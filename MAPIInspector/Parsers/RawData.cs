@@ -12,8 +12,22 @@ namespace MAPIInspector.Parsers
         private ulong currentBitPosition;
         private int currentBytePosition;
         private ulong remainingBitLength;
-        private int remainingBytePosition;
+        private int remainingByteLength;
         private byte[] data;
+
+        public RawData(byte[] rawData)
+        {
+            this.CurrentBitPosition = 0;
+            this.RemainingBitLength = (ulong)rawData.Length << 3;
+            this.Data = rawData;
+        }
+
+        public RawData(byte[] rawData, ulong currentPosition, ulong leftLength)
+        {
+            this.CurrentBitPosition = currentPosition;
+            this.RemainingBitLength = leftLength << 3;
+            this.Data = rawData;
+        }
 
         public ulong CurrentBitPosition
         {
@@ -33,22 +47,6 @@ namespace MAPIInspector.Parsers
             set;
         }
 
-
-        public RawData(byte[] rawData)
-        {
-            this.CurrentBitPosition = 0;
-            this.RemainingBitLength = (ulong)rawData.Length << 3;
-            this.Data = rawData;
-        }
-
-        public RawData(byte[] rawData, ulong currentPosition, ulong leftLength)
-        {
-            this.CurrentBitPosition = currentPosition;
-            this.RemainingBitLength = leftLength << 3;
-            this.Data = rawData;
-        }
-
-
         #region Consumption Methods
 
         /// <summary>
@@ -57,22 +55,22 @@ namespace MAPIInspector.Parsers
         /// Will throw an exception if we attempt to read past the end of the buffer.
         /// </summary>
         /// <returns>1 or 0</returns>
-        public int ConsumeBit(int bitNumber = 1)
+        public int ConsumeBit(int bitPosition = 1)
         {
             // Verify that we have not read past the end of the frame.
             if (this.RemainingBitLength < 1)
             {
-                return 0;
+                throw new Exception("There is no insufficient data to parse.");
             }
 
-            int result = (Data[this.CurrentBitPosition>>3] & (1 << bitNumber - 1)) != 0 ? 1 : 0;
+            int result = (Data[this.CurrentBitPosition>>3] & (1 << bitPosition - 1)) != 0 ? 1 : 0;
             this.CurrentBitPosition++;
             this.RemainingBitLength--;
             return result;
         }
 
         /// <summary>
-        /// Read a single byte.  This method will return a byte (or a partial byte padded with zeros) based on the total bits
+        /// Read a single byte. This method will return a byte (or a partial byte padded with zeros) based on the total bits
         /// that we require for a given type.
         /// 
         /// Will throw an exception if we attempt to read past the end of the buffer.
@@ -92,7 +90,7 @@ namespace MAPIInspector.Parsers
             // Verify that we have not read past the end of the frame.
             if ((ulong)this.RemainingBitLength < widthInBits)
             {
-                return 0;
+                throw new Exception("There is no insufficient data to parse.");
             }
 
             // First we check if we need to return a fictionally padded value to allow for width.
@@ -150,7 +148,7 @@ namespace MAPIInspector.Parsers
         public byte[] ConsumeBytes(int count)
         {
             // If they want a list of nothing, we provide it.
-            if (count <= 0)
+            if (count == 0)
             {
                 return new byte[] { };
             }
@@ -227,7 +225,7 @@ namespace MAPIInspector.Parsers
         /// <returns>
         /// <see lang="true"/> if just consumed character is a zero-terminator; otherwise <see lang="false"/>.
         /// </returns>
-        private bool ConsumeCharacter(StringBuilder sb, Decoder decoder)
+        private bool ConsumeCharacterWithBoolResult(StringBuilder sb, Decoder decoder)
         {
             var c = ConsumeCharacter(decoder);
             // BUGBUG: This should compare against the default value for a TerminationCharacter as per the aspect.
@@ -256,6 +254,11 @@ namespace MAPIInspector.Parsers
             return chars[0];
         }
 
+        /// <summary>
+        /// Try to decode the message to the specific data types.
+        /// </summary>
+        /// <typeparam name="T">The type to decode</typeparam>
+        /// <returns>The object with parsed result</returns>
         public object Parser<T> ()
         {
             Type type = typeof(T);
@@ -274,7 +277,6 @@ namespace MAPIInspector.Parsers
                 FieldInfo[] fields = type.GetFields();
                 PropertyInfo[] props = type.GetProperties();
                 created = Activator.CreateInstance(type);
-                offset = 0;
                 for (int i = 0; i < fields.Length; i++)
                 {
                     if (fields[i].FieldType.Name == DataType.Boolean.ToString())
@@ -346,6 +348,12 @@ namespace MAPIInspector.Parsers
             return created;
         }
 
+        /// <summary>
+        /// Consume basic data types
+        /// </summary>
+        /// <param name="kind">The data type to consume</param>
+        /// <param name="size">The offset the data type consumed</param>
+        /// <returns></returns>
         public object ConsumeUsingKind(DataType kind, out ulong size)
         {
             object result;
@@ -511,7 +519,7 @@ namespace MAPIInspector.Parsers
             {
                 if (ed == Encoding.ASCII)
                 {
-                    done = ConsumeCharacter(sb, ed.GetDecoder());
+                    done = ConsumeCharacterWithBoolResult(sb, ed.GetDecoder());
                 }
                 else
                 {
@@ -530,7 +538,7 @@ namespace MAPIInspector.Parsers
                     }
                     else
                     {
-                        done = ConsumeCharacter(sb, ed.GetDecoder());
+                        done = ConsumeCharacterWithBoolResult(sb, ed.GetDecoder());
                     }
                 }
             } while (!done && this.RemainingBitLength >= bitsNeeded);
