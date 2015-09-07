@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace MAPIInspector.Parsers
 {
@@ -58,7 +59,7 @@ namespace MAPIInspector.Parsers
         public int ConsumeBit(int bitPosition = 1)
         {
             // Verify that we have not read past the end of the frame.
-            if (this.RemainingBitLength < 1)
+            if (this.RemainingBitLength == 0 || this.RemainingBitLength < (ulong)bitPosition)
             {
                 throw new Exception("There is no insufficient data to parse.");
             }
@@ -88,7 +89,7 @@ namespace MAPIInspector.Parsers
         private byte ConsumeByteWithWidth(ulong widthInBits)
         {
             // Verify that we have not read past the end of the frame.
-            if ((ulong)this.RemainingBitLength < widthInBits)
+            if (this.RemainingBitLength == 0 || this.RemainingBitLength < widthInBits)
             {
                 throw new Exception("There is no insufficient data to parse.");
             }
@@ -225,7 +226,7 @@ namespace MAPIInspector.Parsers
         /// <returns>
         /// <see lang="true"/> if just consumed character is a zero-terminator; otherwise <see lang="false"/>.
         /// </returns>
-        private bool ConsumeCharacterWithBoolResult(StringBuilder sb, Decoder decoder)
+        private bool IsConsumedCharacterZeroTerminator(StringBuilder sb, Decoder decoder)
         {
             var c = ConsumeCharacter(decoder);
             // BUGBUG: This should compare against the default value for a TerminationCharacter as per the aspect.
@@ -255,97 +256,137 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Try to decode the message to the specific data types.
+        /// Retrieve a Boolean value. (Actually a byte. Returns true if != 0 )
         /// </summary>
-        /// <typeparam name="T">The type to decode</typeparam>
-        /// <returns>The object with parsed result</returns>
-        public object Parser<T> ()
+        /// <returns>True if the byte is not 0x00 </returns>
+        public bool ConsumeBool()
         {
-            Type type = typeof(T);
-            bool isBasicType = Enum.IsDefined(typeof(DataType), type.Name.ToString());
-            object created = null;
-            ulong offset = 0;
-            if (isBasicType)
+            return ConsumeByte() != 0x00;
+        }
+
+        /// <summary>
+        /// Retrieve a set number of bytes. If the total number of bytes are not present in the stream, pad the result.
+        /// </summary>
+        /// <param name="byteCount"></param>
+        /// <returns></returns>
+        public byte[] ConsumeForSure(int byteCount)
+        {
+            byte[] result = ConsumeBytes(byteCount);
+            if (result.Length < byteCount)
             {
-                object basicType = Activator.CreateInstance(type);
-                DataType dataType = (DataType)Enum.Parse(typeof(DataType), type.Name.ToString());
-                var result = ConsumeUsingKind(dataType, out offset);
-                return (T)Convert.ChangeType(result, typeof(T));
+                Array.Resize<byte>(ref result, byteCount);
+                // BUGBUG: This check is not used for determining if we have run out of data in all 
+                // cases however, we need to be aware that we are generating data.
+                // This should be handled more comprehensively post-CTP.
             }
-            else
+            return result;
+        }
+
+
+        /// <summary>
+        /// Read a single precision floating point number from the next four bytes.
+        /// 
+        /// This method using System.BitConverter to perform the conversion.
+        /// </summary>
+        /// <returns>the single precision floating point value</returns>
+        public float ConsumeSingle()
+        {
+            return BitConverter.ToSingle(ConsumeForSure(4), 0);
+        }
+
+        /// <summary>
+        /// Read a single precision floating point number from up the next eight bytes.
+        /// 
+        /// This method using System.BitConverter to perform the conversion.
+        /// </summary>
+        /// <returns>the single precision floating point value</returns>
+        public double ConsumeDouble()
+        {
+           return BitConverter.ToDouble(ConsumeForSure(8), 0);       
+        }
+
+        public Guid ConsumeGuid()
+        {
+            return new Guid(ConsumeForSure(16));
+        }
+
+        /// <summary>
+        /// Read a string
+        /// 
+        /// Requires either a length or a terminator given using aspects.
+        /// </summary>
+        /// <returns> the string</returns>
+        public string ConsumeString(Encoding ed, string TextTerminator = "/0", uint length = 0)
+        {
+            ulong bitsNeeded = 16;
+
+            if (this.RemainingBitLength == 0 || this.RemainingBitLength < bitsNeeded)
             {
-                FieldInfo[] fields = type.GetFields();
-                PropertyInfo[] props = type.GetProperties();
-                created = Activator.CreateInstance(type);
-                for (int i = 0; i < fields.Length; i++)
+                throw new Exception("There is no insufficient data to parse.");
+            }
+
+            if (ed != null && ed == Encoding.ASCII)
+            {
+                bitsNeeded = 8;
+            }
+
+            if (length != 0)
+            {                
+                return ConsumeStringWithLength(bitsNeeded, length, ed);
+            }
+
+            var terminatorAspectValue = String.Empty;
+            if (TextTerminator != string.Empty)
+            {
+                terminatorAspectValue = TextTerminator;
+            }
+
+            var sb = new StringBuilder();
+            var done = false;
+
+            do
+            {
+                if (ed == Encoding.ASCII)
                 {
-                    if (fields[i].FieldType.Name == DataType.Boolean.ToString())
+                    done = IsConsumedCharacterZeroTerminator(sb, ed.GetDecoder());
+                }
+                else
+                {
+                    if (TextTerminator != null)
                     {
-                        bool result = false;
-                        result = (bool)ConsumeUsingKind(RawData.DataType.Boolean, out offset);
-                        fields[i].SetValue(created, result);
-                    }
-                    else if (fields[i].FieldType.Name == DataType.Byte.ToString())
-                    {
-                        byte result;
-                        result = (byte)ConsumeUsingKind(RawData.DataType.Byte, out offset);
-                        fields[i].SetValue(created, result);
-                    }
-                    else if (fields[i].FieldType.Name == DataType.Char.ToString())
-                    {
-                        char result;
-                        result = (char)ConsumeUsingKind(RawData.DataType.Char, out offset);
-                        fields[i].SetValue(created, result);
-                    }
-                    else if (fields[i].FieldType.Name == DataType.Single.ToString())
-                    {
-                        float result;
-                        result = (float)ConsumeUsingKind(RawData.DataType.Single, out offset);
-                        fields[i].SetValue(created, result);
-                    }
-                    else if (fields[i].FieldType.Name == DataType.Double.ToString())
-                    {
-                        double result;
-                        result = (double)ConsumeUsingKind(RawData.DataType.Double, out offset);
-                        fields[i].SetValue(created, result);
-                    }
-                    else if (fields[i].FieldType.Name == DataType.Guid.ToString())
-                    {
-                        Guid result;
-                        result = (Guid)ConsumeUsingKind(RawData.DataType.Guid, out offset);
-                        fields[i].SetValue(created, result);
-                    }
-                    else if (fields[i].FieldType.Name == DataType.Int16.ToString())
-                    {
-                        Int16 result;
-                        result = (Int16)ConsumeUsingKind(RawData.DataType.Int16, out offset);
-                        fields[i].SetValue(created, result);
-                    }
-                    else if (fields[i].FieldType.Name == DataType.Int32.ToString())
-                    {
-                        Int32 result;
-                        result = (Int32)ConsumeUsingKind(RawData.DataType.Int32, out offset);
-                        fields[i].SetValue(created, result);
-                    }
-                    else if (fields[i].FieldType.Name == DataType.Int64.ToString())
-                    {
-                        Int64 result;
-                        result = (Int64)ConsumeUsingKind(RawData.DataType.Int64, out offset);
-                        fields[i].SetValue(created, result);
-                    }
-                    else if (fields[i].FieldType.Name == DataType.String.ToString())
-                    {
-                        string result;
-                        result = (string)ConsumeUsingKind(RawData.DataType.String, out offset);
-                        fields[i].SetValue(created, result);
+                        char c = ConsumeCharacter(ed.GetDecoder());
+                        sb.Append(c);
+                        // BUGBUG: Making the string and using EndsWith can be more performant.
+                        // TODO : It would be much more efficient if we support only single char terminators
+                        if (sb.ToString().EndsWith(terminatorAspectValue))
+                        {
+                            // Remove the terminator from the 'string' data.
+                            sb = sb.Remove(sb.Length - terminatorAspectValue.Length, terminatorAspectValue.Length);
+                            done = true;
+                        }
                     }
                     else
                     {
-                        throw new Exception(string.Format("Unhandled primitive type in Unions: {0}", fields[i].FieldType.Name));
+                        done = IsConsumedCharacterZeroTerminator(sb, ed.GetDecoder());
                     }
                 }
-            }
-            return created;
+            } while (!done && this.RemainingBitLength >= bitsNeeded);
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Consumes the string of the specified length and character width.
+        /// </summary>
+        private string ConsumeStringWithLength(ulong bitsPerChar, uint lengthInChars, Encoding encoding)
+        {
+            // TODO : byte length calculation is done assuming that BinaryEncoding.Width is not set.
+            // Is it a valid assumption? Most likely it is. Otherwise what byte width should be used?
+            // The one specified by encoding or the one specified by BinaryEncoding.Width?
+
+            var lengthInBytes = bitsPerChar * lengthInChars >> 3;
+            var bytes = ConsumeBytes((int)lengthInBytes);
+            var result = encoding.GetString(bytes).TrimEnd("\0".ToCharArray());
+            return result;
         }
 
         /// <summary>
@@ -415,152 +456,66 @@ namespace MAPIInspector.Parsers
             return result;
         }
 
-        /// <summary>
-        /// Retrieve a Boolean value. (Actually a byte. Returns true if != 0 )
-        /// </summary>
-        /// <returns>True if the byte is not 0x00 </returns>
-        public bool ConsumeBool()
-        {
-            return ConsumeByte() != 0x00;
-        }
+        #endregion
 
+        #region Parse method
         /// <summary>
-        /// Retrieve a set number of bytes. If the total number of bytes are not present in the stream, pad
-        /// pad the result.
+        /// Try to decode the message to the specific data types.
         /// </summary>
-        /// <param name="byteCount"></param>
-        /// <returns></returns>
-        public byte[] ConsumeForSure(int byteCount)
+        /// <typeparam name="T">The type to decode</typeparam>
+        /// <returns>The object with parsed result</returns>
+        public object Parse<T>()
         {
-            byte[] result = ConsumeBytes(byteCount);
-            if (result.Length < byteCount)
+            Type type = typeof(T);
+            bool isBasicType = Enum.IsDefined(typeof(DataType), type.Name.ToString());
+            ulong offset = 0;
+            if (isBasicType)
             {
-                Array.Resize<byte>(ref result, byteCount);
-                // BUGBUG: This check is not used for determining if we have run out of data in all 
-                // cases however, we need to be aware that we are generating data.
-                // This should be handled more comprehensively post-CTP.
+                DataType dataType = (DataType)Enum.Parse(typeof(DataType), type.Name);
+                var result = ConsumeUsingKind(dataType, out offset);
+                return (T)Convert.ChangeType(result, typeof(T));
             }
-            return result;
-        }
-
-
-        /// <summary>
-        /// Read a single precision floating point number from the next four bytes.
-        /// 
-        /// This method using System.BitConverter to perform the conversion.
-        /// </summary>
-        /// <returns>the single precision floating point value</returns>
-        public float ConsumeSingle()
-        {
-            float singleValue = BitConverter.ToSingle(ConsumeForSure(4), 0);
-            return singleValue;
-        }
-
-        /// <summary>
-        /// Read a single precision floating point number from up the next eight bytes.
-        /// 
-        /// This method using System.BitConverter to perform the conversion.
-        /// </summary>
-        /// <returns>the single precision floating point value</returns>
-        public double ConsumeDouble()
-        {
-            double doubleValue = BitConverter.ToDouble(ConsumeForSure(8), 0);
-            return doubleValue;
-        }
-
-        public Guid ConsumeGuid()
-        {
-            var g = new Guid(ConsumeForSure(16));
-            return g;
-        }
-
-        /// <summary>
-        /// Read a string
-        /// 
-        /// Requires either a length or a terminator given using aspects.
-        /// </summary>
-        /// <returns> the string</returns>
-        public string ConsumeString(Encoding ed, string TextTerminator = "/0", uint length = 0)
-        {
-            ulong bitsNeeded = 16;
-
-            if (ed != null)
+            else
             {
-                if (ed == Encoding.ASCII)
+                FieldInfo[] fields = type.GetFields();
+                PropertyInfo[] props = type.GetProperties();
+                object created = Activator.CreateInstance(type);
+                for (int i = 0; i < fields.Length; i++)
                 {
-                    bitsNeeded = 8;
-                }
-                else if (ed == Encoding.Unicode)
-                {
-                    bitsNeeded = 16;
-                }
-            }
-
-            if (bitsNeeded > this.RemainingBitLength)
-            {
-                return "";
-            }
-
-            if (length != 0)
-            {                
-                return ConsumeStringWithLength(bitsNeeded, length, ed);
-            }
-
-            var terminatorAspectValue = String.Empty;
-            if (TextTerminator != string.Empty)
-            {
-                terminatorAspectValue = TextTerminator;
-            }
-
-            var sb = new StringBuilder();
-            var done = false;
-
-            do
-            {
-                if (ed == Encoding.ASCII)
-                {
-                    done = ConsumeCharacterWithBoolResult(sb, ed.GetDecoder());
-                }
-                else
-                {
-                    if (TextTerminator != null)
+                    if (fields[i].FieldType.IsArray)
                     {
-                        char c = ConsumeCharacter(ed.GetDecoder());
-                        sb.Append(c);
-                        // BUGBUG: Making the string and using EndsWith can be more performant.
-                        // TODO : It would be much more efficient if we support only single char terminators
-                        if (sb.ToString().EndsWith(terminatorAspectValue))
+                        object[] attributes = fields[i].GetCustomAttributes(typeof(MarshalAsAttribute), false);
+                        int length = 0;
+                        if (attributes.Length > 0)
                         {
-                            // Remove the terminator from the 'string' data.
-                            sb = sb.Remove(sb.Length - terminatorAspectValue.Length, terminatorAspectValue.Length);
-                            done = true;
+                            MarshalAsAttribute marshal = (MarshalAsAttribute)attributes[0];
+                            length = marshal.SizeConst;
+                            Type t = fields[i].FieldType.GetElementType();
+                            DataType dataType = (DataType)Enum.Parse(typeof(DataType), t.Name.ToString());
+
+                            Array arr = Array.CreateInstance(t, length);
+                            for (int j = 0; j < length; j++)
+                            {
+                                arr.SetValue(ConsumeUsingKind(dataType, out offset), j);
+                            }
+                            fields[i].SetValue(created, arr);
                         }
+                    }
+                    else if (Enum.IsDefined(typeof(DataType), fields[i].FieldType.Name))
+                    {
+                        DataType dataType = (DataType)Enum.Parse(typeof(DataType), fields[i].FieldType.Name);
+                        fields[i].SetValue(created, ConsumeUsingKind(dataType, out offset));
                     }
                     else
                     {
-                        done = ConsumeCharacterWithBoolResult(sb, ed.GetDecoder());
+                        throw new Exception(string.Format("Unhandled primitive type in Unions: {0}", fields[i].FieldType.Name));
                     }
                 }
-            } while (!done && this.RemainingBitLength >= bitsNeeded);
-            return sb.ToString();
+                return created;
+            }
         }
 
-        /// <summary>
-        /// Consumes the string of the specified length and character width.
-        /// </summary>
-        private string ConsumeStringWithLength(ulong bitsPerChar, uint lengthInChars, Encoding encoding)
-        {
-            // TODO : byte length calculation is done assuming that BinaryEncoding.Width is not set.
-            // Is it a valid assumption? Most likely it is. Otherwise what byte width should be used?
-            // The one specified by encoding or the one specified by BinaryEncoding.Width?
-
-            var lengthInBytes = bitsPerChar * lengthInChars >> 3;
-            var bytes = ConsumeBytes((int)lengthInBytes);
-            var result = encoding.GetString(bytes).TrimEnd("\0".ToCharArray());
-            return result;
-        }
-
-        #endregion
+        #endregion Parse method
 
 
         /// <summary>
