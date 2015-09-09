@@ -5,16 +5,23 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.IO;
 
 namespace MAPIInspector.Parsers
 {
     class RawData
     {
-        private ulong currentBitPosition;
-        private int currentBytePosition;
-        private ulong remainingBitLength;
-        private int remainingByteLength;
-        private byte[] data;
+        public RawData(Stream s)
+        {
+            byte[] DataInBytes = new byte[s.Length];
+            for (int i = 0; i < s.Length - 1; i++)
+            {
+                DataInBytes[i] = (byte)s.ReadByte();
+            }
+            this.CurrentBitPosition = 0;
+            this.RemainingBitLength = (ulong)DataInBytes.Length << 3;
+            this.Data = DataInBytes;
+        } 
 
         public RawData(byte[] rawData)
         {
@@ -23,10 +30,16 @@ namespace MAPIInspector.Parsers
             this.Data = rawData;
         }
 
-        public RawData(byte[] rawData, ulong currentPosition, ulong leftLength)
+        public RawData(byte[] rawData, ulong currentPosition)
         {
             this.CurrentBitPosition = currentPosition;
-            this.RemainingBitLength = leftLength << 3;
+            this.Data = rawData;
+        }
+
+        public RawData(byte[] rawData, ulong currentPosition, ulong leftBitLength)
+        {
+            this.CurrentBitPosition = currentPosition;
+            this.RemainingBitLength = leftBitLength;
             this.Data = rawData;
         }
 
@@ -61,7 +74,7 @@ namespace MAPIInspector.Parsers
             // Verify that we have not read past the end of the frame.
             if (this.RemainingBitLength == 0 || this.RemainingBitLength < (ulong)bitPosition)
             {
-                throw new Exception("There is no insufficient data to parse.");
+                throw new Exception("There is no sufficient data to parse.");
             }
 
             int result = (Data[this.CurrentBitPosition>>3] & (1 << bitPosition - 1)) != 0 ? 1 : 0;
@@ -91,7 +104,7 @@ namespace MAPIInspector.Parsers
             // Verify that we have not read past the end of the frame.
             if (this.RemainingBitLength == 0 || this.RemainingBitLength < widthInBits)
             {
-                throw new Exception("There is no insufficient data to parse.");
+                throw new Exception("There is no sufficient data to parse.");
             }
 
             // First we check if we need to return a fictionally padded value to allow for width.
@@ -322,7 +335,7 @@ namespace MAPIInspector.Parsers
 
             if (this.RemainingBitLength == 0 || this.RemainingBitLength < bitsNeeded)
             {
-                throw new Exception("There is no insufficient data to parse.");
+                throw new Exception("There is no sufficient data to parse.");
             }
 
             if (ed != null && ed == Encoding.ASCII)
@@ -395,10 +408,11 @@ namespace MAPIInspector.Parsers
         /// <param name="kind">The data type to consume</param>
         /// <param name="size">The offset the data type consumed</param>
         /// <returns></returns>
-        public object ConsumeUsingKind(DataType kind, out ulong size)
+        public object ConsumeUsingKind(DataType kind, out ulong start, out ulong size)
         {
             object result;
             var before = this.CurrentBitPosition;
+            start = before;
             switch (kind)
             {
                 case DataType.Boolean:
@@ -464,21 +478,28 @@ namespace MAPIInspector.Parsers
         /// </summary>
         /// <typeparam name="T">The type to decode</typeparam>
         /// <returns>The object with parsed result</returns>
-        public object Parse<T>()
+        public void Parse<T>(out Dictionary<object, ulong> typeResult, out Dictionary<FieldInfo, ulong> fieldsInfoStart, out Dictionary<FieldInfo, ulong> fieldsInfoLength)
         {
-            Type type = typeof(T);
+            fieldsInfoStart = new Dictionary<FieldInfo, ulong>();
+            fieldsInfoLength = new Dictionary<FieldInfo, ulong>();
+            typeResult = new Dictionary<object, ulong>();
+
+            Type type = typeof(T);           
             bool isBasicType = Enum.IsDefined(typeof(DataType), type.Name.ToString());
+            ulong startPosition = 0;
             ulong offset = 0;
+
             if (isBasicType)
             {
                 DataType dataType = (DataType)Enum.Parse(typeof(DataType), type.Name);
-                var result = ConsumeUsingKind(dataType, out offset);
-                return (T)Convert.ChangeType(result, typeof(T));
+                var result = ConsumeUsingKind(dataType, out startPosition, out offset);
+                typeResult.Add((T)Convert.ChangeType(result, typeof(T)), offset);
             }
             else
             {
+                ulong totalOffset = 0;
                 FieldInfo[] fields = type.GetFields();
-                PropertyInfo[] props = type.GetProperties();
+                ulong startLength = 0;
                 object created = Activator.CreateInstance(type);
                 for (int i = 0; i < fields.Length; i++)
                 {
@@ -486,36 +507,179 @@ namespace MAPIInspector.Parsers
                     {
                         object[] attributes = fields[i].GetCustomAttributes(typeof(MarshalAsAttribute), false);
                         int length = 0;
+                        ulong offsetLength = 0;
                         if (attributes.Length > 0)
                         {
                             MarshalAsAttribute marshal = (MarshalAsAttribute)attributes[0];
                             length = marshal.SizeConst;
                             Type t = fields[i].FieldType.GetElementType();
-                            DataType dataType = (DataType)Enum.Parse(typeof(DataType), t.Name.ToString());
+                            DataType dataType = (DataType)Enum.Parse(typeof(DataType), t.Name);
 
                             Array arr = Array.CreateInstance(t, length);
                             for (int j = 0; j < length; j++)
                             {
-                                arr.SetValue(ConsumeUsingKind(dataType, out offset), j);
+                                arr.SetValue(ConsumeUsingKind(dataType, out startLength, out offset), j);
+                                if (j == 0)
+                                {
+                                    startPosition = startLength;
+                                }
+                                totalOffset += offset;
+                                offsetLength += offset;
                             }
                             fields[i].SetValue(created, arr);
+                            fieldsInfoStart.Add(fields[i], startPosition);
+                            fieldsInfoLength.Add(fields[i], offsetLength);
                         }
                     }
                     else if (Enum.IsDefined(typeof(DataType), fields[i].FieldType.Name))
                     {
                         DataType dataType = (DataType)Enum.Parse(typeof(DataType), fields[i].FieldType.Name);
-                        fields[i].SetValue(created, ConsumeUsingKind(dataType, out offset));
+                        fields[i].SetValue(created, ConsumeUsingKind(dataType, out startLength, out offset));
+                        fieldsInfoStart.Add(fields[i], startLength);
+                        fieldsInfoLength.Add(fields[i], offset);
+                        totalOffset += offset;
                     }
                     else
                     {
                         throw new Exception(string.Format("Unhandled primitive type in Unions: {0}", fields[i].FieldType.Name));
                     }
                 }
-                return created;
+                typeResult.Add(created, totalOffset);
+
             }
         }
 
         #endregion Parse method
+
+        public void ParseBasicDataType<T>(out object result, out ulong startPosition, out ulong offsetLength)
+        {
+            Type type = typeof(T);
+            result = null;
+            startPosition = 0;
+            offsetLength = 0;
+
+            if (Enum.IsDefined(typeof(DataType), type.Name))
+            {
+                DataType dataType = (DataType)Enum.Parse(typeof(DataType), type.Name);
+                var parsedResult = ConsumeUsingKind(dataType, out startPosition, out offsetLength);
+                result = (T)Convert.ChangeType(parsedResult, typeof(T));
+            }
+        }
+
+        public void ParseArrayType(FieldInfo field, out object result, out ulong startPosition, out ulong offsetLength)
+        {
+            Type type = field.FieldType;
+            result = null;
+            startPosition = 0;
+            offsetLength = 0;
+
+            if (type.IsArray)
+            {
+                object[] attributesBasic = field.GetCustomAttributes(typeof(MarshalAsAttribute), false);
+                int lengthBasic = 0;
+
+                if (attributesBasic.Length > 0)
+                {
+                    MarshalAsAttribute marshal = (MarshalAsAttribute)attributesBasic[0];
+                    lengthBasic = marshal.SizeConst;
+                    Type t = type.GetElementType();
+                    DataType dataType = (DataType)Enum.Parse(typeof(DataType), t.Name);
+
+                    Array arr = Array.CreateInstance(t, lengthBasic);
+                    for (int j = 0; j < lengthBasic; j++)
+                    {
+                        Type raw = this.GetType();
+                        object[] parameters = new object[] { null, null, null };
+                        string methodName = string.Empty;
+                        if (Enum.IsDefined(typeof(DataType), t.Name))
+                        {
+                            methodName = "ParseBasicDataType";
+                        }
+                        else
+                        {
+                            methodName = "ParseAllDataType";
+                        }
+
+                        MethodInfo mi = raw.GetMethod(methodName).MakeGenericMethod(t);
+                        mi.Invoke(this, parameters);
+
+                        if (j == 0 && parameters.Length >= 3)
+                        {
+                            startPosition = (ulong)parameters[1];
+                        }
+                        arr.SetValue(parameters[0], j);
+                        offsetLength += (ulong)parameters[2];
+                    }
+                    result = arr;
+                }
+            }
+        }
+
+        public void ParseAllDataType<T>(out object result, out ulong startPosition, out ulong offsetLength)
+        {
+            Type type = typeof(T);
+            result = null;
+            startPosition = 0;
+            offsetLength = 0;
+            ulong totalOffsetLength = 0;
+
+            if (Enum.IsDefined(typeof(DataType), type.Name))
+            {
+                ParseBasicDataType<T>(out result, out startPosition, out offsetLength);
+                totalOffsetLength += offsetLength;
+            }
+            else
+            {
+                FieldInfo[] fields = type.GetFields();
+                object created = Activator.CreateInstance(type);
+                foreach (FieldInfo f in fields)
+                {
+                    Type t = this.GetType();
+                    object[] parameters = new object[] { null, null, null };
+                    string methodName = string.Empty;
+                    if (Enum.IsDefined(typeof(DataType), f.FieldType.Name))
+                    {
+                        methodName = "ParseBasicDataType";
+                    }
+                    else if (f.FieldType.IsArray)
+                    {
+                        parameters = new object[] { f, null, null, null };
+                        methodName = "ParseArrayType";
+                    }
+                    else
+                    {
+                        methodName = "ParseAllDataType";
+                    }
+
+                    MethodInfo mi = null;
+                    if (!f.FieldType.IsArray)
+                    {
+                         mi = t.GetMethod(methodName).MakeGenericMethod(f.FieldType);
+                    }
+                    else
+                    {
+                        mi = t.GetMethod(methodName);
+                    }
+                    mi.Invoke(this, parameters);
+                    if (parameters.Length > 0 && !f.FieldType.IsArray)
+                    {
+                        startPosition = (ulong)parameters[1];
+                        offsetLength = (ulong)parameters[2];
+                        f.SetValue(created, parameters[0]);
+                        totalOffsetLength += offsetLength;
+                    }
+                    else
+                    {
+                        startPosition = (ulong)parameters[2];
+                        offsetLength = (ulong)parameters[3];
+                        f.SetValue(created, parameters[1]);
+                        totalOffsetLength += offsetLength;
+                    }
+                }
+                result = created;
+                offsetLength = totalOffsetLength;
+            }
+        }
 
 
         /// <summary>
