@@ -4,54 +4,85 @@ using System.Text;
 using System.IO;
 using System.Windows.Forms;
 using MapiInspector;
+using System.Reflection;
 
 namespace MAPIInspector.Parsers
 {
+
     class ConnectRequestBodyType : BaseStructure
     {
-        public string UserDn;
-        public uint Flags;
-        public uint DefaultCodePage;
-        public uint LcidSort;
-        public uint LcidString;
-        public uint AuxiliaryBufferSize;
-        public ExtendedBuffer AuxiliaryBuffer;
-        
+        public struct ConnectRequest
+        {
+            public string UserDn;
+            public uint Flags;
+            public uint DefaultCodePage;
+            public uint LcidSort;
+            public uint LcidString;
+            public uint AuxiliaryBufferSize;
+            public ExtendedBuffer AuxiliaryBuffer;
+        }
+       
+        public ConnectRequest connectRequest;
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.UserDn = ReadString();
-            this.Flags = ReadUint();
-            this.DefaultCodePage = ReadUint();
-            this.LcidSort = ReadUint();
-            this.LcidString = ReadUint();
-            this.AuxiliaryBufferSize = ReadUint();
+            RawData rawData = new RawData(s);
+            Type t= typeof(ConnectRequest);
+            FieldInfo[] fields = t.GetFields();
+			object testa = Activator.CreateInstance(t);
+            ulong start = 0;
+            ulong offset = 0;
+            ulong totalOffset = 0;
+            object result = null;
+			
+            foreach(FieldInfo f in fields)
+            {       
+               if (f.Name != "AuxiliaryBuffer" && Enum.IsDefined(typeof(RawData.DataType), f.FieldType.Name))
+               {    
+                    RawData.DataType dataType = (RawData.DataType)Enum.Parse(typeof(RawData.DataType), f.FieldType.Name);
+                    result = rawData.ConsumeUsingKind(dataType, out start, out offset);
 
-            if (this.AuxiliaryBufferSize > 0)
-            {
-                this.AuxiliaryBuffer = new ExtendedBuffer(true);
-                this.AuxiliaryBuffer.Parse(s);
-            }
-            else
-            {
-                this.AuxiliaryBuffer = null;
-            }
+                    fieldsInfoStart.Add(f, start);
+                    fieldsInfoLength.Add(f, offset);
+                    f.SetValue(testa, result);
+                    totalOffset += offset;
+               }
+               else
+               {
+                   if (((ConnectRequest)testa).AuxiliaryBufferSize > 0)
+                   {
+                        f.SetValue(testa, new ExtendedBuffer(true));
+                        s.Position = (long)rawData.CurrentBitPosition;
+                        ((ConnectRequest)testa).AuxiliaryBuffer.Parse(s);
+                   }
+                   else
+                   {
+                       f.SetValue(testa, null);
+                   }
+               }
+          } 
+ 
+            connectRequest = (ConnectRequest)testa;
+            typeResult.Add(connectRequest, totalOffset);
         }
 
         public override void AddTreeChildren(TreeNode node)
         {
-            node.Nodes.Add(new TreeNode("UserDn: " + UserDn));
-            node.Nodes.Add(new TreeNode("Flags: " + Utilities.ConvertUintToString(Flags)));
-            node.Nodes.Add(new TreeNode("DefaultCodePage: " + Utilities.ConvertUintToString(DefaultCodePage)));
-            node.Nodes.Add(new TreeNode("LcidSort: " + Utilities.ConvertUintToString(LcidSort)));
-            node.Nodes.Add(new TreeNode("LcidString: " + Utilities.ConvertUintToString(LcidString)));
-            node.Nodes.Add(new TreeNode("AuxiliaryBufferSize: " + Utilities.ConvertUintToString(AuxiliaryBufferSize)));
-
-            if (AuxiliaryBuffer != null)
+            if (fieldsInfoStart != null)
             {
-                TreeNode AuxiliaryBufferNode = new TreeNode("AuxiliaryBuffer: " + AuxiliaryBuffer.ToString());
-                AuxiliaryBuffer.AddTreeChildren(AuxiliaryBufferNode);
-                node.Nodes.Add(AuxiliaryBufferNode);
+                foreach (var feild in fieldsInfoStart)
+                {
+                    object obj = null;
+                    foreach (var key in typeResult.Keys)
+                    {
+                        obj = key;
+                    }
+
+                    TreeNode treeNode = new TreeNode(string.Format("{0}：{1:x8}", feild.Key.Name, feild.Key.GetValue(obj)));
+                    node.Nodes.Add(treeNode);
+                    int[] a = new int[2]{(int)fieldsInfoStart[feild.Key]/8, (int)fieldsInfoLength[feild.Key]/8};
+                    TreeNodeOffsetAndLength.Add(treeNode, a);
+                }
             }
         }
    }
@@ -63,6 +94,7 @@ namespace MAPIInspector.Parsers
 
         public ExtendedBuffer(bool isAuxiliaryBuffer)
         {
+
         }
 
         public override void Parse(Stream s)

@@ -2,16 +2,19 @@
 using System.Windows.Forms;
 using Fiddler;
 using MAPIInspector.Parsers;
+using Be.Windows.Forms;
 
 namespace MapiInspector
 {
     public abstract class MAPIInspector : Inspector2
     {
         public TreeView oMAPIViewControl { get; set; }
+        public MAPIControl oMAPIControl { get; set; }
         public bool bDirty { get; set; }
         public bool bReadOnly { get; set; }
         internal Session session { get; set; }
         private byte[] rawBody { get; set; }
+        public BaseStructure baseStructure;
 
         public TrafficDirection Direction
         {
@@ -64,9 +67,18 @@ namespace MapiInspector
         public override void AddToTab(TabPage o)
         {
             o.Text = "MAPI";
-            this.oMAPIViewControl = new TreeView();
-            o.Controls.Add(this.oMAPIViewControl);
-            o.Controls[0].Dock = DockStyle.Fill;
+            this.oMAPIControl = new MAPIControl();
+            o.Controls.Add(this.oMAPIControl);
+            this.oMAPIControl.Size = o.Size;
+            this.oMAPIControl.Dock = DockStyle.Fill;
+            this.oMAPIViewControl = this.oMAPIControl.TreeView1;
+            this.oMAPIControl.HexBox1.VScrollBarVisible = true;
+
+            this.oMAPIViewControl.AfterSelect += delegate(object sender, TreeViewEventArgs e)
+            {
+                int[] offsetAndlength = baseStructure.TreeNodeOffsetAndLength[e.Node];
+                this.oMAPIControl.HexBox1.Select(offsetAndlength[0], offsetAndlength[1]);
+            };
         }
 
         public override int GetOrder()
@@ -143,6 +155,10 @@ namespace MapiInspector
 
         public void ParseHTTPPayload(HTTPHeaders headers, byte[] bytesFromHTTP, TrafficDirection direction)
         {
+
+            this.oMAPIControl.HexBox1.ByteProvider = new StaticByteProvider(bytesFromHTTP);
+            this.oMAPIControl.HexBox1.ByteProvider.ApplyChanges();
+
             if (bytesFromHTTP.Length == 0 || headers == null || !headers.Exists("X-RequestType"))
             {
                 return;
@@ -166,9 +182,9 @@ namespace MapiInspector
                 {
                     case "Connect":
                         {
-                            ConnectRequestBodyType ConnectRequest = new ConnectRequestBodyType();
-                            ConnectRequest.Parse(stream);
-                            ConnectRequest.AddTreeChildren(topNode);
+                            baseStructure = new ConnectRequestBodyType();
+                            baseStructure.Parse(stream);
+                            baseStructure.AddTreeChildren(topNode);
                             break;
                         }
                     default:
@@ -178,6 +194,7 @@ namespace MapiInspector
                 this.oMAPIViewControl.Nodes.Add(topNode);
                 topNode.Expand();
                 this.oMAPIViewControl.EndUpdate();
+               
             }
 
             else
@@ -210,4 +227,5 @@ namespace MapiInspector
             Out
         }
     }
+
 }

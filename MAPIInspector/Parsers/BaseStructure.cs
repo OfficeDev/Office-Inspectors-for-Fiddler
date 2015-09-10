@@ -4,16 +4,23 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Reflection;
 
 
 namespace MAPIInspector.Parsers
 {
     public abstract class BaseStructure
     {
+       
         private Stream stream;
+        public Dictionary<TreeNode, int[]> TreeNodeOffsetAndLength = new Dictionary<TreeNode, int[]>();
+        public Dictionary<object, ulong> typeResult = new Dictionary<object, ulong>();
+        public Dictionary<FieldInfo, ulong> fieldsInfoStart = new Dictionary<FieldInfo, ulong>();
+        public Dictionary<FieldInfo, ulong> fieldsInfoLength = new Dictionary<FieldInfo, ulong>();
+
         public virtual void Parse(Stream s)
         {
-            stream = s;
+            stream = s;           
         }
         public override string ToString()
         {

@@ -75,6 +75,9 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Be.Windows.Forms.HexBox">
+      <HintPath>C:\Program Files (x86)\Fiddler2\Be.Windows.Forms.HexBox.dll</HintPath>
+    </Reference>
     <Reference Include="Fiddler">
       <HintPath>C:\Program Files (x86)\Fiddler2\Fiddler.exe</HintPath>
     </Reference>
@@ -96,11 +99,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MAPIControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="MAPIControl.Designer.cs">
+      <DependentUpon>MAPIControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="MAPIInspector.cs" />
     <Compile Include="MAPIRequestInspector.cs" />
     <Compile Include="MAPIResponseInspector.cs" />
     <Compile Include="Parsers\BaseStructure.cs" />
     <Compile Include="Parsers\MSOXCMAPIHTTP.cs" />
+    <Compile Include="Parsers\RawData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
@@ -120,6 +130,11 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MAPIControl.resx">
+      <DependentUpon>MAPIControl.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
