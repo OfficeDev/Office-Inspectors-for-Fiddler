@@ -9,12 +9,12 @@ using System.IO;
 
 namespace MAPIInspector.Parsers
 {
-    class RawData
+    class RawDataParser
     {
-        public RawData(Stream s)
+        public RawDataParser(Stream s)
         {
             byte[] DataInBytes = new byte[s.Length];
-            for (int i = 0; i < s.Length - 1; i++)
+            for (int i = 0; i < s.Length; i++)
             {
                 DataInBytes[i] = (byte)s.ReadByte();
             }
@@ -23,22 +23,23 @@ namespace MAPIInspector.Parsers
             this.Data = DataInBytes;
         } 
 
-        public RawData(byte[] rawData)
+        public RawDataParser(byte[] rawData)
         {
             this.CurrentBitPosition = 0;
             this.RemainingBitLength = (ulong)rawData.Length << 3;
             this.Data = rawData;
         }
 
-        public RawData(byte[] rawData, ulong currentPosition)
+        public RawDataParser(byte[] rawData, ulong currentBitPosition)
         {
-            this.CurrentBitPosition = currentPosition;
+            this.CurrentBitPosition = currentBitPosition;
+            this.RemainingBitLength = (ulong)rawData.Length << 3;
             this.Data = rawData;
         }
 
-        public RawData(byte[] rawData, ulong currentPosition, ulong leftBitLength)
+        public RawDataParser(byte[] rawData, ulong currentBitPosition, ulong leftBitLength)
         {
-            this.CurrentBitPosition = currentPosition;
+            this.CurrentBitPosition = currentBitPosition;
             this.RemainingBitLength = leftBitLength;
             this.Data = rawData;
         }
@@ -69,15 +70,17 @@ namespace MAPIInspector.Parsers
         /// Will throw an exception if we attempt to read past the end of the buffer.
         /// </summary>
         /// <returns>1 or 0</returns>
-        public int ConsumeBit(int bitPosition = 1)
+        public int ConsumeBit()
         {
             // Verify that we have not read past the end of the frame.
-            if (this.RemainingBitLength == 0 || this.RemainingBitLength < (ulong)bitPosition)
+            if (this.RemainingBitLength < 1 )
             {
                 throw new Exception("There is no sufficient data to parse.");
             }
 
-            int result = (Data[this.CurrentBitPosition>>3] & (1 << bitPosition - 1)) != 0 ? 1 : 0;
+            var offset = (int)(this.CurrentBitPosition & 7);
+            var mask = (byte)(1 << (7 - offset));
+            int result = (Data[this.CurrentBitPosition >> 3] & mask) != 0 ? 1 : 0;
             this.CurrentBitPosition++;
             this.RemainingBitLength--;
             return result;
