@@ -5,30 +5,23 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 
 namespace MAPIInspector.Parsers
 {
     public abstract class BaseStructure
     {
-       
         private Stream stream;
-        public Dictionary<TreeNode, int[]> TreeNodeOffsetAndLength = new Dictionary<TreeNode, int[]>();
-        public Dictionary<object, ulong> typeResult = new Dictionary<object, ulong>();
-        public Dictionary<FieldInfo, ulong> fieldsInfoStart = new Dictionary<FieldInfo, ulong>();
-        public Dictionary<FieldInfo, ulong> fieldsInfoLength = new Dictionary<FieldInfo, ulong>();
 
         public virtual void Parse(Stream s)
         {
-            stream = s;           
+            stream = s;
         }
+
         public override string ToString()
         {
             return "";
-        }
-
-        public virtual void AddTreeChildren(TreeNode node)
-        {            
         }
 
         protected ushort ReadUshort()
@@ -157,5 +150,148 @@ namespace MAPIInspector.Parsers
             }            
             return chars[0];
         }
+
+        public TreeNode AddNodesForTree(object obj, int startIndex, out int offset)
+        {
+            Type t = obj.GetType();
+            int current = startIndex;
+            TreeNode res = new TreeNode(t.Name);
+
+            if (Enum.IsDefined(typeof(RawData.DataType), t.Name))
+            {
+                res.Nodes.Add(string.Format("{0},{1}", t.Name, obj.ToString()));
+            }
+            else
+            {
+                FieldInfo[] info = t.GetFields();
+                for (int i = 0; i < info.Length; i++)
+                {
+                    int os = 0;
+                    if (Enum.IsDefined(typeof(RawData.DataType), info[i].FieldType.Name))
+                    {
+                        Type fieldType = info[i].FieldType;
+                        TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, info[i].GetValue(obj).ToString()));
+                        res.Nodes.Add(tn);
+                        if (info[i].FieldType.Name == "String")
+                        {
+                            object[] attributes = info[i].GetCustomAttributes(typeof(HelpAttribute), false);
+                            if (((HelpAttribute)(attributes[0])).Encode == StringEncoding.Unicode)
+                            {
+                                os = ((string)info[i].GetValue(obj)).Length * 2;
+                            }
+                            else
+                            {
+                                os = ((string)info[i].GetValue(obj)).Length;
+                            }
+
+                            os += (int)((HelpAttribute)(attributes[0])).TerminatorLength;
+                        }
+                        else
+                        {
+                            os = Marshal.SizeOf(fieldType);
+                        }
+
+                        tn.Tag = new Position(current, os);
+                        current += os;
+                    }
+                    else if ((info[i].FieldType.IsEnum && Enum.IsDefined(typeof(RawData.DataType), info[1].FieldType.GetEnumUnderlyingType().Name)))
+                    {
+                        Type fieldType = info[i].FieldType;
+                        TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, info[i].GetValue(obj).ToString()));
+                        res.Nodes.Add(tn);
+                        if (info[i].FieldType.Name == "String")
+                        {
+                            os = ((string)info[i].GetValue(obj)).Length;
+                        }
+                        else
+                        {
+                            os = Marshal.SizeOf(fieldType.GetEnumUnderlyingType());
+                        }
+                        tn.Tag = new Position(current, os);
+                        current += os;
+                    }
+                    else if(info[i].FieldType.IsArray && Enum.IsDefined(typeof(RawData.DataType), info[i].FieldType.GetElementType().Name))
+                    {
+                        Array arr = (Array)info[i].GetValue(obj);
+                        StringBuilder result = new StringBuilder("{");
+                        foreach (var ar in arr)
+                        {
+                            result.Append(ar.ToString() + ",");
+                        }
+                        result.Remove(result.Length - 1, 1);
+                        result.Append("}");
+                        TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
+                        res.Nodes.Add(tn);
+
+                        if (info[i].FieldType.GetElementType().Name == "String")
+                        {
+                            for (int j = 0; j < arr.Length; j++)
+                            {
+
+                                os += ((string[])(arr))[j].Length;
+                                object[] attributes = info[i].GetCustomAttributes(typeof(HelpAttribute), false);
+                                os += (int)((HelpAttribute)(attributes[0])).TerminatorLength;
+                            }
+                        }
+                        else
+                        {
+                            for (int j = 0; j < arr.Length; j++)
+                            {
+                                os += Marshal.SizeOf(info[i].FieldType.GetElementType());
+                            }
+                        }
+
+                        tn.Tag = new Position(current, os);
+                        current += os;
+                    }
+                    else
+                    {
+                        if (info[i].GetValue(obj) != null)
+                        {
+                            res.Nodes.Add(AddNodesForTree(info[i].GetValue(obj), current, out os));
+                            current += os;
+                        }
+                    }
+
+                }
+            }
+
+            offset = current - startIndex;
+            Position ps = new Position(startIndex, offset);
+            res.Tag = ps;
+
+            return res;
+        }
+
+        #region Helper for AddNodesForTree function
+        public enum StringEncoding
+        {
+            ASCII,
+            Unicode
+        }
+
+        public class Position
+        {
+            public int StartIndox;
+            public int Offset;
+            public Position(int startIndex, int offset)
+            {
+                this.StartIndox = startIndex;
+                this.Offset = offset;
+            }
+        }
+
+        [AttributeUsage(AttributeTargets.All)]
+        public class HelpAttribute : System.Attribute
+        {
+            public readonly StringEncoding Encode;
+            public readonly uint TerminatorLength;
+            public HelpAttribute(StringEncoding encode, uint length = 0)
+            {
+                this.Encode = encode;
+                this.TerminatorLength = length;
+            }
+        }
+        #endregion
     }
 }

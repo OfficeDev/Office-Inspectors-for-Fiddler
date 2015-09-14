@@ -76,9 +76,8 @@ namespace MapiInspector
 
             this.oMAPIViewControl.AfterSelect += delegate(object sender, TreeViewEventArgs e)
             {
-                int[] offsetAndlength = baseStructure.TreeNodeOffsetAndLength[e.Node];
-                this.oMAPIControl.HexBox1.Select(offsetAndlength[0], offsetAndlength[1]);
-            };
+				this.oMAPIControl.HexBox1.Select(((BaseStructure.Position)e.Node.Tag).StartIndox, ((BaseStructure.Position)e.Node.Tag).Offset); 
+			};
         }
 
         public override int GetOrder()
@@ -171,8 +170,8 @@ namespace MapiInspector
                 return;
             }
 
-            Stream stream = new MemoryStream(bytesFromHTTP);            
-
+            Stream stream = new MemoryStream(bytesFromHTTP);
+            int result = 0;
             if (direction == TrafficDirection.In)
             {
                 this.oMAPIViewControl.BeginUpdate();
@@ -182,9 +181,9 @@ namespace MapiInspector
                 {
                     case "Connect":
                         {
-                            baseStructure = new ConnectRequestBodyType();
-                            baseStructure.Parse(stream);
-                            baseStructure.AddTreeChildren(topNode);
+                            ConnectRequestBodyType connectRequestBodyType = new ConnectRequestBodyType();
+                            connectRequestBodyType.Parse(stream);
+                            topNode = connectRequestBodyType.AddNodesForTree(connectRequestBodyType, 0, out result);
                             break;
                         }
                     default:
@@ -196,7 +195,6 @@ namespace MapiInspector
                 this.oMAPIViewControl.EndUpdate();
                
             }
-
             else
             {
                 this.oMAPIViewControl.BeginUpdate();
@@ -206,9 +204,9 @@ namespace MapiInspector
                 {
                     case "Connect":
                         {
-                            ConnectResponseBodyType ConnectResponse = new ConnectResponseBodyType();
+                            ConnectResponseBodyType ConnectResponse = new ConnectResponseBodyType();                           
                             ConnectResponse.Parse(stream);
-                            ConnectResponse.AddTreeChildren(topNode);
+                            topNode = ConnectResponse.AddNodesForTree(ConnectResponse, 0, out result);
                             break;
                         }
                     default:
