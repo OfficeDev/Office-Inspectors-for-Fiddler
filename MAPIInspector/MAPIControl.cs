@@ -10,19 +10,19 @@ namespace MapiInspector
             InitializeComponent();
         }
 
-        public TreeView TreeView1
+        public TreeView MAPITreeView
         {
            get
            {
-                return this.treeView1;
+                return this.mapiTreeView;
            }
         }
 
-        public HexBox HexBox1
+        public HexBox MAPIHexBox
         {
             get
             {
-                return this.hexBox1;
+                return this.mapiHexBox;
             }
         }
 

@@ -71,14 +71,16 @@ namespace MapiInspector
             o.Controls.Add(this.oMAPIControl);
             this.oMAPIControl.Size = o.Size;
             this.oMAPIControl.Dock = DockStyle.Fill;
-            this.oMAPIViewControl = this.oMAPIControl.TreeView1;
-            this.oMAPIControl.HexBox1.VScrollBarVisible = true;
-
-            this.oMAPIViewControl.AfterSelect += delegate(object sender, TreeViewEventArgs e)
-            {
-				this.oMAPIControl.HexBox1.Select(((BaseStructure.Position)e.Node.Tag).StartIndox, ((BaseStructure.Position)e.Node.Tag).Offset); 
-			};
+            this.oMAPIViewControl = this.oMAPIControl.MAPITreeView;
+            this.oMAPIControl.MAPIHexBox.VScrollBarVisible = true;
+            this.oMAPIViewControl.AfterSelect -= TreeView_AfterSelect;
+            this.oMAPIViewControl.AfterSelect += TreeView_AfterSelect;
         }
+
+        void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+			this.oMAPIControl.MAPIHexBox.Select(((BaseStructure.Position)e.Node.Tag).StartIndex, ((BaseStructure.Position)e.Node.Tag).Offset); 
+	    }
 
         public override int GetOrder()
         {
@@ -155,8 +157,8 @@ namespace MapiInspector
         public void ParseHTTPPayload(HTTPHeaders headers, byte[] bytesFromHTTP, TrafficDirection direction)
         {
 
-            this.oMAPIControl.HexBox1.ByteProvider = new StaticByteProvider(bytesFromHTTP);
-            this.oMAPIControl.HexBox1.ByteProvider.ApplyChanges();
+            this.oMAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesFromHTTP);
+            this.oMAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
 
             if (bytesFromHTTP.Length == 0 || headers == null || !headers.Exists("X-RequestType"))
             {
@@ -225,5 +227,4 @@ namespace MapiInspector
             Out
         }
     }
-
 }

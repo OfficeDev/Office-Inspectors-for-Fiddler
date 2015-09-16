@@ -6,6 +6,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Linq.Expressions;
 
 
 namespace MAPIInspector.Parsers
@@ -159,7 +160,7 @@ namespace MAPIInspector.Parsers
 
             if (Enum.IsDefined(typeof(RawData.DataType), t.Name))
             {
-                res.Nodes.Add(string.Format("{0},{1}", t.Name, obj.ToString()));
+                throw new Exception("The method doesn't support handling simple data type.");
             }
             else
             {
@@ -272,11 +273,11 @@ namespace MAPIInspector.Parsers
 
         public class Position
         {
-            public int StartIndox;
+            public int StartIndex;
             public int Offset;
             public Position(int startIndex, int offset)
             {
-                this.StartIndox = startIndex;
+                this.StartIndex = startIndex;
                 this.Offset = offset;
             }
         }

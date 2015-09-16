@@ -28,38 +28,38 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.treeView1 = new System.Windows.Forms.TreeView();
-            this.hexBox1 = new Be.Windows.Forms.HexBox();
+            this.mapiTreeView = new System.Windows.Forms.TreeView();
+            this.mapiHexBox = new Be.Windows.Forms.HexBox();
             this.SuspendLayout();
             // 
             // treeView1
             // 
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.treeView1.Location = new System.Drawing.Point(0, 0);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(424, 430);
-            this.treeView1.TabIndex = 0;
+            this.mapiTreeView.Dock = System.Windows.Forms.DockStyle.Left;
+            this.mapiTreeView.Location = new System.Drawing.Point(0, 0);
+            this.mapiTreeView.Name = "treeView1";
+            this.mapiTreeView.Size = new System.Drawing.Size(424, 430);
+            this.mapiTreeView.TabIndex = 0;
             // 
             // hexBox1
             // 
-            this.hexBox1.BodyOffset = 0;
-            this.hexBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.hexBox1.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.hexBox1.HeaderColor = System.Drawing.Color.Maroon;
-            this.hexBox1.Location = new System.Drawing.Point(424, 0);
-            this.hexBox1.Name = "hexBox1";
-            this.hexBox1.SelectionLength = ((long)(0));
-            this.hexBox1.SelectionStart = ((long)(-1));
-            this.hexBox1.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
-            this.hexBox1.Size = new System.Drawing.Size(644, 430);
-            this.hexBox1.TabIndex = 1;
+            this.mapiHexBox.BodyOffset = 0;
+            this.mapiHexBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mapiHexBox.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.mapiHexBox.HeaderColor = System.Drawing.Color.Maroon;
+            this.mapiHexBox.Location = new System.Drawing.Point(424, 0);
+            this.mapiHexBox.Name = "hexBox1";
+            this.mapiHexBox.SelectionLength = ((long)(0));
+            this.mapiHexBox.SelectionStart = ((long)(-1));
+            this.mapiHexBox.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
+            this.mapiHexBox.Size = new System.Drawing.Size(644, 430);
+            this.mapiHexBox.TabIndex = 1;
             // 
             // MAPIControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.hexBox1);
-            this.Controls.Add(this.treeView1);
+            this.Controls.Add(this.mapiHexBox);
+            this.Controls.Add(this.mapiTreeView);
             this.Name = "MAPIControl";
             this.Size = new System.Drawing.Size(1068, 430);
             this.ResumeLayout(false);
@@ -68,8 +68,8 @@
 
         #endregion
 
-        private System.Windows.Forms.TreeView treeView1;
-        private Be.Windows.Forms.HexBox hexBox1;
+        private System.Windows.Forms.TreeView mapiTreeView;
+        private Be.Windows.Forms.HexBox mapiHexBox;
 
     }
 }
