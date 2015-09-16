@@ -101,6 +101,7 @@
     <Compile Include="MAPIResponseInspector.cs" />
     <Compile Include="Parsers\BaseStructure.cs" />
     <Compile Include="Parsers\MSOXCMAPIHTTP.cs" />
+    <Compile Include="Parsers\RawDataParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
