@@ -14,7 +14,6 @@ namespace MapiInspector
         public bool bReadOnly { get; set; }
         internal Session session { get; set; }
         private byte[] rawBody { get; set; }
-        public BaseStructure baseStructure;
 
         public TrafficDirection Direction
         {
@@ -156,10 +155,6 @@ namespace MapiInspector
 
         public void ParseHTTPPayload(HTTPHeaders headers, byte[] bytesFromHTTP, TrafficDirection direction)
         {
-
-            this.oMAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesFromHTTP);
-            this.oMAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
-
             if (bytesFromHTTP.Length == 0 || headers == null || !headers.Exists("X-RequestType"))
             {
                 return;
@@ -172,6 +167,8 @@ namespace MapiInspector
                 return;
             }
 
+            this.oMAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesFromHTTP);
+            this.oMAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
             Stream stream = new MemoryStream(bytesFromHTTP);
             int result = 0;
             if (direction == TrafficDirection.In)

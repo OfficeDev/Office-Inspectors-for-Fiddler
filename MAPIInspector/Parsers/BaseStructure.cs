@@ -158,7 +158,7 @@ namespace MAPIInspector.Parsers
             int current = startIndex;
             TreeNode res = new TreeNode(t.Name);
 
-            if (Enum.IsDefined(typeof(RawData.DataType), t.Name))
+            if (Enum.IsDefined(typeof(DataType), t.Name))
             {
                 throw new Exception("The method doesn't support handling simple data type.");
             }
@@ -168,7 +168,7 @@ namespace MAPIInspector.Parsers
                 for (int i = 0; i < info.Length; i++)
                 {
                     int os = 0;
-                    if (Enum.IsDefined(typeof(RawData.DataType), info[i].FieldType.Name))
+                    if (Enum.IsDefined(typeof(DataType), info[i].FieldType.Name))
                     {
                         Type fieldType = info[i].FieldType;
                         TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, info[i].GetValue(obj).ToString()));
@@ -195,7 +195,7 @@ namespace MAPIInspector.Parsers
                         tn.Tag = new Position(current, os);
                         current += os;
                     }
-                    else if ((info[i].FieldType.IsEnum && Enum.IsDefined(typeof(RawData.DataType), info[1].FieldType.GetEnumUnderlyingType().Name)))
+                    else if ((info[i].FieldType.IsEnum && Enum.IsDefined(typeof(DataType), info[i].FieldType.GetEnumUnderlyingType().Name)))
                     {
                         Type fieldType = info[i].FieldType;
                         TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, info[i].GetValue(obj).ToString()));
@@ -211,39 +211,41 @@ namespace MAPIInspector.Parsers
                         tn.Tag = new Position(current, os);
                         current += os;
                     }
-                    else if(info[i].FieldType.IsArray && Enum.IsDefined(typeof(RawData.DataType), info[i].FieldType.GetElementType().Name))
+                    else if(info[i].FieldType.IsArray && Enum.IsDefined(typeof(DataType), info[i].FieldType.GetElementType().Name))
                     {
                         Array arr = (Array)info[i].GetValue(obj);
-                        StringBuilder result = new StringBuilder("{");
-                        foreach (var ar in arr)
+                        if (arr != null)
                         {
-                            result.Append(ar.ToString() + ",");
-                        }
-                        result.Remove(result.Length - 1, 1);
-                        result.Append("}");
-                        TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
-                        res.Nodes.Add(tn);
-
-                        if (info[i].FieldType.GetElementType().Name == "String")
-                        {
-                            for (int j = 0; j < arr.Length; j++)
+                            StringBuilder result = new StringBuilder("[");
+                            foreach (var ar in arr)
                             {
-
-                                os += ((string[])(arr))[j].Length;
-                                object[] attributes = info[i].GetCustomAttributes(typeof(HelpAttribute), false);
-                                os += (int)((HelpAttribute)(attributes[0])).TerminatorLength;
+                                result.Append(ar.ToString() + ",");
                             }
-                        }
-                        else
-                        {
-                            for (int j = 0; j < arr.Length; j++)
+                            result.Remove(result.Length - 1, 1);
+                            result.Append("]");
+                            TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
+                            res.Nodes.Add(tn);
+
+                            if (info[i].FieldType.GetElementType().Name == "String")
                             {
-                                os += Marshal.SizeOf(info[i].FieldType.GetElementType());
+                                for (int j = 0; j < arr.Length; j++)
+                                {
+                                    os += ((string[])(arr))[j].Length;
+                                    object[] attributes = info[i].GetCustomAttributes(typeof(HelpAttribute), false);
+                                    os += (int)((HelpAttribute)(attributes[0])).TerminatorLength;
+                                }
                             }
-                        }
+                            else
+                            {
+                                for (int j = 0; j < arr.Length; j++)
+                                {
+                                    os += Marshal.SizeOf(info[i].FieldType.GetElementType());
+                                }
+                            }
 
-                        tn.Tag = new Position(current, os);
-                        current += os;
+                            tn.Tag = new Position(current, os);
+                            current += os;
+                        }
                     }
                     else
                     {
@@ -253,7 +255,6 @@ namespace MAPIInspector.Parsers
                             current += os;
                         }
                     }
-
                 }
             }
 
@@ -292,6 +293,29 @@ namespace MAPIInspector.Parsers
                 this.Encode = encode;
                 this.TerminatorLength = length;
             }
+        }
+
+        /// <summary>
+        /// The kind of a pattern.
+        /// </summary>
+        public enum DataType
+        {
+            Binary,
+            Boolean,
+            Byte,
+            Char,
+            Double,
+            Decimal,
+            Single,
+            Guid,
+            Int16,
+            Int32,
+            Int64,
+            SByte,
+            String,
+            UInt16,
+            UInt32,
+            UInt64
         }
         #endregion
     }
