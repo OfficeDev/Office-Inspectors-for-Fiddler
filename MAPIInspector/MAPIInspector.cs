@@ -149,6 +149,10 @@ namespace MapiInspector
             }
             else
             {
+                if (this.BaseHeaders["X-ResponseCode"] != "0")
+                {
+                    return;
+                }
                 this.ParseHTTPPayload(this.BaseHeaders, Utilities.GetPaylodFromChunkedBody(this.session.responseBodyBytes), TrafficDirection.Out);
             }
         }
@@ -180,9 +184,30 @@ namespace MapiInspector
                 {
                     case "Connect":
                         {
-                            ConnectRequestBodyType connectRequestBodyType = new ConnectRequestBodyType();
-                            connectRequestBodyType.Parse(stream);
-                            topNode = connectRequestBodyType.AddNodesForTree(connectRequestBodyType, 0, out result);
+                            ConnectRequestBody ConnectRequest = new ConnectRequestBody();
+                            ConnectRequest.Parse(stream);
+                            topNode = ConnectRequest.AddNodesForTree(ConnectRequest, 0, out result);
+                            break;
+                        }
+                    case "Execute":
+                        {
+                            ExecuteRequestBody ExecuteRequest = new ExecuteRequestBody();
+                            ExecuteRequest.Parse(stream);
+                            topNode = ExecuteRequest.AddNodesForTree(ExecuteRequest, 0, out result);
+                            break;
+                        }
+                    case "Disconnect":
+                        {
+                            DisconnectRequestBody DisconnectRequest = new DisconnectRequestBody();
+                            DisconnectRequest.Parse(stream);
+                            topNode = DisconnectRequest.AddNodesForTree(DisconnectRequest, 0, out result);
+                            break;
+                        }
+                    case "NotificationWait":
+                        {
+                            NotificationWaitRequestBody NotificationWaitRequest = new NotificationWaitRequestBody();
+                            NotificationWaitRequest.Parse(stream);
+                            topNode = NotificationWaitRequest.AddNodesForTree(NotificationWaitRequest, 0, out result);
                             break;
                         }
                     default:
@@ -203,9 +228,72 @@ namespace MapiInspector
                 {
                     case "Connect":
                         {
-                            ConnectResponseBodyType ConnectResponse = new ConnectResponseBodyType();                           
+                            ConnectResponseBody ConnectResponse = new ConnectResponseBody();
                             ConnectResponse.Parse(stream);
                             topNode = ConnectResponse.AddNodesForTree(ConnectResponse, 0, out result);
+                            if (ConnectResponse.StatusCode == 0)
+                            {
+                                string text = topNode.Text.Replace("Response", "SuccessResponse");
+                                topNode.Text = text;
+                            }
+                            else
+                            {
+                                string text = topNode.Text.Replace("Response", "FailureResponse");
+                                topNode.Text = text;
+                            }
+                            break;
+                        }
+                    case "Execute":
+                        {
+                            ExecuteResponseBody ExecuteResponse = new ExecuteResponseBody();
+                            ExecuteResponse.Parse(stream);
+                            topNode = ExecuteResponse.AddNodesForTree(ExecuteResponse, 0, out result);
+                            if (ExecuteResponse.StatusCode == 0)
+                            {
+                                string text = topNode.Text.Replace("Response", "SuccessResponse");
+                                topNode.Text = text;
+                            }
+                            else
+                            {
+                                string text = topNode.Text.Replace("Response", "FailureResponse");
+                                topNode.Text = text;
+                            }
+                            break;
+                        }
+                    case "Disconnect":
+                        {
+
+                            DisconnectResponseBody DisconnectResponse = new DisconnectResponseBody();
+                            DisconnectResponse.Parse(stream);
+                            topNode = DisconnectResponse.AddNodesForTree(DisconnectResponse, 0, out result);
+                            if (DisconnectResponse.StatusCode == 0)
+                            {
+                                string text = topNode.Text.Replace("Response", "SuccessResponse");
+                                topNode.Text = text;
+                            }
+                            else
+                            {
+                                string text = topNode.Text.Replace("Response", "FailureResponse");
+                                topNode.Text = text;
+                            }
+                            break;
+                        }
+                    case "NotificationWait":
+                        {
+
+                            NotificationWaitResponseBody NotificationWaitResponse = new NotificationWaitResponseBody();
+                            NotificationWaitResponse.Parse(stream);
+                            topNode = NotificationWaitResponse.AddNodesForTree(NotificationWaitResponse, 0, out result);
+                            if (NotificationWaitResponse.StatusCode == 0)
+                            {
+                                string text = topNode.Text.Replace("Response", "SuccessResponse");
+                                topNode.Text = text;
+                            }
+                            else
+                            {
+                                string text = topNode.Text.Replace("Response", "FailureResponse");
+                                topNode.Text = text;
+                            }
                             break;
                         }
                     default:

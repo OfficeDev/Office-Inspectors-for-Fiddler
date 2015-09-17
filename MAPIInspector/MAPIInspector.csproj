@@ -76,7 +76,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Be.Windows.Forms.HexBox">
-      <HintPath>C:\Program Files (x86)\Fiddler2\Be.Windows.Forms.HexBox.dll</HintPath>
+      <HintPath>E:\Fiddler2\Inspectors\Be.Windows.Forms.HexBox.dll</HintPath>
     </Reference>
     <Reference Include="Fiddler">
       <HintPath>C:\Program Files (x86)\Fiddler2\Fiddler.exe</HintPath>
