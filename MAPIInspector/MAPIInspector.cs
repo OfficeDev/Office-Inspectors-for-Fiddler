@@ -78,8 +78,8 @@ namespace MapiInspector
 
         void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-			this.oMAPIControl.MAPIHexBox.Select(((BaseStructure.Position)e.Node.Tag).StartIndex, ((BaseStructure.Position)e.Node.Tag).Offset); 
-	    }
+            this.oMAPIControl.MAPIHexBox.Select(((BaseStructure.Position)e.Node.Tag).StartIndex, ((BaseStructure.Position)e.Node.Tag).Offset);
+        }
 
         public override int GetOrder()
         {
@@ -90,7 +90,7 @@ namespace MapiInspector
         {
             this.oMAPIViewControl.Nodes.Clear();
         }
-       
+
         public override int ScoreForSession(Session oS)
         {
             if (null == this.session)
@@ -125,7 +125,7 @@ namespace MapiInspector
             this.session = oS;
             base.AssignSession(oS);
         }
-        
+
         public byte[] body
         {
             get
@@ -163,7 +163,7 @@ namespace MapiInspector
             {
                 return;
             }
-            
+
             string requestType = headers["X-RequestType"];
 
             if (requestType == null)
@@ -210,14 +210,21 @@ namespace MapiInspector
                             topNode = NotificationWaitRequest.AddNodesForTree(NotificationWaitRequest, 0, out result);
                             break;
                         }
+                    case "Bind":
+                        {
+                            BindRequest bindRequest = new BindRequest();
+                            bindRequest.Parse(stream);
+                            topNode = bindRequest.AddNodesForTree(bindRequest, 0, out result);
+                            break;
+                        }
                     default:
                         break;
                 }
-                
+
                 this.oMAPIViewControl.Nodes.Add(topNode);
                 topNode.Expand();
                 this.oMAPIViewControl.EndUpdate();
-               
+
             }
             else
             {
@@ -296,10 +303,17 @@ namespace MapiInspector
                             }
                             break;
                         }
+                    case "Bind":
+                        {
+                            BindResponse bindResponse = new BindResponse();
+                            bindResponse.Parse(stream);
+                            topNode = bindResponse.AddNodesForTree(bindResponse, 0, out result);
+                            break;
+                        }
                     default:
-                        break; 
+                        break;
                 }
-                
+
                 this.oMAPIViewControl.Nodes.Add(topNode);
                 topNode.Expand();
                 this.oMAPIViewControl.EndUpdate();

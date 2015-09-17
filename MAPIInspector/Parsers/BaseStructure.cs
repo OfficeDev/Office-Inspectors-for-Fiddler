@@ -25,6 +25,12 @@ namespace MAPIInspector.Parsers
             return "";
         }
 
+        protected byte ReadByte()
+        {
+            int value = stream.ReadByte();
+            return (byte)value;
+        }
+
         protected ushort ReadUshort()
         {
             int value;

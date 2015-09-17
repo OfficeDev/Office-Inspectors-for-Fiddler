@@ -578,4 +578,133 @@ namespace MAPIInspector.Parsers
     }
 
     #endregion
+
+    #region 2.2.5.1  Bind
+    /// <summary>
+    ///  A class indicates the Bind request type request body.
+    /// </summary>
+    public class BindRequest : BaseStructure
+    {
+        // An unsigned integer that specify the authentication type for the connection.
+        public uint Flags;
+        // A Boolean value that specifies whether the State field is present.
+        public byte HasState;
+        // An array of bytes that specifies the state of a specific address book container. 
+        public byte[] State;
+        // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
+        public uint AuxiliaryBufferSize;
+        // An array of bytes that constitute the auxiliary payload data sent from the client.
+        public ExtendedBuffer AuxiliaryBuffer;
+
+        /// <summary>
+        /// Parse the HTTP payload of session.
+        /// </summary>
+        /// <param name="s">An stream of HTTP payload of session</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.Flags = ReadUint();
+            this.HasState = ReadByte();
+            if (HasState == 1)
+            {
+                this.State = ReadBytes(36);
+            }
+            else
+            {
+                this.State = null;
+            }
+
+            this.AuxiliaryBufferSize = ReadUint();
+            if (this.AuxiliaryBufferSize > 0)
+            {
+                this.AuxiliaryBuffer = new ExtendedBuffer(true);
+                this.AuxiliaryBuffer.Parse(s);
+            }
+            else
+            {
+                this.AuxiliaryBuffer = null;
+            }
+        }
+    }
+
+    /// <summary>
+    /// A class indicates the Bind request type response body.
+    /// </summary>
+    class BindResponse : BaseStructure
+    {
+        // A string array that informs the client as to the state of processing a request on the server.
+        [HelpAttribute(StringEncoding.ASCII, 2)]
+        public string[] MetaTags;
+        // A string array that specifies additional header information.
+        [HelpAttribute(StringEncoding.ASCII, 2)]
+        public string[] AdditionalHeaders;
+        // An unsigned integer that specifies the status of the request.
+        public uint StatusCode;
+        // An unsigned integer that specifies the return status of the operation.
+        public uint ErrorCode;
+        // A GUID that is associated with a specific address book server.
+        public byte[] ServerGuid;
+        // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.  
+        public uint AuxiliaryBufferSize;
+        //An array of bytes that constitute the auxiliary payload data sent from the client.
+        public ExtendedBuffer AuxiliaryBuffer;
+
+        /// <summary>
+        /// Parse the HTTP payload of session.
+        /// </summary>
+        /// <param name="s">An stream of HTTP payload of session</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            string str = null;
+            List<string> metaTags = new List<string>();
+            List<string> additionalHeaders = new List<string>();
+
+            while (str != "")
+            {
+                str = ReadString("\r\n");
+                switch (str)
+                {
+                    case "PROCESSING":
+                    case "PENDING":
+                    case "DONE":
+                        metaTags.Add(str);
+                        break;
+                    default:
+                        if (str != "")
+                        {
+                            additionalHeaders.Add(str);
+                            break;
+                        }
+                        else
+                        {
+                            additionalHeaders.Add("");
+                            break;
+                        }
+                }
+            }
+            this.MetaTags = metaTags.ToArray();
+            this.AdditionalHeaders = additionalHeaders.ToArray();
+            this.StatusCode = ReadUint();
+            if (this.StatusCode == 0)
+            {
+                this.ErrorCode = ReadUint();
+                this.ServerGuid = ReadBytes(16);
+            }
+            this.AuxiliaryBufferSize = ReadUint();
+
+            if (this.AuxiliaryBufferSize > 0)
+            {
+                this.AuxiliaryBuffer = new ExtendedBuffer(true);
+                this.AuxiliaryBuffer.Parse(s);
+            }
+            else
+            {
+                this.AuxiliaryBuffer = null;
+            }
+        }
+    }
+    #endregion
+
+
 }
