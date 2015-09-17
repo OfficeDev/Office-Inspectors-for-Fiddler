@@ -251,7 +251,10 @@ namespace MAPIInspector.Parsers
                     {
                         if (info[i].GetValue(obj) != null)
                         {
-                            res.Nodes.Add(AddNodesForTree(info[i].GetValue(obj), current, out os));
+                            string filedName = info[i].Name;
+                            TreeNode node = AddNodesForTree(info[i].GetValue(obj), current, out os);
+                            node.Text = filedName;
+                            res.Nodes.Add(node);
                             current += os;
                         }
                     }
