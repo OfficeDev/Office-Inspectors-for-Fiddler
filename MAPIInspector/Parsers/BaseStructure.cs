@@ -178,12 +178,17 @@ namespace MAPIInspector.Parsers
                 for (int i = 0; i < info.Length; i++)
                 {
                     int os = 0;
-                    if (Enum.IsDefined(typeof(DataType), info[i].FieldType.Name))
+                    Type type = info[i].FieldType;
+                    if (type.Name == "Object")
                     {
-                        Type fieldType = info[i].FieldType;
+                        type = info[i].GetValue(obj).GetType();
+                    }
+                    if (Enum.IsDefined(typeof(DataType), type.Name))
+                    {
+                        Type fieldType = type;
                         TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, info[i].GetValue(obj).ToString()));
                         res.Nodes.Add(tn);
-                        if (info[i].FieldType.Name == "String")
+                        if (type.Name == "String")
                         {
                             object[] attributes = info[i].GetCustomAttributes(typeof(HelpAttribute), false);
                             if (((HelpAttribute)(attributes[0])).Encode == StringEncoding.Unicode)
@@ -205,12 +210,12 @@ namespace MAPIInspector.Parsers
                         tn.Tag = new Position(current, os);
                         current += os;
                     }
-                    else if ((info[i].FieldType.IsEnum && Enum.IsDefined(typeof(DataType), info[i].FieldType.GetEnumUnderlyingType().Name)))
+                    else if ((type.IsEnum && Enum.IsDefined(typeof(DataType), type.GetEnumUnderlyingType().Name)))
                     {
-                        Type fieldType = info[i].FieldType;
+                        Type fieldType = type;
                         TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, info[i].GetValue(obj).ToString()));
                         res.Nodes.Add(tn);
-                        if (info[i].FieldType.Name == "String")
+                        if (type.Name == "String")
                         {
                             os = ((string)info[i].GetValue(obj)).Length;
                         }
@@ -221,40 +226,64 @@ namespace MAPIInspector.Parsers
                         tn.Tag = new Position(current, os);
                         current += os;
                     }
-                    else if(info[i].FieldType.IsArray && Enum.IsDefined(typeof(DataType), info[i].FieldType.GetElementType().Name))
+                    else if (type.IsArray)
                     {
-                        Array arr = (Array)info[i].GetValue(obj);
-                        if (arr != null)
+                        if (Enum.IsDefined(typeof(DataType), type.GetElementType().Name))
                         {
-                            StringBuilder result = new StringBuilder("[");
-                            foreach (var ar in arr)
+                            Array arr = (Array)info[i].GetValue(obj);
+                            if (arr != null)
                             {
-                                result.Append(ar.ToString() + ",");
-                            }
-                            result.Remove(result.Length - 1, 1);
-                            result.Append("]");
-                            TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
-                            res.Nodes.Add(tn);
-
-                            if (info[i].FieldType.GetElementType().Name == "String")
-                            {
-                                for (int j = 0; j < arr.Length; j++)
+                                StringBuilder result = new StringBuilder("[");
+                                foreach (var ar in arr)
                                 {
-                                    os += ((string[])(arr))[j].Length;
-                                    object[] attributes = info[i].GetCustomAttributes(typeof(HelpAttribute), false);
-                                    os += (int)((HelpAttribute)(attributes[0])).TerminatorLength;
+                                    result.Append(ar.ToString() + ",");
                                 }
-                            }
-                            else
-                            {
-                                for (int j = 0; j < arr.Length; j++)
-                                {
-                                    os += Marshal.SizeOf(info[i].FieldType.GetElementType());
-                                }
-                            }
+                                result.Remove(result.Length - 1, 1);
+                                result.Append("]");
+                                TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
+                                res.Nodes.Add(tn);
 
-                            tn.Tag = new Position(current, os);
-                            current += os;
+                                if (type.GetElementType().Name == "String")
+                                {
+                                    for (int j = 0; j < arr.Length; j++)
+                                    {
+                                        os += ((string[])(arr))[j].Length;
+                                        object[] attributes = info[i].GetCustomAttributes(typeof(HelpAttribute), false);
+                                        os += (int)((HelpAttribute)(attributes[0])).TerminatorLength;
+                                    }
+                                }
+                                else
+                                {
+                                    for (int j = 0; j < arr.Length; j++)
+                                    {
+                                        os += Marshal.SizeOf(type.GetElementType());
+                                    }
+                                }
+
+                                tn.Tag = new Position(current, os);
+                                current += os;
+                            }
+                        }
+                        else
+                        {
+                            Array arr = (Array)info[i].GetValue(obj);
+                            object[] a = (object[])arr;
+                            if (arr != null)
+                            {
+                                TreeNode tnArr = new TreeNode(info[i].Name);
+                                int arros = 0;
+                                for (int k = 0; k < arr.Length; k++)
+                                {
+                                    
+                                    TreeNode tn = AddNodesForTree(a[k], current, out os);
+                                    tnArr.Nodes.Add(tn);
+                                    tn.Tag = new Position(current, os);
+                                    current += os;
+                                    arros += os;
+                                }
+                                res.Nodes.Add(tnArr);
+                                tnArr.Tag = new Position(current - arros, arros);
+                            }
                         }
                     }
                     else

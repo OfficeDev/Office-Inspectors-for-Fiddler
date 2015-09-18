@@ -89,6 +89,9 @@ namespace MapiInspector
         public void Clear()
         {
             this.oMAPIViewControl.Nodes.Clear();
+            byte[] empty = new byte[0];
+            this.oMAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(empty);
+            this.oMAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
         }
 
         public override int ScoreForSession(Session oS)
@@ -154,7 +157,7 @@ namespace MapiInspector
                 {
                     return;
                 }
-                this.ParseHTTPPayload(this.BaseHeaders, Utilities.GetPaylodFromChunkedBody(this.session.responseBodyBytes), TrafficDirection.Out);
+                this.ParseHTTPPayload(this.BaseHeaders, this.session.responseBodyBytes, TrafficDirection.Out);
             }
         }
 
@@ -172,7 +175,16 @@ namespace MapiInspector
                 return;
             }
 
-            this.oMAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesFromHTTP);
+            if (direction == TrafficDirection.Out)
+            {
+                byte[] ChunckedResponse = Utilities.GetPaylodFromChunkedBody(bytesFromHTTP);
+                this.oMAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(ChunckedResponse);
+            }
+            else
+            {
+                this.oMAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesFromHTTP);
+            }
+            
             this.oMAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
             Stream stream = new MemoryStream(bytesFromHTTP);
             int result = 0;

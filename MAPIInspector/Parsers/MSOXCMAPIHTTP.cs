@@ -16,8 +16,9 @@ namespace MAPIInspector.Parsers
     {
         // The RPC_HEADER_EXT structure provides information about the payload.
         public RPC_HEADER_EXT RPC_HEADER_EXT;
-        // TODO: A structure of bytes that constitute the auxiliary payload data returned from the server. 
-        public byte[] Payload;
+        // A structure of bytes that constitute the auxiliary payload data returned from the server. 
+        public AuxiliaryBufferPayload[] Payload;
+
         /// <summary>
         /// The Constructors of ExtendedBuffer.
         /// </summary>
@@ -34,9 +35,18 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
+
             this.RPC_HEADER_EXT = new RPC_HEADER_EXT();
             this.RPC_HEADER_EXT.Parse(s);
-            this.Payload = ReadBytes(RPC_HEADER_EXT.Size);
+            List<AuxiliaryBufferPayload> payload = new List<AuxiliaryBufferPayload>();
+            for (int length = 0; length < RPC_HEADER_EXT.Size; )
+            {
+                AuxiliaryBufferPayload buffer = new AuxiliaryBufferPayload();
+                buffer.Parse(s);
+                payload.Add(buffer);
+                length += buffer.AUX_HEADER.Size;
+            }
+            this.Payload = payload.ToArray();
         }
     }
 
@@ -706,5 +716,180 @@ namespace MAPIInspector.Parsers
     }
     #endregion
 
+    #region Auxiliary Buffer Payload
+    /// <summary>
+    ///  A class indicates the payload data contains auxiliary information.
+    /// </summary>
+    public class AuxiliaryBufferPayload : BaseStructure
+    {
+        // An AUX_HEADER structure that provides information about the auxiliary block structures that follow it. 
+        public AUX_HEADER AUX_HEADER;
+        // An object that constitute the auxiliary buffer payload data.
+        public object AuxiliaryBlock;
 
+        /// <summary>
+        /// Parse the auxiliary buffer payload of session.
+        /// </summary>
+        /// <param name="s">An stream of auxiliary buffer payload of session</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.AUX_HEADER = new AUX_HEADER();
+            this.AUX_HEADER.Parse(s);
+            AuxiliaryBlockType_1 type1;
+            AuxiliaryBlockType_2 type2;
+            if (this.AUX_HEADER.Version == PayloadDataVersion.AUX_VERSION_1)
+            {
+                type1 = (AuxiliaryBlockType_1)this.AUX_HEADER.Type;
+                switch (type1)
+                {
+                    case AuxiliaryBlockType_1.AUX_TYPE_ENDPOINT_CAPABILITIES:
+                        {
+                            AUX_ENDPOINT_CAPABILITIES auxiliaryBlock = new AUX_ENDPOINT_CAPABILITIES();
+                            auxiliaryBlock.Parse(s);
+                            this.AuxiliaryBlock = auxiliaryBlock;
+                            break;
+                        }
+                    default:
+                        this.AuxiliaryBlock = ReadBytes((int)this.AUX_HEADER.Size - 4);
+                        break;
+                }
+
+            }
+            else if (this.AUX_HEADER.Version == PayloadDataVersion.AUX_VERSION_2)
+            {
+                type2 = (AuxiliaryBlockType_2)this.AUX_HEADER.Type;
+                switch (type2)
+                {
+                    case AuxiliaryBlockType_2.AUX_TYPE_PERF_BG_FAILURE:
+                        break;
+                    default:
+                        this.AuxiliaryBlock = ReadBytes((int)this.AUX_HEADER.Size - 4);
+                        break;
+                }
+            }
+            else
+            {
+                this.AuxiliaryBlock = ReadBytes((int)this.AUX_HEADER.Size - 4);
+            }
+        }
+    }
+
+    public class AUX_ENDPOINT_CAPABILITIES : BaseStructure
+    {
+        //A flag that indicates that the server combines capabilities on a single endpoint.
+        public EndpointCapabilityFlag EndpointCapabilityFlag;
+
+        /// <summary>
+        /// Parse the AUX_ENDPOINT_CAPABILITIES structure.
+        /// </summary>
+        /// <param name="s">A stream containing the AUX_ENDPOINT_CAPABILITIES structure</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.EndpointCapabilityFlag = (EndpointCapabilityFlag)ReadUint();
+        }
+    }
+
+     /// <summary>
+    /// A flag that indicates that the server combines capabilities on a single endpoint.
+    /// </summary>
+    public enum EndpointCapabilityFlag : uint
+    {
+        ENDPOINT_CAPABILITIES_SINGLE_ENDPOINT = 0x00000001
+    }
+    /// <summary>
+    /// The AUX_HEADER structure provides information about the auxiliary block structures that follow it.
+    /// </summary>
+    public class AUX_HEADER : BaseStructure
+    {
+        // The size of the AUX_HEADER structure plus any additional payload data.
+        public ushort Size;
+        // The version information of the payload data.
+        public PayloadDataVersion Version;
+        // The type of auxiliary block data structure. The Type should be AuxiliaryBlockType_1 or AuxiliaryBlockType_2.
+        public object Type;
+
+        /// <summary>
+        /// Parse the AUX_HEADER structure.
+        /// </summary>
+        /// <param name="s">A stream containing the AUX_HEADER structure</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.Size = ReadUshort();
+            this.Version = (PayloadDataVersion)ReadByte();
+            if (this.Version == PayloadDataVersion.AUX_VERSION_1)
+            {
+                this.Type = (AuxiliaryBlockType_1)ReadByte();
+            }
+            else
+            {
+                this.Type = (AuxiliaryBlockType_2)ReadByte();
+            }
+        }
+    }
+
+    /// <summary>
+    /// The version information of the payload data.
+    /// </summary>
+    public enum PayloadDataVersion : byte
+    {
+        AUX_VERSION_1 = 0x01,
+        AUX_VERSION_2 = 0x02
+    }
+
+    /// <summary>
+    /// The enum type corresponding auxiliary block structure that follows the AUX_HEADER structure when the Version field is AUX_VERSION_1.
+    /// </summary>
+    public enum AuxiliaryBlockType_1 : byte
+    {
+        AUX_TYPE_PERF_REQUESTID = 0x01,
+        AUX_TYPE_PERF_CLIENTINFO = 0x02,
+        AUX_TYPE_PERF_SERVERINFO = 0x03,
+        AUX_TYPE_PERF_SESSIONINFO = 0x04,
+        AUX_TYPE_PERF_DEFMDB_SUCCESS = 0x05,
+        AUX_TYPE_PERF_DEFGC_SUCCESS = 0x06,
+        AUX_TYPE_PERF_MDB_SUCCESS = 0x07,
+        AUX_TYPE_PERF_GC_SUCCESS = 0x08,
+        AUX_TYPE_PERF_FAILURE = 0x09,
+        AUX_TYPE_CLIENT_CONTROL = 0x0A,
+        AUX_TYPE_PERF_PROCESSINFO = 0x0B,
+        AUX_TYPE_PERF_BG_DEFMDB_SUCCESS = 0x0C,
+        AUX_TYPE_PERF_BG_DEFGC_SUCCESS = 0x0D,
+        AUX_TYPE_PERF_BG_MDB_SUCCESS = 0x0E,
+        AUX_TYPE_PERF_BG_GC_SUCCESS = 0x0F,
+        AUX_TYPE_PERF_BG_FAILURE = 0x10,
+        AUX_TYPE_PERF_FG_DEFMDB_SUCCESS = 0x11,
+        AUX_TYPE_PERF_FG_DEFGC_SUCCESS = 0x12,
+        AUX_TYPE_PERF_FG_MDB_SUCCESS = 0x13,
+        AUX_TYPE_PERF_FG_GC_SUCCESS = 0x14,
+        AUX_TYPE_PERF_FG_FAILURE = 0x15,
+        AUX_TYPE_OSVERSIONINFO = 0x16,
+        AUX_TYPE_EXORGINFO = 0x17,
+        AUX_TYPE_PERF_ACCOUNTINFO = 0x18,
+        AUX_TYPE_ENDPOINT_CAPABILITIES = 0x48,
+        AUX_CLIENT_CONNECTION_INFO = 0x4A,
+        AUX_SERVER_SESSION_INFO = 0x4B,
+        AUX_PROTOCOL_DEVICE_IDENTIFICATION = 0x4E
+    }
+
+    /// <summary>
+    /// The enum type corresponding auxiliary block structure that follows the AUX_HEADER structure when the Version field is AUX_VERSION_2.
+    /// </summary>
+    public enum AuxiliaryBlockType_2 : byte
+    {
+        AUX_TYPE_PERF_SESSIONINFO = 0x04,
+        AUX_TYPE_PERF_MDB_SUCCESS = 0x07,
+        AUX_TYPE_PERF_GC_SUCCESS = 0x08,
+        AUX_TYPE_PERF_FAILURE = 0x09,
+        AUX_TYPE_PERF_PROCESSINFO = 0x0B,
+        AUX_TYPE_PERF_BG_MDB_SUCCESS = 0x0E,
+        AUX_TYPE_PERF_BG_GC_SUCCESS = 0x0F,
+        AUX_TYPE_PERF_BG_FAILURE = 0x10,
+        AUX_TYPE_PERF_FG_MDB_SUCCESS = 0x13,
+        AUX_TYPE_PERF_FG_GC_SUCCESS = 0x14,
+        AUX_TYPE_PERF_FG_FAILURE = 0x15, s
+    }
+    #endregion
 }
