@@ -149,6 +149,7 @@ namespace MapiInspector
             }
             else
             {
+                //An X-ResponseCode of 0 (zero) means success from the perspective of the protocol transport, and the client SHOULD parse the response body based on the request that was issued.
                 if (this.BaseHeaders["X-ResponseCode"] != "0")
                 {
                     return;

@@ -75,11 +75,13 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Be.Windows.Forms.HexBox">
+    <Reference Include="Be.Windows.Forms.HexBox, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Fiddler2\Inspectors\Be.Windows.Forms.HexBox.dll</HintPath>
     </Reference>
-    <Reference Include="Fiddler">
-      <HintPath>C:\Program Files (x86)\Fiddler2\Fiddler.exe</HintPath>
+    <Reference Include="Fiddler, Version=4.6.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\Fiddler2\Inspectors\Fiddler.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />

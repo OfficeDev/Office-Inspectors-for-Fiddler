@@ -16,7 +16,7 @@ namespace MAPIInspector.Parsers
     {
         // The RPC_HEADER_EXT structure provides information about the payload.
         public RPC_HEADER_EXT RPC_HEADER_EXT;
-        // A structure of bytes that constitute the auxiliary payload data returned from the server. 
+        // TODO: A structure of bytes that constitute the auxiliary payload data returned from the server. 
         public byte[] Payload;
         /// <summary>
         /// The Constructors of ExtendedBuffer.
@@ -235,7 +235,7 @@ namespace MAPIInspector.Parsers
         public uint Flags;
         // An unsigned integer that specifies the size, in bytes, of the RopBuffer field.
         public uint RopBufferSize;
-        // An array of bytes that constitute the ROP requests payload. 
+        // TODO: An array of bytes that constitute the ROP requests payload. 
         public byte[] RopBuffer;
         // An unsigned integer that specifies the maximum size for the RopBuffer field of the Execute request type success response body.
         public uint MaxRopOut;
@@ -643,7 +643,7 @@ namespace MAPIInspector.Parsers
         // An unsigned integer that specifies the return status of the operation.
         public uint ErrorCode;
         // A GUID that is associated with a specific address book server.
-        public byte[] ServerGuid;
+        public Guid ServerGuid;
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.  
         public uint AuxiliaryBufferSize;
         //An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -689,7 +689,7 @@ namespace MAPIInspector.Parsers
             if (this.StatusCode == 0)
             {
                 this.ErrorCode = ReadUint();
-                this.ServerGuid = ReadBytes(16);
+                this.ServerGuid = new Guid(ReadBytes(16));
             }
             this.AuxiliaryBufferSize = ReadUint();
 

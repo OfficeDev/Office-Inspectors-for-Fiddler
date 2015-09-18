@@ -28,6 +28,10 @@ namespace MAPIInspector.Parsers
         protected byte ReadByte()
         {
             int value = stream.ReadByte();
+            if (value == -1)
+            {
+                throw new Exception();
+            }
             return (byte)value;
         }
 
