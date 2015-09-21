@@ -47,7 +47,7 @@ namespace MAPIInspector.Parsers
 
             if (this.AuxiliaryBufferSize > 0)
             {
-                this.AuxiliaryBuffer = new ExtendedBuffer(true);
+                this.AuxiliaryBuffer = new ExtendedBuffer();
                 this.AuxiliaryBuffer.Parse(s);
             }
             else
@@ -87,7 +87,7 @@ namespace MAPIInspector.Parsers
         public string DisplayName;
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        //An array of bytes that constitute the auxiliary payload data sent from the client. 
+        // An array of bytes that constitute the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace MAPIInspector.Parsers
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
             {
-                this.AuxiliaryBuffer = new ExtendedBuffer(true);
+                this.AuxiliaryBuffer = new ExtendedBuffer();
                 this.AuxiliaryBuffer.Parse(s);
             }
             else
@@ -187,7 +187,7 @@ namespace MAPIInspector.Parsers
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
             {
-                this.AuxiliaryBuffer = new ExtendedBuffer(true);
+                this.AuxiliaryBuffer = new ExtendedBuffer();
                 this.AuxiliaryBuffer.Parse(s);
             }
             else
@@ -220,7 +220,7 @@ namespace MAPIInspector.Parsers
         public byte[] RopBuffer;
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        //An array of bytes that constitute the auxiliary payload data sent from the client. 
+        // An array of bytes that constitute the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
@@ -271,7 +271,7 @@ namespace MAPIInspector.Parsers
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
             {
-                this.AuxiliaryBuffer = new ExtendedBuffer(true);
+                this.AuxiliaryBuffer = new ExtendedBuffer();
                 this.AuxiliaryBuffer.Parse(s);
             }
             else
@@ -307,7 +307,7 @@ namespace MAPIInspector.Parsers
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
             {
-                this.AuxiliaryBuffer = new ExtendedBuffer(true);
+                this.AuxiliaryBuffer = new ExtendedBuffer();
                 this.AuxiliaryBuffer.Parse(s);
             }
             else
@@ -334,7 +334,7 @@ namespace MAPIInspector.Parsers
         public uint ErrorCode;
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        //An array of bytes that constitute the auxiliary payload data sent from the client. 
+        // An array of bytes that constitute the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
@@ -382,7 +382,7 @@ namespace MAPIInspector.Parsers
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
             {
-                this.AuxiliaryBuffer = new ExtendedBuffer(true);
+                this.AuxiliaryBuffer = new ExtendedBuffer();
                 this.AuxiliaryBuffer.Parse(s);
             }
             else
@@ -416,7 +416,7 @@ namespace MAPIInspector.Parsers
 
             if (this.AuxiliaryBufferSize > 0)
             {
-                this.AuxiliaryBuffer = new ExtendedBuffer(true);
+                this.AuxiliaryBuffer = new ExtendedBuffer();
                 this.AuxiliaryBuffer.Parse(s);
             }
             else
@@ -445,7 +445,7 @@ namespace MAPIInspector.Parsers
         public uint EventPending;
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        //An array of bytes that constitute the auxiliary payload data sent from the client. 
+        // An array of bytes that constitute the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
@@ -494,7 +494,7 @@ namespace MAPIInspector.Parsers
 
             if (this.AuxiliaryBufferSize > 0)
             {
-                this.AuxiliaryBuffer = new ExtendedBuffer(true);
+                this.AuxiliaryBuffer = new ExtendedBuffer();
                 this.AuxiliaryBuffer.Parse(s);
             }
             else
@@ -544,7 +544,7 @@ namespace MAPIInspector.Parsers
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
             {
-                this.AuxiliaryBuffer = new ExtendedBuffer(true);
+                this.AuxiliaryBuffer = new ExtendedBuffer();
                 this.AuxiliaryBuffer.Parse(s);
             }
             else
@@ -573,7 +573,7 @@ namespace MAPIInspector.Parsers
         public Guid ServerGuid;
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.  
         public uint AuxiliaryBufferSize;
-        //An array of bytes that constitute the auxiliary payload data sent from the client.
+        // An array of bytes that constitute the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
@@ -622,7 +622,7 @@ namespace MAPIInspector.Parsers
 
             if (this.AuxiliaryBufferSize > 0)
             {
-                this.AuxiliaryBuffer = new ExtendedBuffer(true);
+                this.AuxiliaryBuffer = new ExtendedBuffer();
                 this.AuxiliaryBuffer.Parse(s);
             }
             else
@@ -643,15 +643,6 @@ namespace MAPIInspector.Parsers
         public RPC_HEADER_EXT RPC_HEADER_EXT;
         // A structure of bytes that constitute the auxiliary payload data returned from the server. 
         public AuxiliaryBufferPayload[] Payload;
-
-        /// <summary>
-        /// The Constructors of ExtendedBuffer.
-        /// </summary>
-        /// <param name="isAuxiliaryBuffer">The bool value that speicfied if it is an auxiliary buffer.</param>
-        public ExtendedBuffer(bool isAuxiliaryBuffer)
-        {
-
-        }
 
         /// <summary>
         /// Parse the ExtendedBuffer. 

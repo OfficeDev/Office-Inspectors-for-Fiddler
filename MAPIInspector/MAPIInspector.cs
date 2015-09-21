@@ -175,7 +175,7 @@ namespace MapiInspector
                 return;
             }
 
-            if (direction == TrafficDirection.Out)
+            if (direction == TrafficDirection.Out && headers.Exists("Transfer-Encoding") && headers["Transfer-Encoding"] == "chunked")
             {
                 bytesFromHTTP = Utilities.GetPaylodFromChunkedBody(bytesFromHTTP);
                 this.oMAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesFromHTTP);
