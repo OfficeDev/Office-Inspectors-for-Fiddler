@@ -170,33 +170,10 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            string str = null;
             List<string> metaTags = new List<string>();
             List<string> additionalHeaders = new List<string>();
-
-            while (str != "")
-            {
-                str = ReadString("\r\n");
-                switch (str)
-                {
-                    case "PROCESSING":
-                    case "PENDING":
-                    case "DONE":
-                        metaTags.Add(str);
-                        break;
-                    default:
-                        if (str != "")
-                        {
-                            additionalHeaders.Add(str);
-                            break;
-                        }
-                        else
-                        {
-                            additionalHeaders.Add("");
-                            break;
-                        }
-                }
-            }
+            ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
+            parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
             this.AdditionalHeaders = additionalHeaders.ToArray();
             this.StatusCode = ReadUint();
@@ -303,33 +280,10 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            string str = null;
             List<string> metaTags = new List<string>();
             List<string> additionalHeaders = new List<string>();
-
-            while (str != "")
-            {
-                str = ReadString("\r\n");
-                switch (str)
-                {
-                    case "PROCESSING":
-                    case "PENDING":
-                    case "DONE":
-                        metaTags.Add(str);
-                        break;
-                    default:
-                        if (str != "")
-                        {
-                            additionalHeaders.Add(str);
-                            break;
-                        }
-                        else
-                        {
-                            additionalHeaders.Add("");
-                            break;
-                        }
-                }
-            }
+            ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
+            parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
             this.AdditionalHeaders = additionalHeaders.ToArray();
             this.StatusCode = ReadUint();
@@ -417,34 +371,10 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            string str = null;
             List<string> metaTags = new List<string>();
             List<string> additionalHeaders = new List<string>();
-
-            while (str != "")
-            {
-                str = ReadString("\r\n");
-                switch (str)
-                {
-                    case "PROCESSING":
-                    case "PENDING":
-                    case "DONE":
-                        metaTags.Add(str);
-                        break;
-                    default:
-                        if (str != "")
-                        {
-                            additionalHeaders.Add(str);
-                            break;
-                        }
-                        else
-                        {
-                            additionalHeaders.Add("");
-                            break;
-                        }
-                }
-            }
-
+            ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
+            parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
             this.AdditionalHeaders = additionalHeaders.ToArray();
             this.StatusCode = ReadUint();
@@ -528,33 +458,10 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            string str = null;
             List<string> metaTags = new List<string>();
             List<string> additionalHeaders = new List<string>();
-
-            while (str != "")
-            {
-                str = ReadString("\r\n");
-                switch (str)
-                {
-                    case "PROCESSING":
-                    case "PENDING":
-                    case "DONE":
-                        metaTags.Add(str);
-                        break;
-                    default:
-                        if (str != "")
-                        {
-                            additionalHeaders.Add(str);
-                            break;
-                        }
-                        else
-                        {
-                            additionalHeaders.Add("");
-                            break;
-                        }
-                }
-            }
+            ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
+            parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
             this.AdditionalHeaders = additionalHeaders.ToArray();
             this.StatusCode = ReadUint();
@@ -656,40 +563,17 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            string str = null;
             List<string> metaTags = new List<string>();
             List<string> additionalHeaders = new List<string>();
-
-            while (str != "")
-            {
-                str = ReadString("\r\n");
-                switch (str)
-                {
-                    case "PROCESSING":
-                    case "PENDING":
-                    case "DONE":
-                        metaTags.Add(str);
-                        break;
-                    default:
-                        if (str != "")
-                        {
-                            additionalHeaders.Add(str);
-                            break;
-                        }
-                        else
-                        {
-                            additionalHeaders.Add("");
-                            break;
-                        }
-                }
-            }
+            ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
+            parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
             this.AdditionalHeaders = additionalHeaders.ToArray();
             this.StatusCode = ReadUint();
             if (this.StatusCode == 0)
             {
                 this.ErrorCode = ReadUint();
-                this.ServerGuid = new Guid(ReadBytes(16));
+                this.ServerGuid = ReadGuid();
             }
             this.AuxiliaryBufferSize = ReadUint();
 
@@ -706,5 +590,43 @@ namespace MAPIInspector.Parsers
     }
     #endregion
 
-
+    /// <summary>
+    /// Parse the addtional headers in Common Response Format
+    /// </summary>
+    public class ParseMAPIMethod : BaseStructure
+    {
+        public void ParseAddtionlHeader(Stream s, out List<string> metaTags, out List<string> additionalHeaders)
+        {
+            base.Parse(s);
+            string str = null;
+            List<string> tempmetaTags = new List<string>();
+            List<string> tempadditionalHeaders = new List<string>();
+            while (str != "")
+            {
+                str = ReadString("\r\n");
+                switch (str)
+                {
+                    case "PROCESSING":
+                    case "PENDING":
+                    case "DONE":
+                        tempmetaTags.Add(str);
+                        break;
+                    default:
+                        if (str != "")
+                        {
+                            tempadditionalHeaders.Add(str);
+                            break;
+                        }
+                        else
+                        {
+                            tempadditionalHeaders.Add("");
+                            break;
+                        }
+                }
+            }
+            metaTags = tempmetaTags;
+            additionalHeaders = tempadditionalHeaders;
+        }
+    }
+    
 }

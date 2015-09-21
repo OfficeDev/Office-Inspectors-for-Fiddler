@@ -35,6 +35,12 @@ namespace MAPIInspector.Parsers
             return (byte)value;
         }
 
+        protected Guid ReadGuid()
+        {
+            Guid guid = new Guid(ReadBytes(16));
+            return guid;
+        }
+
         protected ushort ReadUshort()
         {
             int value;
