@@ -177,8 +177,8 @@ namespace MapiInspector
 
             if (direction == TrafficDirection.Out)
             {
-                byte[] ChunckedResponse = Utilities.GetPaylodFromChunkedBody(bytesFromHTTP);
-                this.oMAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(ChunckedResponse);
+                bytesFromHTTP = Utilities.GetPaylodFromChunkedBody(bytesFromHTTP);
+                this.oMAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesFromHTTP);
             }
             else
             {

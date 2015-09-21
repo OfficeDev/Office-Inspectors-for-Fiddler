@@ -7,90 +7,7 @@ using MapiInspector;
 using System.Reflection;
 
 namespace MAPIInspector.Parsers
-{
-
-    /// <summary>
-    /// The auxiliary blocks sent from the server to the client in the rgbAuxOut parameter auxiliary buffer on the EcDoConnectEx method.
-    /// </summary>
-    public class ExtendedBuffer : BaseStructure
-    {
-        // The RPC_HEADER_EXT structure provides information about the payload.
-        public RPC_HEADER_EXT RPC_HEADER_EXT;
-        // A structure of bytes that constitute the auxiliary payload data returned from the server. 
-        public AuxiliaryBufferPayload[] Payload;
-
-        /// <summary>
-        /// The Constructors of ExtendedBuffer.
-        /// </summary>
-        /// <param name="isAuxiliaryBuffer">The bool value that speicfied if it is an auxiliary buffer.</param>
-        public ExtendedBuffer(bool isAuxiliaryBuffer)
-        {
-
-        }
-
-        /// <summary>
-        /// Parse the ExtendedBuffer. 
-        /// </summary>
-        /// <param name="s">An stream of the extended buffers.</param>
-        public override void Parse(Stream s)
-        {
-            base.Parse(s);
-
-            this.RPC_HEADER_EXT = new RPC_HEADER_EXT();
-            this.RPC_HEADER_EXT.Parse(s);
-            List<AuxiliaryBufferPayload> payload = new List<AuxiliaryBufferPayload>();
-            for (int length = 0; length < RPC_HEADER_EXT.Size; )
-            {
-                AuxiliaryBufferPayload buffer = new AuxiliaryBufferPayload();
-                buffer.Parse(s);
-                payload.Add(buffer);
-                length += buffer.AUX_HEADER.Size;
-            }
-            this.Payload = payload.ToArray();
-        }
-    }
-
-    /// <summary>
-    /// The RPC_HEADER_EXT structure provides information about the payload.
-    /// </summary>
-    public class RPC_HEADER_EXT : BaseStructure
-    {
-        //The version of the structure. This value MUST be set to 0x0000.
-        public ushort Version;
-        //The flags that specify how data that follows this header MUST be interpreted. 
-        public RpcHeaderFlags Flags;
-        //The total length of the payload data that follows the RPC_HEADER_EXT structure. 
-        public ushort Size;
-        //The length of the payload data after it has been uncompressed.
-        public ushort SizeActual;
-
-        /// <summary>
-        /// Parse the RPC_HEADER_EXT. 
-        /// </summary>
-        /// <param name="s">An stream related to the RPC_HEADER_EXT.</param>
-        public override void Parse(Stream s)
-        {
-            base.Parse(s);
-            this.Version = ReadUshort();
-            this.Flags = (RpcHeaderFlags)ReadUshort();
-            this.Size = ReadUshort();
-            this.SizeActual = ReadUshort();
-        }
-    }
-
-    /// <summary>
-    /// The enum flags that specify how data that follows this header MUST be interpreted. 
-    /// </summary>
-    public enum RpcHeaderFlags : ushort
-    {
-        //The data that follows the RPC_HEADER_EXT structure is compressed. 
-        Compressed = 0x0001,
-        //The data following the RPC_HEADER_EXT structure has been obfuscated. 
-        XorMagic = 0x0002,
-        //No other RPC_HEADER_EXT structure follows the data of the current RPC_HEADER_EXT structure. 
-        Last = 0x0004
-    }
-
+{  
     #region 2.2.4.1	Connect
 
     /// <summary>
@@ -716,9 +633,96 @@ namespace MAPIInspector.Parsers
     }
     #endregion
 
+    #region Extended Buffer
+    /// <summary>
+    /// The auxiliary blocks sent from the server to the client in the rgbAuxOut parameter auxiliary buffer on the EcDoConnectEx method. It is defined in section 3.1.4.1.1.1 of MS-OXCRPC.
+    /// </summary>
+    public class ExtendedBuffer : BaseStructure
+    {
+        // The RPC_HEADER_EXT structure provides information about the payload.
+        public RPC_HEADER_EXT RPC_HEADER_EXT;
+        // A structure of bytes that constitute the auxiliary payload data returned from the server. 
+        public AuxiliaryBufferPayload[] Payload;
+
+        /// <summary>
+        /// The Constructors of ExtendedBuffer.
+        /// </summary>
+        /// <param name="isAuxiliaryBuffer">The bool value that speicfied if it is an auxiliary buffer.</param>
+        public ExtendedBuffer(bool isAuxiliaryBuffer)
+        {
+
+        }
+
+        /// <summary>
+        /// Parse the ExtendedBuffer. 
+        /// </summary>
+        /// <param name="s">An stream of the extended buffers.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+
+            this.RPC_HEADER_EXT = new RPC_HEADER_EXT();
+            this.RPC_HEADER_EXT.Parse(s);
+            List<AuxiliaryBufferPayload> payload = new List<AuxiliaryBufferPayload>();
+            for (int length = 0; length < RPC_HEADER_EXT.Size; )
+            {
+                AuxiliaryBufferPayload buffer = new AuxiliaryBufferPayload();
+                buffer.Parse(s);
+                payload.Add(buffer);
+                length += buffer.AUX_HEADER.Size;
+            }
+            this.Payload = payload.ToArray();
+        }
+    }
+    #endregion
+
+    #region RPC_HEADER_EXT
+    /// <summary>
+    /// The RPC_HEADER_EXT structure provides information about the payload. It is defined in section 2.2.2.1 of MS-OXCRPC.
+    /// </summary>
+    public class RPC_HEADER_EXT : BaseStructure
+    {
+        //The version of the structure. This value MUST be set to 0x0000.
+        public ushort Version;
+        //The flags that specify how data that follows this header MUST be interpreted. 
+        public RpcHeaderFlags Flags;
+        //The total length of the payload data that follows the RPC_HEADER_EXT structure. 
+        public ushort Size;
+        //The length of the payload data after it has been uncompressed.
+        public ushort SizeActual;
+
+        /// <summary>
+        /// Parse the RPC_HEADER_EXT. 
+        /// </summary>
+        /// <param name="s">An stream related to the RPC_HEADER_EXT.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.Version = ReadUshort();
+            this.Flags = (RpcHeaderFlags)ReadUshort();
+            this.Size = ReadUshort();
+            this.SizeActual = ReadUshort();
+        }
+    }
+
+    /// <summary>
+    /// The enum flags that specify how data that follows this header MUST be interpreted. It is defined in section 2.2.2.1 of MS-OXCRPC. 
+    /// </summary>
+    public enum RpcHeaderFlags : ushort
+    {
+        //The data that follows the RPC_HEADER_EXT structure is compressed. 
+        Compressed = 0x0001,
+        //The data following the RPC_HEADER_EXT structure has been obfuscated. 
+        XorMagic = 0x0002,
+        //No other RPC_HEADER_EXT structure follows the data of the current RPC_HEADER_EXT structure. 
+        Last = 0x0004
+    }
+
+    #endregion
+
     #region Auxiliary Buffer Payload
     /// <summary>
-    ///  A class indicates the payload data contains auxiliary information.
+    ///  A class indicates the payload data contains auxiliary information. It is defined in section 3.1.4.1.2 of MS-OXCRPC.
     /// </summary>
     public class AuxiliaryBufferPayload : BaseStructure
     {
@@ -775,6 +779,9 @@ namespace MAPIInspector.Parsers
         }
     }
 
+    /// <summary>
+    ///  The AUX_ENDPOINT_CAPABILITIES auxiliary block structure. It is defined in section 2.2.2.2.19 of MS-OXCRPC.
+    /// </summary>
     public class AUX_ENDPOINT_CAPABILITIES : BaseStructure
     {
         //A flag that indicates that the server combines capabilities on a single endpoint.
@@ -792,14 +799,15 @@ namespace MAPIInspector.Parsers
     }
 
      /// <summary>
-    /// A flag that indicates that the server combines capabilities on a single endpoint.
+    /// A flag that indicates that the server combines capabilities on a single endpoint. It is defined in section 2.2.2.2.19 of MS-OXCRPC.
     /// </summary>
     public enum EndpointCapabilityFlag : uint
     {
         ENDPOINT_CAPABILITIES_SINGLE_ENDPOINT = 0x00000001
     }
+
     /// <summary>
-    /// The AUX_HEADER structure provides information about the auxiliary block structures that follow it.
+    /// The AUX_HEADER structure provides information about the auxiliary block structures that follow it. It is defined in section 2.2.2.2 of MS-OXCRPC.
     /// </summary>
     public class AUX_HEADER : BaseStructure
     {
@@ -831,7 +839,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// The version information of the payload data.
+    /// The version information of the payload data. It is defined in section 2.2.2.2 of MS-OXCRPC.
     /// </summary>
     public enum PayloadDataVersion : byte
     {
@@ -840,7 +848,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// The enum type corresponding auxiliary block structure that follows the AUX_HEADER structure when the Version field is AUX_VERSION_1.
+    /// The enum type corresponding auxiliary block structure that follows the AUX_HEADER structure when the Version field is AUX_VERSION_1. It is defined in section 2.2.2.2 of MS-OXCRPC.
     /// </summary>
     public enum AuxiliaryBlockType_1 : byte
     {
@@ -875,7 +883,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// The enum type corresponding auxiliary block structure that follows the AUX_HEADER structure when the Version field is AUX_VERSION_2.
+    /// The enum type corresponding auxiliary block structure that follows the AUX_HEADER structure when the Version field is AUX_VERSION_2. It is defined in section 2.2.2.2 of MS-OXCRPC.
     /// </summary>
     public enum AuxiliaryBlockType_2 : byte
     {
