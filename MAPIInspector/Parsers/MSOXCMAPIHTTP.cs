@@ -517,45 +517,6 @@ namespace MAPIInspector.Parsers
     }
     #endregion
 
-    /// <summary>
-    /// Parse the addtional headers in Common Response Format
-    /// </summary>
-    public class ParseMAPIMethod : BaseStructure
-    {
-        public void ParseAddtionlHeader(Stream s, out List<string> metaTags, out List<string> additionalHeaders)
-        {
-            base.Parse(s);
-            string str = null;
-            List<string> tempmetaTags = new List<string>();
-            List<string> tempadditionalHeaders = new List<string>();
-            while (str != "")
-            {
-                str = ReadString("\r\n");
-                switch (str)
-                {
-                    case "PROCESSING":
-                    case "PENDING":
-                    case "DONE":
-                        tempmetaTags.Add(str);
-                        break;
-                    default:
-                        if (str != "")
-                        {
-                            tempadditionalHeaders.Add(str);
-                            break;
-                        }
-                        else
-                        {
-                            tempadditionalHeaders.Add("");
-                            break;
-                        }
-            }
-            }
-            metaTags = tempmetaTags;
-            additionalHeaders = tempadditionalHeaders;
-        }
-    }
-
     #region Extended Buffer
     /// <summary>
     /// The auxiliary blocks sent from the server to the client in the rgbAuxOut parameter auxiliary buffer on the EcDoConnectEx method. It is defined in section 3.1.4.1.1.1 of MS-OXCRPC.
@@ -814,4 +775,45 @@ namespace MAPIInspector.Parsers
         AUX_TYPE_PERF_FG_FAILURE = 0x15, s
     }
     #endregion
+
+    #region Parse common message methods
+    /// <summary>
+    /// Parse the addtional headers in Common Response Format
+    /// </summary>
+    public class ParseMAPIMethod : BaseStructure
+    {
+        public void ParseAddtionlHeader(Stream s, out List<string> metaTags, out List<string> additionalHeaders)
+        {
+            base.Parse(s);
+            string str = null;
+            List<string> tempmetaTags = new List<string>();
+            List<string> tempadditionalHeaders = new List<string>();
+            while (str != "")
+            {
+                str = ReadString("\r\n");
+                switch (str)
+                {
+                    case "PROCESSING":
+                    case "PENDING":
+                    case "DONE":
+                        tempmetaTags.Add(str);
+                        break;
+                    default:
+                        if (str != "")
+                        {
+                            tempadditionalHeaders.Add(str);
+                            break;
+                        }
+                        else
+                        {
+                            tempadditionalHeaders.Add("");
+                            break;
+                        }
+                }
+            }
+            metaTags = tempmetaTags;
+            additionalHeaders = tempadditionalHeaders;
+        }
+    }
+    #endregion Parse common message methods
 }

@@ -13,18 +13,33 @@ namespace MAPIInspector.Parsers
 {
     public abstract class BaseStructure
     {
+        /// <summary>
+        /// The stream to parse
+        /// </summary>
         private Stream stream;
 
+        /// <summary>
+        /// Parse stream to specific message
+        /// </summary>
+        /// <param name="s"></param>
         public virtual void Parse(Stream s)
         {
             stream = s;
         }
 
+        /// <summary>
+        /// Override the ToString method to return empty.
+        /// </summary>
+        /// <returns>Empty string value</returns>
         public override string ToString()
         {
             return "";
         }
 
+        /// <summary>
+        /// Read a byte value from stream
+        /// </summary>
+        /// <returns>A byte</returns>
         protected byte ReadByte()
         {
             int value = stream.ReadByte();
@@ -35,6 +50,10 @@ namespace MAPIInspector.Parsers
             return (byte)value;
         }
 
+        /// <summary>
+        /// Read a GUID from stream
+        /// </summary>
+        /// <returns>A GUID value</returns>
         protected Guid ReadGuid()
         {
             Guid guid = new Guid(ReadBytes(16));
@@ -45,6 +64,10 @@ namespace MAPIInspector.Parsers
             return guid;
         }
 
+        /// <summary>
+        /// Read a ushort from stream
+        /// </summary>
+        /// <returns>A ushort value</returns>
         protected ushort ReadUshort()
         {
             int value;
@@ -62,6 +85,10 @@ namespace MAPIInspector.Parsers
             return (ushort)value;
         }
 
+        /// <summary>
+        /// Read an uint from stream
+        /// </summary>
+        /// <returns>A uint value</returns>
         protected uint ReadUint()
         {
             long value;
@@ -81,6 +108,11 @@ namespace MAPIInspector.Parsers
             return (uint)value;
         }
                 
+        /// <summary>
+        /// Read string value from stream according to string terminator
+        /// </summary>
+        /// <param name="terminator">The string terminator</param>
+        /// <returns>A string value</returns>
         protected string ReadString(string terminator = "\0")
         {            
             StringBuilder value = new StringBuilder();
@@ -114,6 +146,12 @@ namespace MAPIInspector.Parsers
             return value.Remove(value.Length - length, length).ToString();
         }
 
+        /// <summary>
+        /// Read string value from stream according to string terminator and Encoding
+        /// </summary>
+        /// <param name="encoding">The character Encoding</param>
+        /// <param name="terminator">The string terminator</param>
+        /// <returns>A string value</returns>
         protected string ReadString(Encoding encoding, string terminator = "\0")
         {            
             StringBuilder value = new StringBuilder();
@@ -140,6 +178,11 @@ namespace MAPIInspector.Parsers
             return value.Remove(value.Length - length, length).ToString();
         }
 
+        /// <summary>
+        /// Read bytes from stream
+        /// </summary>
+        /// <param name="length">The byte length to read</param>
+        /// <returns>Bytes value</returns>
         protected byte[] ReadBytes(int length)
         {
             byte[] bytes = new byte[length];
@@ -153,6 +196,11 @@ namespace MAPIInspector.Parsers
             return bytes; 
         }
 
+        /// <summary>
+        /// Read character from stream
+        /// </summary>
+        /// <param name="encoding">The text encoding</param>
+        /// <returns>A char value</returns>
         protected char ReadChar(Encoding encoding)
         {
             int length = encoding.GetMaxByteCount(1);
@@ -172,6 +220,13 @@ namespace MAPIInspector.Parsers
             return chars[0];
         }
 
+        /// <summary>
+        /// Add the object to TreeNode and calculate the byte number it consumed
+        /// </summary>
+        /// <param name="obj">The object need to display in TreeView</param>
+        /// <param name="startIndex">The start position of the object in HexView</param>
+        /// <param name="offset">The byte number consumed by the object</param>
+        /// <returns>The TreeNode with object value information</returns>
         public TreeNode AddNodesForTree(object obj, int startIndex, out int offset)
         {
             Type t = obj.GetType();
@@ -318,12 +373,18 @@ namespace MAPIInspector.Parsers
         }
 
         #region Helper for AddNodesForTree function
+        /// <summary>
+        /// Two kinds of String Encoding
+        /// </summary>
         public enum StringEncoding
         {
             ASCII,
             Unicode
         }
 
+        /// <summary>
+        /// Record start position and byte counts consumed 
+        /// </summary>
         public class Position
         {
             public int StartIndex;
@@ -335,6 +396,9 @@ namespace MAPIInspector.Parsers
             }
         }
 
+        /// <summary>
+        /// Custom Attribute for string type
+        /// </summary>
         [AttributeUsage(AttributeTargets.All)]
         public class HelpAttribute : System.Attribute
         {
