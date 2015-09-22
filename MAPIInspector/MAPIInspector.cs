@@ -321,6 +321,16 @@ namespace MapiInspector
                             BindResponse bindResponse = new BindResponse();
                             bindResponse.Parse(stream);
                             topNode = bindResponse.AddNodesForTree(bindResponse, 0, out result);
+                            if (bindResponse.StatusCode == 0)
+                            {
+                                string text = topNode.Text.Replace("Response", "SuccessResponse");
+                                topNode.Text = text;
+                            }
+                            else
+                            {
+                                string text = topNode.Text.Replace("Response", "FailureResponse");
+                                topNode.Text = text;
+                            }
                             break;
                         }
                     default:
