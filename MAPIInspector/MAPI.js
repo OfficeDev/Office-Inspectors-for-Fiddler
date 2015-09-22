@@ -12,12 +12,10 @@ function CalcMethodCol(oS : Session) {
     }
     var sRequestType = oS.RequestHeaders["X-RequestType"];
     switch (sRequestType) {
-        case "Connect":
-            return "MS-OXCMAPIHTTP";
         case "Execute":
             return "MS-OXCROPS";  
+        case "Connect":
         case "Disconnect":
-            return "MS-OXCMAPIHTTP";
         case "NotificationWait":
             return "MS-OXCMAPIHTTP";
         case "Bind":

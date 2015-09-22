@@ -38,6 +38,10 @@ namespace MAPIInspector.Parsers
         protected Guid ReadGuid()
         {
             Guid guid = new Guid(ReadBytes(16));
+            if (guid == null)
+            {
+                throw new Exception();
+            }
             return guid;
         }
 
