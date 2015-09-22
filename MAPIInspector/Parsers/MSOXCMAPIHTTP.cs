@@ -413,7 +413,7 @@ namespace MAPIInspector.Parsers
 
     #endregion
 
-    #region 2.2.5.1  Bind
+    #region 2.2.5.1 Bind
     /// <summary>
     ///  A class indicates the Bind request type request body.
     /// </summary>
@@ -506,7 +506,7 @@ namespace MAPIInspector.Parsers
 
             if (this.AuxiliaryBufferSize > 0)
             {
-                this.AuxiliaryBuffer = new ExtendedBuffer(true);
+                this.AuxiliaryBuffer = new ExtendedBuffer();
                 this.AuxiliaryBuffer.Parse(s);
             }
             else
@@ -555,7 +555,6 @@ namespace MAPIInspector.Parsers
             additionalHeaders = tempadditionalHeaders;
         }
     }
-    #endregion
 
     #region Extended Buffer
     /// <summary>
