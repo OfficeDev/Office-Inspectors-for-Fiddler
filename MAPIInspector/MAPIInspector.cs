@@ -9,7 +9,7 @@ namespace MapiInspector
     public abstract class MAPIInspector : Inspector2
     {
         /// <summary>
-        /// Gets or sets the Tree View control where displayed the MAPI layer message.
+        /// Gets or sets the Tree View control where displayed the MAPI message.
         /// </summary>
         public TreeView oMAPIViewControl { get; set; }
         
@@ -62,7 +62,7 @@ namespace MapiInspector
         public HTTPHeaders BaseHeaders { get; set; }
         
         /// <summary>
-        /// Gets whether the message is MAPI layer message.
+        /// Gets whether the message is MAPI protocol message.
         /// </summary>
         public bool IsMapihttp
         {
@@ -141,14 +141,9 @@ namespace MapiInspector
         /// <summary>
         /// Called by Fiddler to determine how confident this inspector is that it can
         /// decode the data.  This is only called when the user hits enter or double-
-        /// clicks a session.  It does not seem to be called 100% of the time.
-        /// _
+        /// clicks a session.  
         /// If we score the highest out of the other inspectors, Fiddler will open this
         /// inspector's tab and then call AssignSession.
-        /// ****************************************************************************
-        /// Note that some built-in tabs may still override this.  Known overrides:
-        /// - "Headers" will always override when it sees a 401
-        /// - "Headers" will always override when it sees a 200 and a Content-Length of 0
         /// </summary>
         /// <param name="oS">the session object passed by Fiddler</param>
         /// <returns>Int between 0-100 with 100 being the most confident</returns>
@@ -230,7 +225,7 @@ namespace MapiInspector
         }
 
         /// <summary>
-        /// Parse the HTTP layer data to MAPI layer message.
+        /// Parse the HTTP payload to MAPI message.
         /// </summary>
         /// <param name="headers">The HTTP header.</param>
         /// <param name="bytesFromHTTP">The raw data from HTTP layer.</param>
