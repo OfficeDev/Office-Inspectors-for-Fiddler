@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using Fiddler;
 using MAPIInspector.Parsers;
 using Be.Windows.Forms;
+using System;
 
 namespace MapiInspector
 {
@@ -89,6 +90,8 @@ namespace MapiInspector
         public void Clear()
         {
             this.oMAPIViewControl.Nodes.Clear();
+            this.oMAPIControl.MAPIRichTextBox.Visible = false;
+            this.oMAPIControl.MAPIRichTextBox.Clear();
             byte[] empty = new byte[0];
             this.oMAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(empty);
             this.oMAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
@@ -146,11 +149,11 @@ namespace MapiInspector
         {
             this.Clear();
 
-            if (this.Direction == TrafficDirection.In)
+            if (this.IsMapihttp && this.Direction == TrafficDirection.In)
             {
                 this.ParseHTTPPayload(this.BaseHeaders, this.session.requestBodyBytes, TrafficDirection.In);
             }
-            else
+            else if (this.IsMapihttp && this.Direction == TrafficDirection.Out)
             {
                 //An X-ResponseCode of 0 (zero) means success from the perspective of the protocol transport, and the client SHOULD parse the response body based on the request that was issued.
                 if (this.BaseHeaders["X-ResponseCode"] != "0")
@@ -174,24 +177,25 @@ namespace MapiInspector
             {
                 return;
             }
+            try
+            {
+                if (direction == TrafficDirection.Out && headers.Exists("Transfer-Encoding") && headers["Transfer-Encoding"] == "chunked")
+                {
+                    bytesFromHTTP = Utilities.GetPaylodFromChunkedBody(bytesFromHTTP);
+                    this.oMAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesFromHTTP);
+                }
+                else
+                {
+                    this.oMAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesFromHTTP);
+                }
 
-            if (direction == TrafficDirection.Out && headers.Exists("Transfer-Encoding") && headers["Transfer-Encoding"] == "chunked")
-            {
-                bytesFromHTTP = Utilities.GetPaylodFromChunkedBody(bytesFromHTTP);
-                this.oMAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesFromHTTP);
-            }
-            else
-            {
-                this.oMAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesFromHTTP);
-            }
-            
-            this.oMAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
-            Stream stream = new MemoryStream(bytesFromHTTP);
-            int result = 0;
-            if (direction == TrafficDirection.In)
-            {
-                this.oMAPIViewControl.BeginUpdate();
-                TreeNode topNode = new TreeNode(requestType + "Request:");
+                this.oMAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
+                Stream stream = new MemoryStream(bytesFromHTTP);
+                int result = 0;
+                if (direction == TrafficDirection.In)
+                {
+                    this.oMAPIViewControl.BeginUpdate();
+                    TreeNode topNode = new TreeNode(requestType + "Request:");
 
                 switch (requestType)
                 {
@@ -228,6 +232,12 @@ namespace MapiInspector
                             BindRequest bindRequest = new BindRequest();
                             bindRequest.Parse(stream);
                             topNode = bindRequest.AddNodesForTree(bindRequest, 0, out result);
+                            break;
+                        }
+                    case "invalidValue":
+                        {
+                            this.oMAPIControl.MAPIRichTextBox.Visible = true;
+                            this.oMAPIControl.MAPIRichTextBox.Text = "Invalid Request Format";
                             break;
                         }
                     default:
@@ -337,8 +347,15 @@ namespace MapiInspector
                         break;
                 }
 
-                this.oMAPIViewControl.Nodes.Add(topNode);
-                topNode.Expand();
+                    this.oMAPIViewControl.Nodes.Add(topNode);
+                    topNode.Expand();
+                    this.oMAPIViewControl.EndUpdate();
+                }
+            }
+            catch (Exception ex)
+            {
+                this.oMAPIControl.MAPIRichTextBox.Visible = true;
+                this.oMAPIControl.MAPIRichTextBox.Text = ex.ToString();
                 this.oMAPIViewControl.EndUpdate();
             }
         }

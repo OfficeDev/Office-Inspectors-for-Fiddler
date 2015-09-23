@@ -26,5 +26,12 @@ namespace MapiInspector
             }
         }
 
+        public RichTextBox MAPIRichTextBox
+        {
+            get
+            {
+                return this.mapiRichTextBox;
+            }
+        }
     }
 }
