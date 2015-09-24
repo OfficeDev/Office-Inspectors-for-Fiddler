@@ -21,7 +21,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse stream to specific message
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="s">Stream to parse</param>
         public virtual void Parse(Stream s)
         {
             stream = s;
@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Read a GUID from stream
+        /// Read a GUID value from stream
         /// </summary>
         /// <returns>A GUID value</returns>
         protected Guid ReadGuid()
@@ -65,9 +65,9 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Read a ushort from stream
+        /// Read an ushort value from stream
         /// </summary>
-        /// <returns>A ushort value</returns>
+        /// <returns>An ushort value</returns>
         protected ushort ReadUshort()
         {
             int value;
@@ -86,9 +86,9 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Read an uint from stream
+        /// Read an uint value from stream
         /// </summary>
-        /// <returns>A uint value</returns>
+        /// <returns>An uint value</returns>
         protected uint ReadUint()
         {
             long value;
@@ -109,7 +109,7 @@ namespace MAPIInspector.Parsers
         }
                 
         /// <summary>
-        /// Read string value from stream according to string terminator
+        /// Read a string value from stream according to string terminator
         /// </summary>
         /// <param name="terminator">The string terminator</param>
         /// <returns>A string value</returns>
@@ -147,7 +147,7 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Read string value from stream according to string terminator and Encoding
+        /// Read string value from stream according to string terminator and Encoding method
         /// </summary>
         /// <param name="encoding">The character Encoding</param>
         /// <param name="terminator">The string terminator</param>
@@ -374,7 +374,7 @@ namespace MAPIInspector.Parsers
 
         #region Helper for AddNodesForTree function
         /// <summary>
-        /// Two kinds of String Encoding
+        /// String encoding enum
         /// </summary>
         public enum StringEncoding
         {
@@ -397,7 +397,7 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Custom Attribute for string type
+        /// Custom attribute for string type
         /// </summary>
         [AttributeUsage(AttributeTargets.All)]
         public class HelpAttribute : System.Attribute
@@ -412,7 +412,7 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// The kind of a pattern.
+        /// The data type enum
         /// </summary>
         public enum DataType
         {

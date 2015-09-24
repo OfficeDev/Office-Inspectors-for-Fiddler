@@ -15,20 +15,26 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class ConnectRequestBody : BaseStructure
     {
-        //A null-terminated ASCII string that specifies the DN of the user who is requesting the connection. 
+        // A null-terminated ASCII string that specifies the DN of the user who is requesting the connection. 
         [HelpAttribute(StringEncoding.ASCII, 1)]
         public string UserDn;
-        //A set of flags that designate the type of connection being requested. 
+
+        // A set of flags that designate the type of connection being requested. 
         public uint Flags;
-        //An unsigned integer that specifies the code page that the server is being requested to use for string values of properties. 
+
+        // An unsigned integer that specifies the code page that the server is being requested to use for string values of properties. 
         public uint DefaultCodePage;
-        //An unsigned integer that specifies the language code identifier (LCID), as specified in [MS-LCID], to be used for sorting. 
+
+        // An unsigned integer that specifies the language code identifier (LCID), as specified in [MS-LCID], to be used for sorting. 
         public uint LcidSort;
-        //An unsigned integer that specifies the language code identifier (LCID), as specified in [MS-LCID], to be used for everything other than sorting. 
+
+        // An unsigned integer that specifies the language code identifier (LCID), as specified in [MS-LCID], to be used for everything other than sorting. 
         public uint LcidString;
+
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        //An array of bytes that constitute the auxiliary payload data sent from the client. 
+
+        // An array of bytes that constitute the auxiliary payload data sent from the client. 
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
@@ -66,27 +72,37 @@ namespace MAPIInspector.Parsers
         // A string array that informs the client as to the state of processing a request on the server
         [HelpAttribute(StringEncoding.ASCII, 2)]
         public string[] MetaTags;
+        
         // A string array that specifies additional header information.
         [HelpAttribute(StringEncoding.ASCII, 2)]
         public string[] AdditionalHeaders;
+        
         // An unsigned integer that specifies the status of the request.
         public uint StatusCode;
+        
         // An unsigned integer that specifies the return status of the operation.
         public uint ErrorCode;
-        //An unsigned integer that specifies the number of milliseconds for the maximum polling interval.
+        
+        // An unsigned integer that specifies the number of milliseconds for the maximum polling interval.
         public uint PollsMax;
-        //): An unsigned integer that specifies the number of times to retry request types.
+        
+        // An unsigned integer that specifies the number of times to retry request types.
         public uint RetryCount;
-        //An unsigned integer that specifies the number of milliseconds for the client to wait before retrying a failed request type. 
+       
+        // An unsigned integer that specifies the number of milliseconds for the client to wait before retrying a failed request type. 
         public uint RetryDelay;
+        
         //A null-terminated ASCII string that specifies the DN prefix to be used for building message recipients. 
         [HelpAttribute(StringEncoding.ASCII, 1)]
         public string DnPrefix;
+        
         //A null-terminated Unicode string that specifies the display name of the user who is specified in the UserDn field of the Connect request type request body. 
         [HelpAttribute(StringEncoding.Unicode, 2)]
         public string DisplayName;
+        
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
+        
         // An array of bytes that constitute the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
@@ -137,15 +153,20 @@ namespace MAPIInspector.Parsers
     {
         // An unsigned integer that specify to the server how to build the ROP responses in the RopBuffer field of the Execute request type success response body.
         public uint Flags;
+        
         // An unsigned integer that specifies the size, in bytes, of the RopBuffer field.
         public uint RopBufferSize;
+        
         // TODO: An array of bytes that constitute the ROP requests payload. 
         public byte[] RopBuffer;
+        
         // An unsigned integer that specifies the maximum size for the RopBuffer field of the Execute request type success response body.
         public uint MaxRopOut;
+        
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        //An array of bytes that constitute the auxiliary payload data sent from the client. 
+        
+        // An array of bytes that constitute the auxiliary payload data sent from the client. 
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
@@ -182,21 +203,29 @@ namespace MAPIInspector.Parsers
         // A string array that informs the client as to the state of processing a request on the server
         [HelpAttribute(StringEncoding.ASCII, 2)]
         public string[] MetaTags;
+        
         // A string array that specifies additional header information.
         [HelpAttribute(StringEncoding.ASCII, 2)]
         public string[] AdditionalHeaders;
+        
         // An unsigned integer that specifies the status of the request.
         public uint StatusCode;
+        
         // An unsigned integer that specifies the return status of the operation.
         public uint ErrorCode;
+        
         // The reserved flag. The server MUST set this field to 0x00000000 and the client MUST ignore this field.
         public uint Flags;
+        
         // An unsigned integer that specifies the size, in bytes, of the RopBuffer field.
         public uint RopBufferSize;
+        
         // An array of bytes that constitute the ROP responses payload. 
         public byte[] RopBuffer;
+        
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
+        
         // An array of bytes that constitute the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
@@ -247,7 +276,8 @@ namespace MAPIInspector.Parsers
     {
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        //An array of bytes that constitute the auxiliary payload data sent from the client. 
+        
+        // An array of bytes that constitute the auxiliary payload data sent from the client. 
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
@@ -279,15 +309,20 @@ namespace MAPIInspector.Parsers
         // A string array that informs the client as to the state of processing a request on the server
         [HelpAttribute(StringEncoding.ASCII, 2)]
         public string[] MetaTags;
+        
         // A string array that specifies additional header information.
         [HelpAttribute(StringEncoding.ASCII, 2)]
         public string[] AdditionalHeaders;
+        
         // An unsigned integer that specifies the status of the request.
         public uint StatusCode;
+        
         // An unsigned integer that specifies the return status of the operation.
         public uint ErrorCode;
+        
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
+        
         // An array of bytes that constitute the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
@@ -331,11 +366,13 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class NotificationWaitRequestBody : BaseStructure
     {
-        //Reserved. The client MUST set this field to 0x00000000 and the server MUST ignore this field.
+        // Reserved. The client MUST set this field to 0x00000000 and the server MUST ignore this field.
         public uint Flags;
+        
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        //An array of bytes that constitute the auxiliary payload data sent from the client. 
+        
+        // An array of bytes that constitute the auxiliary payload data sent from the client. 
         public ExtendedBuffer AuxiliaryBuffer;
         public override void Parse(Stream s)
         {
@@ -364,17 +401,23 @@ namespace MAPIInspector.Parsers
         // A string array that informs the client as to the state of processing a request on the server
         [HelpAttribute(StringEncoding.ASCII, 2)]
         public string[] MetaTags;
+        
         // A string array that specifies additional header information.
         [HelpAttribute(StringEncoding.ASCII, 2)]
         public string[] AdditionalHeaders;
+        
         // An unsigned integer that specifies the status of the request.
         public uint StatusCode;
+        
         // An unsigned integer that specifies the return status of the operation.
         public uint ErrorCode;
+        
         //An unsigned integer that indicates whether an event is pending on the Session Context. 
         public uint EventPending;
+        
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
+        
         // An array of bytes that constitute the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
@@ -421,12 +464,16 @@ namespace MAPIInspector.Parsers
     {
         // An unsigned integer that specify the authentication type for the connection.
         public uint Flags;
+        
         // A Boolean value that specifies whether the State field is present.
         public byte HasState;
+        
         // An array of bytes that specifies the state of a specific address book container. 
         public byte[] State;
+        
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
+        
         // An array of bytes that constitute the auxiliary payload data sent from the client.
         public ExtendedBuffer AuxiliaryBuffer;
 
@@ -469,17 +516,23 @@ namespace MAPIInspector.Parsers
         // A string array that informs the client as to the state of processing a request on the server.
         [HelpAttribute(StringEncoding.ASCII, 2)]
         public string[] MetaTags;
+        
         // A string array that specifies additional header information.
         [HelpAttribute(StringEncoding.ASCII, 2)]
         public string[] AdditionalHeaders;
+        
         // An unsigned integer that specifies the status of the request.
         public uint StatusCode;
+        
         // An unsigned integer that specifies the return status of the operation.
         public uint ErrorCode;
+        
         // A GUID that is associated with a specific address book server.
         public Guid ServerGuid;
+        
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.  
         public uint AuxiliaryBufferSize;
+        
         // An array of bytes that constitute the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
@@ -525,6 +578,7 @@ namespace MAPIInspector.Parsers
     {
         // The RPC_HEADER_EXT structure provides information about the payload.
         public RPC_HEADER_EXT RPC_HEADER_EXT;
+        
         // A structure of bytes that constitute the auxiliary payload data returned from the server. 
         public AuxiliaryBufferPayload[] Payload;
 
@@ -557,13 +611,16 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RPC_HEADER_EXT : BaseStructure
     {
-        //The version of the structure. This value MUST be set to 0x0000.
+        // The version of the structure. This value MUST be set to 0x0000.
         public ushort Version;
-        //The flags that specify how data that follows this header MUST be interpreted. 
+        
+        // The flags that specify how data that follows this header MUST be interpreted. 
         public RpcHeaderFlags Flags;
-        //The total length of the payload data that follows the RPC_HEADER_EXT structure. 
+        
+        // The total length of the payload data that follows the RPC_HEADER_EXT structure. 
         public ushort Size;
-        //The length of the payload data after it has been uncompressed.
+        
+        // The length of the payload data after it has been uncompressed.
         public ushort SizeActual;
 
         /// <summary>
@@ -587,8 +644,10 @@ namespace MAPIInspector.Parsers
     {
         //The data that follows the RPC_HEADER_EXT structure is compressed. 
         Compressed = 0x0001,
+        
         //The data following the RPC_HEADER_EXT structure has been obfuscated. 
         XorMagic = 0x0002,
+        
         //No other RPC_HEADER_EXT structure follows the data of the current RPC_HEADER_EXT structure. 
         Last = 0x0004
     }
@@ -603,6 +662,7 @@ namespace MAPIInspector.Parsers
     {
         // An AUX_HEADER structure that provides information about the auxiliary block structures that follow it. 
         public AUX_HEADER AUX_HEADER;
+        
         // An object that constitute the auxiliary buffer payload data.
         public object AuxiliaryBlock;
 
@@ -688,8 +748,10 @@ namespace MAPIInspector.Parsers
     {
         // The size of the AUX_HEADER structure plus any additional payload data.
         public ushort Size;
+        
         // The version information of the payload data.
         public PayloadDataVersion Version;
+        
         // The type of auxiliary block data structure. The Type should be AuxiliaryBlockType_1 or AuxiliaryBlockType_2.
         public object Type;
 
@@ -778,7 +840,7 @@ namespace MAPIInspector.Parsers
 
     #region Parse common message methods
     /// <summary>
-    /// Parse the addtional headers in Common Response Format
+    /// Parse the additional headers in Common Response Format
     /// </summary>
     public class ParseMAPIMethod : BaseStructure
     {

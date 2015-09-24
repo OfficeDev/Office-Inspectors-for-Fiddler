@@ -17,6 +17,7 @@ namespace MapiInspector
         {
             return data.ToString() + " (0x" + data.ToString("X8") + ")"; 
         }
+
         /// <summary>
         /// Convert the data format from ushort to string 
         /// </summary>
@@ -30,8 +31,8 @@ namespace MapiInspector
         /// <summary>
         /// Get the valid response from HTTP chunked response body.
         /// </summary>
-        /// <param name="responseBodyFromFiddler"></param>
-        /// <returns></returns>
+        /// <param name="responseBodyFromFiddler">The raw response body from Fiddler.</param>
+        /// <returns>The valid response bytes</returns>
         public static byte[] GetPaylodFromChunkedBody(byte[] responseBodyFromFiddler)
         {
             int length = responseBodyFromFiddler.Length;

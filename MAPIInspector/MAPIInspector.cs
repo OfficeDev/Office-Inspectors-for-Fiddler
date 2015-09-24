@@ -109,7 +109,7 @@ namespace MapiInspector
         }
 
         /// <summary>
-        /// Represents the method, which is used to handle the the AfterSelect event of a TreeView.
+        /// Represents the method, which is used to handle the AfterSelect event of a TreeView.
         /// </summary>
         /// <param name="sender">The source of the event</param>
         /// <param name="e">A System.Windows.Forms.TreeViewEventArgs that contains the event data.</param>
