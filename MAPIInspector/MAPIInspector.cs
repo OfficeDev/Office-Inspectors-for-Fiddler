@@ -149,18 +149,25 @@ namespace MapiInspector
         {
             this.Clear();
 
-            if (this.IsMapihttp && this.Direction == TrafficDirection.In)
+            if (this.IsMapihttp)
             {
-                this.ParseHTTPPayload(this.BaseHeaders, this.session.requestBodyBytes, TrafficDirection.In);
-            }
-            else if (this.IsMapihttp && this.Direction == TrafficDirection.Out)
-            {
-                //An X-ResponseCode of 0 (zero) means success from the perspective of the protocol transport, and the client SHOULD parse the response body based on the request that was issued.
-                if (this.BaseHeaders["X-ResponseCode"] != "0")
+                if (this.Direction == TrafficDirection.In)
                 {
-                    return;
+                    this.ParseHTTPPayload(this.BaseHeaders, this.session.requestBodyBytes, TrafficDirection.In);
                 }
-                this.ParseHTTPPayload(this.BaseHeaders, this.session.responseBodyBytes, TrafficDirection.Out);
+                else
+                {
+                    //An X-ResponseCode of 0 (zero) means success from the perspective of the protocol transport, and the client SHOULD parse the response body based on the request that was issued.
+                    if (this.BaseHeaders["X-ResponseCode"] != "0")
+                    {
+                        return;
+                    }
+                    this.ParseHTTPPayload(this.BaseHeaders, this.session.responseBodyBytes, TrafficDirection.Out);
+                }
+            }
+            else
+            {
+                return;
             }
         }
 
@@ -234,14 +241,12 @@ namespace MapiInspector
                             topNode = bindRequest.AddNodesForTree(bindRequest, 0, out result);
                             break;
                         }
-                    case "invalidValue":
+                    default:
                         {
                             this.oMAPIControl.MAPIRichTextBox.Visible = true;
-                            this.oMAPIControl.MAPIRichTextBox.Text = "Invalid Request Format";
+                            this.oMAPIControl.MAPIRichTextBox.Text = "Unavailable Request Type.";
                             break;
                         }
-                    default:
-                        break;
                 }
 
                 this.oMAPIViewControl.Nodes.Add(topNode);
@@ -344,7 +349,11 @@ namespace MapiInspector
                             break;
                         }
                     default:
-                        break;
+                        {
+                            this.oMAPIControl.MAPIRichTextBox.Visible = true;
+                            this.oMAPIControl.MAPIRichTextBox.Text = "Unavailable Response Type.";
+                            break;
+                        }
                 }
 
                     this.oMAPIViewControl.Nodes.Add(topNode);

@@ -21,6 +21,6 @@ function CalcMethodCol(oS : Session) {
         case "Bind":
             return "MS-OXNSPI";
         default:
-            return "";
+            return "MS-OXCMAPIHTTP";
     }
 }
