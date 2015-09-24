@@ -1,16 +1,16 @@
-# MAPI Inspector Fiddler Extension
-Messaging Application Programming Interface (MAPI) Inspector extension for Fiddler helps you to further decode the HTTP payload to MAPI message according to MAPI Extensions for HTTP protocol family.  
+# MAPI Inspector for Fiddler
+Messaging Application Programming Interface (MAPI) Inspector for Fiddler helps you to further decode the HTTP payload to MAPI message according to MAPI protocol Open Specifications.  
 
 
 ## Introduction
-Use this extension to add a MS Protocol column in Fiddler web session panel and MAPI Inspector under fiddler Inspectors.
+Use this inspector to add a MS Protocol column in Fiddler web session panel and MAPI Inspector under fiddler Inspectors.
 
-This is an extension of [Fiddler](http://www.telerik.com/fiddler) that provides further decoding methods for the message, which are transferred via MAPI over HTTP transport. Install this extension, you can live capture and parse the MAPI message to know what happened on the wire. 
+This is an inspector of [Fiddler](http://www.telerik.com/fiddler) that provides further decoding methods for the message, which are transferred via MAPI over HTTP transport. Install this inspector, you can live capture and parse the MAPI message to know what happened on the wire. 
 
 
 ## Installation 
 ### MAPI Inspector ###
-1. Install the latest [Fiddler](http://www.fiddlertool.com) tool. Fiddler must be run at least once before installing MAPI Inspector. 
+1. Install the latest [Fiddler](http://www.telerik.com/fiddler) tool. Fiddler must be run at least once before installing MAPI Inspector. 
 2. Copy the file [MAPIInspector.dll](https://github.com/HuiliDong/MAPI-Inspector-for-Fiddler/MAPIInspector.dll) into  C:\Program Files\Fiddler2\Inspectors  and restart Fiddler. Or if you want to put in more effort, clone this repo, build it, and copy the built MAPIInspector.dll to your C:\Program Files\Fiddler2\Inspectors directory.
 3. Restart Fiddler and then the MAPI Inspector will display under Inspectors.
 ![alt tag](https://cloud.githubusercontent.com/assets/13864956/10044516/329c59c4-622e-11e5-9b68-8ef920d4ead8.jpg)
@@ -35,7 +35,7 @@ This is an extension of [Fiddler](http://www.telerik.com/fiddler) that provides 
 ![alt tag](https://cloud.githubusercontent.com/assets/13864956/10044752/f405a25e-622f-11e5-8dca-c2f5c5521445.jpg)
 - Decode the HTTP payload to MAPI message and display the parsed message in MAPI Inspector. The MAPI Inspector includes TreeView (left side) and HexView (right side), when clicking the node in TreeView, the corresponding hex data in HexView can be highlighted.
 ![alt tag](https://cloud.githubusercontent.com/assets/13864956/10045590/6689c232-6236-11e5-9751-0caf596b3bba.jpg)
-- Fourteen Microsoft protocols will be supported in this extension. For example, MS-OXCFOLD protocol, it specifies how to manipulate folder and its contents. 
+- Fourteen Microsoft protocols will be supported in this inspector. For example, MS-OXCFOLD protocol, it specifies how to manipulate folder and its contents. 
 ![alt tag](https://cloud.githubusercontent.com/assets/13864956/10046218/f1a3c338-6239-11e5-9d3f-38f8d99e42df.jpg)
 
 ## Reference
