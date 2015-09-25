@@ -3,18 +3,36 @@ using System.Collections.Generic;
 
 namespace MapiInspector
 {
+    /// <summary>
+    /// The utilities class for MAPI Inspector.
+    /// </summary>
     class Utilities
     {
+        /// <summary>
+        /// Convert the data format from uint to string 
+        /// </summary>
+        /// <param name="data">The uint data</param>
+        /// <returns>The converted string result</returns>
         public static string ConvertUintToString(uint data)
         {
             return data.ToString() + " (0x" + data.ToString("X8") + ")"; 
         }
 
+        /// <summary>
+        /// Convert the data format from ushort to string 
+        /// </summary>
+        /// <param name="data">The ushort data</param>
+        /// <returns>The converted string result</returns>
         public static string ConvertUshortToString(ushort data)
         {
             return data.ToString() + " (0x" + data.ToString("X4") + ")"; 
         }
 
+        /// <summary>
+        /// Get the valid response from HTTP chunked response body.
+        /// </summary>
+        /// <param name="responseBodyFromFiddler">The raw response body from Fiddler.</param>
+        /// <returns>The valid response bytes</returns>
         public static byte[] GetPaylodFromChunkedBody(byte[] responseBodyFromFiddler)
         {
             int length = responseBodyFromFiddler.Length;

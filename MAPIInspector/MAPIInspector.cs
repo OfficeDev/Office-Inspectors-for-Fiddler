@@ -9,13 +9,39 @@ namespace MapiInspector
 {
     public abstract class MAPIInspector : Inspector2
     {
+        /// <summary>
+        /// Gets or sets the Tree View control where displayed the MAPI message.
+        /// </summary>
         public TreeView oMAPIViewControl { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the control collection where displayed the MAPI parsed message and corresponding hex data.
+        /// </summary>
         public MAPIControl oMAPIControl { get; set; }
+        
+        /// <summary>
+        /// Gets or sets a value indicating whether or not the frame has been changed.
+        /// </summary>
         public bool bDirty { get; set; }
+        
+        /// <summary>
+        /// Gets or sets a value indicating whether or not the frame is read-only.
+        /// </summary>
         public bool bReadOnly { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the Session object to pull frame data from Fiddler.
+        /// </summary>
         internal Session session { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the raw bytes from the frame
+        /// </summary>
         private byte[] rawBody { get; set; }
-
+        
+        /// <summary>
+        /// Gets the direction of the traffic
+        /// </summary>
         public TrafficDirection Direction
         {
             get
@@ -31,8 +57,14 @@ namespace MapiInspector
             }
         }
 
+        /// <summary>
+        /// Gets or sets the base HTTP headers assigned by the request or response
+        /// </summary>
         public HTTPHeaders BaseHeaders { get; set; }
-
+        
+        /// <summary>
+        /// Gets whether the message is MAPI protocol message.
+        /// </summary>
         public bool IsMapihttp
         {
             get
@@ -61,7 +93,7 @@ namespace MapiInspector
         }
 
         /// <summary>
-        /// Called by Fiddler to add the inspector tab
+        /// Called by Fiddler to add the MAPI inspector tab
         /// </summary>
         /// <param name="o">The tab control for the inspector</param>
         public override void AddToTab(TabPage o)
@@ -77,16 +109,28 @@ namespace MapiInspector
             this.oMAPIViewControl.AfterSelect += TreeView_AfterSelect;
         }
 
+        /// <summary>
+        /// Represents the method, which is used to handle the AfterSelect event of a TreeView.
+        /// </summary>
+        /// <param name="sender">The source of the event</param>
+        /// <param name="e">A System.Windows.Forms.TreeViewEventArgs that contains the event data.</param>
         void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             this.oMAPIControl.MAPIHexBox.Select(((BaseStructure.Position)e.Node.Tag).StartIndex, ((BaseStructure.Position)e.Node.Tag).Offset);
         }
 
+        /// <summary>
+        /// Method that returns a sorting hint
+        /// </summary>
+        /// <returns>An integer indicating where we should order ourselves</returns>
         public override int GetOrder()
         {
             return 0;
         }
 
+        /// <summary>
+        /// Method Fiddler calls to clear the display
+        /// </summary>
         public void Clear()
         {
             this.oMAPIViewControl.Nodes.Clear();
@@ -97,6 +141,15 @@ namespace MapiInspector
             this.oMAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
         }
 
+        /// <summary>
+        /// Called by Fiddler to determine how confident this inspector is that it can
+        /// decode the data.  This is only called when the user hits enter or double-
+        /// clicks a session.  
+        /// If we score the highest out of the other inspectors, Fiddler will open this
+        /// inspector's tab and then call AssignSession.
+        /// </summary>
+        /// <param name="oS">the session object passed by Fiddler</param>
+        /// <returns>Int between 0-100 with 100 being the most confident</returns>
         public override int ScoreForSession(Session oS)
         {
             if (null == this.session)
@@ -126,12 +179,19 @@ namespace MapiInspector
             }
         }
 
+        /// <summary>
+        /// This is called every time this inspector is shown
+        /// </summary>
+        /// <param name="oS">Session object passed by Fiddler</param>
         public override void AssignSession(Session oS)
         {
             this.session = oS;
             base.AssignSession(oS);
         }
 
+        /// <summary>
+        /// Gets or sets the body byte[], called by Fiddler with session byte[]
+        /// </summary>
         public byte[] body
         {
             get
@@ -145,6 +205,9 @@ namespace MapiInspector
             }
         }
 
+        /// <summary>
+        /// Update the view with parsed and diagnosed data
+        /// </summary>
         private void UpdateView()
         {
             this.Clear();
@@ -171,6 +234,12 @@ namespace MapiInspector
             }
         }
 
+        /// <summary>
+        /// Parse the HTTP payload to MAPI message.
+        /// </summary>
+        /// <param name="headers">The HTTP header.</param>
+        /// <param name="bytesFromHTTP">The raw data from HTTP layer.</param>
+        /// <param name="direction">The direction of the traffic.</param>
         public void ParseHTTPPayload(HTTPHeaders headers, byte[] bytesFromHTTP, TrafficDirection direction)
         {
             if (bytesFromHTTP.Length == 0 || headers == null || !headers.Exists("X-RequestType"))
@@ -369,6 +438,9 @@ namespace MapiInspector
             }
         }
 
+        /// <summary>
+        /// Enum for traffic direction
+        /// </summary>
         public enum TrafficDirection
         {
             In,
