@@ -137,9 +137,6 @@
       <DependentUpon>MAPIControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="MAPI.js" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>start "CopyDLLs" /B /wait start xcopy "$(SolutionDir)$(OutDir)*.*" "C:\Program Files (x86)\Fiddler2\Inspectors" /Q /Y</PostBuildEvent>

@@ -11,7 +11,7 @@ This is an inspector of [Fiddler](http://www.telerik.com/fiddler) that provides 
 ## Installation 
 ### MAPI Inspector ###
 1. Install the latest [Fiddler](http://www.telerik.com/fiddler) tool. Fiddler must be run at least once before installing MAPI Inspector. 
-2. Copy the file [MAPIInspector.dll](https://github.com/HuiliDong/MAPI-Inspector-for-Fiddler/MAPIInspector.dll) into  C:\Program Files\Fiddler2\Inspectors  and restart Fiddler. Or if you want to put in more effort, clone this repo, build it, and copy the built MAPIInspector.dll to your C:\Program Files\Fiddler2\Inspectors directory.
+2. Copy the file [MAPIFiddlerInspector.dll](https://github.com/OfficeDev/MAPI-Inspector-for-Fiddler/MAPIFiddlerInspector.dll) into  C:\Program Files\Fiddler2\Inspectors  and restart Fiddler. Or if you want to put in more effort, clone this repo, build it, and copy the built MAPIFiddlerInspector.dll to your C:\Program Files\Fiddler2\Inspectors directory.
 3. Restart Fiddler and then the MAPI Inspector will display under Inspectors.
 ![alt tag](https://cloud.githubusercontent.com/assets/13864956/10044516/329c59c4-622e-11e5-9b68-8ef920d4ead8.jpg)
 
@@ -23,7 +23,7 @@ This is an inspector of [Fiddler](http://www.telerik.com/fiddler) that provides 
     ![alt tag](https://cloud.githubusercontent.com/assets/13864956/10044513/2d5a400c-622e-11e5-9b1c-3cb44c11eb15.jpg) 
 3.	Finish the installation, the Fiddler will have a new Tab FiddlerScript. 
     ![alt tag](https://cloud.githubusercontent.com/assets/13864956/10044452/b959a3be-622d-11e5-8ca5-acc297b98623.jpg) 
-4.	Insert the code in MAPI.js to the class “Handlers” and click “Save Script” button to save script.  
+4.	Insert the code in [MAPI.js](https://github.com/OfficeDev/MAPI-Inspector-for-Fiddler/MAPI.js) to the class “Handlers” and click “Save Script” button to save script.  
     ![alt tag](https://cloud.githubusercontent.com/assets/13864956/10044440/9fc2b382-622d-11e5-8308-a642768bf28a.jpg)
 5.	Restart Fiddler, MS protocol column will be displayed in session view. 
 
