@@ -1,4 +1,4 @@
-# MAPI Inspector for Fiddler
+﻿# MAPI Inspector for Fiddler
 Messaging Application Programming Interface (MAPI) Inspector for Fiddler helps you to further decode the HTTP payload to MAPI message according to MAPI protocol Open Specifications.  
 
 
@@ -28,9 +28,7 @@ This is an inspector of [Fiddler](http://www.telerik.com/fiddler) that provides 
 5.	Restart Fiddler, MS protocol column will be displayed in session view. 
 
 
-
 ## Feature
-
 - Add MS Protocol in session view to identify which sessions are MAPI message. 
 ![alt tag](https://cloud.githubusercontent.com/assets/13864956/10044752/f405a25e-622f-11e5-8dca-c2f5c5521445.jpg)
 - Decode the HTTP payload to MAPI message and display the parsed message in MAPI Inspector. The MAPI Inspector includes TreeView (left side) and HexView (right side), when clicking the node in TreeView, the corresponding hex data in HexView can be highlighted.
