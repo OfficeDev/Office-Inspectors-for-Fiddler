@@ -28,7 +28,6 @@ This is an inspector of [Fiddler](http://www.telerik.com/fiddler) that provides 
 5.	Restart Fiddler, MS protocol column will be displayed in session view. 
 
 
-
 ## Feature
 - Add MS Protocol in session view to identify which sessions are MAPI message. 
 ![alt tag](https://cloud.githubusercontent.com/assets/13864956/10044752/f405a25e-622f-11e5-8dca-c2f5c5521445.jpg)
