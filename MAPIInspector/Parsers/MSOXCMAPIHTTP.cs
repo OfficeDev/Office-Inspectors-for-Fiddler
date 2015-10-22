@@ -11,7 +11,7 @@ namespace MAPIInspector.Parsers
     #region 2.2.4.1	Connect
 
     /// <summary>
-    ///  A class indicates the Connect request type.
+    ///  A class that indicates the Connect request type.
     /// </summary>
     public class ConnectRequestBody : BaseStructure
     {
@@ -38,9 +38,9 @@ namespace MAPIInspector.Parsers
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
-        /// Parse the HTTP payload of session.
+        /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of the session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -64,12 +64,12 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// A class indicates the Connect request type response body.
+    /// A class that indicates the Connect request type response body.
     /// </summary>
     public class ConnectResponseBody : BaseStructure
     {
 
-        // A string array that informs the client as to the state of processing a request on the server
+        // A string array that informs the client of the state of processing a request on the server.
         [HelpAttribute(StringEncoding.ASCII, 2)]
         public string[] MetaTags;
         
@@ -107,9 +107,9 @@ namespace MAPIInspector.Parsers
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
-        /// Parse the HTTP payload of session.
+        /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">An stream of HTTP payload of the session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -147,17 +147,17 @@ namespace MAPIInspector.Parsers
     #region 2.2.4.2	Execute
 
     /// <summary>
-    ///  A class indicates the Execute request type.
+    ///  A class that indicates the Execute request type.
     /// </summary>
     public class ExecuteRequestBody : BaseStructure
     {
-        // An unsigned integer that specify to the server how to build the ROP responses in the RopBuffer field of the Execute request type success response body.
+        // An unsigned integer that specifies to the server how to build the ROP responses in the RopBuffer field of the Execute request type success response body.
         public uint Flags;
         
         // An unsigned integer that specifies the size, in bytes, of the RopBuffer field.
         public uint RopBufferSize;
         
-        // TODO: An array of bytes that constitute the ROP requests payload. 
+        // An array of bytes that constitutes the ROP requests payload. 
         public byte[] RopBuffer;
         
         // An unsigned integer that specifies the maximum size for the RopBuffer field of the Execute request type success response body.
@@ -166,13 +166,13 @@ namespace MAPIInspector.Parsers
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
         
-        // An array of bytes that constitute the auxiliary payload data sent from the client. 
+        // An array of bytes that constitutes the auxiliary payload data sent from the client. 
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
-        /// Parse the HTTP payload of session.
+        /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of the session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -196,11 +196,11 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// A class indicates the Execute request type response body.
+    /// A class that indicates the Execute request type response body.
     /// </summary>
     public class ExecuteResponseBody : BaseStructure
     {
-        // A string array that informs the client as to the state of processing a request on the server
+        // A string array that informs the client of the state of processing a request on the server.
         [HelpAttribute(StringEncoding.ASCII, 2)]
         public string[] MetaTags;
         
@@ -220,19 +220,19 @@ namespace MAPIInspector.Parsers
         // An unsigned integer that specifies the size, in bytes, of the RopBuffer field.
         public uint RopBufferSize;
         
-        // An array of bytes that constitute the ROP responses payload. 
+        // An array of bytes that constitutes the ROP responses payload. 
         public byte[] RopBuffer;
         
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
         
-        // An array of bytes that constitute the auxiliary payload data returned from the server.
+        // An array of bytes that constitutes the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
-        /// Parse the HTTP payload of session.
+        /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of the session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -270,20 +270,20 @@ namespace MAPIInspector.Parsers
     #region 2.2.4.3	Disconnect
 
     /// <summary>
-    ///  A class indicates the Disconnect request type.
+    ///  A class that indicates the Disconnect request type.
     /// </summary>
     public class DisconnectRequestBody : BaseStructure
     {
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
         
-        // An array of bytes that constitute the auxiliary payload data sent from the client. 
+        // An array of bytes that constitutes the auxiliary payload data sent from the client. 
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
-        /// Parse the HTTP payload of session.
+        /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of the session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -302,11 +302,11 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// A class indicates the Disconnect request type response body.
+    /// A class that indicates the Disconnect request type response body.
     /// </summary>
     public class DisconnectResponseBody : BaseStructure
     {
-        // A string array that informs the client as to the state of processing a request on the server
+        // A string array that informs the client as to the state of processing a request on the server.
         [HelpAttribute(StringEncoding.ASCII, 2)]
         public string[] MetaTags;
         
@@ -323,13 +323,13 @@ namespace MAPIInspector.Parsers
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
         
-        // An array of bytes that constitute the auxiliary payload data returned from the server.
+        // An array of bytes that constitutes the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
-        /// Parse the HTTP payload of session.
+        /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of the session.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -362,7 +362,7 @@ namespace MAPIInspector.Parsers
     #region 2.2.4.4	NotificationWait
 
     /// <summary>
-    /// A class indicates the NotificationWait request type response body.
+    /// A class that indicates the NotificationWait request type response body.
     /// </summary>
     public class NotificationWaitRequestBody : BaseStructure
     {
@@ -372,7 +372,7 @@ namespace MAPIInspector.Parsers
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
         
-        // An array of bytes that constitute the auxiliary payload data sent from the client. 
+        // An array of bytes that constitutes the auxiliary payload data sent from the client. 
         public ExtendedBuffer AuxiliaryBuffer;
         public override void Parse(Stream s)
         {
@@ -394,11 +394,11 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// A class indicates the NotificationWait request type response body.
+    /// A class that indicates the NotificationWait request type response body.
     /// </summary>
     public class NotificationWaitResponseBody : BaseStructure
     {
-        // A string array that informs the client as to the state of processing a request on the server
+        // A string array that informs the client as to the state of processing a request on the server.
         [HelpAttribute(StringEncoding.ASCII, 2)]
         public string[] MetaTags;
         
@@ -418,13 +418,13 @@ namespace MAPIInspector.Parsers
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
         
-        // An array of bytes that constitute the auxiliary payload data returned from the server.
+        // An array of bytes that constitutes the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
-        /// Parse the HTTP payload of session.
+        /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of the session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -458,11 +458,11 @@ namespace MAPIInspector.Parsers
 
     #region 2.2.5.1 Bind
     /// <summary>
-    ///  A class indicates the Bind request type request body.
+    ///  A class that indicates the Bind request type request body.
     /// </summary>
     public class BindRequest : BaseStructure
     {
-        // An unsigned integer that specify the authentication type for the connection.
+        // An unsigned integer that specifies the authentication type for the connection.
         public uint Flags;
         
         // A Boolean value that specifies whether the State field is present.
@@ -474,13 +474,13 @@ namespace MAPIInspector.Parsers
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
         
-        // An array of bytes that constitute the auxiliary payload data sent from the client.
+        // An array of bytes that constitutes the auxiliary payload data sent from the client.
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
-        /// Parse the HTTP payload of session.
+        /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of the session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -509,7 +509,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// A class indicates the Bind request type response body.
+    /// A class that indicates the Bind request type response body.
     /// </summary>
     class BindResponse : BaseStructure
     {
@@ -533,13 +533,13 @@ namespace MAPIInspector.Parsers
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.  
         public uint AuxiliaryBufferSize;
         
-        // An array of bytes that constitute the auxiliary payload data returned from the server.
+        // An array of bytes that constitutes the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
         /// <summary>
-        /// Parse the HTTP payload of session.
+        /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of the session.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -579,13 +579,13 @@ namespace MAPIInspector.Parsers
         // The RPC_HEADER_EXT structure provides information about the payload.
         public RPC_HEADER_EXT RPC_HEADER_EXT;
         
-        // A structure of bytes that constitute the auxiliary payload data returned from the server. 
+        // A structure of bytes that constitutes the auxiliary payload data returned from the server. 
         public AuxiliaryBufferPayload[] Payload;
 
         /// <summary>
         /// Parse the ExtendedBuffer. 
         /// </summary>
-        /// <param name="s">An stream of the extended buffers.</param>
+        /// <param name="s">A stream of the extended buffers.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -626,7 +626,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RPC_HEADER_EXT. 
         /// </summary>
-        /// <param name="s">An stream related to the RPC_HEADER_EXT.</param>
+        /// <param name="s">A stream related to the RPC_HEADER_EXT.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -656,20 +656,20 @@ namespace MAPIInspector.Parsers
 
     #region Auxiliary Buffer Payload
     /// <summary>
-    ///  A class indicates the payload data contains auxiliary information. It is defined in section 3.1.4.1.2 of MS-OXCRPC.
+    ///  A class that indicates the payload data contains auxiliary information. It is defined in section 3.1.4.1.2 of MS-OXCRPC.
     /// </summary>
     public class AuxiliaryBufferPayload : BaseStructure
     {
         // An AUX_HEADER structure that provides information about the auxiliary block structures that follow it. 
         public AUX_HEADER AUX_HEADER;
         
-        // An object that constitute the auxiliary buffer payload data.
+        // An object that constitutes the auxiliary buffer payload data.
         public object AuxiliaryBlock;
 
         /// <summary>
-        /// Parse the auxiliary buffer payload of session.
+        /// Parse the auxiliary buffer payload of the session.
         /// </summary>
-        /// <param name="s">An stream of auxiliary buffer payload of session</param>
+        /// <param name="s">A stream of auxiliary buffer payload of the session.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -758,7 +758,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the AUX_HEADER structure.
         /// </summary>
-        /// <param name="s">A stream containing the AUX_HEADER structure</param>
+        /// <param name="s">A stream containing the AUX_HEADER structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -840,7 +840,7 @@ namespace MAPIInspector.Parsers
 
     #region Parse common message methods
     /// <summary>
-    /// Parse the additional headers in Common Response Format
+    /// Parse the additional headers in Common Response Format.
     /// </summary>
     public class ParseMAPIMethod : BaseStructure
     {
