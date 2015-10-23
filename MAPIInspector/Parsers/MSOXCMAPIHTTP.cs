@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">A stream of HTTP payload of the session</param>
+        /// <param name="s">A stream of HTTP payload of the session.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -109,7 +109,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of the session</param>
+        /// <param name="s">A stream of HTTP payload of the session.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -172,7 +172,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">A stream of HTTP payload of the session</param>
+        /// <param name="s">A stream of HTTP payload of the session.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -232,7 +232,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">A stream of HTTP payload of the session</param>
+        /// <param name="s">A stream of HTTP payload of the session.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -283,7 +283,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">A stream of HTTP payload of the session</param>
+        /// <param name="s">A stream of HTTP payload of the session.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -424,7 +424,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">A stream of HTTP payload of the session</param>
+        /// <param name="s">A stream of HTTP payload of the session.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -480,7 +480,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of the session.
         /// </summary>
-        /// <param name="s">A stream of HTTP payload of the session</param>
+        /// <param name="s">A stream of HTTP payload of the session.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -725,7 +725,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the AUX_ENDPOINT_CAPABILITIES structure.
         /// </summary>
-        /// <param name="s">A stream containing the AUX_ENDPOINT_CAPABILITIES structure</param>
+        /// <param name="s">A stream containing the AUX_ENDPOINT_CAPABILITIES structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
