@@ -35,12 +35,12 @@ namespace MapiInspector
         internal Session session { get; set; }
         
         /// <summary>
-        /// Gets or sets the raw bytes from the frame
+        /// Gets or sets the raw bytes from the frame.
         /// </summary>
         private byte[] rawBody { get; set; }
         
         /// <summary>
-        /// Gets the direction of the traffic
+        /// Gets the direction of the traffic.
         /// </summary>
         public TrafficDirection Direction
         {
@@ -58,12 +58,12 @@ namespace MapiInspector
         }
 
         /// <summary>
-        /// Gets or sets the base HTTP headers assigned by the request or response
+        /// Gets or sets the base HTTP headers assigned by the request or response.
         /// </summary>
         public HTTPHeaders BaseHeaders { get; set; }
         
         /// <summary>
-        /// Gets whether the message is MAPI protocol message.
+        /// Gets whether the message is a MAPI protocol message.
         /// </summary>
         public bool IsMapihttp
         {
@@ -93,9 +93,9 @@ namespace MapiInspector
         }
 
         /// <summary>
-        /// Called by Fiddler to add the MAPI inspector tab
+        /// Called by Fiddler to add the MAPI inspector tab.
         /// </summary>
-        /// <param name="o">The tab control for the inspector</param>
+        /// <param name="o">The tab control for the inspector.</param>
         public override void AddToTab(TabPage o)
         {
             o.Text = "MAPI";
@@ -112,7 +112,7 @@ namespace MapiInspector
         /// <summary>
         /// Represents the method, which is used to handle the AfterSelect event of a TreeView.
         /// </summary>
-        /// <param name="sender">The source of the event</param>
+        /// <param name="sender">The source of the event.</param>
         /// <param name="e">A System.Windows.Forms.TreeViewEventArgs that contains the event data.</param>
         void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -120,16 +120,16 @@ namespace MapiInspector
         }
 
         /// <summary>
-        /// Method that returns a sorting hint
+        /// Method that returns a sorting hint.
         /// </summary>
-        /// <returns>An integer indicating where we should order ourselves</returns>
+        /// <returns>An integer indicating where we should order ourselves.</returns>
         public override int GetOrder()
         {
             return 0;
         }
 
         /// <summary>
-        /// Method Fiddler calls to clear the display
+        /// Method Fiddler calls to clear the display.
         /// </summary>
         public void Clear()
         {
@@ -148,8 +148,8 @@ namespace MapiInspector
         /// If we score the highest out of the other inspectors, Fiddler will open this
         /// inspector's tab and then call AssignSession.
         /// </summary>
-        /// <param name="oS">the session object passed by Fiddler</param>
-        /// <returns>Int between 0-100 with 100 being the most confident</returns>
+        /// <param name="oS">The session object passed by Fiddler.</param>
+        /// <returns>Int between 0-100 with 100 being the most confident.</returns>
         public override int ScoreForSession(Session oS)
         {
             if (null == this.session)
@@ -180,9 +180,9 @@ namespace MapiInspector
         }
 
         /// <summary>
-        /// This is called every time this inspector is shown
+        /// This is called every time this inspector is shown.
         /// </summary>
-        /// <param name="oS">Session object passed by Fiddler</param>
+        /// <param name="oS">Session object passed by Fiddler.</param>
         public override void AssignSession(Session oS)
         {
             this.session = oS;
@@ -190,7 +190,7 @@ namespace MapiInspector
         }
 
         /// <summary>
-        /// Gets or sets the body byte[], called by Fiddler with session byte[]
+        /// Gets or sets the body byte[], called by Fiddler with session byte[].
         /// </summary>
         public byte[] body
         {
@@ -206,7 +206,7 @@ namespace MapiInspector
         }
 
         /// <summary>
-        /// Update the view with parsed and diagnosed data
+        /// Update the view with parsed and diagnosed data.
         /// </summary>
         private void UpdateView()
         {
@@ -439,7 +439,7 @@ namespace MapiInspector
         }
 
         /// <summary>
-        /// Enum for traffic direction
+        /// Enum for traffic direction.
         /// </summary>
         public enum TrafficDirection
         {
