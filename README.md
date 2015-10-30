@@ -3,7 +3,7 @@ The Messaging Application Programming Interface (MAPI) Inspector for [Fiddler](h
 
 This repository also includes Jscript that adds an *MS Protocol* column in the Fiddler web session panel. The *MS Protocol* column displays the protocols that are relevant to MAPI messages thereby allowing you to easily identify which HTTP requests and responses contain MAPI message payloads.
 
-The MAPI inspector decodes the MAPI message payload according to [MS-OXCMAPIHTTP](https://msdn.microsoft.com/en-us/library/Dn530952(v=EXCHG.80).aspx). TBD - waiting for more info.
+The MAPI inspector decodes the MAPI message payload according to [MS-OXCMAPIHTTP](https://msdn.microsoft.com/en-us/library/Dn530952(v=EXCHG.80).aspx).
 
 ## Installation 
 Installation of the MAPI Inspector involves adding the DLL file and the MAPI script. Before installing these items, you must first install the latest [Fiddler](http://www.telerik.com/fiddler) tool and then run it. Note that Fiddler must be run at least once before installing the MAPI Inspector.
