@@ -10,25 +10,25 @@ Installation of the MAPI Inspector involves adding the DLL file and the MAPI scr
 
 ### MAPI Inspector DLL###
 1. Copy the file [MAPIFiddlerInspector.dll](https://github.com/OfficeDev/MAPI-Inspector-for-Fiddler/blob/master/MAPIFiddlerInspector.dll) into the C:\Program Files\Fiddler2\Inspectors directory. Alternatively, you can clone this repository, build the MAPIFiddlerInspector.dll, and copy the built .dll to your C:\Program Files\Fiddler2\Inspectors directory.
-2. Restart Fiddler. The MAPI Inspector will display under the *Inspectors* tab, as shown in the following screenshot, after restarting.
+2. Restart Fiddler. After restarting, the MAPI Inspector will display under the *Inspectors* tab for both the request and the response, as shown in the following screenshot.
 
-    ![alt tag](https://cloud.githubusercontent.com/assets/13864956/10044516/329c59c4-622e-11e5-9b68-8ef920d4ead8.jpg)
+    ![alt tag](/README-Images/Figure1-Inspector.png)
 
 ### MAPI Script ###
 
 1. From the *Rules* menu, which is shown in the following screenshot, click *Customize Rules*.
     
-    ![alt tag](https://cloud.githubusercontent.com/assets/13864956/10038377/a6e8d104-61f7-11e5-9a84-989fcf135f2c.png)
+    ![alt tag](/README-Images/Figure2-mapiscript.png)
 
 2. When the following message box displays, click the *Yes* button to install the FiddlerScript editor.
 
-    ![alt tag](https://cloud.githubusercontent.com/assets/13864956/10044513/2d5a400c-622e-11e5-9b1c-3cb44c11eb15.jpg)
+    ![alt tag](/README-Images/Figure3-mapiscript.png)
 
 3. Restart Fiddler after the installation of the FiddlerScript editor completes. Fiddler displays a new tab, *FiddlerScript*, as shown in the following screenshot. Copy the code from the code from the [MAPI.js](https://github.com/OfficeDev/MAPI-Inspector-for-Fiddler/blob/master/MAPI.js) file and paste it into the definition for the **Handlers** class. Click the *Save Script* button to save the script.
 
-    ![alt tag](https://cloud.githubusercontent.com/assets/13864956/10044440/9fc2b382-622d-11e5-8308-a642768bf28a.jpg)
+    ![alt tag](/README-Images/Figure4-mapiscript.png)
 
 4. Restart Fiddler. After restarting, the *MS protocol column* can be displayed in session view.
 
-    ![alt tag](https://cloud.githubusercontent.com/assets/13864956/10045590/6689c232-6236-11e5-9751-0caf596b3bba.jpg)
+    ![alt tag](/README-Images/Figure5-mapiscript.png)
 
