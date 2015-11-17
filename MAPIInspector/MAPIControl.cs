@@ -33,5 +33,21 @@ namespace MapiInspector
                 return this.mapiRichTextBox;
             }
         }
+
+        public HexBox CROPSHexBox
+        {
+            get
+            {
+                return this.cropsHexBox;
+            }
+        }
+
+        public SplitContainer SplitContainer
+        {
+            get
+            {
+                return this.splitContainer;
+            }
+        }
     }
 }
