@@ -1,5 +1,5 @@
 # MAPI Inspector for Fiddler
-The Messaging Application Programming Interface (MAPI) Inspector for [Fiddler](http://www.telerik.com/fiddler) decodes the MAPI message payload of an HTTP POST request and response. The MAPI Inspector displays under the *Inspectors* tab in Fiddler abc.
+The Messaging Application Programming Interface (MAPI) Inspector for [Fiddler](http://www.telerik.com/fiddler) decodes the MAPI message payload of an HTTP POST request and response. The MAPI Inspector displays under the *Inspectors* tab in Fiddler.
 
 This repository also includes Jscript that adds an *MS Protocol* column in the Fiddler web session panel. The *MS Protocol* column displays the protocols that are relevant to MAPI messages thereby allowing you to easily identify which HTTP requests and responses contain MAPI message payloads.
 
