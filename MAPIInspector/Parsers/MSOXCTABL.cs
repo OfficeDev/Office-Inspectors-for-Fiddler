@@ -370,7 +370,6 @@ namespace MAPIInspector.Parsers
         // A list of PropertyRow structures. 
         public PropertyRow[] RowData;
 
-        // TODO: need the other rop information
         // Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1). 
         PropertyTag[] propertiesBySetColum;
         public RopQueryRowsResponse(PropertyTag[] PropertyTags)
@@ -1094,18 +1093,17 @@ namespace MAPIInspector.Parsers
         // A Boolean that indicates whether the RowData field is present.
         public PropertyRow RowData;
 
-        // TODO: need the other rop information
         // Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1). 
         public PropertyTag[] propertiesBySetColum;
 
-        ///// <summary>
-        ///// The Constructor to set the property tag.
-        ///// </summary>
-        ///// <param name="PropertyTags">The property tag</param>
-        //public RopFindRowResponse(PropertyTag[] PropertyTags)
-        //{
-        //    this.propertiesBySetColum = PropertyTags;
-        //}
+        /// <summary>
+        /// The Constructor to set the property tag.
+        /// </summary>
+        /// <param name="PropertyTags">The property tag</param>
+        public RopFindRowResponse(PropertyTag[] PropertyTags)
+        {
+            this.propertiesBySetColum = PropertyTags;
+        }
 
         /// <summary>
         /// Parse the RopFindRowResponse structure.
@@ -1331,7 +1329,6 @@ namespace MAPIInspector.Parsers
         // A list of PropertyRow structures. The number of structures contained in this field is specified by the RowCount field.
         public PropertyRow[] RowData;
 
-        // TODO: need the other rop information
         // Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1). 
         PropertyTag[] propertiesBySetColum;
 
@@ -1358,6 +1355,7 @@ namespace MAPIInspector.Parsers
 
             if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
             {
+                this.ExpandedRowCount = ReadUint();
                 this.RowCount = ReadUshort();
                 List<PropertyRow> tempPropertyRows = new List<PropertyRow>();
                 for (int i = 0; i < RowCount; i++)

@@ -99,11 +99,14 @@ namespace MAPIInspector.Parsers
                             RopReleaseRequest.Parse(s);
                             ropsList.Add(RopReleaseRequest);
                             break;
+
                         // MSOXCTABL Rop
                         case RopIdType.RopSetColumns:
                             RopSetColumnsRequest RopSetColumnsRequest = new RopSetColumnsRequest();
                             RopSetColumnsRequest.Parse(s);
                             ropsList.Add(RopSetColumnsRequest);
+                            // Record the property tags.
+                            DecodingContext.SetColumnsPropertyTags = new Dictionary<int, PropertyTag[]>() { { MapiInspector.MAPIInspector.currentSessionID, RopSetColumnsRequest.PropertyTags } };
                             break;
 
                         case RopIdType.RopSortTable:
@@ -232,6 +235,92 @@ namespace MAPIInspector.Parsers
                             RopUpdateDeferredActionMessagesRequest.Parse(s);
                             ropsList.Add(RopUpdateDeferredActionMessagesRequest);
                             break;
+
+                        // MSOXCFOLD Rop
+                        case RopIdType.RopOpenFolder:
+                            RopOpenFolderRequest RopOpenFolderRequest = new RopOpenFolderRequest();
+                            RopOpenFolderRequest.Parse(s);
+                            ropsList.Add(RopOpenFolderRequest);
+                            break;
+
+                        case RopIdType.RopCreateFolder:
+                            RopCreateFolderRequest RopCreateFolderRequest = new RopCreateFolderRequest();
+                            RopCreateFolderRequest.Parse(s);
+                            ropsList.Add(RopCreateFolderRequest);
+                            break;
+
+                        case RopIdType.RopDeleteFolder:
+                            RopDeleteFolderRequest RopDeleteFolderRequest = new RopDeleteFolderRequest();
+                            RopDeleteFolderRequest.Parse(s);
+                            ropsList.Add(RopDeleteFolderRequest);
+                            break;
+
+                        case RopIdType.RopSetSearchCriteria:
+                            RopSetSearchCriteriaRequest RopSetSearchCriteriaRequest = new RopSetSearchCriteriaRequest();
+                            RopSetSearchCriteriaRequest.Parse(s);
+                            ropsList.Add(RopSetSearchCriteriaRequest);
+                            break;
+
+                        case RopIdType.RopGetSearchCriteria:
+                            RopGetSearchCriteriaRequest RopGetSearchCriteriaRequest = new RopGetSearchCriteriaRequest();
+                            RopGetSearchCriteriaRequest.Parse(s);
+                            ropsList.Add(RopGetSearchCriteriaRequest);
+                            break;
+
+                        case RopIdType.RopMoveCopyMessages:
+                            RopMoveCopyMessagesRequest RopMoveCopyMessagesRequest = new RopMoveCopyMessagesRequest();
+                            RopMoveCopyMessagesRequest.Parse(s);
+                            ropsList.Add(RopMoveCopyMessagesRequest);
+                            break;
+
+                        case RopIdType.RopMoveFolder:
+                            RopMoveFolderRequest RopMoveFolderRequest = new RopMoveFolderRequest();
+                            RopMoveFolderRequest.Parse(s);
+                            ropsList.Add(RopMoveFolderRequest);
+                            break;
+
+                        case RopIdType.RopCopyFolder:
+                            RopCopyFolderRequest RopCopyFolderRequest = new RopCopyFolderRequest();
+                            RopCopyFolderRequest.Parse(s);
+                            ropsList.Add(RopCopyFolderRequest);
+                            break;
+
+                        case RopIdType.RopEmptyFolder:
+                            RopEmptyFolderRequest RopEmptyFolderRequest = new RopEmptyFolderRequest();
+                            RopEmptyFolderRequest.Parse(s);
+                            ropsList.Add(RopEmptyFolderRequest);
+                            break;
+
+                        case RopIdType.RopHardDeleteMessagesAndSubfolders:
+                            RopHardDeleteMessagesAndSubfoldersRequest RopHardDeleteMessagesAndSubfoldersRequest = new RopHardDeleteMessagesAndSubfoldersRequest();
+                            RopHardDeleteMessagesAndSubfoldersRequest.Parse(s);
+                            ropsList.Add(RopHardDeleteMessagesAndSubfoldersRequest);
+                            break;
+
+                        case RopIdType.RopDeleteMessages:
+                            RopDeleteMessagesRequest RopDeleteMessagesRequest = new RopDeleteMessagesRequest();
+                            RopDeleteMessagesRequest.Parse(s);
+                            ropsList.Add(RopDeleteMessagesRequest);
+                            break;
+
+                        case RopIdType.RopHardDeleteMessages:
+                            RopHardDeleteMessagesRequest RopHardDeleteMessagesRequest = new RopHardDeleteMessagesRequest();
+                            RopHardDeleteMessagesRequest.Parse(s);
+                            ropsList.Add(RopHardDeleteMessagesRequest);
+                            break;
+
+                        case RopIdType.RopGetHierarchyTable:
+                            RopGetHierarchyTableRequest RopGetHierarchyTableRequest = new RopGetHierarchyTableRequest();
+                            RopGetHierarchyTableRequest.Parse(s);
+                            ropsList.Add(RopGetHierarchyTableRequest);
+                            break;
+
+                        case RopIdType.RopGetContentsTable:
+                            RopGetContentsTableRequest RopGetContentsTableRequest = new RopGetContentsTableRequest();
+                            RopGetContentsTableRequest.Parse(s);
+                            ropsList.Add(RopGetContentsTableRequest);
+                            break;
+
                         default:
                             object RopsBytes = ReadBytes(this.RopSize - 2);
                             ropsList.Add(RopsBytes);
@@ -373,6 +462,7 @@ namespace MAPIInspector.Parsers
                             RopBufferTooSmallResponse.Parse(s);
                             ropsList.Add(RopBufferTooSmallResponse);
                             break;
+
                         // MSOXCTABL Rop
                         case RopIdType.RopSetColumns:
                             RopSetColumnsResponse RopSetColumnsResponse = new RopSetColumnsResponse();
@@ -393,13 +483,27 @@ namespace MAPIInspector.Parsers
                             break;
 
                         case RopIdType.RopQueryRows:
-                            object RopsBytes1 = ReadBytes(this.RopSize - 2);
-                            ropsList.Add(RopsBytes1);
-                            /* TODO
-                            RopQueryRowsResponse RopQueryRowsResponse = new RopQueryRowsResponse();
-                            RopQueryRowsResponse.Parse(s);
-                            ropsList.Add(RopQueryRowsResponse);
-                             */
+                            // If this session alreadby is successfully parsed, get it from the dictionary.
+                            if (DecodingContext.ColumnsRelatedRops != null && DecodingContext.ColumnsRelatedRops.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                            {
+
+                                RopQueryRowsResponse RopQueryRowsResponse = (RopQueryRowsResponse)DecodingContext.ColumnsRelatedRops[MapiInspector.MAPIInspector.currentSessionID];
+                                ropsList.Add(RopQueryRowsResponse);
+                                s.Position += RopSize;
+                            }
+                            // If the related property tags is alreadby in dictionary and this session is not parsed
+                            else if (DecodingContext.SetColumnsPropertyTags != null && DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                            {
+                                RopQueryRowsResponse RopQueryRowsResponse = new RopQueryRowsResponse(DecodingContext.SetColumnsPropertyTags[MapiInspector.MAPIInspector.currentSessionID]);
+                                RopQueryRowsResponse.Parse(s);
+                                ropsList.Add(RopQueryRowsResponse);
+                                DecodingContext.ColumnsRelatedRops = new Dictionary<int, object> { { MapiInspector.MAPIInspector.currentSessionID, RopQueryRowsResponse } };
+                            }
+                            // If the related property tags is not exist.
+                            else
+                            {
+                                throw new MissingInformationException("Missing LogonFlags information for RopLogon", (ushort)CurrentByte, null);
+                            }
                             break;
 
                         case RopIdType.RopAbort:
@@ -451,13 +555,27 @@ namespace MAPIInspector.Parsers
                             break;
 
                         case RopIdType.RopFindRow:
-                            object RopsBytes2 = ReadBytes(this.RopSize - 2);
-                            ropsList.Add(RopsBytes2);
-                            /* TODO
-                            RopFindRowResponse RopFindRowResponse = new RopFindRowResponse();
-                            RopFindRowResponse.Parse(s);
-                            ropsList.Add(RopFindRowResponse);
-                              */
+                            // If this session alreadby is successfully parsed, get it from the dictionary.
+                            if (DecodingContext.ColumnsRelatedRops != null && DecodingContext.ColumnsRelatedRops.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                            {
+
+                                RopFindRowResponse RopFindRowResponse = (RopFindRowResponse)DecodingContext.ColumnsRelatedRops[MapiInspector.MAPIInspector.currentSessionID];
+                                ropsList.Add(RopFindRowResponse);
+                                s.Position += RopSize;
+                            }
+                            // If the related property tags is alreadby in dictionary and this session is not parsed
+                            else if (DecodingContext.SetColumnsPropertyTags != null && DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                            {
+                                RopFindRowResponse RopFindRowResponse = new RopFindRowResponse(DecodingContext.SetColumnsPropertyTags[MapiInspector.MAPIInspector.currentSessionID]);
+                                RopFindRowResponse.Parse(s);
+                                ropsList.Add(RopFindRowResponse);
+                                DecodingContext.ColumnsRelatedRops = new Dictionary<int, object> { { MapiInspector.MAPIInspector.currentSessionID, RopFindRowResponse } };
+                            }
+                            // If the related property tags is not exist.
+                            else
+                            {
+                                throw new MissingInformationException("Missing LogonFlags information for RopLogon", (ushort)CurrentByte, null);
+                            }
                             break;
 
                         case RopIdType.RopFreeBookmark:
@@ -473,13 +591,27 @@ namespace MAPIInspector.Parsers
                             break;
 
                         case RopIdType.RopExpandRow:
-                            object RopsBytes3 = ReadBytes(this.RopSize - 2);
-                            ropsList.Add(RopsBytes3);
-                            /* TODO
-                            RopExpandRowResponse RopExpandRowResponse = new RopExpandRowResponse();
-                            RopExpandRowResponse.Parse(s);
-                            ropsList.Add(RopExpandRowResponse);
-                               */
+                            // If this session alreadby is successfully parsed, get it from the dictionary.
+                            if (DecodingContext.ColumnsRelatedRops != null && DecodingContext.ColumnsRelatedRops.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                            {
+
+                                RopExpandRowResponse RopExpandRowResponse = (RopExpandRowResponse)DecodingContext.ColumnsRelatedRops[MapiInspector.MAPIInspector.currentSessionID];
+                                ropsList.Add(RopExpandRowResponse);
+                                s.Position += RopSize;
+                            }
+                            // If the related property tags is alreadby in dictionary and this session is not parsed
+                            else if (DecodingContext.SetColumnsPropertyTags != null && DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                            {
+                                RopExpandRowResponse RopExpandRowResponse = new RopExpandRowResponse(DecodingContext.SetColumnsPropertyTags[MapiInspector.MAPIInspector.currentSessionID]);
+                                RopExpandRowResponse.Parse(s);
+                                ropsList.Add(RopExpandRowResponse);
+                                DecodingContext.ColumnsRelatedRops = new Dictionary<int, object> { { MapiInspector.MAPIInspector.currentSessionID, RopExpandRowResponse } };
+                            }
+                            // If the related property tags is not exist.
+                            else
+                            {
+                                throw new MissingInformationException("Missing SetColumns PropertyTags information for RopLogon", (ushort)CurrentByte, null);
+                            }
                             break;
 
                         case RopIdType.RopCollapseRow:
@@ -518,6 +650,92 @@ namespace MAPIInspector.Parsers
                             RopUpdateDeferredActionMessagesResponse.Parse(s);
                             ropsList.Add(RopUpdateDeferredActionMessagesResponse);
                             break;
+
+                        // MSOXCFOLD Rop
+                        case RopIdType.RopOpenFolder:
+                            RopOpenFolderResponse RopOpenFolderResponse = new RopOpenFolderResponse();
+                            RopOpenFolderResponse.Parse(s);
+                            ropsList.Add(RopOpenFolderResponse);
+                            break;
+
+                        case RopIdType.RopCreateFolder:
+                            RopCreateFolderResponse RopCreateFolderResponse = new RopCreateFolderResponse();
+                            RopCreateFolderResponse.Parse(s);
+                            ropsList.Add(RopCreateFolderResponse);
+                            break;
+
+                        case RopIdType.RopDeleteFolder:
+                            RopDeleteFolderResponse RopDeleteFolderResponse = new RopDeleteFolderResponse();
+                            RopDeleteFolderResponse.Parse(s);
+                            ropsList.Add(RopDeleteFolderResponse);
+                            break;
+
+                        case RopIdType.RopSetSearchCriteria:
+                            RopSetSearchCriteriaResponse RopSetSearchCriteriaResponse = new RopSetSearchCriteriaResponse();
+                            RopSetSearchCriteriaResponse.Parse(s);
+                            ropsList.Add(RopSetSearchCriteriaResponse);
+                            break;
+
+                        case RopIdType.RopGetSearchCriteria:
+                            RopGetSearchCriteriaResponse RopGetSearchCriteriaResponse = new RopGetSearchCriteriaResponse();
+                            RopGetSearchCriteriaResponse.Parse(s);
+                            ropsList.Add(RopGetSearchCriteriaResponse);
+                            break;
+
+                        case RopIdType.RopMoveCopyMessages:
+                            RopMoveCopyMessagesResponse RopMoveCopyMessagesResponse = new RopMoveCopyMessagesResponse();
+                            RopMoveCopyMessagesResponse.Parse(s);
+                            ropsList.Add(RopMoveCopyMessagesResponse);
+                            break;
+
+                        case RopIdType.RopMoveFolder:
+                            RopMoveFolderResponse RopMoveFolderResponse = new RopMoveFolderResponse();
+                            RopMoveFolderResponse.Parse(s);
+                            ropsList.Add(RopMoveFolderResponse);
+                            break;
+
+                        case RopIdType.RopCopyFolder:
+                            RopCopyFolderResponse RopCopyFolderResponse = new RopCopyFolderResponse();
+                            RopCopyFolderResponse.Parse(s);
+                            ropsList.Add(RopCopyFolderResponse);
+                            break;
+
+                        case RopIdType.RopEmptyFolder:
+                            RopEmptyFolderResponse RopEmptyFolderResponse = new RopEmptyFolderResponse();
+                            RopEmptyFolderResponse.Parse(s);
+                            ropsList.Add(RopEmptyFolderResponse);
+                            break;
+
+                        case RopIdType.RopHardDeleteMessagesAndSubfolders:
+                            RopHardDeleteMessagesAndSubfoldersResponse RopHardDeleteMessagesAndSubfoldersResponse = new RopHardDeleteMessagesAndSubfoldersResponse();
+                            RopHardDeleteMessagesAndSubfoldersResponse.Parse(s);
+                            ropsList.Add(RopHardDeleteMessagesAndSubfoldersResponse);
+                            break;
+
+                        case RopIdType.RopDeleteMessages:
+                            RopDeleteMessagesResponse RopDeleteMessagesResponse = new RopDeleteMessagesResponse();
+                            RopDeleteMessagesResponse.Parse(s);
+                            ropsList.Add(RopDeleteMessagesResponse);
+                            break;
+
+                        case RopIdType.RopHardDeleteMessages:
+                            RopHardDeleteMessagesResponse RopHardDeleteMessagesResponse = new RopHardDeleteMessagesResponse();
+                            RopHardDeleteMessagesResponse.Parse(s);
+                            ropsList.Add(RopHardDeleteMessagesResponse);
+                            break;
+
+                        case RopIdType.RopGetHierarchyTable:
+                            RopGetHierarchyTableResponse RopGetHierarchyTableResponse = new RopGetHierarchyTableResponse();
+                            RopGetHierarchyTableResponse.Parse(s);
+                            ropsList.Add(RopGetHierarchyTableResponse);
+                            break;
+
+                        case RopIdType.RopGetContentsTable:
+                            RopGetContentsTableResponse RopGetContentsTableResponse = new RopGetContentsTableResponse();
+                            RopGetContentsTableResponse.Parse(s);
+                            ropsList.Add(RopGetContentsTableResponse);
+                            break;
+
                         default:
                             object RopsBytes = ReadBytes(this.RopSize - (int)s.Position);
                             ropsList.Add(RopsBytes);
@@ -1561,6 +1779,11 @@ namespace MAPIInspector.Parsers
         // Record the LogonId and logon flags.
         private static Dictionary<byte, LogonFlags> logonFlagMapLogId;
 
+        // Record the SetColumns's property tags.
+        private static Dictionary<int, PropertyTag[]> setColumnsPropertyTags;
+
+        // Record the roplist related to SetColumns's property tags.
+        private static Dictionary<int, object> columnsRelatedRops;
 
         // Gets or sets the logOnFlags.
         public static LogonFlags LogonFlags
@@ -1601,7 +1824,31 @@ namespace MAPIInspector.Parsers
             }
         }
 
+        // Get or set setColumnsPropertyTags
+        public static Dictionary<int, PropertyTag[]> SetColumnsPropertyTags
+        {
+            get
+            {
+                return setColumnsPropertyTags;
+            }
+            set
+            {
+                setColumnsPropertyTags = value;
+            }
+        }
 
+        // Get or set columnsRelatedRops
+        public static Dictionary<int, object> ColumnsRelatedRops
+        {
+            get
+            {
+                return columnsRelatedRops;
+            }
+            set
+            {
+                columnsRelatedRops = value;
+            }
+        }
     }
     #endregion
 

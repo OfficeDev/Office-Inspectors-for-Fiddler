@@ -112,6 +112,7 @@
     <Compile Include="MAPIResponseInspector.cs" />
     <Compile Include="Parsers\BaseStructure.cs" />
     <Compile Include="Parsers\MSOXCDATA.cs" />
+    <Compile Include="Parsers\MSOXCFOLD.cs" />
     <Compile Include="Parsers\MSOXCMAPIHTTP.cs" />
     <Compile Include="Parsers\MSOXCROPS.cs" />
     <Compile Include="Parsers\MSOXCSTOR.cs" />
