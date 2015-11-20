@@ -296,8 +296,13 @@ namespace MapiInspector
         public void HandleContextInformation(ushort sourceRopID, object parameters, out object obj, out byte[] bytes)
         {
             List<Session> AllSessionsList = new List<Session>();
-            AllSessionsList.Add(new Session(new byte[0], new byte[0]));
+            Session session0 = new Session(new byte[0], new byte[0]);
             AllSessionsList.AddRange(FiddlerApplication.UI.GetAllSessions());
+            AllSessionsList.Sort(delegate(Session p1, Session p2)
+            {
+                return p1.id.CompareTo(p2.id);
+            });
+            AllSessionsList.Insert(0,session0);
             Session[] allSessions = AllSessionsList.ToArray();
             int GetBufferSessionId = 0;
             int PutBufferSessionId = 0;
@@ -759,6 +764,78 @@ namespace MapiInspector
                 }
                 while (!(DecodingContext.SessionObjectHandles.ContainsKey(currentSessionID + 1) && DecodingContext.SessionObjectHandles[currentSessionID + 1].ContainsKey(parameters.GetHashCode())));
 
+                MAPIRequest = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                if (MAPIRequest.GetType().Name == "ExecuteRequestBody")
+                {
+                    requestDic.Add(ThisSessionID, MAPIRequest);
+                    requestBytesForHexview.Add(ThisSessionID, bytesForHexView);
+                }
+                obj = requestDic[ThisSessionID];
+                bytes = requestBytesForHexview[ThisSessionID];
+            }
+            else if ((RopIdType)sourceRopID == RopIdType.RopGetPropertiesSpecific)
+            {
+                // If this session has parsed not need do this.
+                if (DecodingContext.SessionPropertyTags != null && DecodingContext.SessionPropertyTags.ContainsKey(this.session.id))
+                {
+                    if (!(responseDic != null && responseDic.ContainsKey(this.session.id) && responseBytesForHexview != null && responseBytesForHexview.ContainsKey(this.session.id)))
+                    {
+                        MAPIResponse = ParseHTTPPayload(this.BaseHeaders, this.session.id, this.session.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                        responseDic.Add(this.session.id, MAPIResponse);
+                        responseBytesForHexview.Add(this.session.id, bytesForHexView);
+                    }
+                    obj = responseDic[this.session.id];
+                    bytes = responseBytesForHexview[this.session.id];
+                }
+                else
+                {
+                    MAPIRequest = ParseHTTPPayload(this.BaseHeaders, this.session.id, this.session.requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                    if (MAPIRequest.GetType().Name == "ExecuteRequestBody")
+                    {
+                        requestDic.Add(this.session.id, MAPIRequest);
+                        requestBytesForHexview.Add(this.session.id, bytesForHexView);
+                    }
+
+                    MAPIResponse = ParseHTTPPayload(this.BaseHeaders, this.session.id, this.session.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody")
+                    {
+                        responseDic.Add(this.session.id, MAPIResponse);
+                        responseBytesForHexview.Add(this.session.id, bytesForHexView);
+                    }
+                    obj = responseDic[this.session.id];
+                    bytes = responseBytesForHexview[this.session.id];
+                }
+            }
+            else if ((RopIdType)sourceRopID == RopIdType.RopWritePerUserInformation)
+            {
+                int ThisSessionID = MAPIInspector.currentSessionID;
+                currentSessionID -= 1;
+
+                // If WritePerUserInf_InputHandles dose not contain this session id(RopWritePerUserInformation Rop), parsering the RopWritePerUserInformation response to get the input server object firstly.
+                if (DecodingContext.WritePerUserInf_InputHandles == null || !DecodingContext.WritePerUserInf_InputHandles.ContainsKey(ThisSessionID))
+                {
+                    MAPIResponse = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody")
+                    {
+                        responseDic.Add(ThisSessionID, MAPIResponse);
+                        responseBytesForHexview.Add(ThisSessionID, bytesForHexView);
+                    }
+                }
+
+                // parsing the previous sessions until DecodingContext.Sessionlogon_OutputHandles contains the value which is equal to the input object hanlde in rop RopWritePerUserInformation. 
+                do
+                {
+                    if (!(requestDic != null && requestDic.ContainsKey(currentSessionID) && requestBytesForHexview != null && requestBytesForHexview.ContainsKey(currentSessionID)))
+                    {
+                        MAPIRequest = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                        requestDic.Add(currentSessionID, MAPIRequest);
+                        requestBytesForHexview.Add(currentSessionID, bytesForHexView);
+                    }
+                    currentSessionID--;
+                }
+                while (!DecodingContext.LogonHandleMapLogonFlag.ContainsKey(DecodingContext.WritePerUserInf_InputHandles[ThisSessionID]));
+
+                // Parsing the request structure of this session.
                 MAPIRequest = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
                 if (MAPIRequest.GetType().Name == "ExecuteRequestBody")
                 {

@@ -114,6 +114,7 @@
     <Compile Include="Parsers\MSOXCDATA.cs" />
     <Compile Include="Parsers\MSOXCFXICS.cs" />
     <Compile Include="Parsers\MSOXCMAPIHTTP.cs" />
+    <Compile Include="Parsers\MSOXCPRPT.cs" />
     <Compile Include="Parsers\MSOXCROPS.cs" />
     <Compile Include="Parsers\MSOXCSTOR.cs" />
     <Compile Include="Parsers\MSOXNSPI.cs" />

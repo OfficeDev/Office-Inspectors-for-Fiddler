@@ -47,6 +47,72 @@ namespace MAPIInspector.Parsers
                             ropsList.Add(RopLogonRequest);
                             DecodingContext.SessionLogonFlag = new Dictionary<int, LogonFlags>() { { MapiInspector.MAPIInspector.currentSessionID, RopLogonRequest.LogonFlags } };
                             break;
+                        case RopIdType.RopGetReceiveFolder:
+                            RopGetReceiveFolderRequest RopGetReceiveFolderRequest = new RopGetReceiveFolderRequest();
+                            RopGetReceiveFolderRequest.Parse(s);
+                            ropsList.Add(RopGetReceiveFolderRequest);
+                            break;
+                        case RopIdType.RopSetReceiveFolder:
+                            RopSetReceiveFolderRequest RopSetReceiveFolderRequest = new RopSetReceiveFolderRequest();
+                            RopSetReceiveFolderRequest.Parse(s);
+                            ropsList.Add(RopSetReceiveFolderRequest);
+                            break;
+                        case RopIdType.RopGetReceiveFolderTable:
+                            RopGetReceiveFolderTableRequest RopGetReceiveFolderTableRequest = new RopGetReceiveFolderTableRequest();
+                            RopGetReceiveFolderTableRequest.Parse(s);
+                            ropsList.Add(RopGetReceiveFolderTableRequest);
+                            break;
+                        case RopIdType.RopGetStoreState:
+                            RopGetStoreStateRequest RopGetStoreStateRequest = new RopGetStoreStateRequest();
+                            RopGetStoreStateRequest.Parse(s);
+                            ropsList.Add(RopGetStoreStateRequest);
+                            break;
+                        case RopIdType.RopGetOwningServers:
+                            RopGetOwningServersRequest RopGetOwningServersRequest = new RopGetOwningServersRequest();
+                            RopGetOwningServersRequest.Parse(s);
+                            ropsList.Add(RopGetOwningServersRequest);
+                            break;
+                        case RopIdType.RopPublicFolderIsGhosted:
+                            RopPublicFolderIsGhostedRequest RopPublicFolderIsGhostedRequest = new RopPublicFolderIsGhostedRequest();
+                            RopPublicFolderIsGhostedRequest.Parse(s);
+                            ropsList.Add(RopPublicFolderIsGhostedRequest);
+                            break;
+                        case RopIdType.RopLongTermIdFromId:
+                            RopLongTermIdFromIdRequest RopLongTermIdFromIdRequest = new RopLongTermIdFromIdRequest();
+                            RopLongTermIdFromIdRequest.Parse(s);
+                            ropsList.Add(RopLongTermIdFromIdRequest);
+                            break;
+                        case RopIdType.RopIdFromLongTermId:
+                            RopIdFromLongTermIdRequest RopIdFromLongTermIdRequest = new RopIdFromLongTermIdRequest();
+                            RopIdFromLongTermIdRequest.Parse(s);
+                            ropsList.Add(RopIdFromLongTermIdRequest);
+                            break;
+                        case RopIdType.RopGetPerUserLongTermIds:
+                            RopGetPerUserLongTermIdsRequest RopGetPerUserLongTermIdsRequest = new RopGetPerUserLongTermIdsRequest();
+                            RopGetPerUserLongTermIdsRequest.Parse(s);
+                            ropsList.Add(RopGetPerUserLongTermIdsRequest);
+                            break;
+                        case RopIdType.RopGetPerUserGuid:
+                            RopGetPerUserGuidRequest RopGetPerUserGuidRequest = new RopGetPerUserGuidRequest();
+                            RopGetPerUserGuidRequest.Parse(s);
+                            ropsList.Add(RopGetPerUserGuidRequest);
+                            break;
+                        case RopIdType.RopReadPerUserInformation:
+                            RopReadPerUserInformationRequest RopReadPerUserInformationRequest = new RopReadPerUserInformationRequest();
+                            RopReadPerUserInformationRequest.Parse(s);
+                            ropsList.Add(RopReadPerUserInformationRequest);
+                            break;
+                        case RopIdType.RopWritePerUserInformation:
+                            if(!(DecodingContext.LogonHandleMapLogonFlag != null && DecodingContext.WritePerUserInf_InputHandles != null 
+                                && DecodingContext.WritePerUserInf_InputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID)
+                                && DecodingContext.LogonHandleMapLogonFlag.ContainsKey(DecodingContext.WritePerUserInf_InputHandles[MapiInspector.MAPIInspector.currentSessionID])))
+                            {
+                                throw new MissingInformationException("Missing LogonFlags information for RopWritePerUserInformation", (ushort)CurrentByte, null);
+                            }
+                            RopWritePerUserInformationRequest RopWritePerUserInformationRequest = new RopWritePerUserInformationRequest();
+                            RopWritePerUserInformationRequest.Parse(s);
+                            ropsList.Add(RopWritePerUserInformationRequest);
+                            break;
 
                         // MS-OXCROPS Rops
                         case RopIdType.RopSubmitMessage:
@@ -347,6 +413,134 @@ namespace MAPIInspector.Parsers
                             RopSetLocalReplicaMidsetDeletedRequest.Parse(s);
                             ropsList.Add(RopSetLocalReplicaMidsetDeletedRequest);
                             break;
+
+                        // MS-OXCPRPT:
+                        case RopIdType.RopGetPropertiesSpecific:
+                            RopGetPropertiesSpecificRequest RopGetPropertiesSpecificRequest = new RopGetPropertiesSpecificRequest();
+                            RopGetPropertiesSpecificRequest.Parse(s);
+                            ropsList.Add(RopGetPropertiesSpecificRequest);
+                            DecodingContext.SessionPropertyTags = new Dictionary<int, PropertyTag[]>() { { MapiInspector.MAPIInspector.currentSessionID, RopGetPropertiesSpecificRequest.PropertyTags } };
+                            break;
+                        case RopIdType.RopGetPropertiesAll:
+                            RopGetPropertiesAllRequest RopGetPropertiesAllRequest = new RopGetPropertiesAllRequest();
+                            RopGetPropertiesAllRequest.Parse(s);
+                            ropsList.Add(RopGetPropertiesAllRequest);
+                            break;
+                        case RopIdType.RopGetPropertiesList:
+                            RopGetPropertiesListRequest RopGetPropertiesListRequest = new RopGetPropertiesListRequest();
+                            RopGetPropertiesListRequest.Parse(s);
+                            ropsList.Add(RopGetPropertiesListRequest);
+                            break;
+                        case RopIdType.RopSetProperties:
+                            RopSetPropertiesRequest RopSetPropertiesRequest = new RopSetPropertiesRequest();
+                            RopSetPropertiesRequest.Parse(s);
+                            ropsList.Add(RopSetPropertiesRequest);
+                            break;
+                        case RopIdType.RopSetPropertiesNoReplicate:
+                            RopSetPropertiesNoReplicateRequest RopSetPropertiesNoReplicateRequest = new RopSetPropertiesNoReplicateRequest();
+                            RopSetPropertiesNoReplicateRequest.Parse(s);
+                            ropsList.Add(RopSetPropertiesNoReplicateRequest);
+                            break;
+                        case RopIdType.RopDeleteProperties:
+                            RopDeletePropertiesRequest RopDeletePropertiesRequest = new RopDeletePropertiesRequest();
+                            RopDeletePropertiesRequest.Parse(s);
+                            ropsList.Add(RopDeletePropertiesRequest);
+                            break;
+                        case RopIdType.RopDeletePropertiesNoReplicate:
+                            RopDeletePropertiesNoReplicateRequest RopDeletePropertiesNoReplicateRequest = new RopDeletePropertiesNoReplicateRequest();
+                            RopDeletePropertiesNoReplicateRequest.Parse(s);
+                            ropsList.Add(RopDeletePropertiesNoReplicateRequest);
+                            break;
+                        case RopIdType.RopQueryNamedProperties:
+                            RopQueryNamedPropertiesRequest RopQueryNamedPropertiesRequest = new RopQueryNamedPropertiesRequest();
+                            RopQueryNamedPropertiesRequest.Parse(s);
+                            ropsList.Add(RopQueryNamedPropertiesRequest);
+                            break;
+                        case RopIdType.RopCopyProperties:
+                            RopCopyPropertiesRequest RopCopyPropertiesRequest = new RopCopyPropertiesRequest();
+                            RopCopyPropertiesRequest.Parse(s);
+                            ropsList.Add(RopCopyPropertiesRequest);
+                            break;
+                        case RopIdType.RopCopyTo:
+                            RopCopyToRequest RopCopyToRequest = new RopCopyToRequest();
+                            RopCopyToRequest.Parse(s);
+                            ropsList.Add(RopCopyToRequest);
+                            break;
+                        case RopIdType.RopGetPropertyIdsFromNames:
+                            RopGetPropertyIdsFromNamesRequest RopGetPropertyIdsFromNamesRequest = new RopGetPropertyIdsFromNamesRequest();
+                            RopGetPropertyIdsFromNamesRequest.Parse(s);
+                            ropsList.Add(RopGetPropertyIdsFromNamesRequest);
+                            break;
+                        case RopIdType.RopGetNamesFromPropertyIds:
+                            RopGetNamesFromPropertyIdsRequest RopGetNamesFromPropertyIdsRequest = new RopGetNamesFromPropertyIdsRequest();
+                            RopGetNamesFromPropertyIdsRequest.Parse(s);
+                            ropsList.Add(RopGetNamesFromPropertyIdsRequest);
+                            break;
+                        case RopIdType.RopOpenStream:
+                            RopOpenStreamRequest RopOpenStreamRequest = new RopOpenStreamRequest();
+                            RopOpenStreamRequest.Parse(s);
+                            ropsList.Add(RopOpenStreamRequest);
+                            break;
+                        case RopIdType.RopReadStream:
+                            RopReadStreamRequest RopReadStreamRequest = new RopReadStreamRequest();
+                            RopReadStreamRequest.Parse(s);
+                            ropsList.Add(RopReadStreamRequest);
+                            break;
+                        case RopIdType.RopWriteStream:
+                            RopWriteStreamRequest RopWriteStreamRequest = new RopWriteStreamRequest();
+                            RopWriteStreamRequest.Parse(s);
+                            ropsList.Add(RopWriteStreamRequest);
+                            break;
+                        case RopIdType.RopCommitStream:
+                            RopCommitStreamRequest RopCommitStreamRequest = new RopCommitStreamRequest();
+                            RopCommitStreamRequest.Parse(s);
+                            ropsList.Add(RopCommitStreamRequest);
+                            break;
+                        case RopIdType.RopGetStreamSize:
+                            RopGetStreamSizeRequest RopGetStreamSizeRequest = new RopGetStreamSizeRequest();
+                            RopGetStreamSizeRequest.Parse(s);
+                            ropsList.Add(RopGetStreamSizeRequest);
+                            break;
+                        case RopIdType.RopSetStreamSize:
+                            RopSetStreamSizeRequest RopSetStreamSizeRequest = new RopSetStreamSizeRequest();
+                            RopSetStreamSizeRequest.Parse(s);
+                            ropsList.Add(RopSetStreamSizeRequest);
+                            break;
+                        case RopIdType.RopSeekStream:
+                            RopSeekStreamRequest RopSeekStreamRequest = new RopSeekStreamRequest();
+                            RopSeekStreamRequest.Parse(s);
+                            ropsList.Add(RopSeekStreamRequest);
+                            break;
+                        case RopIdType.RopCopyToStream:
+                            RopCopyToStreamRequest RopCopyToStreamRequest = new RopCopyToStreamRequest();
+                            RopCopyToStreamRequest.Parse(s);
+                            ropsList.Add(RopCopyToStreamRequest);
+                            break;
+                        case RopIdType.RopProgress:
+                            RopProgressRequest RopProgressRequest = new RopProgressRequest();
+                            RopProgressRequest.Parse(s);
+                            ropsList.Add(RopProgressRequest);
+                            break;
+                        case RopIdType.RopLockRegionStream:
+                            RopLockRegionStreamRequest RopLockRegionStreamRequest = new RopLockRegionStreamRequest();
+                            RopLockRegionStreamRequest.Parse(s);
+                            ropsList.Add(RopLockRegionStreamRequest);
+                            break;
+                        case RopIdType.RopUnlockRegionStream:
+                            RopUnlockRegionStreamRequest RopUnlockRegionStreamRequest = new RopUnlockRegionStreamRequest();
+                            RopUnlockRegionStreamRequest.Parse(s);
+                            ropsList.Add(RopUnlockRegionStreamRequest);
+                            break;
+                        case RopIdType.RopWriteAndCommitStream:
+                            RopWriteAndCommitStreamRequest RopWriteAndCommitStreamRequest = new RopWriteAndCommitStreamRequest();
+                            RopWriteAndCommitStreamRequest.Parse(s);
+                            ropsList.Add(RopWriteAndCommitStreamRequest);
+                            break;
+                        case RopIdType.RopCloneStream:
+                            RopCloneStreamRequest RopCloneStreamRequest = new RopCloneStreamRequest();
+                            RopCloneStreamRequest.Parse(s);
+                            ropsList.Add(RopCloneStreamRequest);
+                            break;
                         default:
                             object RopsBytes = ReadBytes(this.RopSize - 2);
                             ropsList.Add(RopsBytes);
@@ -441,6 +635,24 @@ namespace MAPIInspector.Parsers
                             }
                         }
                     }
+                    else if (ropRequest is RopLogonRequest)
+                    {
+                        uint objectHandleKey = this.ServerObjectHandleTable[(ropRequest as RopLogonRequest).OutputHandleIndex];
+                        if (DecodingContext.Sessionlogon_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                        {
+                            DecodingContext.Sessionlogon_OutputHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                        }
+                        DecodingContext.Sessionlogon_OutputHandles.Add(MapiInspector.MAPIInspector.currentSessionID, (int)objectHandleKey);
+
+                        if (DecodingContext.WritePerUserInf_InputHandles != null && DecodingContext.WritePerUserInf_InputHandles.ContainsValue((int)objectHandleKey))
+                        {
+                            if (DecodingContext.LogonHandleMapLogonFlag != null && DecodingContext.LogonHandleMapLogonFlag.ContainsKey((int)objectHandleKey))
+                            {
+                                DecodingContext.LogonHandleMapLogonFlag.Remove((int)objectHandleKey);
+                            }
+                            DecodingContext.LogonHandleMapLogonFlag.Add((int)objectHandleKey, (ropRequest as RopLogonRequest).LogonFlags);
+                        }   
+                    }
                 }   
             }
         }
@@ -506,6 +718,66 @@ namespace MAPIInspector.Parsers
                                 ropsList.Add(RopLogonResponse_PublicFolders);
                                 break;
                             }
+                        case RopIdType.RopGetReceiveFolder:
+                            RopGetReceiveFolderResponse RopGetReceiveFolderResponse = new RopGetReceiveFolderResponse();
+                            RopGetReceiveFolderResponse.Parse(s);
+                            ropsList.Add(RopGetReceiveFolderResponse);
+                            break;
+                        case RopIdType.RopSetReceiveFolder:
+                            RopSetReceiveFolderResponse RopSetReceiveFolderResponse = new RopSetReceiveFolderResponse();
+                            RopSetReceiveFolderResponse.Parse(s);
+                            ropsList.Add(RopSetReceiveFolderResponse);
+                            break;
+                        case RopIdType.RopGetReceiveFolderTable:
+                            RopGetReceiveFolderTableResponse RopGetReceiveFolderTableResponse = new RopGetReceiveFolderTableResponse();
+                            RopGetReceiveFolderTableResponse.Parse(s);
+                            ropsList.Add(RopGetReceiveFolderTableResponse);
+                            break;
+                        case RopIdType.RopGetStoreState:
+                            RopGetStoreStateResponse RopGetStoreStateResponse = new RopGetStoreStateResponse();
+                            RopGetStoreStateResponse.Parse(s);
+                            ropsList.Add(RopGetStoreStateResponse);
+                            break;
+                        case RopIdType.RopGetOwningServers:
+                            RopGetOwningServersResponse RopGetOwningServersResponse = new RopGetOwningServersResponse();
+                            RopGetOwningServersResponse.Parse(s);
+                            ropsList.Add(RopGetOwningServersResponse);
+                            break;
+                        case RopIdType.RopPublicFolderIsGhosted:
+                            RopPublicFolderIsGhostedResponse RopPublicFolderIsGhostedResponse = new RopPublicFolderIsGhostedResponse();
+                            RopPublicFolderIsGhostedResponse.Parse(s);
+                            ropsList.Add(RopPublicFolderIsGhostedResponse);
+                            break;
+                        case RopIdType.RopLongTermIdFromId:
+                            RopLongTermIdFromIdResponse RopLongTermIdFromIdResponse = new RopLongTermIdFromIdResponse();
+                            RopLongTermIdFromIdResponse.Parse(s);
+                            ropsList.Add(RopLongTermIdFromIdResponse);
+                            break;
+                        case RopIdType.RopIdFromLongTermId:
+                            RopIdFromLongTermIdResponse RopIdFromLongTermIdResponse = new RopIdFromLongTermIdResponse();
+                            RopIdFromLongTermIdResponse.Parse(s);
+                            ropsList.Add(RopIdFromLongTermIdResponse);
+                            break;
+                        case RopIdType.RopGetPerUserLongTermIds:
+                            RopGetPerUserLongTermIdsResponse RopGetPerUserLongTermIdsResponse = new RopGetPerUserLongTermIdsResponse();
+                            RopGetPerUserLongTermIdsResponse.Parse(s);
+                            ropsList.Add(RopGetPerUserLongTermIdsResponse);
+                            break;
+                        case RopIdType.RopGetPerUserGuid:
+                            RopGetPerUserGuidResponse RopGetPerUserGuidResponse = new RopGetPerUserGuidResponse();
+                            RopGetPerUserGuidResponse.Parse(s);
+                            ropsList.Add(RopGetPerUserGuidResponse);
+                            break;
+                        case RopIdType.RopReadPerUserInformation:
+                            RopReadPerUserInformationResponse RopReadPerUserInformationResponse = new RopReadPerUserInformationResponse();
+                            RopReadPerUserInformationResponse.Parse(s);
+                            ropsList.Add(RopReadPerUserInformationResponse);
+                            break;
+                        case RopIdType.RopWritePerUserInformation:
+                            RopWritePerUserInformationResponse RopWritePerUserInformationResponse = new RopWritePerUserInformationResponse();
+                            RopWritePerUserInformationResponse.Parse(s);
+                            ropsList.Add(RopWritePerUserInformationResponse);
+                            break;
 
                         // MS-OXCROPS Rops
                         case RopIdType.RopSubmitMessage:
@@ -840,6 +1112,137 @@ namespace MAPIInspector.Parsers
                             RopCreateAttachmentResponse.Parse(s);
                             ropsList.Add(RopCreateAttachmentResponse);
                             break;
+                        
+                        // MS-OXCPRPT:
+                        case RopIdType.RopGetPropertiesSpecific:
+                        	if (!(DecodingContext.SessionPropertyTags != null && DecodingContext.SessionPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentSessionID)))
+                            {
+                                throw new MissingInformationException("Missing PropertyTags information for RopFastTransferSourceCopyProperties", (ushort)CurrentByte, null);
+                            }
+							RopGetPropertiesSpecificResponse RopGetPropertiesSpecificResponse = new RopGetPropertiesSpecificResponse();
+                            RopGetPropertiesSpecificResponse.Parse(s);
+                            ropsList.Add(RopGetPropertiesSpecificResponse);
+                            break;
+                        case RopIdType.RopGetPropertiesAll:
+                            RopGetPropertiesAllResponse RopGetPropertiesAllResponse = new RopGetPropertiesAllResponse();
+                            RopGetPropertiesAllResponse.Parse(s);
+                            ropsList.Add(RopGetPropertiesAllResponse);
+                            break;
+                        case RopIdType.RopGetPropertiesList:
+                            RopGetPropertiesListResponse RopGetPropertiesListResponse = new RopGetPropertiesListResponse();
+                            RopGetPropertiesListResponse.Parse(s);
+                            ropsList.Add(RopGetPropertiesListResponse);
+                            break;
+                        case RopIdType.RopSetProperties:
+                            RopSetPropertiesResponse RopSetPropertiesResponse = new RopSetPropertiesResponse();
+                            RopSetPropertiesResponse.Parse(s);
+                            ropsList.Add(RopSetPropertiesResponse);
+                            break;
+                        case RopIdType.RopSetPropertiesNoReplicate:
+                            RopSetPropertiesNoReplicateResponse RopSetPropertiesNoReplicateResponse = new RopSetPropertiesNoReplicateResponse();
+                            RopSetPropertiesNoReplicateResponse.Parse(s);
+                            ropsList.Add(RopSetPropertiesNoReplicateResponse);
+                            break;
+                        case RopIdType.RopDeleteProperties:
+                            RopDeletePropertiesResponse RopDeletePropertiesResponse = new RopDeletePropertiesResponse();
+                            RopDeletePropertiesResponse.Parse(s);
+                            ropsList.Add(RopDeletePropertiesResponse);
+                            break;
+                        case RopIdType.RopDeletePropertiesNoReplicate:
+                            RopDeletePropertiesNoReplicateResponse RopDeletePropertiesNoReplicateResponse = new RopDeletePropertiesNoReplicateResponse();
+                            RopDeletePropertiesNoReplicateResponse.Parse(s);
+                            ropsList.Add(RopDeletePropertiesNoReplicateResponse);
+                            break;
+                        case RopIdType.RopQueryNamedProperties:
+                            RopQueryNamedPropertiesResponse RopQueryNamedPropertiesResponse = new RopQueryNamedPropertiesResponse();
+                            RopQueryNamedPropertiesResponse.Parse(s);
+                            ropsList.Add(RopQueryNamedPropertiesResponse);
+                            break;
+                        case RopIdType.RopCopyProperties:
+                            RopCopyPropertiesResponse RopCopyPropertiesResponse = new RopCopyPropertiesResponse();
+                            RopCopyPropertiesResponse.Parse(s);
+                            ropsList.Add(RopCopyPropertiesResponse);
+                            break;
+                        case RopIdType.RopCopyTo:
+                            RopCopyToResponse RopCopyToResponse = new RopCopyToResponse();
+                            RopCopyToResponse.Parse(s);
+                            ropsList.Add(RopCopyToResponse);
+                            break;
+                        case RopIdType.RopGetPropertyIdsFromNames:
+                            RopGetPropertyIdsFromNamesResponse RopGetPropertyIdsFromNamesResponse = new RopGetPropertyIdsFromNamesResponse();
+                            RopGetPropertyIdsFromNamesResponse.Parse(s);
+                            ropsList.Add(RopGetPropertyIdsFromNamesResponse);
+                            break;
+                        case RopIdType.RopGetNamesFromPropertyIds:
+                            RopGetNamesFromPropertyIdsResponse RopGetNamesFromPropertyIdsResponse = new RopGetNamesFromPropertyIdsResponse();
+                            RopGetNamesFromPropertyIdsResponse.Parse(s);
+                            ropsList.Add(RopGetNamesFromPropertyIdsResponse);
+                            break;
+                        case RopIdType.RopOpenStream:
+                            RopOpenStreamResponse RopOpenStreamResponse = new RopOpenStreamResponse();
+                            RopOpenStreamResponse.Parse(s);
+                            ropsList.Add(RopOpenStreamResponse);
+                            break;
+                        case RopIdType.RopReadStream:
+                            RopReadStreamResponse RopReadStreamResponse = new RopReadStreamResponse();
+                            RopReadStreamResponse.Parse(s);
+                            ropsList.Add(RopReadStreamResponse);
+                            break;
+                        case RopIdType.RopWriteStream:
+                            RopWriteStreamResponse RopWriteStreamResponse = new RopWriteStreamResponse();
+                            RopWriteStreamResponse.Parse(s);
+                            ropsList.Add(RopWriteStreamResponse);
+                            break;
+                        case RopIdType.RopCommitStream:
+                            RopCommitStreamResponse RopCommitStreamResponse = new RopCommitStreamResponse();
+                            RopCommitStreamResponse.Parse(s);
+                            ropsList.Add(RopCommitStreamResponse);
+                            break;
+                        case RopIdType.RopGetStreamSize:
+                            RopGetStreamSizeResponse RopGetStreamSizeResponse = new RopGetStreamSizeResponse();
+                            RopGetStreamSizeResponse.Parse(s);
+                            ropsList.Add(RopGetStreamSizeResponse);
+                            break;
+                        case RopIdType.RopSetStreamSize:
+                            RopSetStreamSizeResponse RopSetStreamSizeResponse = new RopSetStreamSizeResponse();
+                            RopSetStreamSizeResponse.Parse(s);
+                            ropsList.Add(RopSetStreamSizeResponse);
+                            break;
+                        case RopIdType.RopSeekStream:
+                            RopSeekStreamResponse RopSeekStreamResponse = new RopSeekStreamResponse();
+                            RopSeekStreamResponse.Parse(s);
+                            ropsList.Add(RopSeekStreamResponse);
+                            break;
+                        case RopIdType.RopCopyToStream:
+                            RopCopyToStreamResponse RopCopyToStreamResponse = new RopCopyToStreamResponse();
+                            RopCopyToStreamResponse.Parse(s);
+                            ropsList.Add(RopCopyToStreamResponse);
+                            break;
+                        case RopIdType.RopProgress:
+                            RopProgressResponse RopProgressResponse = new RopProgressResponse();
+                            RopProgressResponse.Parse(s);
+                            ropsList.Add(RopProgressResponse);
+                            break;
+                        case RopIdType.RopLockRegionStream:
+                            RopLockRegionStreamResponse RopLockRegionStreamResponse = new RopLockRegionStreamResponse();
+                            RopLockRegionStreamResponse.Parse(s);
+                            ropsList.Add(RopLockRegionStreamResponse);
+                            break;
+                        case RopIdType.RopUnlockRegionStream:
+                            RopUnlockRegionStreamResponse RopUnlockRegionStreamResponse = new RopUnlockRegionStreamResponse();
+                            RopUnlockRegionStreamResponse.Parse(s);
+                            ropsList.Add(RopUnlockRegionStreamResponse);
+                            break;
+                        case RopIdType.RopWriteAndCommitStream:
+                            RopWriteAndCommitStreamResponse RopWriteAndCommitStreamResponse = new RopWriteAndCommitStreamResponse();
+                            RopWriteAndCommitStreamResponse.Parse(s);
+                            ropsList.Add(RopWriteAndCommitStreamResponse);
+                            break;
+                        case RopIdType.RopCloneStream:
+                            RopCloneStreamResponse RopCloneStreamResponse = new RopCloneStreamResponse();
+                            RopCloneStreamResponse.Parse(s);
+                            ropsList.Add(RopCloneStreamResponse);
+                            break;
                         default:
                             object RopsBytes = ReadBytes(this.RopSize - (int)s.Position);
                             ropsList.Add(RopsBytes);
@@ -1000,6 +1403,16 @@ namespace MAPIInspector.Parsers
                             DecodingContext.PutBuffer_InPutHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
                         }
                         DecodingContext.PutBuffer_InPutHandles.Add(MapiInspector.MAPIInspector.currentSessionID, (int)objectHandleKey);
+                    }
+                    else if (ropResponse is RopWritePerUserInformationResponse)
+                    {
+                        uint objectHandleKey = this.ServerObjectHandleTable[(ropResponse as RopWritePerUserInformationResponse).InputHandleIndex];
+
+                        if (DecodingContext.WritePerUserInf_InputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                        {
+                            DecodingContext.WritePerUserInf_InputHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                        }
+                        DecodingContext.WritePerUserInf_InputHandles.Add(MapiInspector.MAPIInspector.currentSessionID, (int)objectHandleKey);
                     }
                     else
                     {
@@ -2050,8 +2463,20 @@ namespace MAPIInspector.Parsers
         // Record current session logon flags.
         private static Dictionary<int, LogonFlags> sessionLogonFlag;
 
+        // Record logon outputhandle and logon flags
+        private static Dictionary<int, LogonFlags> logonHandleMapLogonFlag;
+
         // Record the LogonId and logon flags.
         private static Dictionary<byte, LogonFlags> logonFlagMapLogId;
+		
+		// Record current session PropertyTags.
+        private static Dictionary<int, PropertyTag[]> sessionPropertyTags;
+		
+        // Record current session(RopLogon) OutputObjectHandle.
+        private static Dictionary<int, int> sessionlogon_OutputHandles;
+
+        // Record RopWritePerUserInformation InputObjectHandle.
+        private static Dictionary<int, int> writePerUserInf_InputHandles;
 
         // Record current session(RopFastTransferSourceGetBuffer) InputObjectHandle.
         private static Dictionary<int, int> getBuffer_InPutHandles;
@@ -2113,6 +2538,10 @@ namespace MAPIInspector.Parsers
             destinationConfigure_OutputHandles = new Dictionary<int,int>();
             destinationConfigure_InputHandles = new Dictionary<int, int>();
             sessionObjectHandles = new Dictionary<int, Dictionary<int, ObjectHandlesType>>();
+            sessionPropertyTags = new Dictionary<int, PropertyTag[]>();
+			sessionlogon_OutputHandles = new Dictionary<int,int>();
+            writePerUserInf_InputHandles = new Dictionary<int, int>();
+            logonHandleMapLogonFlag = new Dictionary<int, LogonFlags>();
         }
 
         // Gets or sets the logOnFlags.
@@ -2154,6 +2583,58 @@ namespace MAPIInspector.Parsers
             }
         }
 
+        // Gets or sets the Sessionlogon_OutputHandles
+        public static Dictionary<int, int> Sessionlogon_OutputHandles
+        {
+            get
+            {
+                return sessionlogon_OutputHandles;
+            }
+            set
+            {
+                sessionlogon_OutputHandles = value;
+            }
+        }
+
+        // Gets or sets the logonHandleMapLogonFlag
+        public static Dictionary<int, LogonFlags> LogonHandleMapLogonFlag
+        {
+            get
+            {
+                return logonHandleMapLogonFlag;
+            }
+            set
+            {
+                logonHandleMapLogonFlag = value;
+            }
+        }
+
+        // Gets or sets the writePerUserInf_InputHandles
+        public static Dictionary<int, int> WritePerUserInf_InputHandles
+        {
+            get
+            {
+                return writePerUserInf_InputHandles;
+            }
+            set
+            {
+                writePerUserInf_InputHandles = value;
+            }
+        }
+        
+		// Gets or sets the sessionPropertyTags
+        public static Dictionary<int, PropertyTag[]> SessionPropertyTags
+        {
+            get
+            {
+                return sessionPropertyTags;
+            }
+            set
+            {
+                sessionPropertyTags = value;
+            }
+		}
+		
         // Gets or sets the getBuffer_InPutHandles
         public static Dictionary<int, int> GetBuffer_InPutHandles
         {
