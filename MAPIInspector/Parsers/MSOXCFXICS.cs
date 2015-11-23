@@ -191,18 +191,18 @@ namespace MAPIInspector.Parsers
         // Commands composed a GLOBCNT range, which indicates a GLOBSET structure.
         public Command[] Commands;
 
-        // A unsigned interger value indicates the bytes length in common stacks.
-        private uint CommonStackLength = 0;
-
-        // A uint list indicats the pushed or poped count of bytes in common stack.
-        private List<uint> CommonStackCollection = new List<uint>();
-
         /// <summary>
         /// Parse from a stream.
         /// </summary>
         /// <param name="stream">A stream contains GLOBSET.</param>
         public void Parse(FastTransferStream stream)
         {
+            // A unsigned interger value indicates the bytes length in common stacks.
+            uint CommonStackLength = 0;
+
+            // A uint list indicats the pushed or poped count of bytes in common stack.
+            List<uint> CommonStackCollection = new List<uint>();
+
             byte tmp = stream.ReadByte();
             stream.Position -= 1;
 
@@ -978,7 +978,7 @@ namespace MAPIInspector.Parsers
         public ushort BufferSize;
 
         // An unsigned integer that is present when the BufferSize field is set to 0xBABE.
-        public ushort MaximumBufferSize;
+        public ushort? MaximumBufferSize;
 
         /// <summary>
         /// Parse the RopFastTransferSourceGetBufferRequest structure.
@@ -1089,7 +1089,9 @@ namespace MAPIInspector.Parsers
             }
 
             if ((AdditionalErrorCodes)ReturnValue == AdditionalErrorCodes.ServerBusy)
-            { this.BackoffTime = ReadUint(); }
+            { 
+                this.BackoffTime = ReadUint(); 
+            }
         }
     }
     #endregion
@@ -3623,7 +3625,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// Contains a folderContent.
-    /// TopFolder            = StartTopFld FolderContentNoDelProps EndFolder
     /// </summary>
     public class TopFolder : SyntacticalBase
     {
@@ -3668,19 +3669,12 @@ namespace MAPIInspector.Parsers
                 {
                     this.EndMarker = Markers.EndFolder;
                 }
-                //else
-                //{
-                //    throw new Exception("The TopFolder cannot be parsed successfully. The EndFolder Marker is missed.");
-                //}
             }
         }
     }
 
     /// <summary>
     /// The folderContent element contains the content of a folder: its properties, messages, and subFolders.
-    ///  folderContent        = propList
-    ///         ( MetaTagNewFXFolder / folderMessages ) 
-    ///        [ MetaTagFXDelProp *SubFolder ]
     /// </summary>
     public class FolderContent : SyntacticalBase
     {
@@ -3755,9 +3749,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The folderContentNoDelProps element contains the content of a folder: its properties, messages, and subFolders.
-    ///  folderContentNoDelProps        = propList
-    ///         ( MetaTagNewFXFolder / folderMessagesNoDelProps ) 
-    ///        [ *SubFolderNoDelProps ]
     /// </summary>
     public class FolderContentNoDelProps : SyntacticalBase
     {
@@ -3827,7 +3818,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// Contains a folderContent.
-    /// SubFolder            = StartSubFld folderContent EndFolder
     /// </summary>
     public class SubFolder : SyntacticalBase
     {
@@ -3882,7 +3872,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// Contains a folderContentNoDelProps.
-    /// SubFolderNoDelProps            = StartSubFld folderContentNoDelProps EndFolder
     /// </summary>
     public class SubFolderNoDelProps : SyntacticalBase
     {
@@ -3937,7 +3926,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The folderMessages element contains the messages contained in a folder.
-    /// folderMessages       = *2( MetaTagFXDelProp MessageList )
     /// </summary>
     public class FolderMessages : SyntacticalBase
     {
@@ -3988,7 +3976,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The MetaTagFxDelPropMessageList is defined to help Parsering folderMessages class.
-    /// MetaTagFxDelPropMessageList   = MetaTagFXDelProp MessageList
     /// </summary>
     public class MetaTagFxDelPropMessageList : SyntacticalBase
     {
@@ -4029,7 +4016,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The FolderMessagesNoDelProps element contains the messages contained in a folder.
-    /// FolderMessagesNoDelProps       = *2(MessageList )
     /// </summary>
     public class FolderMessagesNoDelProps : SyntacticalBase
     {
@@ -4082,9 +4068,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The message element represents a Message object.
-    /// message              = ( StartMessage / StartFAIMsg ) 
-    ///          MessageContent 
-    ///          EndMessage
     /// </summary>
     public class Message : SyntacticalBase
     {
@@ -4147,9 +4130,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// The MessageContent element represents the content of a message:
-    /// its properties, the recipients, and the attachments.
-    /// MessageContent       = propList MessageChildren
+    /// The MessageContent element represents the content of a message: its properties, the recipients, and the attachments.
     /// </summary>
     public class MessageContent : SyntacticalBase
     {
@@ -4189,10 +4170,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// The MessageChildren element represents children of the Message objects: 
-    /// Recipient and Attachment objects.
-    ///  MessageChildren = [ MetaTagFXDelProp ] [ *Recipient ]
-    ///                     [ MetaTagFXDelProp ] [ *attachment ]
+    /// The MessageChildren element represents children of the Message objects: Recipient and Attachment objects.
     /// </summary>
     public class MessageChildren : SyntacticalBase
     {
@@ -4254,9 +4232,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// The Recipient element represents a Recipient object,
-    /// which is a subobject of the Message object.
-    /// Recipient            = StartRecip propList EndToRecip
+    /// The Recipient element represents a Recipient object, which is a subobject of the Message object.
     /// </summary>
     public class Recipient : SyntacticalBase
     {
@@ -4311,7 +4287,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// Contains an attachmentContent.
-    /// Attachment = NewAttach PidTagAttachNumber attachmentContent EndAttach
     /// </summary>
     public class Attachment : SyntacticalBase
     {
@@ -4369,9 +4344,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// The attachmentContent element contains the properties and the embedded message
-    /// of an Attachment object. If present,
-    /// attachmentContent = propList [EmbeddedMessage]
+    /// The attachmentContent element contains the properties and the embedded message of an Attachment object. If present,
     /// </summary>
     public class AttachmentContent : SyntacticalBase
     {
@@ -4415,7 +4388,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// Contain a MessageContent.
-    /// EmbeddedMessage      = StartEmbed MessageContent EndEmbed
     /// </summary>
     public class EmbeddedMessage : SyntacticalBase
     {
@@ -4470,7 +4442,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The MessageList element contains a list of messages, which is determined by the scope of the operation.
-    /// MessageList          = *( [MetaTagEcWarning] [message] )
     /// </summary>
     public class MessageList : SyntacticalBase
     {
@@ -4514,7 +4485,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The MetaTagEcWaringMessage is defined to help Parsering MessageList class.
-    /// MetaTagEcWaringMessage   = [MetaTagEcWarning] [message]
     /// </summary>
     public class MetaTagEcWaringMessage : SyntacticalBase
     {
@@ -4564,7 +4534,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The Deletions element contains information of messages that have been deleted expired or moved out of the sync scope.
-    /// Deletions   = IncrSyncDel propList
     /// </summary>
     public class Deletions : SyntacticalBase
     {
@@ -4608,7 +4577,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The FolderChange element contains a new or changed folder in the hierarchy sync.
-    /// FolderChange   = IncrSyncChg propList
     /// </summary>
     public class FolderChange : SyntacticalBase
     {
@@ -4652,7 +4620,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The GroupInfo element provides a definition for the property group mapping.
-    /// GroupInfo   = IncrSyncGroupInfo propList
     /// </summary>
     public class GroupInfo : SyntacticalBase
     {
@@ -4698,7 +4665,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The ProgressPerMessage element contains data that describes the approximate size of message change data that follows.
-    /// ProgressPerMessage   = IncrSyncProgressPerMsg propList
     /// </summary>
     public class ProgressPerMessage : SyntacticalBase
     {
@@ -4742,7 +4708,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The progressTotal element contains data that describes the approximate size of all the messageChange elements.
-    /// progressTotal   = IncrSyncProgressMode propList
     /// </summary>
     public class ProgressTotal : SyntacticalBase
     {
@@ -4788,7 +4753,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The readStateChanges element contains information of Message objects that had their read state changed
-    /// ReadStateChange   = IncrSyncRead propList
     /// </summary>
     public class ReadStateChanges : SyntacticalBase
     {
@@ -4832,7 +4796,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The state element contains the final ICS state of the synchronization download operation. 
-    /// State   = IncrSyncStateBegin propList IncrSyncStateEnd
     /// </summary>
     public class State : SyntacticalBase
     {
@@ -4887,12 +4850,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The ContentsSync element contains the result of the contents synchronization download operation.
-    /// contentsSync         = [progressTotal]
-    ///                 *( [ProgressPerMessage] messageChange )
-    ///                 [deletions]
-    ///                 [readStateChanges]
-    ///                 state
-    ///                 IncrSyncEnd
     /// </summary>
     public class ContentsSync : SyntacticalBase
     {
@@ -4979,7 +4936,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The ProgressPerMessageChange is defined to help Parsering ContentSync class.
-    /// ProgressPerMessageChange   = [ProgressPerMessage] MessageChange
     /// </summary>
     public class ProgressPerMessageChange : SyntacticalBase
     {
@@ -5024,10 +4980,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The hierarchySync element contains the result of the hierarchy synchronization download operation.
-    /// hierarchySync        = *folderChange 
-    ///                 [deletions] 
-    ///                 state 
-    ///                 IncrSyncEnd
     /// </summary>
     public class HierarchySync : SyntacticalBase
     {
@@ -5096,7 +5048,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The Messagechange element contains information for the changed messages.
-    /// MessageChange        = MessageChangeFull / MessageChangePartial
     /// </summary>
     public class MessageChange : SyntacticalBase
     {
@@ -5143,9 +5094,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The messageChangeFull element contains the complete content of a new or changed message: the message properties, the recipients,and the attachments.
-    /// messageChangeFull    = IncrSyncChg messageChangeHeader 
-    ///                  IncrSyncMessage propList 
-    ///               MessageChildren
     /// </summary>
     public class MessageChangeFull : SyntacticalBase
     {
@@ -5210,10 +5158,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The MessageChangePartial element represents the difference in message content since the last download, as identified by the initial ICS state.
-    /// MessageChangePartial = groupInfo MetaTagIncrSyncGroupId
-    ///                 IncrSyncChgPartial messageChangeHeader
-    ///                 *( MetaTagIncrementalSyncMessagePartial propList )
-    ///                 MessageChildren
     /// </summary>
     public class MessageChangePartial : SyntacticalBase
     {
@@ -5287,7 +5231,6 @@ namespace MAPIInspector.Parsers
 
     /// <summary>
     /// The SyncMessagePartialPropList is defined to help Parsering MessageChangePartial element.
-    /// SyncMessagePartialPropList   = MetaTagIncrementalSyncMessagePartial MessageList
     /// </summary>
     public class SyncMessagePartialPropList : SyntacticalBase
     {
