@@ -45,7 +45,8 @@ namespace MAPIInspector.Parsers
                             RopLogonRequest RopLogonRequest = new RopLogonRequest();
                             RopLogonRequest.Parse(s);
                             ropsList.Add(RopLogonRequest);
-                            DecodingContext.SessionLogonFlag = new Dictionary<int, LogonFlags>() { { MapiInspector.MAPIInspector.currentSessionID, RopLogonRequest.LogonFlags } };
+                            DecodingContext.SessionLogonFlag = new Dictionary<int, LogonFlags>() { { MapiInspector.MAPIInspector.logonRelatedSessionID, RopLogonRequest.LogonFlags } };
+                            DecodingContext.SessionLogId = new Dictionary<int, byte>() { { MapiInspector.MAPIInspector.logonRelatedSessionID, RopLogonRequest.LogonId } };
                             break;
                         case RopIdType.RopGetReceiveFolder:
                             RopGetReceiveFolderRequest RopGetReceiveFolderRequest = new RopGetReceiveFolderRequest();
@@ -103,9 +104,10 @@ namespace MAPIInspector.Parsers
                             ropsList.Add(RopReadPerUserInformationRequest);
                             break;
                         case RopIdType.RopWritePerUserInformation:
-                            if(!(DecodingContext.LogonHandleMapLogonFlag != null && DecodingContext.WritePerUserInf_InputHandles != null 
-                                && DecodingContext.WritePerUserInf_InputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID)
-                                && DecodingContext.LogonHandleMapLogonFlag.ContainsKey(DecodingContext.WritePerUserInf_InputHandles[MapiInspector.MAPIInspector.currentSessionID])))
+                            byte RopId = ReadByte();
+                            byte logonId = ReadByte();
+                            s.Position -= 2;
+                            if (!(DecodingContext.SessionLogId != null && DecodingContext.SessionLogId.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID) && DecodingContext.SessionLogId[MapiInspector.MAPIInspector.currentParsingSessionID] == logonId))
                             {
                                 throw new MissingInformationException("Missing LogonFlags information for RopWritePerUserInformation", (ushort)CurrentByte, null);
                             }
@@ -336,9 +338,9 @@ namespace MAPIInspector.Parsers
                             ropsList.Add(RopFastTransferDestinationConfigureRequest);
                             break;
                         case RopIdType.RopFastTransferDestinationPutBuffer:
-                            if (DecodingContext.SessionFastTransferStreamType != null && DecodingContext.SessionFastTransferStreamType.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                            if (DecodingContext.SessionFastTransferStreamType != null && DecodingContext.SessionFastTransferStreamType.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                             {
-                                DecodingContext.StreamType_Getbuffer = DecodingContext.SessionFastTransferStreamType[MapiInspector.MAPIInspector.currentSessionID];
+                                DecodingContext.StreamType_Getbuffer = DecodingContext.SessionFastTransferStreamType[MapiInspector.MAPIInspector.currentParsingSessionID];
                             }
                             else
                             {
@@ -419,7 +421,7 @@ namespace MAPIInspector.Parsers
                             RopGetPropertiesSpecificRequest RopGetPropertiesSpecificRequest = new RopGetPropertiesSpecificRequest();
                             RopGetPropertiesSpecificRequest.Parse(s);
                             ropsList.Add(RopGetPropertiesSpecificRequest);
-                            DecodingContext.SessionPropertyTags = new Dictionary<int, PropertyTag[]>() { { MapiInspector.MAPIInspector.currentSessionID, RopGetPropertiesSpecificRequest.PropertyTags } };
+                            DecodingContext.SessionPropertyTags = new Dictionary<int, PropertyTag[]>() { { MapiInspector.MAPIInspector.currentParsingSessionID, RopGetPropertiesSpecificRequest.PropertyTags } };
                             break;
                         case RopIdType.RopGetPropertiesAll:
                             RopGetPropertiesAllRequest RopGetPropertiesAllRequest = new RopGetPropertiesAllRequest();
@@ -572,11 +574,11 @@ namespace MAPIInspector.Parsers
                     {
                         uint objectHandleKey = this.ServerObjectHandleTable[(ropRequest as RopFastTransferSourceGetBufferRequest).InputHandleIndex];
 
-                        if (DecodingContext.GetBuffer_InPutHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                        if (DecodingContext.GetBuffer_InPutHandles.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                         {
-                            DecodingContext.GetBuffer_InPutHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                            DecodingContext.GetBuffer_InPutHandles.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
                         }
-                        DecodingContext.GetBuffer_InPutHandles.Add(MapiInspector.MAPIInspector.currentSessionID, (int)objectHandleKey);
+                        DecodingContext.GetBuffer_InPutHandles.Add(MapiInspector.MAPIInspector.currentParsingSessionID, (int)objectHandleKey);
                     }
 
                     // This is used to set FastTransfer stream root type according to InputServerObject of RopFastTransferSourceCopyTo and RopFastTransferSourceCopyProperties rops,  which are used in MS-OXCFXICS
@@ -586,20 +588,20 @@ namespace MAPIInspector.Parsers
                         if(ropRequest is RopFastTransferSourceCopyToRequest)
                         { 
                             objectHandleKey = this.ServerObjectHandleTable[(ropRequest as RopFastTransferSourceCopyToRequest).InputHandleIndex];
-                            if (DecodingContext.CopyTo_InputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                            if (DecodingContext.CopyTo_InputHandles.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                             {
-                                DecodingContext.CopyTo_InputHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                                DecodingContext.CopyTo_InputHandles.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
                             }
-                            DecodingContext.CopyTo_InputHandles.Add(MapiInspector.MAPIInspector.currentSessionID,(int)objectHandleKey);
+                            DecodingContext.CopyTo_InputHandles.Add(MapiInspector.MAPIInspector.currentParsingSessionID,(int)objectHandleKey);
                         }
                         else
                         {
                             objectHandleKey = this.ServerObjectHandleTable[(ropRequest as RopFastTransferSourceCopyPropertiesRequest).InputHandleIndex];
-                            if (DecodingContext.CopyProperties_InputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                            if (DecodingContext.CopyProperties_InputHandles.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                             {
-                                DecodingContext.CopyProperties_InputHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                                DecodingContext.CopyProperties_InputHandles.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
                             }
-                            DecodingContext.CopyProperties_InputHandles.Add(MapiInspector.MAPIInspector.currentSessionID,(int)objectHandleKey);
+                            DecodingContext.CopyProperties_InputHandles.Add(MapiInspector.MAPIInspector.currentParsingSessionID,(int)objectHandleKey);
                         }
 
                         if (!DecodingContext.ObjectHandles.ContainsKey((int)objectHandleKey))
@@ -623,35 +625,17 @@ namespace MAPIInspector.Parsers
                         {
                             uint objectHandleKeyII = this.ServerObjectHandleTable[request.InputHandleIndex];
 
-                            if (DecodingContext.DestinationConfigure_InputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                            if (DecodingContext.DestinationConfigure_InputHandles.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                             {
-                                DecodingContext.DestinationConfigure_InputHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                                DecodingContext.DestinationConfigure_InputHandles.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
                             }
-                            DecodingContext.DestinationConfigure_InputHandles.Add(MapiInspector.MAPIInspector.currentSessionID, (int)objectHandleKeyII);
+                            DecodingContext.DestinationConfigure_InputHandles.Add(MapiInspector.MAPIInspector.currentParsingSessionID, (int)objectHandleKeyII);
 
                             if (!DecodingContext.ObjectHandles.ContainsKey((int)objectHandleKeyII))
                             {
                                 throw new MissingInformationException("Need more information about foler or message or attachment object handle", (ushort)(ropRequest as RopFastTransferDestinationConfigureRequest).RopId, objectHandleKeyII); 
                             }
                         }
-                    }
-                    else if (ropRequest is RopLogonRequest)
-                    {
-                        uint objectHandleKey = this.ServerObjectHandleTable[(ropRequest as RopLogonRequest).OutputHandleIndex];
-                        if (DecodingContext.Sessionlogon_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
-                        {
-                            DecodingContext.Sessionlogon_OutputHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
-                        }
-                        DecodingContext.Sessionlogon_OutputHandles.Add(MapiInspector.MAPIInspector.currentSessionID, (int)objectHandleKey);
-
-                        if (DecodingContext.WritePerUserInf_InputHandles != null && DecodingContext.WritePerUserInf_InputHandles.ContainsValue((int)objectHandleKey))
-                        {
-                            if (DecodingContext.LogonHandleMapLogonFlag != null && DecodingContext.LogonHandleMapLogonFlag.ContainsKey((int)objectHandleKey))
-                            {
-                                DecodingContext.LogonHandleMapLogonFlag.Remove((int)objectHandleKey);
-                            }
-                            DecodingContext.LogonHandleMapLogonFlag.Add((int)objectHandleKey, (ropRequest as RopLogonRequest).LogonFlags);
-                        }   
                     }
                 }   
             }
@@ -696,9 +680,9 @@ namespace MAPIInspector.Parsers
                     {
                         // MS-OXCSTOR Rops
                         case RopIdType.RopLogon:
-                            if (DecodingContext.SessionLogonFlag != null && DecodingContext.SessionLogonFlag.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                            if (DecodingContext.SessionLogonFlag != null && DecodingContext.SessionLogonFlag.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                             {
-                                DecodingContext.LogonFlags = DecodingContext.SessionLogonFlag[MapiInspector.MAPIInspector.currentSessionID];
+                                DecodingContext.LogonFlags = DecodingContext.SessionLogonFlag[MapiInspector.MAPIInspector.currentParsingSessionID];
                             }
                             else
                             {
@@ -1003,9 +987,9 @@ namespace MAPIInspector.Parsers
                             ropsList.Add(RopFastTransferSourceCopyFolderResponse);
                             break;
                         case RopIdType.RopFastTransferSourceGetBuffer:
-                            if (DecodingContext.SessionFastTransferStreamType != null && DecodingContext.SessionFastTransferStreamType.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                            if (DecodingContext.SessionFastTransferStreamType != null && DecodingContext.SessionFastTransferStreamType.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                             {
-                                DecodingContext.StreamType_Getbuffer = DecodingContext.SessionFastTransferStreamType[MapiInspector.MAPIInspector.currentSessionID];
+                                DecodingContext.StreamType_Getbuffer = DecodingContext.SessionFastTransferStreamType[MapiInspector.MAPIInspector.currentParsingSessionID];
                             }
                             else
                             {
@@ -1095,27 +1079,10 @@ namespace MAPIInspector.Parsers
                             RopSetLocalReplicaMidsetDeletedResponse.Parse(s);
                             ropsList.Add(RopSetLocalReplicaMidsetDeletedResponse);
                             break;
-
-                        // TODO This is just used for FasttransferStream now, after these rops has added in MS-OXCFOLD and MS-OXCMSG, will delete these rop here
-                        case RopIdType.RopCreateFolder:
-                            RopCreateFolderResponse RopCreateFolderResponse = new RopCreateFolderResponse();
-                            RopCreateFolderResponse.Parse(s);
-                            ropsList.Add(RopCreateFolderResponse);
-                            break;
-                        case RopIdType.RopCreateMessage:
-                            RopCreateMessageResponse RopCreateMessageResponse = new RopCreateMessageResponse();
-                            RopCreateMessageResponse.Parse(s);
-                            ropsList.Add(RopCreateMessageResponse);
-                            break;
-                        case RopIdType.RopCreateAttachment:
-                            RopCreateAttachmentResponse RopCreateAttachmentResponse = new RopCreateAttachmentResponse();
-                            RopCreateAttachmentResponse.Parse(s);
-                            ropsList.Add(RopCreateAttachmentResponse);
-                            break;
                         
                         // MS-OXCPRPT:
                         case RopIdType.RopGetPropertiesSpecific:
-                        	if (!(DecodingContext.SessionPropertyTags != null && DecodingContext.SessionPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentSessionID)))
+                        	if (!(DecodingContext.SessionPropertyTags != null && DecodingContext.SessionPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID)))
                             {
                                 throw new MissingInformationException("Missing PropertyTags information for RopFastTransferSourceCopyProperties", (ushort)CurrentByte, null);
                             }
@@ -1273,12 +1240,12 @@ namespace MAPIInspector.Parsers
                     if(ropResponse is RopCreateFolderResponse)
                     {
                         uint objectHandleKey = this.ServerObjectHandleTable[(ropResponse as RopCreateFolderResponse).OutputHandleIndex];
-                        if (DecodingContext.SessionObjectHandles != null && DecodingContext.SessionObjectHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                        if (DecodingContext.SessionObjectHandles != null && DecodingContext.SessionObjectHandles.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                         {
-                            DecodingContext.SessionObjectHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                            DecodingContext.SessionObjectHandles.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
                         }
                         Dictionary<int, ObjectHandlesType> tmpObjectHandle = new Dictionary<int, ObjectHandlesType>() { { (int)objectHandleKey, ObjectHandlesType.FolderHandles } };
-                        DecodingContext.SessionObjectHandles.Add(MapiInspector.MAPIInspector.currentSessionID, tmpObjectHandle);
+                        DecodingContext.SessionObjectHandles.Add(MapiInspector.MAPIInspector.currentParsingSessionID, tmpObjectHandle);
                         if((DecodingContext.CopyTo_InputHandles != null && DecodingContext.CopyTo_InputHandles.ContainsValue((int)objectHandleKey))
                             || DecodingContext.CopyProperties_InputHandles != null && DecodingContext.CopyProperties_InputHandles.ContainsValue((int)objectHandleKey)
                             || DecodingContext.DestinationConfigure_InputHandles != null && DecodingContext.DestinationConfigure_InputHandles.ContainsValue((int)objectHandleKey))
@@ -1293,12 +1260,12 @@ namespace MAPIInspector.Parsers
                    else if (ropResponse is RopCreateMessageResponse)
                     {
                         uint objectHandleKey = this.ServerObjectHandleTable[(ropResponse as RopCreateMessageResponse).OutputHandleIndex];
-                        if (DecodingContext.SessionObjectHandles != null && DecodingContext.SessionObjectHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                        if (DecodingContext.SessionObjectHandles != null && DecodingContext.SessionObjectHandles.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                         {
-                            DecodingContext.SessionObjectHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                            DecodingContext.SessionObjectHandles.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
                         }
                         Dictionary<int, ObjectHandlesType> tmpObjectHandle = new Dictionary<int, ObjectHandlesType>() { { (int)objectHandleKey, ObjectHandlesType.MessageHandles } };
-                        DecodingContext.SessionObjectHandles.Add(MapiInspector.MAPIInspector.currentSessionID, tmpObjectHandle);
+                        DecodingContext.SessionObjectHandles.Add(MapiInspector.MAPIInspector.currentParsingSessionID, tmpObjectHandle);
                         if ((DecodingContext.CopyTo_InputHandles != null && DecodingContext.CopyTo_InputHandles.ContainsValue((int)objectHandleKey))
                             || DecodingContext.CopyProperties_InputHandles != null && DecodingContext.CopyProperties_InputHandles.ContainsValue((int)objectHandleKey)
                             || DecodingContext.DestinationConfigure_InputHandles != null && DecodingContext.DestinationConfigure_InputHandles.ContainsValue((int)objectHandleKey))
@@ -1313,12 +1280,12 @@ namespace MAPIInspector.Parsers
                    else if (ropResponse is RopCreateAttachmentResponse)
                     {
                         uint objectHandleKey = this.ServerObjectHandleTable[(ropResponse as RopCreateAttachmentResponse).OutputHandleIndex];
-                        if (DecodingContext.SessionObjectHandles != null && DecodingContext.SessionObjectHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                        if (DecodingContext.SessionObjectHandles != null && DecodingContext.SessionObjectHandles.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                         {
-                            DecodingContext.SessionObjectHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                            DecodingContext.SessionObjectHandles.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
                         }
                         Dictionary<int, ObjectHandlesType> tmpObjectHandle = new Dictionary<int, ObjectHandlesType>() { { (int)objectHandleKey, ObjectHandlesType.AttachmentHandles } };
-                        DecodingContext.SessionObjectHandles.Add(MapiInspector.MAPIInspector.currentSessionID, tmpObjectHandle);
+                        DecodingContext.SessionObjectHandles.Add(MapiInspector.MAPIInspector.currentParsingSessionID, tmpObjectHandle);
 
                         if ((DecodingContext.CopyTo_InputHandles != null && DecodingContext.CopyTo_InputHandles.ContainsValue((int)objectHandleKey))
                             || DecodingContext.CopyProperties_InputHandles != null && DecodingContext.CopyProperties_InputHandles.ContainsValue((int)objectHandleKey)
@@ -1334,85 +1301,75 @@ namespace MAPIInspector.Parsers
                    else if (ropResponse is RopFastTransferSourceCopyToResponse)
                     {
                         uint objectHandleKey = this.ServerObjectHandleTable[(ropResponse as RopFastTransferSourceCopyToResponse).OutputHandleIndex];
-                        if (DecodingContext.CopyTo_OutputHandles != null && DecodingContext.CopyTo_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                        if (DecodingContext.CopyTo_OutputHandles != null && DecodingContext.CopyTo_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                         {
-                            DecodingContext.CopyTo_OutputHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                            DecodingContext.CopyTo_OutputHandles.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
                         }
-                        DecodingContext.CopyTo_OutputHandles.Add(MapiInspector.MAPIInspector.currentSessionID, (int)objectHandleKey);
+                        DecodingContext.CopyTo_OutputHandles.Add(MapiInspector.MAPIInspector.currentParsingSessionID, (int)objectHandleKey);
                     }
                    else if (ropResponse is RopFastTransferSourceCopyPropertiesResponse)
                     {
                         uint objectHandleKey = this.ServerObjectHandleTable[(ropResponse as RopFastTransferSourceCopyPropertiesResponse).OutputHandleIndex];
-                        if (DecodingContext.CopyProperties_OutputHandles != null && DecodingContext.CopyProperties_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                        if (DecodingContext.CopyProperties_OutputHandles != null && DecodingContext.CopyProperties_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                         {
-                            DecodingContext.CopyProperties_OutputHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                            DecodingContext.CopyProperties_OutputHandles.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
                         }
-                        DecodingContext.CopyProperties_OutputHandles.Add(MapiInspector.MAPIInspector.currentSessionID, (int)objectHandleKey);
+                        DecodingContext.CopyProperties_OutputHandles.Add(MapiInspector.MAPIInspector.currentParsingSessionID, (int)objectHandleKey);
                     }
                    else if (ropResponse is RopFastTransferSourceCopyMessagesResponse)
                     {
                         uint objectHandleKey = this.ServerObjectHandleTable[(ropResponse as RopFastTransferSourceCopyMessagesResponse).OutputHandleIndex];
-                        if (DecodingContext.CopyMessage_OutputHandles != null && DecodingContext.CopyMessage_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                        if (DecodingContext.CopyMessage_OutputHandles != null && DecodingContext.CopyMessage_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                         {
-                            DecodingContext.CopyMessage_OutputHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                            DecodingContext.CopyMessage_OutputHandles.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
                         }
-                        DecodingContext.CopyMessage_OutputHandles.Add(MapiInspector.MAPIInspector.currentSessionID, (int)objectHandleKey);
+                        DecodingContext.CopyMessage_OutputHandles.Add(MapiInspector.MAPIInspector.currentParsingSessionID, (int)objectHandleKey);
                     }
                    else if (ropResponse is RopFastTransferSourceCopyFolderResponse)
                     {
                         uint objectHandleKey = this.ServerObjectHandleTable[(ropResponse as RopFastTransferSourceCopyFolderResponse).OutputHandleIndex];
-                        if (DecodingContext.CopyFolder_OutputHandles != null && DecodingContext.CopyFolder_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                        if (DecodingContext.CopyFolder_OutputHandles != null && DecodingContext.CopyFolder_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                         {
-                            DecodingContext.CopyFolder_OutputHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                            DecodingContext.CopyFolder_OutputHandles.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
                         }
-                        DecodingContext.CopyFolder_OutputHandles.Add(MapiInspector.MAPIInspector.currentSessionID, (int)objectHandleKey);
+                        DecodingContext.CopyFolder_OutputHandles.Add(MapiInspector.MAPIInspector.currentParsingSessionID, (int)objectHandleKey);
                     }
                    else if (ropResponse is RopSynchronizationConfigureResponse)
                     {
                         uint objectHandleKey = this.ServerObjectHandleTable[(ropResponse as RopSynchronizationConfigureResponse).OutputHandleIndex];
-                        if (DecodingContext.SyncConfigure_OutputHandles != null && DecodingContext.SyncConfigure_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                        if (DecodingContext.SyncConfigure_OutputHandles != null && DecodingContext.SyncConfigure_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                         {
-                            DecodingContext.SyncConfigure_OutputHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                            DecodingContext.SyncConfigure_OutputHandles.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
                         }
-                        DecodingContext.SyncConfigure_OutputHandles.Add(MapiInspector.MAPIInspector.currentSessionID, (int)objectHandleKey);
+                        DecodingContext.SyncConfigure_OutputHandles.Add(MapiInspector.MAPIInspector.currentParsingSessionID, (int)objectHandleKey);
                     }
                    else if (ropResponse is RopSynchronizationGetTransferStateResponse)
                     {
                         uint objectHandleKey = this.ServerObjectHandleTable[(ropResponse as RopSynchronizationGetTransferStateResponse).OutputHandleIndex];
-                        if (DecodingContext.SyncGetTransferState_OutputHandles != null && DecodingContext.SyncGetTransferState_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                        if (DecodingContext.SyncGetTransferState_OutputHandles != null && DecodingContext.SyncGetTransferState_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                         {
-                            DecodingContext.SyncGetTransferState_OutputHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                            DecodingContext.SyncGetTransferState_OutputHandles.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
                         }
-                        DecodingContext.SyncGetTransferState_OutputHandles.Add(MapiInspector.MAPIInspector.currentSessionID, (int)objectHandleKey);
+                        DecodingContext.SyncGetTransferState_OutputHandles.Add(MapiInspector.MAPIInspector.currentParsingSessionID, (int)objectHandleKey);
                     }
                     else if (ropResponse is RopFastTransferDestinationConfigureResponse)
                     {
                         uint objectHandleKey = this.ServerObjectHandleTable[(ropResponse as RopFastTransferDestinationConfigureResponse).OutputHandleIndex];
-                        if (DecodingContext.DestinationConfigure_OutputHandles != null && DecodingContext.DestinationConfigure_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                        if (DecodingContext.DestinationConfigure_OutputHandles != null && DecodingContext.DestinationConfigure_OutputHandles.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                         {
-                            DecodingContext.DestinationConfigure_OutputHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                            DecodingContext.DestinationConfigure_OutputHandles.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
                         }
-                        DecodingContext.DestinationConfigure_OutputHandles.Add(MapiInspector.MAPIInspector.currentSessionID, (int)objectHandleKey);
+                        DecodingContext.DestinationConfigure_OutputHandles.Add(MapiInspector.MAPIInspector.currentParsingSessionID, (int)objectHandleKey);
                     }
                    else if (ropResponse is RopFastTransferDestinationPutBufferResponse)
                     {
                         uint objectHandleKey = this.ServerObjectHandleTable[(ropResponse as RopFastTransferDestinationPutBufferResponse).InputHandleIndex];
 
-                        if (DecodingContext.PutBuffer_InPutHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                        if (DecodingContext.PutBuffer_InPutHandles.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                         {
-                            DecodingContext.PutBuffer_InPutHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
+                            DecodingContext.PutBuffer_InPutHandles.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
                         }
-                        DecodingContext.PutBuffer_InPutHandles.Add(MapiInspector.MAPIInspector.currentSessionID, (int)objectHandleKey);
-                    }
-                    else if (ropResponse is RopWritePerUserInformationResponse)
-                    {
-                        uint objectHandleKey = this.ServerObjectHandleTable[(ropResponse as RopWritePerUserInformationResponse).InputHandleIndex];
-
-                        if (DecodingContext.WritePerUserInf_InputHandles.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
-                        {
-                            DecodingContext.WritePerUserInf_InputHandles.Remove(MapiInspector.MAPIInspector.currentSessionID);
-                        }
-                        DecodingContext.WritePerUserInf_InputHandles.Add(MapiInspector.MAPIInspector.currentSessionID, (int)objectHandleKey);
+                        DecodingContext.PutBuffer_InPutHandles.Add(MapiInspector.MAPIInspector.currentParsingSessionID, (int)objectHandleKey);
                     }
                     else
                     {
@@ -2463,20 +2420,14 @@ namespace MAPIInspector.Parsers
         // Record current session logon flags.
         private static Dictionary<int, LogonFlags> sessionLogonFlag;
 
-        // Record logon outputhandle and logon flags
-        private static Dictionary<int, LogonFlags> logonHandleMapLogonFlag;
+        // Record current session logon logon id.
+        private static Dictionary<int, byte> sessionLogId;
 
         // Record the LogonId and logon flags.
         private static Dictionary<byte, LogonFlags> logonFlagMapLogId;
 		
 		// Record current session PropertyTags.
         private static Dictionary<int, PropertyTag[]> sessionPropertyTags;
-		
-        // Record current session(RopLogon) OutputObjectHandle.
-        private static Dictionary<int, int> sessionlogon_OutputHandles;
-
-        // Record RopWritePerUserInformation InputObjectHandle.
-        private static Dictionary<int, int> writePerUserInf_InputHandles;
 
         // Record current session(RopFastTransferSourceGetBuffer) InputObjectHandle.
         private static Dictionary<int, int> getBuffer_InPutHandles;
@@ -2539,9 +2490,7 @@ namespace MAPIInspector.Parsers
             destinationConfigure_InputHandles = new Dictionary<int, int>();
             sessionObjectHandles = new Dictionary<int, Dictionary<int, ObjectHandlesType>>();
             sessionPropertyTags = new Dictionary<int, PropertyTag[]>();
-			sessionlogon_OutputHandles = new Dictionary<int,int>();
-            writePerUserInf_InputHandles = new Dictionary<int, int>();
-            logonHandleMapLogonFlag = new Dictionary<int, LogonFlags>();
+            sessionLogId = new Dictionary<int, byte>();
         }
 
         // Gets or sets the logOnFlags.
@@ -2583,42 +2532,16 @@ namespace MAPIInspector.Parsers
             }
         }
 
-        // Gets or sets the Sessionlogon_OutputHandles
-        public static Dictionary<int, int> Sessionlogon_OutputHandles
+        // Gets or sets the sessionLogId
+        public static Dictionary<int, byte> SessionLogId
         {
             get
             {
-                return sessionlogon_OutputHandles;
+                return sessionLogId;
             }
             set
             {
-                sessionlogon_OutputHandles = value;
-            }
-        }
-
-        // Gets or sets the logonHandleMapLogonFlag
-        public static Dictionary<int, LogonFlags> LogonHandleMapLogonFlag
-        {
-            get
-            {
-                return logonHandleMapLogonFlag;
-            }
-            set
-            {
-                logonHandleMapLogonFlag = value;
-            }
-        }
-
-        // Gets or sets the writePerUserInf_InputHandles
-        public static Dictionary<int, int> WritePerUserInf_InputHandles
-        {
-            get
-            {
-                return writePerUserInf_InputHandles;
-            }
-            set
-            {
-                writePerUserInf_InputHandles = value;
+                sessionLogId = value;
             }
         }
         
