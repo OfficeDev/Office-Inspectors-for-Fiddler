@@ -40,14 +40,6 @@ namespace MAPIInspector.Parsers
                     s.Position -= 1;
                     switch ((RopIdType)CurrentByte)
                     {
-                        // MS-OXCSTOR Rops
-                        case RopIdType.RopLogon:
-                            RopLogonRequest RopLogonRequest = new RopLogonRequest();
-                            RopLogonRequest.Parse(s);
-                            ropsList.Add(RopLogonRequest);
-                            DecodingContext.SessionLogonFlag = new Dictionary<int, LogonFlags>() { { MapiInspector.MAPIInspector.currentSessionID, RopLogonRequest.LogonFlags } };
-                            break;
-
                         // MS-OXCROPS Rops
                         case RopIdType.RopSubmitMessage:
                             RopSubmitMessageRequest RopSubmitMessageRequest = new RopSubmitMessageRequest();
@@ -106,7 +98,10 @@ namespace MAPIInspector.Parsers
                             RopSetColumnsRequest.Parse(s);
                             ropsList.Add(RopSetColumnsRequest);
                             // Record the property tags.
-                            DecodingContext.SetColumnsPropertyTags = new Dictionary<int, PropertyTag[]>() { { MapiInspector.MAPIInspector.currentSessionID, RopSetColumnsRequest.PropertyTags } };
+                            if (DecodingContext.SetColumnsPropertyTags == null || !DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
+                            {
+                                DecodingContext.SetColumnsPropertyTags = new Dictionary<int, PropertyTag[]>() { { MapiInspector.MAPIInspector.currentParsingSessionID, RopSetColumnsRequest.PropertyTags } };
+                            }
                             break;
 
                         case RopIdType.RopSortTable:
@@ -383,9 +378,9 @@ namespace MAPIInspector.Parsers
                     {
                         // MS-OXCSTOR Rops
                         case RopIdType.RopLogon:
-                            if (DecodingContext.SessionLogonFlag != null && DecodingContext.SessionLogonFlag.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
+                            if (DecodingContext.SessionLogonFlag != null && DecodingContext.SessionLogonFlag.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                             {
-                                DecodingContext.LogonFlags = DecodingContext.SessionLogonFlag[MapiInspector.MAPIInspector.currentSessionID];
+                                DecodingContext.LogonFlags = DecodingContext.SessionLogonFlag[MapiInspector.MAPIInspector.currentParsingSessionID];
                             }
                             else
                             {
@@ -483,27 +478,9 @@ namespace MAPIInspector.Parsers
                             break;
 
                         case RopIdType.RopQueryRows:
-                            // If this session alreadby is successfully parsed, get it from the dictionary.
-                            if (DecodingContext.ColumnsRelatedRops != null && DecodingContext.ColumnsRelatedRops.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
-                            {
-
-                                RopQueryRowsResponse RopQueryRowsResponse = (RopQueryRowsResponse)DecodingContext.ColumnsRelatedRops[MapiInspector.MAPIInspector.currentSessionID];
-                                ropsList.Add(RopQueryRowsResponse);
-                                s.Position += RopSize;
-                            }
-                            // If the related property tags is alreadby in dictionary and this session is not parsed
-                            else if (DecodingContext.SetColumnsPropertyTags != null && DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
-                            {
-                                RopQueryRowsResponse RopQueryRowsResponse = new RopQueryRowsResponse(DecodingContext.SetColumnsPropertyTags[MapiInspector.MAPIInspector.currentSessionID]);
-                                RopQueryRowsResponse.Parse(s);
-                                ropsList.Add(RopQueryRowsResponse);
-                                DecodingContext.ColumnsRelatedRops = new Dictionary<int, object> { { MapiInspector.MAPIInspector.currentSessionID, RopQueryRowsResponse } };
-                            }
-                            // If the related property tags is not exist.
-                            else
-                            {
-                                throw new MissingInformationException("Missing LogonFlags information for RopLogon", (ushort)CurrentByte, null);
-                            }
+                            RopQueryRowsResponse RopQueryRowsResponse = new RopQueryRowsResponse();
+                            RopQueryRowsResponse.Parse(s);
+                            ropsList.Add(RopQueryRowsResponse);
                             break;
 
                         case RopIdType.RopAbort:
@@ -555,27 +532,9 @@ namespace MAPIInspector.Parsers
                             break;
 
                         case RopIdType.RopFindRow:
-                            // If this session alreadby is successfully parsed, get it from the dictionary.
-                            if (DecodingContext.ColumnsRelatedRops != null && DecodingContext.ColumnsRelatedRops.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
-                            {
-
-                                RopFindRowResponse RopFindRowResponse = (RopFindRowResponse)DecodingContext.ColumnsRelatedRops[MapiInspector.MAPIInspector.currentSessionID];
-                                ropsList.Add(RopFindRowResponse);
-                                s.Position += RopSize;
-                            }
-                            // If the related property tags is alreadby in dictionary and this session is not parsed
-                            else if (DecodingContext.SetColumnsPropertyTags != null && DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
-                            {
-                                RopFindRowResponse RopFindRowResponse = new RopFindRowResponse(DecodingContext.SetColumnsPropertyTags[MapiInspector.MAPIInspector.currentSessionID]);
-                                RopFindRowResponse.Parse(s);
-                                ropsList.Add(RopFindRowResponse);
-                                DecodingContext.ColumnsRelatedRops = new Dictionary<int, object> { { MapiInspector.MAPIInspector.currentSessionID, RopFindRowResponse } };
-                            }
-                            // If the related property tags is not exist.
-                            else
-                            {
-                                throw new MissingInformationException("Missing LogonFlags information for RopLogon", (ushort)CurrentByte, null);
-                            }
+                            RopFindRowResponse RopFindRowResponse = new RopFindRowResponse();
+                            RopFindRowResponse.Parse(s);
+                            ropsList.Add(RopFindRowResponse);
                             break;
 
                         case RopIdType.RopFreeBookmark:
@@ -591,27 +550,10 @@ namespace MAPIInspector.Parsers
                             break;
 
                         case RopIdType.RopExpandRow:
-                            // If this session alreadby is successfully parsed, get it from the dictionary.
-                            if (DecodingContext.ColumnsRelatedRops != null && DecodingContext.ColumnsRelatedRops.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
-                            {
+                            RopExpandRowResponse RopExpandRowResponse = new RopExpandRowResponse();
+                            RopExpandRowResponse.Parse(s);
+                            ropsList.Add(RopExpandRowResponse);
 
-                                RopExpandRowResponse RopExpandRowResponse = (RopExpandRowResponse)DecodingContext.ColumnsRelatedRops[MapiInspector.MAPIInspector.currentSessionID];
-                                ropsList.Add(RopExpandRowResponse);
-                                s.Position += RopSize;
-                            }
-                            // If the related property tags is alreadby in dictionary and this session is not parsed
-                            else if (DecodingContext.SetColumnsPropertyTags != null && DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentSessionID))
-                            {
-                                RopExpandRowResponse RopExpandRowResponse = new RopExpandRowResponse(DecodingContext.SetColumnsPropertyTags[MapiInspector.MAPIInspector.currentSessionID]);
-                                RopExpandRowResponse.Parse(s);
-                                ropsList.Add(RopExpandRowResponse);
-                                DecodingContext.ColumnsRelatedRops = new Dictionary<int, object> { { MapiInspector.MAPIInspector.currentSessionID, RopExpandRowResponse } };
-                            }
-                            // If the related property tags is not exist.
-                            else
-                            {
-                                throw new MissingInformationException("Missing SetColumns PropertyTags information for RopLogon", (ushort)CurrentByte, null);
-                            }
                             break;
 
                         case RopIdType.RopCollapseRow:

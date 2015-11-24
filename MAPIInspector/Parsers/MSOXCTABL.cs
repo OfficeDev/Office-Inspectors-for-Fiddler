@@ -371,11 +371,8 @@ namespace MAPIInspector.Parsers
         public PropertyRow[] RowData;
 
         // Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1). 
-        PropertyTag[] propertiesBySetColum;
-        public RopQueryRowsResponse(PropertyTag[] PropertyTags)
-        {
-            this.propertiesBySetColum = PropertyTags;
-        }
+        private PropertyTag[] propertiesBySetColum;
+
         /// <summary>
         /// Parse the RopQueryRows structure.
         /// </summary>
@@ -393,6 +390,16 @@ namespace MAPIInspector.Parsers
             {
                 this.Origin = (Bookmarks)ReadByte();
                 this.RowCount = ReadUshort();
+                // If the related property tags is alreadby in dictionary and this session is not parsed
+                if (this.RowCount != 0 && DecodingContext.SetColumnsPropertyTags != null && DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
+                {
+                    this.propertiesBySetColum = DecodingContext.SetColumnsPropertyTags[MapiInspector.MAPIInspector.currentParsingSessionID];
+                }
+                // If the related property tags is not exist.
+                else
+                {
+                    throw new MissingInformationException("Missing LogonFlags information for RopQueryRowsResponse", (ushort)RopIdType.RopQueryRows, null);
+                }
                 List<PropertyRow> tempPropertyRows = new List<PropertyRow>();
                 for (int i = 0; i < RowCount; i++)
                 {
@@ -1094,16 +1101,7 @@ namespace MAPIInspector.Parsers
         public PropertyRow RowData;
 
         // Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1). 
-        public PropertyTag[] propertiesBySetColum;
-
-        /// <summary>
-        /// The Constructor to set the property tag.
-        /// </summary>
-        /// <param name="PropertyTags">The property tag</param>
-        public RopFindRowResponse(PropertyTag[] PropertyTags)
-        {
-            this.propertiesBySetColum = PropertyTags;
-        }
+        private PropertyTag[] propertiesBySetColum;
 
         /// <summary>
         /// Parse the RopFindRowResponse structure.
@@ -1124,6 +1122,16 @@ namespace MAPIInspector.Parsers
                 this.HasRowData = ReadBoolean();
                 if ((bool)HasRowData)
                 {
+                    // If the related property tags is alreadby in dictionary and this session is not parsed
+                    if (DecodingContext.SetColumnsPropertyTags != null && DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
+                    {
+                        this.propertiesBySetColum = DecodingContext.SetColumnsPropertyTags[MapiInspector.MAPIInspector.currentParsingSessionID];
+                    }
+                    // If the related property tags is not exist.
+                    else
+                    {
+                        throw new MissingInformationException("Missing LogonFlags information for RopFindRowResponse", (ushort)RopIdType.RopFindRow, null);
+                    }
                     PropertyRow tempPropertyRow = new PropertyRow(propertiesBySetColum);
                     this.RowData = tempPropertyRow;
                     this.RowData.Parse(s);
@@ -1330,16 +1338,8 @@ namespace MAPIInspector.Parsers
         public PropertyRow[] RowData;
 
         // Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1). 
-        PropertyTag[] propertiesBySetColum;
+        private PropertyTag[] propertiesBySetColum;
 
-        /// <summary>
-        /// The constructor method to set the property tag.
-        /// </summary>
-        /// <param name="PropertyTags">The property tag</param>
-        public RopExpandRowResponse(PropertyTag[] PropertyTags)
-        {
-            this.propertiesBySetColum = PropertyTags;
-        }
         /// <summary>
         /// Parse the RopExpandRowResponse structure.
         /// </summary>
@@ -1357,6 +1357,19 @@ namespace MAPIInspector.Parsers
             {
                 this.ExpandedRowCount = ReadUint();
                 this.RowCount = ReadUshort();
+                if (this.RowCount != 0)
+                {
+                    // If the related property tags is alreadby in dictionary and this session is not parsed
+                    if (DecodingContext.SetColumnsPropertyTags != null && DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
+                    {
+                        this.propertiesBySetColum = DecodingContext.SetColumnsPropertyTags[MapiInspector.MAPIInspector.currentParsingSessionID];
+                    }
+                    // If the related property tags is not exist.
+                    else
+                    {
+                        throw new MissingInformationException("Missing LogonFlags information for RopExpandRowResponse", (ushort)RopIdType.RopExpandRow, null);
+                    }
+                }
                 List<PropertyRow> tempPropertyRows = new List<PropertyRow>();
                 for (int i = 0; i < RowCount; i++)
                 {

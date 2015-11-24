@@ -1224,8 +1224,8 @@ namespace MAPIInspector.Parsers
                 {
                     if (tempPropTag.PropertyType != PropertyDataType.PtypUnspecified)
                     {
-                        PropertyValue propValue = new PropertyValue();
-                        propValue.ReadPropertyValue(tempPropTag.PropertyType, s);
+                        PropertyValue propValue = new PropertyValue(tempPropTag.PropertyType, CountWideEnum.twoBytes);
+                        propValue.Parse(s);
                         rowPropValue = propValue;
                     }
                     else
@@ -2576,6 +2576,41 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class PropertyValue : BaseStructure
     {
+        // A PropertyValue structure, as specified in section 2.11.2. The value MUST be compatible with the value of the PropertyType field.
+        public object Value;
+
+        // The Count wide size of ptypMutiple type.
+        private CountWideEnum countWide;
+
+        // An unsigned integer that specifies the data type of the property value, according to the table in section 2.11.1.
+        private PropertyDataType PropertyType;
+
+        /// <summary>
+        /// The Constructor to set the property type and Count wide size.
+        /// </summary>
+        /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
+        public PropertyValue(PropertyDataType ProType, CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes)
+        {
+            countWide = ptypMultiCountSize;
+            PropertyType = ProType;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the PropertyValue class without parameters.
+        /// </summary>
+        public PropertyValue()
+        {
+        }
+
+        /// <summary>
+        /// Parse the PropertyValue structure.
+        /// </summary>
+        /// <param name="s">A stream containing the PropertyValue structure</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.Value = this.ReadPropertyValue(this.PropertyType, s, countWide);
+        }
         /// <summary>
         /// The method to return the object of PropertyValue.
         /// </summary>

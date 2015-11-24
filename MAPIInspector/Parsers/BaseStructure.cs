@@ -414,7 +414,7 @@ namespace MAPIInspector.Parsers
                             }
                             else if (type.Name == "DateTime")
                             {
-                                os = 4;
+                                os = 8;
                             }
                             // Check if it is bit.
                             else if (type.Name == "Byte" && info[i].GetCustomAttributesData().Count != 0 && info[i].GetCustomAttributes(typeof(BitAttribute), false) != null)
@@ -456,6 +456,24 @@ namespace MAPIInspector.Parsers
                         if (type.Name == "String")
                         {
                             os = ((string)info[i].GetValue(obj)).Length;
+                        }
+                        // Modify the bit os for the NotificationFlagsT in MSOXCNOTIF
+                        else if (info[i].GetCustomAttributesData().Count != 0 && info[i].GetCustomAttributes(typeof(BitAttribute), false) != null)
+                        {
+                            BitAttribute attribute = (BitAttribute)info[i].GetCustomAttributes(typeof(BitAttribute), false)[0];
+                            if ((BitLength) % 8 != 0)
+                            {
+                                current -= 1;
+                            }
+                            if (attribute.BitLength % 8 == 0)
+                            {
+                                os += attribute.BitLength / 8;
+                            }
+                            else
+                            {
+                                os += attribute.BitLength / 8 + 1;
+                            }
+                            BitLength += attribute.BitLength;
                         }
                         else
                         {

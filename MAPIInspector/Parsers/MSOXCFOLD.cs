@@ -180,8 +180,8 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.OutputHandleIndex = ReadByte();
-         HelpMethod help = new HelpMethod();
-  this.ReturnValue =help. FormatErrorCode(ReadUint());
+            HelpMethod help = new HelpMethod();
+            this.ReturnValue = help.FormatErrorCode(ReadUint());
 
             if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
             {
@@ -321,8 +321,8 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-         HelpMethod help = new HelpMethod();
-  this.ReturnValue =help. FormatErrorCode(ReadUint());
+            HelpMethod help = new HelpMethod();
+            this.ReturnValue = help.FormatErrorCode(ReadUint());
 
             if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
             {
@@ -417,8 +417,8 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-         HelpMethod help = new HelpMethod();
-  this.ReturnValue =help. FormatErrorCode(ReadUint());
+            HelpMethod help = new HelpMethod();
+            this.ReturnValue = help.FormatErrorCode(ReadUint());
             this.PartialCompletion = ReadBoolean();
         }
     }
@@ -473,7 +473,7 @@ namespace MAPIInspector.Parsers
                 this.RestrictionData.Parse(s);
             }
             this.FolderIdCount = ReadUshort();
-            List<FolderID> tempFolderIDs = new List<FolderID> ();
+            List<FolderID> tempFolderIDs = new List<FolderID>();
             for (int i = 0; i < FolderIdCount; i++)
             {
                 FolderID folderID = new FolderID();
@@ -509,8 +509,8 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-         HelpMethod help = new HelpMethod();
-  this.ReturnValue =help. FormatErrorCode(ReadUint());
+            HelpMethod help = new HelpMethod();
+            this.ReturnValue = help.FormatErrorCode(ReadUint());
         }
     }
 
@@ -599,8 +599,8 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-         HelpMethod help = new HelpMethod();
-  this.ReturnValue =help. FormatErrorCode(ReadUint());
+            HelpMethod help = new HelpMethod();
+            this.ReturnValue = help.FormatErrorCode(ReadUint());
 
             if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
             {
@@ -608,7 +608,6 @@ namespace MAPIInspector.Parsers
                 if (RestrictionDataSize > 0)
                 {
                     this.RestrictionData = new RestrictionType();
-                    // TODO : if need to use RestrictionDataSize
                     this.RestrictionData.Parse(s);
                 }
                 this.LogonId = ReadByte();
@@ -702,7 +701,7 @@ namespace MAPIInspector.Parsers
         public uint? DestHandleIndex;
 
         // A Boolean that indicates whether the operation was only partially completed.
-        public bool? PartialCompletion;
+        public bool PartialCompletion;
         /// <summary>
         /// Parse the RopMoveCopyMessagesResponse structure.
         /// </summary>
@@ -713,8 +712,8 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.SourceHandleIndex = ReadByte();
-         HelpMethod help = new HelpMethod();
-  this.ReturnValue =help. FormatErrorCode(ReadUint());
+            HelpMethod help = new HelpMethod();
+            this.ReturnValue = help.FormatErrorCode(ReadUint());
             if ((AdditionalErrorCodes)ReturnValue == AdditionalErrorCodes.NullDestinationObject)
             {
                 this.DestHandleIndex = ReadUint();
@@ -803,7 +802,7 @@ namespace MAPIInspector.Parsers
         public object ReturnValue;
 
         //  An unsigned integer index that MUST be set to the value specified in the DestHandleIndex field in the request.
-        public uint DestHandleIndex;
+        public uint? DestHandleIndex;
 
         //A Boolean that indicates whether the operation was only partially completed.
         public bool PartialCompletion;
@@ -818,8 +817,8 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.SourceHandleIndex = ReadByte();
-         HelpMethod help = new HelpMethod();
-  this.ReturnValue =help. FormatErrorCode(ReadUint());
+            HelpMethod help = new HelpMethod();
+            this.ReturnValue = help.FormatErrorCode(ReadUint());
             if ((AdditionalErrorCodes)ReturnValue == AdditionalErrorCodes.NullDestinationObject)
             {
                 this.DestHandleIndex = ReadUint();
@@ -913,7 +912,7 @@ namespace MAPIInspector.Parsers
         public object ReturnValue;
 
         //  An unsigned integer index that MUST be set to the value specified in the DestHandleIndex field in the request.
-        public uint DestHandleIndex;
+        public uint? DestHandleIndex;
 
         //A Boolean that indicates whether the operation was only partially completed.
         public bool PartialCompletion;
@@ -928,8 +927,8 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.SourceHandleIndex = ReadByte();
-         HelpMethod help = new HelpMethod();
-  this.ReturnValue =help. FormatErrorCode(ReadUint());
+            HelpMethod help = new HelpMethod();
+            this.ReturnValue = help.FormatErrorCode(ReadUint());
             if ((AdditionalErrorCodes)ReturnValue == AdditionalErrorCodes.NullDestinationObject)
             {
                 this.DestHandleIndex = ReadUint();
@@ -1008,8 +1007,8 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-         HelpMethod help = new HelpMethod();
-  this.ReturnValue =help. FormatErrorCode(ReadUint());
+            HelpMethod help = new HelpMethod();
+            this.ReturnValue = help.FormatErrorCode(ReadUint());
             this.PartialCompletion = ReadBoolean();
         }
     }
@@ -1080,8 +1079,8 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-         HelpMethod help = new HelpMethod();
-  this.ReturnValue =help. FormatErrorCode(ReadUint());
+            HelpMethod help = new HelpMethod();
+            this.ReturnValue = help.FormatErrorCode(ReadUint());
             this.PartialCompletion = ReadBoolean();
         }
     }
@@ -1167,8 +1166,8 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-         HelpMethod help = new HelpMethod();
-  this.ReturnValue =help. FormatErrorCode(ReadUint());
+            HelpMethod help = new HelpMethod();
+            this.ReturnValue = help.FormatErrorCode(ReadUint());
             this.PartialCompletion = ReadBoolean();
         }
     }
@@ -1254,8 +1253,8 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-         HelpMethod help = new HelpMethod();
-  this.ReturnValue =help. FormatErrorCode(ReadUint());
+            HelpMethod help = new HelpMethod();
+            this.ReturnValue = help.FormatErrorCode(ReadUint());
             this.PartialCompletion = ReadBoolean();
         }
     }
@@ -1281,7 +1280,7 @@ namespace MAPIInspector.Parsers
         public byte OutputHandleIndex;
 
         // These flags control the type of table.
-        public byte TableFlags; // TODO: MSOXCFOLD.HierarchyTableFlags 
+        public HierarchyTableFlags TableFlags;
 
         /// <summary>
         /// Parse the RopGetHierarchyTableRequest structure.
@@ -1295,7 +1294,7 @@ namespace MAPIInspector.Parsers
             this.LogonId = ReadByte();
             this.InputHandleIndex = ReadByte();
             this.OutputHandleIndex = ReadByte();
-            this.TableFlags = ReadByte();
+            this.TableFlags = (HierarchyTableFlags)ReadByte();
         }
     }
 
@@ -1326,8 +1325,8 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-         HelpMethod help = new HelpMethod();
-  this.ReturnValue =help. FormatErrorCode(ReadUint());
+            HelpMethod help = new HelpMethod();
+            this.ReturnValue = help.FormatErrorCode(ReadUint());
 
             if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
             {
@@ -1357,7 +1356,7 @@ namespace MAPIInspector.Parsers
         public byte OutputHandleIndex;
 
         // These flags control the type of table.
-        public byte TableFlags; // TODO: MSOXCFOLD.HierarchyTableFlags 
+        public HierarchyTableFlags TableFlags;
 
         /// <summary>
         /// Parse the RopGetContentsTableRequest structure.
@@ -1371,7 +1370,7 @@ namespace MAPIInspector.Parsers
             this.LogonId = ReadByte();
             this.InputHandleIndex = ReadByte();
             this.OutputHandleIndex = ReadByte();
-            this.TableFlags = ReadByte();
+            this.TableFlags = (HierarchyTableFlags)ReadByte();
         }
     }
 
@@ -1402,8 +1401,8 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-         HelpMethod help = new HelpMethod();
-  this.ReturnValue =help. FormatErrorCode(ReadUint());
+            HelpMethod help = new HelpMethod();
+            this.ReturnValue = help.FormatErrorCode(ReadUint());
 
             if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
             {
