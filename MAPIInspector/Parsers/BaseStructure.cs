@@ -368,6 +368,13 @@ namespace MAPIInspector.Parsers
                 // If the data type is not simple type, we will loop each field, check the data type and then parse the value in different format
                 FieldInfo[] info = t.GetFields();
                 int BitLength = 0;
+
+                // The is only for FastTransfer stream parse, Polymorphic in PropValue and NamedPropInfo 
+                if (obj is PropValue || obj is NamedPropInfo)
+                {
+                    info = MoveFirstNFieldsBehind(info, info.Length - 2);
+                }
+
                 for (int i = 0; i < info.Length; i++)
                 {
                     int os = 0;
@@ -410,6 +417,18 @@ namespace MAPIInspector.Parsers
                                     }
 
                                     os += (int)((HelpAttribute)(attributes[0])).TerminatorLength;
+                                }
+                            }
+                            else if (type.Name == "UInt64")
+                            {
+                                if (info[i].GetCustomAttributesData().Count == 0)
+                                {
+                                    os = 8;
+                                }
+                                else
+                                {
+                                    object[] attributes = info[i].GetCustomAttributes(typeof(BytesAttribute), false);
+                                    os = (int)((BytesAttribute)attributes[0]).ByteLength;
                                 }
                             }
                             else if (type.Name == "DateTime")
@@ -613,7 +632,7 @@ namespace MAPIInspector.Parsers
                                 tnArr.Tag = pss;
 
                                 // Special handling for the array field data type when its name is Payload and it's compressed or XOR: recalculating the offset and position.
-								if (fieldNameForAut == "Payload" && isCompressedXOR)
+                                if (fieldNameForAut == "Payload" && isCompressedXOR)
                                 {
                                     tnArr = TreeNodeForCompressed(tnArr, current - arros, true);
                                     string text = tnArr.Text.Replace("Payload", "Payload(CompressedOrObfuscated)");
@@ -644,7 +663,7 @@ namespace MAPIInspector.Parsers
                         {
                             string fieldName = info[i].Name;
                             TreeNode node = new TreeNode();
-                            
+
                             // The below logical is used to check whether the payload is compressed or XOR.
                             if (fieldName == "RPC_HEADER_EXT")
                             {
@@ -675,6 +694,13 @@ namespace MAPIInspector.Parsers
                             {
                                 node = AddNodesForTree(info[i].GetValue(obj), current, out os);
                             }
+
+                            // Add the specific type(FastTransfer stream type) for TransferBuffer and TransferData fields.
+                            if (fieldName == "TransferBuffer" || fieldName == "TransferData")
+                            {
+                                fieldName = string.Format(fieldName + ": " + info[i].GetValue(obj).GetType().Name);
+                            }
+
                             node.Text = fieldName;
                             res.Nodes.Add(node);
                             current += os;
@@ -691,15 +717,6 @@ namespace MAPIInspector.Parsers
         }
 
         #region Helper for AddNodesForTree function
-        /// <summary>
-        /// String encoding enum
-        /// </summary>
-        public enum StringEncoding
-        {
-            ASCII,
-            Unicode
-        }
-
         /// <summary>
         /// Record start position and byte counts consumed 
         /// </summary>
@@ -718,36 +735,6 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Custom attribute for string type
-        /// </summary>
-        [AttributeUsage(AttributeTargets.All)]
-        public class HelpAttribute : System.Attribute
-        {
-            public StringEncoding Encode { get; set; }
-            public uint TerminatorLength { get; set; }
-            public bool IsExist { get; set; }
-            public HelpAttribute(StringEncoding encode, bool isExist, uint length = 0)
-            {
-                this.Encode = encode;
-                this.TerminatorLength = length;
-                this.IsExist = isExist;
-            }
-        }
-        /// <summary>
-        /// Custom attribute for bit length
-        /// </summary>
-        [AttributeUsage(AttributeTargets.All)]
-        public class BitAttribute : System.Attribute
-        {
-            public readonly int BitLength;
-            public BitAttribute(int bitLength)
-            {
-                this.BitLength = bitLength;
-            }
-
-        }
-
-        /// <summary>
         /// Modify custom attribute for string type
         /// </summary>
         public void ModifyIsExistAttribute(object obj, string fieldName)
@@ -758,6 +745,7 @@ namespace MAPIInspector.Parsers
             HelpAttribute attribute = (HelpAttribute)attributes[0];
             attribute.IsExist = true;
         }
+
         /// <summary>
         /// Modify Encode and TerminatorLength attribute for string type.
         /// </summary>
@@ -807,6 +795,33 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
+        /// Moving the number of fields in FieldInfo from begining to the end
+        /// </summary>
+        public static FieldInfo[] MoveFirstNFieldsBehind(FieldInfo[] field, int n)
+        {
+            FieldInfo[] NewField = new FieldInfo[field.Length];
+
+            if (n < 0 || n > field.Length)
+            {
+                throw new InvalidOperationException(string.Format("Moving Failed because the length ({0}) need to move is exceeded the fields' length ({1}).", n, field.Length));
+            }
+            else
+            {
+                int i = 0;
+                for (; i < field.Length - n; i++)
+                {
+                    NewField[i] = field[n + i];
+                }
+
+                for (; i < field.Length; i++)
+                {
+                    NewField[i] = field[i - (field.Length - n)];
+                }
+                return NewField;
+            }
+        }
+
+        /// <summary>
         /// The data type enum
         /// </summary>
         public enum DataType
@@ -829,7 +844,59 @@ namespace MAPIInspector.Parsers
             UInt64,
             DateTime
         }
-
         #endregion
+    }
+
+    /// <summary>
+    /// Custom attribute for string type
+    /// </summary>
+    [AttributeUsage(AttributeTargets.All)]
+    public class HelpAttribute : System.Attribute
+    {
+        public StringEncoding Encode { get; set; }
+        public uint TerminatorLength { get; set; }
+        public bool IsExist { get; set; }
+        public HelpAttribute(StringEncoding encode, bool isExist, uint length = 0)
+        {
+            this.Encode = encode;
+            this.TerminatorLength = length;
+            this.IsExist = isExist;
+        }
+    }
+
+    /// <summary>
+    /// Custom attribute for bit length
+    /// </summary>
+    [AttributeUsage(AttributeTargets.All)]
+    public class BitAttribute : System.Attribute
+    {
+        public readonly int BitLength;
+        public BitAttribute(int bitLength)
+        {
+            this.BitLength = bitLength;
+        }
+
+    }
+
+    /// <summary>
+    /// Custom attribute for bytes length
+    /// </summary>
+    [AttributeUsage(AttributeTargets.All)]
+    public class BytesAttribute : System.Attribute
+    {
+        public readonly uint ByteLength;
+        public BytesAttribute(uint byteLength)
+        {
+            this.ByteLength = byteLength;
+        }
+    }
+
+    /// <summary>
+    /// String encoding enum
+    /// </summary>
+    public enum StringEncoding
+    {
+        ASCII,
+        Unicode
     }
 }

@@ -1113,7 +1113,7 @@ namespace MAPIInspector.Parsers
                 case KindEnum.Name:
                     {
                         this.NameSize = ReadByte();
-                        this.Name = ReadString(Encoding.Unicode, "", (int)NameSize);
+                        this.Name = ReadString(Encoding.Unicode, "", (int)NameSize / 2);
                         ModifyIsExistAttribute(this, "Name");
                         break;
                     }
@@ -1224,7 +1224,7 @@ namespace MAPIInspector.Parsers
                 {
                     if (tempPropTag.PropertyType != PropertyDataType.PtypUnspecified)
                     {
-                        PropertyValue propValue = new PropertyValue(tempPropTag.PropertyType, CountWideEnum.twoBytes);
+                        PropertyValue propValue = new PropertyValue(tempPropTag.PropertyType);
                         propValue.Parse(s);
                         rowPropValue = propValue;
                     }
@@ -1524,6 +1524,24 @@ namespace MAPIInspector.Parsers
 
         // An unsigned integer that identifies the property.
         public PidTagPropertyEnum PropertyId;
+
+        /// <summary>
+        /// Initializes a new instance of the PropertyTag class with parameters.
+        /// </summary>
+        /// <param name="PType">The Type of the PropertyTag.</param>
+        /// /// <param name="PId">The Id of the PropertyTag.</param>
+        public PropertyTag(PropertyDataType PType, PidTagPropertyEnum PId)
+        {
+            this.PropertyType = PType;
+            this.PropertyId = PId;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the PropertyTag class without parameters.
+        /// </summary>
+        public PropertyTag()
+        {
+        }
 
         /// <summary>
         /// Parse the PropertyTag structure.
@@ -2595,6 +2613,7 @@ namespace MAPIInspector.Parsers
             PropertyType = ProType;
         }
 
+
         /// <summary>
         /// Initializes a new instance of the PropertyValue class without parameters.
         /// </summary>
@@ -2611,6 +2630,7 @@ namespace MAPIInspector.Parsers
             base.Parse(s);
             this.Value = this.ReadPropertyValue(this.PropertyType, s, countWide);
         }
+
         /// <summary>
         /// The method to return the object of PropertyValue.
         /// </summary>
