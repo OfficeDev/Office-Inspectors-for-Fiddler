@@ -312,7 +312,7 @@ namespace MapiInspector
             {
                 return p1.id.CompareTo(p2.id);
             });
-            AllSessionsList.Insert(0,session0);
+            AllSessionsList.Insert(0, session0);
             Session[] allSessions = AllSessionsList.ToArray();
             int currentSessionID = MAPIInspector.currentParsingSessionID;
             byte[] bytesForHexView;
@@ -404,7 +404,7 @@ namespace MapiInspector
                         requestBytesForHexview.Add(ThisSessionID, bytesForHexView);
                     }
                 }
-                
+
                 // parsing the previous sessions until DecodingContext.StreamType_Getbuffer has value. 
                 do
                 {
@@ -420,7 +420,7 @@ namespace MapiInspector
                             responseBytesForHexview.Add(currentSessionID, bytesForHexView);
                         }
                     }
-                    
+
                     if (DecodingContext.CopyTo_OutputHandles != null && DecodingContext.CopyTo_OutputHandles.ContainsKey(currentSessionID))
                     {
                         if (DecodingContext.CopyTo_OutputHandles[currentSessionID] == DecodingContext.GetBuffer_InPutHandles[ThisSessionID])
@@ -546,9 +546,10 @@ namespace MapiInspector
                         if (DecodingContext.SyncGetTransferState_OutputHandles[currentSessionID] == DecodingContext.GetBuffer_InPutHandles[ThisSessionID])
                         {
                             DecodingContext.StreamType_Getbuffer = FastTransferStreamType.state;
-            }
-            else
-            {
+                        }
+                    }
+                    else
+                    {
                         currentSessionID--;
                         continue;
                     }
@@ -575,7 +576,7 @@ namespace MapiInspector
             }
             else if ((RopIdType)sourceRopID == RopIdType.RopFastTransferSourceCopyProperties)
             {
-                int ThisSessionID = MAPIInspector.currentParsingSessionID;
+               int ThisSessionID = MAPIInspector.currentParsingSessionID;
                 currentSessionID -= 1;
 
                 // parsing the previous sessions until DecodingContext.ObjectHandles contains the parameters value(confirmed the type of input server object in CopyProperties is a folder or message or attachment). 
@@ -592,7 +593,7 @@ namespace MapiInspector
                     }
                     currentSessionID--;
                 }
-                while (!(DecodingContext.SessionObjectHandles.ContainsKey(currentSessionID+1) && DecodingContext.SessionObjectHandles[currentSessionID+1].ContainsKey(parameters.GetHashCode())));
+                while (!(DecodingContext.SessionObjectHandles.ContainsKey(currentSessionID + 1) && DecodingContext.SessionObjectHandles[currentSessionID + 1].ContainsKey(parameters.GetHashCode())));
 
                 // After confirmed the type of input server object in CopyProperties(such as folder). Parsing the response structure of this session.
                 MAPIRequest = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
@@ -620,7 +621,7 @@ namespace MapiInspector
                             responseDic.Add(currentSessionID, MAPIResponse);
                             responseBytesForHexview.Add(currentSessionID, bytesForHexView);
                         }
-                    } 
+                    }
                     currentSessionID--;
                 }
                 while (!(DecodingContext.SessionObjectHandles.ContainsKey(currentSessionID + 1) && DecodingContext.SessionObjectHandles[currentSessionID + 1].ContainsKey(parameters.GetHashCode())));
@@ -639,7 +640,7 @@ namespace MapiInspector
                 int ThisSessionID = MAPIInspector.currentParsingSessionID;
                 currentSessionID -= 1;
                 DecodingContext.StreamType_Putbuffer = 0;
-                
+
                 // If PutBuffer_InPutHandles dose not contain this session id(PutBuffer Rop), parsering the RopFastTransferDestinationPutBuffer response to get the input server object firstly.
                 if (DecodingContext.PutBuffer_InPutHandles == null || !DecodingContext.PutBuffer_InPutHandles.ContainsKey(ThisSessionID))
                 {
@@ -650,7 +651,7 @@ namespace MapiInspector
                         responseBytesForHexview.Add(ThisSessionID, bytesForHexView);
                     }
                 }
-                
+
                 // parsing the previous sessions until DecodingContext.StreamType_PutBuffer has value. 
                 do
                 {
@@ -782,7 +783,7 @@ namespace MapiInspector
                 if (DecodingContext.SessionPropertyTags != null && DecodingContext.SessionPropertyTags.ContainsKey(this.session.id))
                 {
                     obj = responseDic[currentSessionID];
-                    bytes = responseBytesForHexview[currentSessionID];     
+                    bytes = responseBytesForHexview[currentSessionID];
                 }
                 else
                 {
@@ -833,7 +834,7 @@ namespace MapiInspector
                 obj = requestDic[ThisSessionID];
                 bytes = requestBytesForHexview[ThisSessionID];
             }
-                else if ((RopIdType)sourceRopID == RopIdType.RopQueryRows || (RopIdType)sourceRopID == RopIdType.RopFindRow || (RopIdType)sourceRopID == RopIdType.RopExpandRow || (RopIdType)sourceRopID == RopIdType.RopNotify) // MSOXCTABL rop
+            else if ((RopIdType)sourceRopID == RopIdType.RopQueryRows || (RopIdType)sourceRopID == RopIdType.RopFindRow || (RopIdType)sourceRopID == RopIdType.RopExpandRow || (RopIdType)sourceRopID == RopIdType.RopNotify) // MSOXCTABL rop
             {
                 int ThisSessionID = MAPIInspector.currentParsingSessionID;
                 currentSessionID -= 1;
@@ -874,7 +875,7 @@ namespace MapiInspector
         /// Parse the HTTP payload to MAPI message.
         /// </summary>
         /// <param name="headers">The HTTP header.</param>
-		/// <param name="currentSessionID">the current session ID.</param>
+        /// <param name="currentSessionID">the current session ID.</param>
         /// <param name="bytesFromHTTP">The raw data from HTTP layer.</param>
         /// <param name="direction">The direction of the traffic.</param>
         /// <param name="bytes">The bytes provided for MAPI view layer.</param>

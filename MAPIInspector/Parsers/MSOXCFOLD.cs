@@ -13,7 +13,7 @@ namespace MAPIInspector.Parsers
     /// Section 2.2.1.1.1   RopOpenFolder ROP Request Buffer
     /// </summary>
     [Flags]
-    public enum OpenModeFlags : byte
+    public enum OpenModeFlagsMSOXCFOLD : byte
     {
         OpenSoftDeleted = 0x04
     }
@@ -120,7 +120,7 @@ namespace MAPIInspector.Parsers
         public FolderID FolderId;
 
         // An 8-bit flags structure that contains flags that are used to control how the folder is opened.
-        public OpenModeFlags OpenModeFlags;
+        public OpenModeFlagsMSOXCFOLD OpenModeFlags;
 
         /// <summary>
         /// Parse the RopOpenFolderRequest structure.
@@ -136,7 +136,7 @@ namespace MAPIInspector.Parsers
             this.OutputHandleIndex = ReadByte();
             this.FolderId = new FolderID();
             this.FolderId.Parse(s);
-            this.OpenModeFlags = (OpenModeFlags)ReadByte();
+            this.OpenModeFlags = (OpenModeFlagsMSOXCFOLD)ReadByte();
         }
     }
 
@@ -284,7 +284,7 @@ namespace MAPIInspector.Parsers
         public RopIdType RopId;
 
         // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
-        public byte InputHandleIndex;
+        public byte OutputHandleIndex;
 
         // An unsigned integer that specifies the status of the ROP.
         public object ReturnValue;
@@ -320,7 +320,7 @@ namespace MAPIInspector.Parsers
             base.Parse(s);
 
             this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.OutputHandleIndex = ReadByte();
             HelpMethod help = new HelpMethod();
             this.ReturnValue = help.FormatErrorCode(ReadUint());
 
