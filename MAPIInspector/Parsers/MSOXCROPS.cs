@@ -635,6 +635,26 @@ namespace MAPIInspector.Parsers
                             ropsList.Add(RopGetContentsTableRequest);
                             break;
 
+                        // MSOXCNOTIF rops
+                        case RopIdType.RopRegisterNotification:
+                            RopRegisterNotificationRequest RopRegisterNotificationRequest = new RopRegisterNotificationRequest();
+                            RopRegisterNotificationRequest.Parse(s);
+                            ropsList.Add(RopRegisterNotificationRequest);
+                            break;
+
+                        // MS-OXCPERM rops
+                        case RopIdType.RopGetPermissionsTable:
+                            RopGetPermissionsTableRequest RopGetPermissionsTableRequest = new RopGetPermissionsTableRequest();
+                            RopGetPermissionsTableRequest.Parse(s);
+                            ropsList.Add(RopGetPermissionsTableRequest);
+                            break;
+
+                        case RopIdType.RopModifyPermissions:
+                            RopModifyPermissionsRequest RopModifyPermissionsRequest = new RopModifyPermissionsRequest();
+                            RopModifyPermissionsRequest.Parse(s);
+                            ropsList.Add(RopModifyPermissionsRequest);
+                            break;
+
                         default:
                             object RopsBytes = ReadBytes(this.RopSize - 2);
                             ropsList.Add(RopsBytes);
@@ -1376,6 +1396,40 @@ namespace MAPIInspector.Parsers
                             RopGetContentsTableResponse RopGetContentsTableResponse = new RopGetContentsTableResponse();
                             RopGetContentsTableResponse.Parse(s);
                             ropsList.Add(RopGetContentsTableResponse);
+                            break;
+
+
+                        // MSOXCNOTIF rops
+                        case RopIdType.RopRegisterNotification:
+                            RopRegisterNotificationResponse RopRegisterNotificationResponse = new RopRegisterNotificationResponse();
+                            RopRegisterNotificationResponse.Parse(s);
+                            ropsList.Add(RopRegisterNotificationResponse);
+                            break;
+
+                        case RopIdType.RopPending:
+                            RopPendingResponse RopPendingResponse = new RopPendingResponse();
+                            RopPendingResponse.Parse(s);
+                            ropsList.Add(RopPendingResponse);
+                            break;
+
+                        case RopIdType.RopNotify:
+
+                            RopNotifyResponse RopNotifyResponse = new RopNotifyResponse();
+                            RopNotifyResponse.Parse(s);
+                            ropsList.Add(RopNotifyResponse);
+                            break;
+
+                        // MS-OXCPERM rops
+                        case RopIdType.RopGetPermissionsTable:
+                            RopGetPermissionsTableResponse RopGetPermissionsTableResponse = new RopGetPermissionsTableResponse();
+                            RopGetPermissionsTableResponse.Parse(s);
+                            ropsList.Add(RopGetPermissionsTableResponse);
+                            break;
+
+                        case RopIdType.RopModifyPermissions:
+                            RopModifyPermissionsResponse RopModifyPermissionsResponse = new RopModifyPermissionsResponse();
+                            RopModifyPermissionsResponse.Parse(s);
+                            ropsList.Add(RopModifyPermissionsResponse);
                             break;
 
                         default:
