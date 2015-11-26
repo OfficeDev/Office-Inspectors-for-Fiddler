@@ -248,7 +248,7 @@ namespace MAPIInspector.Parsers
         public object ReturnValue;
 
         // A Boolean that specifies whether the MessageId field is present.
-        public bool HasMessageId;
+        public bool? HasMessageId;
 
         // An identifier that is present if HasMessageId is nonzero and is not present if it is zero.
         public MessageID MessageId;
@@ -267,7 +267,7 @@ namespace MAPIInspector.Parsers
             if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
             {
                 this.HasMessageId = ReadBoolean();
-                if (this.HasMessageId)
+                if ((bool)this.HasMessageId)
                 {
                     this.MessageId = new MessageID();
                     this.MessageId.Parse(s);
@@ -1228,7 +1228,7 @@ namespace MAPIInspector.Parsers
         public object ReturnValue;
 
         // An unsigned integer identifier that refers to the attachment created.
-        public uint AttachmentID;
+        public uint? AttachmentID;
 
         /// <summary>
         /// Parse the RopCreateAttachmentResponse structure.
