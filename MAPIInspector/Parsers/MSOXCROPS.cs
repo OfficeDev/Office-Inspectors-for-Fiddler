@@ -2844,6 +2844,7 @@ namespace MAPIInspector.Parsers
 
         // Record current session(RopSynchronizationGetTransferState) OutputObjectHandle.
         private static Dictionary<int, int> syncGetTransferState_OutputHandles;
+        
         // Record the SetColumns's property tags.
         private static Dictionary<int, PropertyTag[]> setColumnsPropertyTags;
 
@@ -2861,9 +2862,6 @@ namespace MAPIInspector.Parsers
 
         // Record object handles value and type, contains FolderHandles, MessageHandles and AttachmentHandles.
         private static Dictionary<int, ObjectHandlesType> objectHandles;
-
-        // Record the remain size in roplist for parsing.
-        private static List<uint> ropRemainSize;
 
         // Record the map in session id and the remain seize in roplist parsing.
         private static Dictionary<int, List<uint>> sessionRequestRemainSize;
@@ -2888,7 +2886,6 @@ namespace MAPIInspector.Parsers
             sessionObjectHandles = new Dictionary<int, Dictionary<int, ObjectHandlesType>>();
             sessionPropertyTags = new Dictionary<int, PropertyTag[]>();
             sessionLogId = new Dictionary<int, byte>();
-            ropRemainSize = new List<uint>();
             sessionRequestRemainSize = new Dictionary<int, List<uint>>();
         }
 
@@ -3199,19 +3196,6 @@ namespace MAPIInspector.Parsers
             set
             {
                 columnsRelatedRops = value;
-            }
-        }
-		
-        // Gets or sets the ropRemainSize.
-        public static List<uint> RopRemainSize
-        {
-            get
-            {
-                return ropRemainSize;
-            }
-            set
-            {
-                ropRemainSize = value;
             }
         }
 
