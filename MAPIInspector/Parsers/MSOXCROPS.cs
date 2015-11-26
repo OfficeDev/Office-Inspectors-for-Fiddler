@@ -31,6 +31,7 @@ namespace MAPIInspector.Parsers
             this.RopSize = ReadUshort();
             List<object> ropsList = new List<object>();
             List<uint> serverObjectHandleTable = new List<uint>();
+            List<uint> RopRemainSize = new List<uint>();
 
             if (this.RopSize > 2)
             {
@@ -634,22 +635,125 @@ namespace MAPIInspector.Parsers
                             RopGetContentsTableRequest.Parse(s);
                             ropsList.Add(RopGetContentsTableRequest);
                             break;
-
+							                        
+                        //MS-OXCMSG
+                        case RopIdType.RopOpenMessage:
+                            RopOpenMessageRequest ropOpenMessageRequest = new RopOpenMessageRequest();
+                            ropOpenMessageRequest.Parse(s);
+                            ropsList.Add(ropOpenMessageRequest);
+                            break;
+                        case RopIdType.RopCreateMessage:
+                            RopCreateMessageRequest ropCreateMessageRequest = new RopCreateMessageRequest();
+                            ropCreateMessageRequest.Parse(s);
+                            ropsList.Add(ropCreateMessageRequest);
+                            break;
+                        case RopIdType.RopSaveChangesMessage:
+                            RopSaveChangesMessageRequest ropSaveChangesMessageRequest = new RopSaveChangesMessageRequest();
+                            ropSaveChangesMessageRequest.Parse(s);
+                            ropsList.Add(ropSaveChangesMessageRequest);
+                            break;
+                        case RopIdType.RopRemoveAllRecipients:
+                            RopRemoveAllRecipientsRequest ropRemoveAllRecipientsRequest = new RopRemoveAllRecipientsRequest();
+                            ropRemoveAllRecipientsRequest.Parse(s);
+                            ropsList.Add(ropRemoveAllRecipientsRequest);
+                            break;
+                        case RopIdType.RopModifyRecipients:
+                            RopModifyRecipientsRequest ropModifyRecipientsRequest = new RopModifyRecipientsRequest();
+                            ropModifyRecipientsRequest.Parse(s);
+                            ropsList.Add(ropModifyRecipientsRequest);
+                            break;
+                        case RopIdType.RopReadRecipients:
+                            RopReadRecipientsRequest ropReadRecipientsRequest = new RopReadRecipientsRequest();
+                            ropReadRecipientsRequest.Parse(s);
+                            ropsList.Add(ropReadRecipientsRequest);
+                            break;
+                        case RopIdType.RopReloadCachedInformation:
+                            RopReloadCachedInformationRequest ropReloadCachedInformationRequest = new RopReloadCachedInformationRequest();
+                            ropReloadCachedInformationRequest.Parse(s);
+                            ropsList.Add(ropReloadCachedInformationRequest);
+                            break;
+                        case RopIdType.RopSetMessageStatus:
+                            RopSetMessageStatusRequest ropSetMessageStatusRequest = new RopSetMessageStatusRequest();
+                            ropSetMessageStatusRequest.Parse(s);
+                            ropsList.Add(ropSetMessageStatusRequest);
+                            break;
+                        case RopIdType.RopGetMessageStatus:
+                            RopGetMessageStatusRequest ropGetMessageStatusRequest = new RopGetMessageStatusRequest();
+                            ropGetMessageStatusRequest.Parse(s);
+                            ropsList.Add(ropGetMessageStatusRequest);
+                            break;
+                        case RopIdType.RopSetReadFlags:
+                            RopSetReadFlagsRequest ropSetReadFlagsRequest = new RopSetReadFlagsRequest();
+                            ropSetReadFlagsRequest.Parse(s);
+                            ropsList.Add(ropSetReadFlagsRequest);
+                            break;
+                        case RopIdType.RopSetMessageReadFlag:
+                            byte ropId = ReadByte();
+                            byte logId = ReadByte();
+                            s.Position -= 2;
+                            if (!(DecodingContext.SessionLogId != null && DecodingContext.SessionLogId.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID) && DecodingContext.SessionLogId[MapiInspector.MAPIInspector.currentParsingSessionID] == logId))
+                            {
+                                throw new MissingInformationException("Missing LogonFlags information for RopWritePerUserInformation", (ushort)CurrentByte, null);
+                            }
+                            RopSetMessageReadFlagRequest ropSetMessageReadFlagRequest = new RopSetMessageReadFlagRequest();
+                            ropSetMessageReadFlagRequest.Parse(s);
+                            ropsList.Add(ropSetMessageReadFlagRequest);
+                            break;
+                        case RopIdType.RopOpenAttachment:
+                            RopOpenAttachmentRequest ropOpenAttachmentRequest = new RopOpenAttachmentRequest();
+                            ropOpenAttachmentRequest.Parse(s);
+                            ropsList.Add(ropOpenAttachmentRequest);
+                            break;
+                        case RopIdType.RopCreateAttachment:
+                            RopCreateAttachmentRequest ropCreateAttachmentRequest = new RopCreateAttachmentRequest();
+                            ropCreateAttachmentRequest.Parse(s);
+                            ropsList.Add(ropCreateAttachmentRequest);
+                            break;
+                        case RopIdType.RopDeleteAttachment:
+                            RopDeleteAttachmentRequest ropDeleteAttachmentRequest = new RopDeleteAttachmentRequest();
+                            ropDeleteAttachmentRequest.Parse(s);
+                            ropsList.Add(ropDeleteAttachmentRequest);
+                            break;
+                        case RopIdType.RopSaveChangesAttachment:
+                            RopSaveChangesAttachmentRequest ropSaveChangesAttachmentRequest = new RopSaveChangesAttachmentRequest();
+                            ropSaveChangesAttachmentRequest.Parse(s);
+                            ropsList.Add(ropSaveChangesAttachmentRequest);
+                            break;
+                        case RopIdType.RopOpenEmbeddedMessage:
+                            RopOpenEmbeddedMessageRequest ropOpenEmbeddedMessageRequest = new RopOpenEmbeddedMessageRequest();
+                            ropOpenEmbeddedMessageRequest.Parse(s);
+                            ropsList.Add(ropOpenEmbeddedMessageRequest);
+                            break;
+                        case RopIdType.RopGetAttachmentTable:
+                            RopGetAttachmentTableRequest ropGetAttachmentTableRequest = new RopGetAttachmentTableRequest();
+                            ropGetAttachmentTableRequest.Parse(s);
+                            ropsList.Add(ropGetAttachmentTableRequest);
+                            break;
+                        case RopIdType.RopGetValidAttachments:
+                            RopGetValidAttachmentsRequest ropGetValidAttachmentsRequest = new RopGetValidAttachmentsRequest();
+                            ropGetValidAttachmentsRequest.Parse(s);
+                            ropsList.Add(ropGetValidAttachmentsRequest);
+                            break;
                         default:
                             object RopsBytes = ReadBytes(this.RopSize - 2);
                             ropsList.Add(RopsBytes);
                             break;
                     }
-
-                } while (s.Position < this.RopSize);
-
+                    RopRemainSize.Add(this.RopSize - (uint)s.Position);
+                } while (s.Position < this.RopSize); 
             }
             else
             {
                 this.RopsList = null;
             }
-
+            
+            if (DecodingContext.SessionRequestRemainSize.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
+            {
+                DecodingContext.SessionRequestRemainSize.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
+                DecodingContext.SessionRequestRemainSize.Add(MapiInspector.MAPIInspector.currentParsingSessionID, RopRemainSize);
+            }
             this.RopsList = ropsList.ToArray();
+           
             while (s.Position < s.Length)
             {
                 uint ServerObjectHandle = ReadUint();
@@ -907,11 +1011,23 @@ namespace MAPIInspector.Parsers
                             ropsList.Add(RopBackoffResponse);
                             break;
                         case RopIdType.RopBufferTooSmall:
-                            RopBufferTooSmallResponse RopBufferTooSmallResponse = new RopBufferTooSmallResponse();
-                            RopBufferTooSmallResponse.Parse(s);
-                            ropsList.Add(RopBufferTooSmallResponse);
-                            break;
-
+                            if (DecodingContext.SessionRequestRemainSize != null && DecodingContext.SessionRequestRemainSize.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
+                            {
+                                uint RequestBuffersSize = 0;
+                                int RopCountInResponse = ropsList.Count;
+                                if (DecodingContext.SessionRequestRemainSize.Count > RopCountInResponse)
+                                {
+                                    RequestBuffersSize = DecodingContext.SessionRequestRemainSize[MapiInspector.MAPIInspector.currentParsingSessionID][RopCountInResponse];
+                                }
+                                RopBufferTooSmallResponse RopBufferTooSmallResponse = new RopBufferTooSmallResponse(RequestBuffersSize);
+                                RopBufferTooSmallResponse.Parse(s);
+                                ropsList.Add(RopBufferTooSmallResponse);
+                                break;
+                            }
+                            else
+                            {
+                                throw new MissingInformationException("Missing RequestBuffersSize information for RopBufferTooSmall", (ushort)CurrentByte, null);
+                            }
                         // MSOXCTABL Rop
                         case RopIdType.RopSetColumns:
                             RopSetColumnsResponse RopSetColumnsResponse = new RopSetColumnsResponse();
@@ -1378,6 +1494,97 @@ namespace MAPIInspector.Parsers
                             ropsList.Add(RopGetContentsTableResponse);
                             break;
 
+                        //MS-OXCMSG
+                        case RopIdType.RopOpenMessage:
+                            RopOpenMessageResponse ropOpenMessageResponse = new RopOpenMessageResponse();
+                            ropOpenMessageResponse.Parse(s);
+                            ropsList.Add(ropOpenMessageResponse);
+                            break;
+                        case RopIdType.RopCreateMessage:
+                            RopCreateMessageResponse ropCreateMessageResponse = new RopCreateMessageResponse();
+                            ropCreateMessageResponse.Parse(s);
+                            ropsList.Add(ropCreateMessageResponse);
+                            break;
+                        case RopIdType.RopSaveChangesMessage:
+                            RopSaveChangesMessageResponse ropSaveChangesMessageResponse = new RopSaveChangesMessageResponse();
+                            ropSaveChangesMessageResponse.Parse(s);
+                            ropsList.Add(ropSaveChangesMessageResponse);
+                            break;
+                        case RopIdType.RopRemoveAllRecipients:
+                            RopRemoveAllRecipientsResponse ropRemoveAllRecipientsResponse = new RopRemoveAllRecipientsResponse();
+                            ropRemoveAllRecipientsResponse.Parse(s);
+                            ropsList.Add(ropRemoveAllRecipientsResponse);
+                            break;
+                        case RopIdType.RopModifyRecipients:
+                            RopModifyRecipientsResponse ropModifyRecipientsResponse = new RopModifyRecipientsResponse();
+                            ropModifyRecipientsResponse.Parse(s);
+                            ropsList.Add(ropModifyRecipientsResponse);
+                            break;
+                        case RopIdType.RopReadRecipients:
+                            RopReadRecipientsResponse ropReadRecipientsResponse = new RopReadRecipientsResponse();
+                            ropReadRecipientsResponse.Parse(s);
+                            ropsList.Add(ropReadRecipientsResponse);
+                            break;
+                        case RopIdType.RopReloadCachedInformation:
+                            RopReloadCachedInformationResponse ropReloadCachedInformationResponse = new RopReloadCachedInformationResponse();
+                            ropReloadCachedInformationResponse.Parse(s);
+                            ropsList.Add(ropReloadCachedInformationResponse);
+                            break;
+                        case RopIdType.RopSetMessageStatus:
+                            RopSetMessageStatusResponse ropSetMessageStatusResponse = new RopSetMessageStatusResponse();
+                            ropSetMessageStatusResponse.Parse(s);
+                            ropsList.Add(ropSetMessageStatusResponse);
+                            break;
+                        case RopIdType.RopGetMessageStatus:
+                            RopGetMessageStatusResponse ropGetMessageStatusResponse = new RopGetMessageStatusResponse();
+                            ropGetMessageStatusResponse.Parse(s);
+                            ropsList.Add(ropGetMessageStatusResponse);
+                            break;
+                        case RopIdType.RopSetReadFlags:
+                            RopSetReadFlagsResponse ropSetReadFlagsResponse = new RopSetReadFlagsResponse();
+                            ropSetReadFlagsResponse.Parse(s);
+                            ropsList.Add(ropSetReadFlagsResponse);
+                            break;
+                        case RopIdType.RopSetMessageReadFlag:
+                            RopSetMessageReadFlagResponse ropSetMessageReadFlagResponse = new RopSetMessageReadFlagResponse();
+                            ropSetMessageReadFlagResponse.Parse(s);
+                            ropsList.Add(ropSetMessageReadFlagResponse);
+                            break;
+                        case RopIdType.RopOpenAttachment:
+                            RopOpenAttachmentResponse ropOpenAttachmentResponse = new RopOpenAttachmentResponse();
+                            ropOpenAttachmentResponse.Parse(s);
+                            ropsList.Add(ropOpenAttachmentResponse);
+                            break;
+                        case RopIdType.RopCreateAttachment:
+                            RopCreateAttachmentResponse ropCreateAttachmentResponse = new RopCreateAttachmentResponse();
+                            ropCreateAttachmentResponse.Parse(s);
+                            ropsList.Add(ropCreateAttachmentResponse);
+                            break;
+                        case RopIdType.RopDeleteAttachment:
+                            RopDeleteAttachmentResponse ropDeleteAttachmentResponse = new RopDeleteAttachmentResponse();
+                            ropDeleteAttachmentResponse.Parse(s);
+                            ropsList.Add(ropDeleteAttachmentResponse);
+                            break;
+                        case RopIdType.RopSaveChangesAttachment:
+                            RopSaveChangesAttachmentResponse ropSaveChangesAttachmentResponse = new RopSaveChangesAttachmentResponse();
+                            ropSaveChangesAttachmentResponse.Parse(s);
+                            ropsList.Add(ropSaveChangesAttachmentResponse);
+                            break;
+                        case RopIdType.RopOpenEmbeddedMessage:
+                            RopOpenEmbeddedMessageResponse ropOpenEmbeddedMessageResponse = new RopOpenEmbeddedMessageResponse();
+                            ropOpenEmbeddedMessageResponse.Parse(s);
+                            ropsList.Add(ropOpenEmbeddedMessageResponse);
+                            break;
+                        case RopIdType.RopGetAttachmentTable:
+                            RopGetAttachmentTableResponse ropGetAttachmentTableResponse = new RopGetAttachmentTableResponse();
+                            ropGetAttachmentTableResponse.Parse(s);
+                            ropsList.Add(ropGetAttachmentTableResponse);
+                            break;
+                        case RopIdType.RopGetValidAttachments:
+                            RopGetValidAttachmentsResponse ropGetValidAttachmentsResponse = new RopGetValidAttachmentsResponse();
+                            ropGetValidAttachmentsResponse.Parse(s);
+                            ropsList.Add(ropGetValidAttachmentsResponse);
+                            break;
                         default:
                             object RopsBytes = ReadBytes(this.RopSize - (int)s.Position);
                             ropsList.Add(RopsBytes);
@@ -2405,6 +2612,18 @@ namespace MAPIInspector.Parsers
         // An array of bytes that contains the section of the ROP input buffer that was not executed because of the insufficient size of the ROP output buffer.
         public byte[] RequestBuffers;
 
+        // An unsigned integer that specifies the size of RequestBuffers.
+        private uint RequestBuffersSize;
+
+        /// <summary>
+        /// The Constructor of RopBufferTooSmallResponse.
+        /// </summary>
+        /// <param name="RequestBuffersSize"> The size of RequestBuffers.</param>
+        public RopBufferTooSmallResponse(uint RequestBuffersSize)
+        {
+            this.RequestBuffersSize = RequestBuffersSize;
+        }
+
         /// <summary>
         /// Parse the RopBufferTooSmallResponse structure.
         /// </summary>
@@ -2415,8 +2634,7 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.SizeNeeded = ReadUshort();
-            // TODO 
-            this.RequestBuffers = ReadBytes(SizeNeeded);
+            this.RequestBuffers = ReadBytes((int)this.RequestBuffersSize);
         }
     }
 
@@ -2644,6 +2862,12 @@ namespace MAPIInspector.Parsers
         // Record object handles value and type, contains FolderHandles, MessageHandles and AttachmentHandles.
         private static Dictionary<int, ObjectHandlesType> objectHandles;
 
+        // Record the remain size in roplist for parsing.
+        private static List<uint> ropRemainSize;
+
+        // Record the map in session id and the remain seize in roplist parsing.
+        private static Dictionary<int, List<uint>> sessionRequestRemainSize;
+
         public DecodingContext()
         {
             objectHandles = new Dictionary<int, ObjectHandlesType>();
@@ -2664,6 +2888,8 @@ namespace MAPIInspector.Parsers
             sessionObjectHandles = new Dictionary<int, Dictionary<int, ObjectHandlesType>>();
             sessionPropertyTags = new Dictionary<int, PropertyTag[]>();
             sessionLogId = new Dictionary<int, byte>();
+            ropRemainSize = new List<uint>();
+            sessionRequestRemainSize = new Dictionary<int, List<uint>>();
         }
 
         // Gets or sets the logOnFlags.
@@ -2962,6 +3188,7 @@ namespace MAPIInspector.Parsers
                 streamType_Putbuffer = value;
             }
         }
+		
         // Get or set columnsRelatedRops
         public static Dictionary<int, object> ColumnsRelatedRops
         {
@@ -2972,6 +3199,32 @@ namespace MAPIInspector.Parsers
             set
             {
                 columnsRelatedRops = value;
+            }
+        }
+		
+        // Gets or sets the ropRemainSize.
+        public static List<uint> RopRemainSize
+        {
+            get
+            {
+                return ropRemainSize;
+            }
+            set
+            {
+                ropRemainSize = value;
+            }
+        }
+
+        // Gets or sets the sessionRequestRemainSize
+        public static Dictionary<int, List<uint>> SessionRequestRemainSize
+        {
+            get
+            {
+                return sessionRequestRemainSize;
+            }
+            set
+            {
+                sessionRequestRemainSize = value;
             }
         }
     }

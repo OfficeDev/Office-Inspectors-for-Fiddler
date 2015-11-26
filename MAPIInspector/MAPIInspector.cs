@@ -347,46 +347,33 @@ namespace MapiInspector
             }
             else if ((RopIdType)sourceRopID == RopIdType.RopSetMessageReadFlag)
             {
-                byte result = 0;
-                if (parameters.GetType().Name == "Byte")
-                {
-                    result = (byte)parameters;
-                }
-                else
-                {
-                    throw new Exception("Missing parameter information for RopSetMessageReadFlag");
-                }
-
+                int ThisSessionID = MAPIInspector.currentParsingSessionID;
+                MapiInspector.MAPIInspector.logonRelatedSessionID = ThisSessionID;
                 currentSessionID -= 1;
+
+                // parsing the previous sessions until DecodingContext.SessionLogonFlag contains currentSessionID. 
                 do
                 {
-                    MAPIRequest = ParseHTTPPayload(this.BaseHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
-                    if (MAPIRequest.GetType().Name == "ExecuteRequestBody")
+                    MAPIRequest = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                    MapiInspector.MAPIInspector.logonRelatedSessionID = ThisSessionID;
+                    if (MAPIRequest != null && MAPIRequest.GetType().Name == "ExecuteRequestBody" && !requestDic.ContainsKey(allSessions[currentSessionID].id))
                     {
                         requestDic.Add(allSessions[currentSessionID].id, MAPIRequest);
                         requestBytesForHexview.Add(allSessions[currentSessionID].id, bytesForHexView);
                     }
                     currentSessionID--;
                 }
-                while (!DecodingContext.LogonFlagMapLogId.ContainsKey(result));
+                while (DecodingContext.SessionLogonFlag == null || !DecodingContext.SessionLogonFlag.ContainsKey(ThisSessionID));
 
-                if (DecodingContext.LogonFlagMapLogId.ContainsKey(result))
+                // Parsing the request structure of this session.
+                MAPIRequest = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                if (MAPIRequest.GetType().Name == "ExecuteRequestBody" && requestDic != null && !requestDic.ContainsKey(ThisSessionID))
                 {
-                    MAPIResponse = ParseHTTPPayload(this.BaseHeaders, this.session.id, this.session.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
-                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody")
-                    {
-                        responseDic.Add(this.session.id, MAPIResponse);
-                        responseBytesForHexview.Add(this.session.id, bytesForHexView);
-                    }
-                    obj = responseDic[this.session.id];
-                    bytes = responseBytesForHexview[this.session.id];
+                    requestDic.Add(ThisSessionID, MAPIRequest);
+                    requestBytesForHexview.Add(ThisSessionID, bytesForHexView);
                 }
-                else
-                {
-                    obj = null;
-                    bytes = new byte[0];
-                    DialogResult confirmResult = MessageBox.Show("Missing related session information, check please.", "Confirmation", MessageBoxButtons.OK);
-                }
+                obj = requestDic[ThisSessionID];
+                bytes = requestBytesForHexview[ThisSessionID];
             }
             else if ((RopIdType)sourceRopID == RopIdType.RopFastTransferSourceGetBuffer)
             {
@@ -861,7 +848,33 @@ namespace MapiInspector
                 }
                 obj = responseDic[ThisSessionID];
                 bytes = responseBytesForHexview[ThisSessionID];
+            }
+            else if ((RopIdType)sourceRopID == RopIdType.RopBufferTooSmall)
+            {
+                int ThisSessionID = MAPIInspector.currentParsingSessionID;
+                if (DecodingContext.SessionRequestRemainSize != null && DecodingContext.SessionRequestRemainSize.ContainsKey(ThisSessionID))
+                {
+                    obj = responseDic[ThisSessionID];
+                    bytes = responseBytesForHexview[ThisSessionID];
+                }
+                else
+                {
+                    MAPIRequest = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                    if (MAPIRequest.GetType().Name == "ExecuteRequestBody")
+                    {
+                        requestDic.Add(ThisSessionID, MAPIRequest);
+                        requestBytesForHexview.Add(ThisSessionID, bytesForHexView);
+                    }
 
+                    MAPIResponse = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody")
+                    {
+                        responseDic.Add(ThisSessionID, MAPIResponse);
+                        responseBytesForHexview.Add(ThisSessionID, bytesForHexView);
+                    }
+                    obj = responseDic[ThisSessionID];
+                    bytes = responseBytesForHexview[ThisSessionID];
+                }
             }
             else
             {
