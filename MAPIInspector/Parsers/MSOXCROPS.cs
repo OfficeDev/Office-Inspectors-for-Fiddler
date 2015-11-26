@@ -635,7 +635,7 @@ namespace MAPIInspector.Parsers
                             RopGetContentsTableRequest.Parse(s);
                             ropsList.Add(RopGetContentsTableRequest);
                             break;
-							                        
+
                         //MS-OXCMSG
                         case RopIdType.RopOpenMessage:
                             RopOpenMessageRequest ropOpenMessageRequest = new RopOpenMessageRequest();
@@ -734,19 +734,39 @@ namespace MAPIInspector.Parsers
                             ropGetValidAttachmentsRequest.Parse(s);
                             ropsList.Add(ropGetValidAttachmentsRequest);
                             break;
+                        // MSOXCNOTIF rops
+                        case RopIdType.RopRegisterNotification:
+                            RopRegisterNotificationRequest RopRegisterNotificationRequest = new RopRegisterNotificationRequest();
+                            RopRegisterNotificationRequest.Parse(s);
+                            ropsList.Add(RopRegisterNotificationRequest);
+                            break;
+
+                        // MS-OXCPERM rops
+                        case RopIdType.RopGetPermissionsTable:
+                            RopGetPermissionsTableRequest RopGetPermissionsTableRequest = new RopGetPermissionsTableRequest();
+                            RopGetPermissionsTableRequest.Parse(s);
+                            ropsList.Add(RopGetPermissionsTableRequest);
+                            break;
+
+                        case RopIdType.RopModifyPermissions:
+                            RopModifyPermissionsRequest RopModifyPermissionsRequest = new RopModifyPermissionsRequest();
+                            RopModifyPermissionsRequest.Parse(s);
+                            ropsList.Add(RopModifyPermissionsRequest);
+                            break;
+
                         default:
                             object RopsBytes = ReadBytes(this.RopSize - 2);
                             ropsList.Add(RopsBytes);
                             break;
                     }
                     RopRemainSize.Add(this.RopSize - (uint)s.Position);
-                } while (s.Position < this.RopSize); 
+                } while (s.Position < this.RopSize);
             }
             else
             {
                 this.RopsList = null;
             }
-            
+
             if (DecodingContext.SessionRequestRemainSize.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
             {
                 DecodingContext.SessionRequestRemainSize.Remove(MapiInspector.MAPIInspector.currentParsingSessionID);
@@ -1020,9 +1040,9 @@ namespace MAPIInspector.Parsers
                                     RequestBuffersSize = DecodingContext.SessionRequestRemainSize[MapiInspector.MAPIInspector.currentParsingSessionID][RopCountInResponse];
                                 }
                                 RopBufferTooSmallResponse RopBufferTooSmallResponse = new RopBufferTooSmallResponse(RequestBuffersSize);
-                                RopBufferTooSmallResponse.Parse(s);
-                                ropsList.Add(RopBufferTooSmallResponse);
-                                break;
+                            RopBufferTooSmallResponse.Parse(s);
+                            ropsList.Add(RopBufferTooSmallResponse);
+                            break;
                             }
                             else
                             {
@@ -1585,6 +1605,40 @@ namespace MAPIInspector.Parsers
                             ropGetValidAttachmentsResponse.Parse(s);
                             ropsList.Add(ropGetValidAttachmentsResponse);
                             break;
+
+                        // MSOXCNOTIF rops
+                        case RopIdType.RopRegisterNotification:
+                            RopRegisterNotificationResponse RopRegisterNotificationResponse = new RopRegisterNotificationResponse();
+                            RopRegisterNotificationResponse.Parse(s);
+                            ropsList.Add(RopRegisterNotificationResponse);
+                            break;
+
+                        case RopIdType.RopPending:
+                            RopPendingResponse RopPendingResponse = new RopPendingResponse();
+                            RopPendingResponse.Parse(s);
+                            ropsList.Add(RopPendingResponse);
+                            break;
+
+                        case RopIdType.RopNotify:
+
+                            RopNotifyResponse RopNotifyResponse = new RopNotifyResponse();
+                            RopNotifyResponse.Parse(s);
+                            ropsList.Add(RopNotifyResponse);
+                            break;
+
+                        // MS-OXCPERM rops
+                        case RopIdType.RopGetPermissionsTable:
+                            RopGetPermissionsTableResponse RopGetPermissionsTableResponse = new RopGetPermissionsTableResponse();
+                            RopGetPermissionsTableResponse.Parse(s);
+                            ropsList.Add(RopGetPermissionsTableResponse);
+                            break;
+
+                        case RopIdType.RopModifyPermissions:
+                            RopModifyPermissionsResponse RopModifyPermissionsResponse = new RopModifyPermissionsResponse();
+                            RopModifyPermissionsResponse.Parse(s);
+                            ropsList.Add(RopModifyPermissionsResponse);
+                            break;
+
                         default:
                             object RopsBytes = ReadBytes(this.RopSize - (int)s.Position);
                             ropsList.Add(RopsBytes);
