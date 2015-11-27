@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using System.Text;
 
 namespace MAPIInspector.Parsers
 {
@@ -33,8 +34,7 @@ namespace MAPIInspector.Parsers
         public ushort EssdnSize;
 
         // A null-terminated ASCII string that specifies which mailbox to log on to. 
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string Essdn;
+        public MAPIString Essdn;
 
         /// <summary>
         /// Parse the RopLogonRequest structure.
@@ -53,7 +53,8 @@ namespace MAPIInspector.Parsers
             this.EssdnSize = ReadUshort();
             if (this.EssdnSize > 0)
             {
-                this.Essdn = ReadString();
+                this.Essdn = new MAPIString(Encoding.ASCII);
+                this.Essdn.Parse(s);
             }
         }
     }
@@ -104,8 +105,7 @@ namespace MAPIInspector.Parsers
         public byte? ServerNameSize;
 
         //  A null-terminated ASCII string that specifies a different server for the client to connect to.
-        [HelpAttribute(StringEncoding.ASCII, false, 1)]
-        public string ServerName;
+        public MAPIString ServerName;
 
         /// <summary>
         /// Parse the RopLogonResponse_PrivateMailboxes structure.
@@ -141,8 +141,8 @@ namespace MAPIInspector.Parsers
             {
                 this.LogonFlags = (LogonFlags)ReadByte();
                 this.ServerNameSize = ReadByte();
-                this.ServerName = ReadString();
-                ModifyIsExistAttribute(this, "ServerName");
+                this.ServerName = new MAPIString(Encoding.ASCII);
+                this.ServerName.Parse(s);
             }
         }
     }
@@ -181,8 +181,7 @@ namespace MAPIInspector.Parsers
         public byte? ServerNameSize;
 
         //  A null-terminated ASCII string that specifies a different server for the client to connect to.
-        [HelpAttribute(StringEncoding.ASCII, false, 1)]
-        public string ServerName;
+        public MAPIString ServerName;
 
         /// <summary>
         /// Parse the RopLogonResponse_PublicFolders structure.
@@ -213,8 +212,8 @@ namespace MAPIInspector.Parsers
             {
                 this.LogonFlags = (LogonFlags)ReadByte();
                 this.ServerNameSize = ReadByte();
-                this.ServerName = ReadString();
-                ModifyIsExistAttribute(this, "ServerName");
+                this.ServerName = new MAPIString(Encoding.ASCII);
+                this.ServerName.Parse(s);
             }
         }
     }
@@ -236,8 +235,7 @@ namespace MAPIInspector.Parsers
         public byte InputHandleIndex;
 
         // A null-terminated ASCII string that specifies the message class to find the Receive folder for.
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string MessageClass;
+        public MAPIString MessageClass;
 
         /// <summary>
         /// Parse the RopGetReceiveFolderRequest structure.
@@ -250,7 +248,8 @@ namespace MAPIInspector.Parsers
             this.RopId = (RopIdType)ReadByte();
             this.LogonId = ReadByte();
             this.InputHandleIndex = ReadByte();
-            this.MessageClass = ReadString();
+            this.MessageClass = new MAPIString(Encoding.ASCII);
+            this.MessageClass.Parse(s);
         }
     }
 
@@ -272,8 +271,7 @@ namespace MAPIInspector.Parsers
         public FolderID FolderId;
 
         // A null-terminated ASCII string that specifies the message class that is actually configured for delivery to the folder.
-        [HelpAttribute(StringEncoding.ASCII, false, 1)]
-        public string ExplicitMessageClass;
+        public MAPIString ExplicitMessageClass;
 
         /// <summary>
         /// Parse the RopGetReceiveFolderResponse structure.
@@ -291,8 +289,8 @@ namespace MAPIInspector.Parsers
             {
                 this.FolderId = new FolderID();
                 this.FolderId.Parse(s);
-                this.ExplicitMessageClass = ReadString();
-                ModifyIsExistAttribute(this, "ExplicitMessageClass");
+                this.ExplicitMessageClass = new MAPIString(Encoding.ASCII);
+                this.ExplicitMessageClass.Parse(s);
             }
         }
     }
@@ -317,8 +315,7 @@ namespace MAPIInspector.Parsers
         public FolderID FolderId;
 
         // A null-terminated ASCII string that specifies which message class to set the Receive folder for.
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string MessageClass;
+        public MAPIString MessageClass;
 
         /// <summary>
         /// Parse the RopSetReceiveFolderRequest structure.
@@ -333,7 +330,8 @@ namespace MAPIInspector.Parsers
             this.InputHandleIndex = ReadByte();
             this.FolderId = new FolderID();
             this.FolderId.Parse(s);
-            this.MessageClass = ReadString();
+            this.MessageClass = new MAPIString(Encoding.ASCII);
+            this.MessageClass.Parse(s);
         }
     }
 
@@ -572,8 +570,7 @@ namespace MAPIInspector.Parsers
         public ushort? CheapServersCount;
 
         // A list of null-terminated ASCII strings that specify which servers have replicas (1) of this folder.
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string[] OwningServers;
+        public MAPIString[] OwningServers;
 
         /// <summary>
         /// Parse the RopGetOwningServersResponse structure.
@@ -592,10 +589,12 @@ namespace MAPIInspector.Parsers
                 this.OwningServersCount = ReadUshort();
                 this.CheapServersCount = ReadUshort();
 
-                List<string> tmpOwning = new List<string>();
+                List<MAPIString> tmpOwning = new List<MAPIString>();
                 for (int i = 0; i < this.OwningServersCount; i++)
                 {
-                    tmpOwning.Add(ReadString());
+                    MAPIString subOwing = new MAPIString(Encoding.ASCII);
+                    subOwing.Parse(s);
+                    tmpOwning.Add(subOwing);
                 }
                 this.OwningServers = tmpOwning.ToArray();
             }
@@ -661,8 +660,7 @@ namespace MAPIInspector.Parsers
         public ushort? CheapServersCount;
 
         // A list of null-terminated ASCII strings that specify which servers have replicas (1) of this folder.
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string[] Servers;
+        public MAPIString[] Servers;
 
         /// <summary>
         /// Parse the RopPublicFolderIsGhostedResponse structure.
@@ -683,10 +681,12 @@ namespace MAPIInspector.Parsers
                 {
                     this.ServersCount = ReadUshort();
                     this.CheapServersCount = ReadUshort();
-                    List<string> tmpServers = new List<string>();
+                    List<MAPIString> tmpServers = new List<MAPIString>();
                     for (int i = 0; i < this.ServersCount; i++)
                     {
-                        tmpServers.Add(ReadString());
+                        MAPIString subServer = new MAPIString(Encoding.ASCII);
+                        subServer.Parse(s);
+                        tmpServers.Add(subServer);
                     }
                     this.Servers = tmpServers.ToArray();
                 }

@@ -163,8 +163,7 @@ namespace MAPIInspector.Parsers
         public DisplayTypeValues DisplayTypeString;
 
         // The DN (1) of the object specified by this Permanent Entry ID. 
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string DistinguishedName ;
+        public MAPIString DistinguishedName ;
 
         /// <summary>
         /// Parse the PermanentEntryID payload of session.
@@ -180,7 +179,8 @@ namespace MAPIInspector.Parsers
             this.ProviderUID = ReadGuid();
             this.R4 = ReadUint();
             this.DisplayTypeString = (DisplayTypeValues)ReadUint();
-            this.DistinguishedName = ReadString();
+            this.DistinguishedName = new MAPIString(Encoding.ASCII);
+            this.DistinguishedName.Parse(s);
         }
     }
 
@@ -397,8 +397,7 @@ namespace MAPIInspector.Parsers
         public byte? MagicNumber;
 
         // A single 8-bit character string value. This value is NULL-terminated.
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string Value;
+        public MAPIString Value;
 
         /// <summary>
         /// Parse the String_r payload of session.
@@ -416,7 +415,8 @@ namespace MAPIInspector.Parsers
             {
                 s.Position -= 1;
             }
-            this.Value = ReadString();
+            this.Value = new MAPIString(Encoding.ASCII);
+            this.Value.Parse(s);
         }
     }
 
@@ -429,8 +429,7 @@ namespace MAPIInspector.Parsers
         public byte? MagicNumber;
 
         // A single Unicode string value. This value is NULL-terminated.
-        [HelpAttribute(StringEncoding.Unicode, true, 1)]
-        public string Value;
+        public MAPIString Value;
 
         /// <summary>
         /// Parse the WString_r payload of session.
@@ -448,7 +447,8 @@ namespace MAPIInspector.Parsers
             {
                 s.Position -= 1;
             }
-            this.Value = ReadString();
+            this.Value = new MAPIString(Encoding.Unicode);
+            this.Value.Parse(s);
         }
     }
 
@@ -555,8 +555,7 @@ namespace MAPIInspector.Parsers
         public uint cValues;
 
         // The 8-bit character string references. The strings referred to are NULL-terminated.
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string[] lppszA;
+        public MAPIString[] lppszA;
 
         /// <summary>
         /// Parse the StringArray_r payload of session.
@@ -575,10 +574,12 @@ namespace MAPIInspector.Parsers
                 s.Position -= 1;
             }
             this.cValues = ReadUint();
-            List<string> temBytes = new List<string>();
+            List<MAPIString> temBytes = new List<MAPIString>();
             for (ulong i = 0; i < this.cValues; i++)
             {
-                temBytes.Add(ReadString());
+                MAPIString tempByte = new MAPIString(Encoding.ASCII);
+                tempByte.Parse(s);
+                temBytes.Add(tempByte);
             }
             this.lppszA = temBytes.ToArray();
         }
@@ -669,8 +670,7 @@ namespace MAPIInspector.Parsers
         public uint cValues;
 
         // The Unicode character string references. The strings referred to are NULL-terminated.
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string[] lppszW;
+        public MAPIString[] lppszW;
 
         /// <summary>
         /// Parse the WStringArray_r payload of session.
@@ -689,10 +689,12 @@ namespace MAPIInspector.Parsers
                 s.Position -= 1;
             }
             this.cValues = ReadUint();
-            List<string> temBytes = new List<string>();
+            List<MAPIString> temBytes = new List<MAPIString>();
             for (ulong i = 0; i < this.cValues; i++)
             {
-                temBytes.Add(ReadString(Encoding.Unicode));
+                MAPIString tempByte = new MAPIString(Encoding.Unicode);
+                tempByte.Parse(s);
+                temBytes.Add(tempByte);
             }
             this.lppszW = temBytes.ToArray();
         }
@@ -740,8 +742,7 @@ namespace MAPIInspector.Parsers
         public uint Count;
 
         // The list of character type strings in this aggregation. The strings in this list are NULL-terminated.
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string[] Strings;
+        public MAPIString[] Strings;
 
         /// <summary>
         /// Parse the StringsArray_r payload of session.
@@ -760,10 +761,12 @@ namespace MAPIInspector.Parsers
                 s.Position -= 1;
             }
             this.Count = ReadUint();
-            List<string> temBytes = new List<string>();
+            List<MAPIString> temBytes = new List<MAPIString>();
             for (ulong i = 0; i < this.Count; i++)
             {
-                temBytes.Add(ReadString());
+                MAPIString tempByte = new MAPIString(Encoding.ASCII);
+                tempByte.Parse(s);
+                temBytes.Add(tempByte);
             }
             this.Strings = temBytes.ToArray();
         }
@@ -781,8 +784,7 @@ namespace MAPIInspector.Parsers
         public uint Count;
 
         // The list of wchar_t type strings in this aggregation. The strings in this list are NULL-terminated.
-        [HelpAttribute(StringEncoding.Unicode, true, 1)]
-        public string[] Strings;
+        public MAPIString[] Strings;
 
         /// <summary>
         /// Parse the WStringsArray_r payload of session.
@@ -801,10 +803,12 @@ namespace MAPIInspector.Parsers
                 s.Position -= 1;
             }
             this.Count = ReadUint();
-            List<string> temBytes = new List<string>();
+            List<MAPIString> temBytes = new List<MAPIString>();
             for (ulong i = 0; i < this.Count; i++)
             {
-                temBytes.Add(ReadString(Encoding.Unicode));
+                MAPIString tempByte = new MAPIString(Encoding.Unicode);
+                tempByte.Parse(s);
+                temBytes.Add(tempByte);
             }
             this.Strings = temBytes.ToArray();
         }

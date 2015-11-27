@@ -357,7 +357,43 @@ namespace MAPIInspector.Parsers
             int current = startIndex;
 
             TreeNode res = new TreeNode(t.Name);
+            if (t.Name == "MAPIString")
+            {
+                int os = 0;
+                FieldInfo[] infoString = t.GetFields();
 
+                string terminator = (string)infoString[2].GetValue(obj);
+                TreeNode node = new TreeNode(string.Format("{0}:{1}", infoString[0].Name, infoString[0].GetValue(obj).ToString()));
+                // If the StringLength is not equal 0, the StringLength will be os value.
+                if (infoString[3].GetValue(obj).ToString() != "0")
+                {
+                    os = ((int)infoString[3].GetValue(obj));
+                }
+                // If the Encoding is Unicode.
+                else if (infoString[1].GetValue(obj).ToString() == "System.Text.UnicodeEncoding")
+                {
+                    os = ((string)infoString[0].GetValue(obj)).Length * 2;
+                    if (infoString[4].GetValue(obj).ToString() != "False")
+                    {
+                        os -= 1;
+                    }
+                    os += terminator.Length;
+                }
+                //If the Encoding is ASCII.
+                else
+                {
+                    os = ((string)infoString[0].GetValue(obj)).Length;
+                    os += terminator.Length;
+                }
+
+                offset = os;
+                Position positionString = new Position(current, os);
+                node.Tag = positionString;
+                res.Nodes.Add(node);
+                res.Tag = positionString;
+                return res;
+            }
+			
             // Check whether the data type is simple type
             if (Enum.IsDefined(typeof(DataType), t.Name))
             {

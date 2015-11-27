@@ -550,8 +550,7 @@ namespace MAPIInspector.Parsers
         public uint? NameSize;
 
         // A Unicode (UTF-16) string that identifies the property within the property set. 
-        [HelpAttribute(StringEncoding.Unicode, true, 2)]
-        public string Name;
+        public MAPIString Name;
 
         /// <summary>
         /// Parse from a stream.
@@ -569,7 +568,8 @@ namespace MAPIInspector.Parsers
             else if (this.Kind == 0x00000001)
             {
                 this.NameSize = stream.ReadUInt32();
-                this.Name = stream.ReadString();
+                this.Name = new MAPIString(Encoding.Unicode);
+                this.Name.Parse(stream);
             }
         }
     }
@@ -598,8 +598,7 @@ namespace MAPIInspector.Parsers
         public uint CheapServerDNCount;
 
         // An array of ASCII-encoded NULL-terminated strings. 
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string[] ServerDNArray;
+        public MAPIString[] ServerDNArray;
 
         /// <summary>
         /// Parse from a stream.
@@ -612,11 +611,12 @@ namespace MAPIInspector.Parsers
             this.FolderLongTermId = new LongTermId(stream);
             this.ServerDNCount = stream.ReadUInt32();
             this.CheapServerDNCount = stream.ReadUInt32();
-            this.ServerDNArray = new string[this.ServerDNCount];
+            this.ServerDNArray = new MAPIString[this.ServerDNCount];
 
             for (int i = 0; i < this.ServerDNCount; i++)
             {
-                this.ServerDNArray[i] = stream.ReadString8();
+                this.ServerDNArray[i] = new MAPIString(Encoding.ASCII);
+                this.ServerDNArray[i].Parse(stream);
             }
         }
     }
@@ -2611,26 +2611,6 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Read a string value from stream, and advance the position.
-        /// </summary>
-        /// <returns>The string value</returns>
-        public string ReadString()
-        {
-            char tmp;
-            byte[] buffer = new byte[2];
-            StringBuilder b = new StringBuilder();
-            do
-            {
-                this.Read(buffer, 0, 2);
-                tmp = BitConverter.ToChar(buffer, 0);
-                b.Append(tmp);
-            }
-            while (tmp != 0);
-            b.Remove(b.Length - 1, 1);
-            return b.ToString();
-        }
-
-        /// <summary>
         /// Read a GUID value from stream, and advance the position.
         /// </summary>
         /// <returns>The GUID value</returns>
@@ -2639,26 +2619,6 @@ namespace MAPIInspector.Parsers
             byte[] buffer = new byte[Guid.Empty.ToByteArray().Length];
             this.Read(buffer, 0, buffer.Length);
             return new Guid(buffer);
-        }
-
-        /// <summary>
-        /// Read a ASCII string value from stream, and advance the position.
-        /// </summary>
-        /// <returns>The ASCII string value</returns>
-        public string ReadString8()
-        {
-            byte tmp;
-            byte[] buffer = new byte[1];
-            StringBuilder b = new StringBuilder();
-            do
-            {
-                this.Read(buffer, 0, 1);
-                tmp = buffer[0];
-                b.Append(Convert.ToChar(tmp));
-            }
-            while (tmp != 0);
-            b.Remove(b.Length - 1, 1);
-            return b.ToString();
         }
 
         /// <summary>
@@ -3148,7 +3108,8 @@ namespace MAPIInspector.Parsers
                         this.ValueArray = pstring8;
                         break;
                     default:
-                        this.ValueArray = stream.ReadString8();
+                        PtypString8 defaultstring8 = new PtypString8();
+                        defaultstring8.Parse(stream);
                         break;
                 }
             }
@@ -3445,8 +3406,7 @@ namespace MAPIInspector.Parsers
     public class NameNamedPropInfo : NamedPropInfo
     {
         // The name of the NamedPropInfo.
-        [HelpAttribute(StringEncoding.Unicode, true, 2)]
-        public string Name;
+        public MAPIString Name;
 
         /// <summary>
         /// Initializes a new instance of the NameNamedPropInfo class.
@@ -3483,7 +3443,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             base.Parse(stream);
-            this.Name = stream.ReadString();
+            this.Name = new MAPIString(Encoding.Unicode);
+            this.Name.Parse(stream);
         }
     }
     #endregion
@@ -3617,7 +3578,9 @@ namespace MAPIInspector.Parsers
                 }
                 else
                 {
-                    this.PropValue = stream.ReadString8();
+                    PtypString8 pstring8 = new PtypString8();
+                    pstring8.Parse(stream);
+                    this.PropValue = pstring8;
                 }
             }
         }
@@ -5362,7 +5325,6 @@ namespace MAPIInspector.Parsers
                 PropertyDataType.PtypString8,
                 PropertyDataType.PtypBinary,
                 PropertyDataType.PtypServerId,
-                // PropertyDataType.PtypObject,
                 PropertyDataType.PtypObject_Or_PtypEmbeddedTable
             };
 
