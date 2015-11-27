@@ -323,8 +323,7 @@ namespace MAPIInspector.Parsers
         public byte? UnicodeFlag;
 
         // A null-terminated string containing the message class of the new mail. 
-        [HelpAttribute(StringEncoding.ASCII, false, 1)]
-        public string MessageClass; //  A null-terminated string containing the message class of the new mail. The string is in Unicode if the UnicodeFlag field is set to TRUE (0x01). The string is in ASCII if UnicodeFlag is set to FALSE (0x00). 
+        public MAPIString MessageClass; //  A null-terminated string containing the message class of the new mail. The string is in Unicode if the UnicodeFlag field is set to TRUE (0x01). The string is in ASCII if UnicodeFlag is set to FALSE (0x00). 
 
         // Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1). 
         private PropertyTag[] propertiesBySetColum;
@@ -449,8 +448,8 @@ namespace MAPIInspector.Parsers
             {
                 this.MessageFlags = ReadUint();
                 this.UnicodeFlag = ReadByte();
-
-                this.MessageClass = ReadString();
+                this.MessageClass = new MAPIString(Encoding.ASCII);
+                this.MessageClass.Parse(s);
             }
         }
     }

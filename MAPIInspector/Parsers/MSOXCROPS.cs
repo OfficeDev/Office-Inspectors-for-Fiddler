@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-
+using System.Text;
 namespace MAPIInspector.Parsers
 {
     #region ROP Input Buffer
@@ -773,7 +773,7 @@ namespace MAPIInspector.Parsers
                 DecodingContext.SessionRequestRemainSize.Add(MapiInspector.MAPIInspector.currentParsingSessionID, RopRemainSize);
             }
             this.RopsList = ropsList.ToArray();
-           
+
             while (s.Position < s.Length)
             {
                 uint ServerObjectHandle = ReadUint();
@@ -1040,9 +1040,9 @@ namespace MAPIInspector.Parsers
                                     RequestBuffersSize = DecodingContext.SessionRequestRemainSize[MapiInspector.MAPIInspector.currentParsingSessionID][RopCountInResponse];
                                 }
                                 RopBufferTooSmallResponse RopBufferTooSmallResponse = new RopBufferTooSmallResponse(RequestBuffersSize);
-                            RopBufferTooSmallResponse.Parse(s);
-                            ropsList.Add(RopBufferTooSmallResponse);
-                            break;
+                                RopBufferTooSmallResponse.Parse(s);
+                                ropsList.Add(RopBufferTooSmallResponse);
+                                break;
                             }
                             else
                             {
@@ -2146,8 +2146,7 @@ namespace MAPIInspector.Parsers
         public ushort? AddressTypeSize;
 
         // A list of null-terminated ASCII strings.
-        [HelpAttribute(StringEncoding.ASCII, false, 1)]
-        public string[] AddressTypes;
+        public MAPIString[] AddressTypes;
 
         /// <summary>
         /// Parse the RopGetAddressTypesResponse structure.
@@ -2166,15 +2165,16 @@ namespace MAPIInspector.Parsers
             {
                 this.AddressTypeCount = ReadUshort();
                 this.AddressTypeSize = ReadUshort();
-                this.AddressTypes = new string[(int)this.AddressTypeCount];
+                List<MAPIString> listAddressTypes = new List<MAPIString>();
 
                 for (int i = 0; i < this.AddressTypeCount; i++)
                 {
-                    string AddressType = ReadString();
-                    this.AddressTypes[i] = AddressType;
+                    MAPIString tempAddressTypes = new MAPIString(Encoding.ASCII);
+                    tempAddressTypes.Parse(s);
+                    listAddressTypes.Add(tempAddressTypes);
                 }
+                this.AddressTypes = listAddressTypes.ToArray();
 
-                ModifyIsExistAttribute(this, "AddressTypes");
             }
         }
     }
@@ -2418,8 +2418,8 @@ namespace MAPIInspector.Parsers
         public FolderID FolderId;
 
         // A null-terminated ASCII string that specifies the message class of the new message object;
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string MessageClass;
+
+        public MAPIString MessageClass;
 
         // A flags structure that contains the message flags of the new message object.
         public MessageFlags MessageFlags;
@@ -2439,7 +2439,8 @@ namespace MAPIInspector.Parsers
             this.MessageId.Parse(s);
             this.FolderId = new FolderID();
             this.FolderId.Parse(s);
-            this.MessageClass = ReadString();
+            this.MessageClass = new MAPIString(Encoding.ASCII);
+            this.MessageClass.Parse(s);
             this.MessageFlags = (MessageFlags)ReadUint();
         }
 
@@ -2563,8 +2564,8 @@ namespace MAPIInspector.Parsers
         public byte InputHandleIndex;
 
         // A null-terminated ASCII string that specifies the address type that options are to be returned for.
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string AddressType;
+
+        public MAPIString AddressType;
 
         // A boolean that specifies whether the help file data is to be returned in a format that is suited for 32-bit machines.
         public byte WantWin32;
@@ -2580,7 +2581,8 @@ namespace MAPIInspector.Parsers
             this.RopId = (RopIdType)ReadByte();
             this.LogonId = ReadByte();
             this.InputHandleIndex = ReadByte();
-            this.AddressType = ReadString();
+            this.AddressType = new MAPIString(Encoding.ASCII);
+            this.AddressType.Parse(s);
             this.WantWin32 = ReadByte();
         }
 
@@ -2616,8 +2618,7 @@ namespace MAPIInspector.Parsers
         public byte?[] HelpFile;
 
         // A null-terminated multibyte string that specifies the name of the help file that is associated with the specified address type.
-        [HelpAttribute(StringEncoding.ASCII, false, 2)]
-        public string HelpFileName;
+        public MAPIString HelpFileName;
 
         /// <summary>
         /// Parse the RopOptionsDataResponse structure.
@@ -2641,8 +2642,8 @@ namespace MAPIInspector.Parsers
                 if (this.HelpFileSize != 0)
                 {
                     this.HelpFile = ConvertArray(ReadBytes((int)this.HelpFileSize));
-                    this.HelpFileName = ReadString();
-                    ModifyIsExistAttribute(this, "HelpFileName");
+                    this.HelpFileName = new MAPIString(Encoding.ASCII);
+                    this.HelpFileName.Parse(s);
                 }
             }
         }
@@ -2898,12 +2899,9 @@ namespace MAPIInspector.Parsers
 
         // Record current session(RopSynchronizationGetTransferState) OutputObjectHandle.
         private static Dictionary<int, int> syncGetTransferState_OutputHandles;
-        
+
         // Record the SetColumns's property tags.
         private static Dictionary<int, PropertyTag[]> setColumnsPropertyTags;
-
-        // Record the roplist related to SetColumns's property tags.
-        private static Dictionary<int, object> columnsRelatedRops;
 
         // Record current session(RopFastTransferDestinationConfigure) InputObjectHandle.
         private static Dictionary<int, int> destinationConfigure_InputHandles;
@@ -3237,19 +3235,6 @@ namespace MAPIInspector.Parsers
             set
             {
                 streamType_Putbuffer = value;
-            }
-        }
-		
-        // Get or set columnsRelatedRops
-        public static Dictionary<int, object> ColumnsRelatedRops
-        {
-            get
-            {
-                return columnsRelatedRops;
-            }
-            set
-            {
-                columnsRelatedRops = value;
             }
         }
 

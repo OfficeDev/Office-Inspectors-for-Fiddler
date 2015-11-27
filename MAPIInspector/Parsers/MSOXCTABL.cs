@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-
 namespace MAPIInspector.Parsers
 {
     #region 2.2.2.1	Table ROP Constants
@@ -390,24 +389,27 @@ namespace MAPIInspector.Parsers
             {
                 this.Origin = (Bookmarks)ReadByte();
                 this.RowCount = ReadUshort();
-                // If the related property tags is alreadby in dictionary and this session is not parsed
-                if (this.RowCount != 0 && DecodingContext.SetColumnsPropertyTags != null && DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
+                if (this.RowCount != 0)
                 {
-                    this.propertiesBySetColum = DecodingContext.SetColumnsPropertyTags[MapiInspector.MAPIInspector.currentParsingSessionID];
+                    // If the related property tags is alreadby in dictionary and this session is not parsed
+                    if (DecodingContext.SetColumnsPropertyTags != null && DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
+                    {
+                        this.propertiesBySetColum = DecodingContext.SetColumnsPropertyTags[MapiInspector.MAPIInspector.currentParsingSessionID];
+                    }
+                    // If the related property tags is not exist.
+                    else
+                    {
+                        throw new MissingInformationException("Missing LogonFlags information for RopQueryRowsResponse", (ushort)RopIdType.RopQueryRows, null);
+                    }
+                    List<PropertyRow> tempPropertyRows = new List<PropertyRow>();
+                    for (int i = 0; i < RowCount; i++)
+                    {
+                        PropertyRow tempPropertyRow = new PropertyRow(this.propertiesBySetColum);
+                        tempPropertyRow.Parse(s);
+                        tempPropertyRows.Add(tempPropertyRow);
+                    }
+                    this.RowData = tempPropertyRows.ToArray();
                 }
-                // If the related property tags is not exist.
-                else
-                {
-                    throw new MissingInformationException("Missing LogonFlags information for RopQueryRowsResponse", (ushort)RopIdType.RopQueryRows, null);
-                }
-                List<PropertyRow> tempPropertyRows = new List<PropertyRow>();
-                for (int i = 0; i < RowCount; i++)
-                {
-                    PropertyRow tempPropertyRow = new PropertyRow(this.propertiesBySetColum);
-                    tempPropertyRow.Parse(s);
-                    tempPropertyRows.Add(tempPropertyRow);
-                }
-                this.RowData = tempPropertyRows.ToArray();
             }
         }
     }
