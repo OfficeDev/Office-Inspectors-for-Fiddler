@@ -8,6 +8,47 @@ using System.Reflection;
 using Fiddler;
 namespace MAPIInspector.Parsers
 {
+    /// <summary>
+    /// The MAPIString class to record the related attributes of string.
+    /// </summary>
+    public class MAPIString : BaseStructure
+    {
+        // The string vaule
+        public string Value;
+
+        // The string Encoding : ASCII or Unicode
+        public Encoding Encode;
+
+        // The string Terminator. Default is "\0".
+        public string Terminator;
+
+        // If the StringLength is not 0, The StringLength will be as the string length.
+        public int StringLength;
+
+        // If the Encoding is Unicode, and it is reduced unicode, it is true.
+        public bool ReducedUnicode;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="encode"></param>
+        /// <param name="terminator"></param>
+        /// <param name="stringLength"></param>
+        /// <param name="reducedUnicode"></param>
+        public MAPIString(Encoding encode, string terminator = "\0", int stringLength = 0, bool reducedUnicode = false)
+        {
+            this.Encode = encode;
+            this.Terminator = terminator;
+            this.StringLength = stringLength;
+            this.ReducedUnicode = reducedUnicode;
+        }
+
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.Value = ReadString(Encode, Terminator, StringLength, ReducedUnicode);
+        }
+    }
 
     #region 2.1	AddressList Structures
 
@@ -304,12 +345,10 @@ namespace MAPIInspector.Parsers
         public uint WrappedType;
 
         // A string of single-byte characters terminated by a single zero byte, indicating the short name or NetBIOS name of the server.
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string ServerShortname;
+        public MAPIString ServerShortname;
 
         // A string of single-byte characters terminated by a single zero byte and representing the X500 DN of the mailbox, as specified in [MS-OXOAB]. 
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string MailboxDN;
+        public MAPIString MailboxDN;
 
         /// <summary>
         /// Parse the StoreObjectEntryID structure.
@@ -326,8 +365,10 @@ namespace MAPIInspector.Parsers
             this.WrappedFlags = ReadUint();
             this.WrappedProviderUID = ReadBytes(16);
             this.WrappedType = ReadUint();
-            this.ServerShortname = ReadString();
-            this.MailboxDN = ReadString();
+            this.ServerShortname = new MAPIString(Encoding.ASCII);
+            this.ServerShortname.Parse(s);
+            this.MailboxDN = new MAPIString(Encoding.ASCII);
+            this.MailboxDN.Parse(s);
         }
     }
     #endregion
@@ -351,8 +392,7 @@ namespace MAPIInspector.Parsers
         public AddressbookEntryIDtype Type;
 
         // The X500 DN of the Address Book object. 
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string X500DN;
+        public MAPIString X500DN;
 
         /// <summary>
         /// Parse the AddressBookEntryID structure.
@@ -365,7 +405,8 @@ namespace MAPIInspector.Parsers
             this.ProviderUID = ReadBytes(16);
             this.Version = ReadUint();
             this.Type = (AddressbookEntryIDtype)ReadUint();
-            this.X500DN = ReadString();
+            this.X500DN = new MAPIString(Encoding.ASCII);
+            this.X500DN.Parse(s);
         }
     }
 
@@ -1091,8 +1132,7 @@ namespace MAPIInspector.Parsers
         public byte? NameSize;
 
         // This field is present only if Kind is equal to 0x01.
-        [HelpAttribute(StringEncoding.Unicode, false, 2)]
-        public string Name;
+        public MAPIString Name;
 
         /// <summary>
         /// Parse the PropertyName structure.
@@ -1113,8 +1153,9 @@ namespace MAPIInspector.Parsers
                 case KindEnum.Name:
                     {
                         this.NameSize = ReadByte();
-                        this.Name = ReadString(Encoding.Unicode, "", (int)NameSize / 2);
-                        ModifyIsExistAttribute(this, "Name");
+                        this.Name = new MAPIString(Encoding.Unicode, "", (int)NameSize / 2);
+                        this.Name.Parse(s);
+
                         break;
                     }
                 case KindEnum.NoPropertyName:
@@ -1325,7 +1366,7 @@ namespace MAPIInspector.Parsers
         /// <param name="s">A stream containing the RecipientFlags structure</param>
         public override void Parse(Stream s)
         {
-            base.Parse(s); // TODO: need to modify the AddTreeNode method about the pos and length.  
+            base.Parse(s);
             Byte tempByte = ReadByte();
             int index = 0;
             this.R = GetBits(tempByte, index, 1);
@@ -1383,8 +1424,7 @@ namespace MAPIInspector.Parsers
         public DisplayType? DisplayType;
 
         // A null-terminated ASCII string. 
-        [HelpAttribute(StringEncoding.ASCII, false, 1)]
-        public string X500DN;
+        public MAPIString X500DN;
 
         // An unsigned integer. This field MUST be present when the Type field of the RecipientFlags field is set to PersonalDistributionList1 (0x6) or PersonalDistributionList2 (0x7). 
         public ushort? EntryIdSize;
@@ -1399,24 +1439,19 @@ namespace MAPIInspector.Parsers
         public byte?[] SearchKey;
 
         // This string specifies the address type of the recipient (1).
-        [HelpAttribute(StringEncoding.ASCII, false, 1)]
-        public string AddressType;
+        public MAPIString AddressType;
 
         // This string specifies the email address of the recipient (1).
-        [HelpAttribute(StringEncoding.ASCII, false, 1)]
-        public string EmailAddress;
+        public MAPIString EmailAddress;
 
         // This string specifies the email address of the recipient (1).
-        [HelpAttribute(StringEncoding.ASCII, false, 1)]
-        public string DisplayName;
+        public MAPIString DisplayName;
 
         // This string specifies the email address of the recipient (1).
-        [HelpAttribute(StringEncoding.ASCII, false, 1)]
-        public string SimpleDisplayName;
+        public MAPIString SimpleDisplayName;
 
         // This string specifies the email address of the recipient (1).
-        [HelpAttribute(StringEncoding.ASCII, false, 1)]
-        public string TransmittableDisplayName;
+        public MAPIString TransmittableDisplayName;
 
         // This value specifies the number of columns from the RecipientColumns field that are included in the RecipientProperties field. 
         public ushort? RecipientColumnCount;
@@ -1448,8 +1483,9 @@ namespace MAPIInspector.Parsers
             {
                 this.AddressPrefixUsed = ReadByte();
                 this.DisplayType = (DisplayType)ReadByte();
-                this.X500DN = ReadString();
-                ModifyIsExistAttribute(this, "X500DN");
+                this.X500DN = new MAPIString(Encoding.ASCII);
+                this.X500DN.Parse(s);
+
             }
             else if (this.RecipientFlags.Type == AddressTypeEnum.PersonalDistributionList1 || this.RecipientFlags.Type == AddressTypeEnum.PersonalDistributionList2)
             {
@@ -1461,48 +1497,35 @@ namespace MAPIInspector.Parsers
             }
             else if (this.RecipientFlags.Type == AddressTypeEnum.NoType && this.RecipientFlags.O == 0x1)
             {
-                this.AddressType = ReadString();
-                ModifyIsExistAttribute(this, "AddressType");
+                this.AddressType = new MAPIString(Encoding.ASCII);
+                this.AddressType.Parse(s);
+
             }
 
             if (RecipientFlags.E == 0x1)
             {
-                this.EmailAddress = ReadString((RecipientFlags.U == 0x1) ? Encoding.Unicode : Encoding.ASCII);
-                ModifyIsExistAttribute(this, "EmailAddress");
-                if (RecipientFlags.U == 0x1)
-                {
-                    ModifyEncodingAttribute(this, "EmailAddress", StringEncoding.Unicode, 2);
-                }
+                this.EmailAddress = new MAPIString((RecipientFlags.U == 0x1) ? Encoding.Unicode : Encoding.ASCII);
+                this.EmailAddress.Parse(s);
+
             }
 
             if (RecipientFlags.D == 0x1)
             {
-                this.DisplayName = ReadString((RecipientFlags.U == 0x1) ? Encoding.Unicode : Encoding.ASCII);
-                ModifyIsExistAttribute(this, "DisplayName");
-                if (RecipientFlags.U == 0x1)
-                {
-                    ModifyEncodingAttribute(this, "DisplayName", StringEncoding.Unicode, 2);
-                }
+                this.DisplayName = new MAPIString((RecipientFlags.U == 0x1) ? Encoding.Unicode : Encoding.ASCII);
+                this.DisplayName.Parse(s);
+
             }
 
             if (RecipientFlags.I == 0x1)
             {
-                this.SimpleDisplayName = ReadString((RecipientFlags.U == 0x1) ? Encoding.Unicode : Encoding.ASCII);
-                ModifyIsExistAttribute(this, "SimpleDisplayName");
-                if (RecipientFlags.U == 0x1)
-                {
-                    ModifyEncodingAttribute(this, "SimpleDisplayName", StringEncoding.Unicode, 2);
-                }
+                this.SimpleDisplayName = new MAPIString((RecipientFlags.U == 0x1) ? Encoding.Unicode : Encoding.ASCII);
+                this.SimpleDisplayName.Parse(s);
             }
 
             if (RecipientFlags.T == 0x1)
             {
-                this.TransmittableDisplayName = ReadString((RecipientFlags.U == 0x1) ? Encoding.Unicode : Encoding.ASCII);
-                ModifyIsExistAttribute(this, "TransmittableDisplayName");
-                if (RecipientFlags.U == 0x1)
-                {
-                    ModifyEncodingAttribute(this, "TransmittableDisplayName", StringEncoding.Unicode, 2);
-                }
+                this.TransmittableDisplayName = new MAPIString((RecipientFlags.U == 0x1) ? Encoding.Unicode : Encoding.ASCII);
+                this.TransmittableDisplayName.Parse(s);
             }
             this.RecipientColumnCount = ReadUshort();
             PropertyRow tempPropertyRow = new PropertyRow(PropTags);
@@ -1778,8 +1801,7 @@ namespace MAPIInspector.Parsers
     public class PtypString : BaseStructure
     {
         // A string of Unicode characters in UTF-16LE format encoding with terminating null character (0x0000).
-        [HelpAttribute(StringEncoding.Unicode, true, 2)]
-        public string Value;
+        public MAPIString Value;
 
         /// <summary>
         /// Parse the PtypString structure.
@@ -1788,7 +1810,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.Value = ReadString(Encoding.Unicode);
+            this.Value = new MAPIString(Encoding.Unicode);
+            this.Value.Parse(s);
         }
     }
 
@@ -1798,8 +1821,7 @@ namespace MAPIInspector.Parsers
     public class PtypString8 : BaseStructure
     {
         // A string of multibyte characters in externally specified encoding with terminating null character (single 0 byte).
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string Value;
+        public MAPIString Value;
 
         /// <summary>
         /// Parse the PtypString8 structure.
@@ -1808,7 +1830,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.Value = ReadString();
+            this.Value = new MAPIString(Encoding.ASCII);
+            this.Value.Parse(s);
         }
     }
 
@@ -1952,7 +1975,6 @@ namespace MAPIInspector.Parsers
                     return ReadUshort(); ;
             }
         }
-
 
         /// <summary>
         /// Format the error codes.
@@ -2326,8 +2348,7 @@ namespace MAPIInspector.Parsers
         public ushort undefinedCount;
 
         // The arrary of string value.
-        [HelpAttribute(StringEncoding.Unicode, true, 2)]
-        public string[] Value;
+        public MAPIString[] Value;
 
         // The Count wide size.
         private CountWideEnum countWide;
@@ -2350,13 +2371,14 @@ namespace MAPIInspector.Parsers
             HelpMethod help = new HelpMethod();
             this.Count = help.ReadCount(this.countWide, s);
             this.undefinedCount = ReadUshort();
-            List<string> tempvalue = new List<string>();
-            string str;
+            List<MAPIString> tempvalue = new List<MAPIString>();
+            MAPIString str;
             for (int i = 0; i < this.Count.GetHashCode(); )
             {
-                str = ReadString(Encoding.Unicode);
+                str = new MAPIString(Encoding.Unicode);
+                str.Parse(s);
                 tempvalue.Add(str);
-                i = i + str.Length * 2 + 2;
+                i = i + str.Value.ToString().Length * 2 + 2;
             }
             this.Value = tempvalue.ToArray();
         }
@@ -2371,8 +2393,7 @@ namespace MAPIInspector.Parsers
         public object Count;
 
         // The arrary of string value.
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string[] Value;
+        public MAPIString[] Value;
 
         // The Count wide size.
         private CountWideEnum countWide;
@@ -2394,13 +2415,14 @@ namespace MAPIInspector.Parsers
             base.Parse(s);
             HelpMethod help = new HelpMethod();
             this.Count = help.ReadCount(this.countWide, s);
-            List<string> tempvalue = new List<string>();
-            string str;
+            List<MAPIString> tempvalue = new List<MAPIString>();
+            MAPIString str;
             for (int i = 0; i < this.Count.GetHashCode(); )
             {
-                str = ReadString();
+                str = new MAPIString(Encoding.ASCII);
+                str.Parse(s);
                 tempvalue.Add(str);
-                i = i + str.Length + 1;
+                i = i + str.Value.Length + 1;
             }
             this.Value = tempvalue.ToArray();
         }
@@ -2558,8 +2580,7 @@ namespace MAPIInspector.Parsers
     public class PtypNull : BaseStructure
     {
         // The null value.
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string Value;
+        public MAPIString Value;
 
         /// <summary>
         /// Parse the PtypNull structure.
@@ -2612,7 +2633,6 @@ namespace MAPIInspector.Parsers
             countWide = ptypMultiCountSize;
             PropertyType = ProType;
         }
-
 
         /// <summary>
         /// Initializes a new instance of the PropertyValue class without parameters.
@@ -3084,8 +3104,7 @@ namespace MAPIInspector.Parsers
         public StringTypeEnum StringType;
 
         // If the StringType field is set to 0x02, 0x03, or 0x04, then this field MUST be present and in the format specified by the Type field. Otherwise, this field MUST NOT be present.
-        [HelpAttribute(StringEncoding.ASCII, false, 1)]
-        public string String;
+        public MAPIString String;
 
         /// <summary>
         /// Parse the TypedString structure.
@@ -3104,27 +3123,25 @@ namespace MAPIInspector.Parsers
                     }
                 case StringTypeEnum.Empty:
                     {
-                        this.String = string.Empty;
+                        this.String.Value = string.Empty;
                         break;
                     }
                 case StringTypeEnum.CharacterString:
                     {
-                        this.String = ReadString();
-                        ModifyIsExistAttribute(this, "String");
+                        this.String = new MAPIString(Encoding.ASCII);
+                        this.String.Parse(s);
                         break;
                     }
                 case StringTypeEnum.ReducedUnicodeCharacterString:
                     {
-                        this.String = ReadString(Encoding.Unicode, "\0", 0, true);
-                        ModifyIsExistAttribute(this, "String");
-                        ModifyEncodingAttribute(this, "String", StringEncoding.Unicode, 1);
+                        this.String = new MAPIString(Encoding.Unicode, "\0", 0, true);
+                        this.String.Parse(s);
                         break;
                     }
                 case StringTypeEnum.UnicodeCharacterString:
                     {
-                        this.String = ReadString(Encoding.Unicode);
-                        ModifyIsExistAttribute(this, "String");
-                        ModifyEncodingAttribute(this, "String", StringEncoding.Unicode, 2);
+                        this.String = new MAPIString(Encoding.Unicode);
+                        this.String.Parse(s);
                         break;
                     }
                 default:

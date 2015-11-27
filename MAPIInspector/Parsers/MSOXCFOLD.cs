@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-
 namespace MAPIInspector.Parsers
 {
     #region The enum value that used by Rops.
@@ -167,8 +166,7 @@ namespace MAPIInspector.Parsers
         public ushort? CheapServerCount;
 
         // A list of null-terminated ASCII strings that specify which servers have replicas (2) of this folder. 
-        [HelpAttribute(StringEncoding.ASCII, false, 1)]
-        public string[] Servers;
+        public MAPIString[] Servers;
 
         /// <summary>
         /// Parse the RopOpenFolderResponse structure.
@@ -191,13 +189,14 @@ namespace MAPIInspector.Parsers
                 {
                     this.ServerCount = ReadUshort();
                     this.CheapServerCount = ReadUshort();
-                    List<string> tempServers = new List<string>();
+                    List<MAPIString> tempServers = new List<MAPIString>();
                     for (int i = 0; i < ServerCount; i++)
                     {
-                        tempServers.Add(ReadString());
+                        MAPIString tempString = new MAPIString(Encoding.ASCII);
+                        tempString.Parse(s);
+                        tempServers.Add(tempString);
                     }
                     this.Servers = tempServers.ToArray();
-                    ModifyIsExistAttribute(this, "Servers");
                 }
             }
         }
@@ -236,12 +235,10 @@ namespace MAPIInspector.Parsers
         public byte Reserved;
 
         // A null-terminated multibyte string that specifies the name of the created folder. 
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string DisplayName;
+        public MAPIString DisplayName;
 
         // A null-terminated multibyte string that specifies the folder comment that is associated with the created folder. 
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string Comment;
+        public MAPIString Comment;
 
         /// <summary>
         /// Parse the RopCreateFolderRequest structure.
@@ -261,15 +258,17 @@ namespace MAPIInspector.Parsers
             this.Reserved = ReadByte();
             if (UseUnicodeStrings)
             {
-                this.DisplayName = ReadString(Encoding.Unicode);
-                ModifyEncodingAttribute(this, "DisplayName", StringEncoding.Unicode, 2);
-                this.Comment = ReadString(Encoding.Unicode);
-                ModifyEncodingAttribute(this, "Comment", StringEncoding.Unicode, 2);
+                this.DisplayName = new MAPIString(Encoding.Unicode);
+                this.DisplayName.Parse(s);
+                this.Comment = new MAPIString(Encoding.Unicode);
+                this.Comment.Parse(s);
             }
             else
             {
-                this.DisplayName = ReadString();
-                this.Comment = ReadString();
+                this.DisplayName = new MAPIString(Encoding.ASCII);
+                this.DisplayName.Parse(s);
+                this.Comment = new MAPIString(Encoding.ASCII);
+                this.Comment.Parse(s);
             }
 
         }
@@ -283,7 +282,7 @@ namespace MAPIInspector.Parsers
         // An unsigned integer that specifies the type of ROP.
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request. 
         public byte OutputHandleIndex;
 
         // An unsigned integer that specifies the status of the ROP.
@@ -308,8 +307,7 @@ namespace MAPIInspector.Parsers
         public ushort? CheapServerCount;
 
         // These strings specify which servers have replicas (2) of this folder.
-        [HelpAttribute(StringEncoding.ASCII, false, 1)]
-        public string[] Servers;
+        public MAPIString[] Servers;
 
         /// <summary>
         /// Parse the RopCreateFolderResponse structure.
@@ -337,13 +335,14 @@ namespace MAPIInspector.Parsers
                     {
                         this.ServerCount = ReadUshort();
                         this.CheapServerCount = ReadUshort();
-                        List<string> tempServers = new List<string>();
+                        List<MAPIString> tempServers = new List<MAPIString>();
                         for (int i = 0; i < ServerCount; i++)
                         {
-                            tempServers.Add(ReadString());
+                            MAPIString tempString = new MAPIString(Encoding.ASCII);
+                            tempString.Parse(s);
+                            tempServers.Add(tempString);
                         }
                         this.Servers = tempServers.ToArray();
-                        ModifyIsExistAttribute(this, "Servers");
                     }
                 }
             }
@@ -756,8 +755,7 @@ namespace MAPIInspector.Parsers
         public FolderID FolderId;
 
         // A null-terminated multibyte string that specifies the name for the new moved folder. 
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string NewFolderName;
+        public MAPIString NewFolderName;
 
         /// <summary>
         /// Parse the RopMoveFolderRequest structure.
@@ -777,12 +775,13 @@ namespace MAPIInspector.Parsers
             this.FolderId.Parse(s);
             if (UseUnicode)
             {
-                this.NewFolderName = ReadString(Encoding.Unicode);
-                ModifyEncodingAttribute(this, "NewFolderName", StringEncoding.Unicode, 2);
+                this.NewFolderName = new MAPIString(Encoding.Unicode);
+                this.NewFolderName.Parse(s);
             }
             else
             {
-                this.NewFolderName = ReadString();
+                this.NewFolderName = new MAPIString(Encoding.ASCII);
+                this.NewFolderName.Parse(s);
             }
         }
     }
@@ -864,9 +863,7 @@ namespace MAPIInspector.Parsers
         public FolderID FolderId;
 
         // A null-terminated multibyte string that specifies the name for the new moved folder. 
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string NewFolderName;
-
+        public MAPIString NewFolderName;
 
         /// <summary>
         /// Parse the RopCopyFolderRequest structure.
@@ -887,12 +884,13 @@ namespace MAPIInspector.Parsers
             this.FolderId.Parse(s);
             if (UseUnicode)
             {
-                this.NewFolderName = ReadString(Encoding.Unicode);
-                ModifyEncodingAttribute(this, "NewFolderName", StringEncoding.Unicode, 2);
+                this.NewFolderName = new MAPIString(Encoding.Unicode);
+                this.NewFolderName.Parse(s);
             }
             else
             {
-                this.NewFolderName = ReadString();
+                this.NewFolderName = new MAPIString(Encoding.ASCII);
+                this.NewFolderName.Parse(s);
             }
         }
     }
@@ -1412,7 +1410,5 @@ namespace MAPIInspector.Parsers
     }
 
     #endregion
-
-
 
 }

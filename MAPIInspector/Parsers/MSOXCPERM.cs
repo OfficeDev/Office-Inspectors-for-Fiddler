@@ -36,7 +36,6 @@ namespace MAPIInspector.Parsers
         RemoveRow = 0x04
     }
 
-
     #region 2.2.1	RopGetPermissionsTable ROP
     /// <summary>
     /// The RopGetPermissionsTable ROP ([MS-OXCROPS] section 2.2.10.2) retrieves a Server object handle to a Table object, which is then used in other ROP requests to retrieve the current permissions list on a folder.
