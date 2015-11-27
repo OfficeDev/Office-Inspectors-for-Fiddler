@@ -196,44 +196,6 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Read a string value from stream according to string terminator
-        /// </summary>
-        /// <param name="terminator">The string terminator</param>
-        /// <returns>A string value</returns>
-        protected string ReadString(string terminator = "\0")
-        {
-            StringBuilder value = new StringBuilder();
-            int length = terminator.Length;
-            bool terminated = false;
-
-            while (!terminated)
-            {
-                int b = stream.ReadByte();
-                if (b == -1)
-                {
-                    throw new Exception();
-                }
-
-                value.Append((char)b);
-                if (value.Length < length)
-                {
-                    continue;
-                }
-                int i;
-                for (i = length - 1; i >= 0; i--)
-                {
-                    if (terminator[i] != value[value.Length - length + i])
-                    {
-                        break;
-                    }
-                }
-                terminated = i < 0;
-            }
-
-            return value.Remove(value.Length - length, length).ToString();
-        }
-
-        /// <summary>
         /// Read string value from stream according to string terminator and Encoding method
         /// </summary>
         /// <param name="encoding">The character Encoding</param>
@@ -377,7 +339,7 @@ namespace MAPIInspector.Parsers
                     {
                         os -= 1;
                     }
-                    os += terminator.Length;
+                    os += terminator.Length * 2;
                 }
                 //If the Encoding is ASCII.
                 else
@@ -438,24 +400,7 @@ namespace MAPIInspector.Parsers
                             Type fieldType = type;
                             TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, info[i].GetValue(obj).ToString()));
                             res.Nodes.Add(tn);
-                            if (type.Name == "String")
-                            {
-                                object[] attributes = info[i].GetCustomAttributes(typeof(HelpAttribute), false);
-                                if (((HelpAttribute)(attributes[0])).IsExist == true)
-                                {
-                                    if (((HelpAttribute)(attributes[0])).Encode == StringEncoding.Unicode)
-                                    {
-                                        os = ((string)info[i].GetValue(obj)).Length * 2;
-                                    }
-                                    else
-                                    {
-                                        os = ((string)info[i].GetValue(obj)).Length;
-                                    }
-
-                                    os += (int)((HelpAttribute)(attributes[0])).TerminatorLength;
-                                }
-                            }
-                            else if (type.Name == "UInt64")
+                            if (type.Name == "UInt64")
                             {
                                 if (info[i].GetCustomAttributesData().Count == 0)
                                 {
@@ -580,21 +525,9 @@ namespace MAPIInspector.Parsers
                                 TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
                                 res.Nodes.Add(tn);
 
-                                if (elementType.Name == "String")
+                                for (int j = 0; j < arr.Length; j++)
                                 {
-                                    for (int j = 0; j < arr.Length; j++)
-                                    {
-                                        os += ((string[])(arr))[j].Length;
-                                        object[] attributes = info[i].GetCustomAttributes(typeof(HelpAttribute), false);
-                                        os += (int)((HelpAttribute)(attributes[0])).TerminatorLength;
-                                    }
-                                }
-                                else
-                                {
-                                    for (int j = 0; j < arr.Length; j++)
-                                    {
-                                        os += Marshal.SizeOf(elementType);
-                                    }
+                                    os += Marshal.SizeOf(elementType);
                                 }
 
                                 Position ps = new Position(current, os);
@@ -771,31 +704,6 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Modify custom attribute for string type
-        /// </summary>
-        public void ModifyIsExistAttribute(object obj, string fieldName)
-        {
-            Type type = obj.GetType();
-            FieldInfo f = type.GetField(fieldName);
-            object[] attributes = f.GetCustomAttributes(typeof(HelpAttribute), false);
-            HelpAttribute attribute = (HelpAttribute)attributes[0];
-            attribute.IsExist = true;
-        }
-
-        /// <summary>
-        /// Modify Encode and TerminatorLength attribute for string type.
-        /// </summary>
-        public void ModifyEncodingAttribute(object obj, string fieldName, StringEncoding encoding, uint length)
-        {
-            Type type = obj.GetType();
-            FieldInfo f = type.GetField(fieldName);
-            object[] attributes = f.GetCustomAttributes(typeof(HelpAttribute), false);
-            HelpAttribute attribute = (HelpAttribute)attributes[0];
-            attribute.Encode = encoding;
-            attribute.TerminatorLength = length;
-        }
-
-        /// <summary>
         /// Convert an array T to array T?
         /// </summary>
         public T?[] ConvertArray<T>(T[] array) where T : struct
@@ -881,23 +789,6 @@ namespace MAPIInspector.Parsers
             DateTime
         }
         #endregion
-    }
-
-    /// <summary>
-    /// Custom attribute for string type
-    /// </summary>
-    [AttributeUsage(AttributeTargets.All)]
-    public class HelpAttribute : System.Attribute
-    {
-        public StringEncoding Encode { get; set; }
-        public uint TerminatorLength { get; set; }
-        public bool IsExist { get; set; }
-        public HelpAttribute(StringEncoding encode, bool isExist, uint length = 0)
-        {
-            this.Encode = encode;
-            this.TerminatorLength = length;
-            this.IsExist = isExist;
-        }
     }
 
     /// <summary>
