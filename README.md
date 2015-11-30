@@ -28,7 +28,7 @@ Installation of the MAPI Inspector involves adding the DLL file and the MAPI scr
 
     ![alt tag](/README-Images/Figure4-mapiscript.png)
 
-4. Restart Fiddler. After restarting, the *MS protocol column* can be displayed in session view.
+4. Restart Fiddler. After restarting, the *MS protocol* column can be displayed in session view.
 
     ![alt tag](/README-Images/Figure5-mapiscript.png)
 
