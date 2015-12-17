@@ -15,8 +15,7 @@ namespace MAPIInspector.Parsers
     public class ConnectRequestBody : BaseStructure
     {
         // A null-terminated ASCII string that specifies the DN of the user who is requesting the connection. 
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string UserDn;
+        public MAPIString UserDn;
 
         // A set of flags that designate the type of connection being requested. 
         public uint Flags;
@@ -43,7 +42,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.UserDn = ReadString();
+            this.UserDn = new MAPIString(Encoding.ASCII);
+            this.UserDn.Parse(s);
             this.Flags = ReadUint();
             this.DefaultCodePage = ReadUint();
             this.LcidSort = ReadUint();
@@ -69,39 +69,39 @@ namespace MAPIInspector.Parsers
     {
 
         // A string array that informs the client as to the state of processing a request on the server
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
-        
+
+        public MAPIString[] MetaTags;
+
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
-        
+
+        public MAPIString[] AdditionalHeaders;
+
         // An unsigned integer that specifies the status of the request.
         public uint StatusCode;
-        
+
         // An unsigned integer that specifies the return status of the operation.
         public uint ErrorCode;
-        
+
         // An unsigned integer that specifies the number of milliseconds for the maximum polling interval.
         public uint PollsMax;
-        
+
         // An unsigned integer that specifies the number of times to retry request types.
         public uint RetryCount;
-       
+
         // An unsigned integer that specifies the number of milliseconds for the client to wait before retrying a failed request type. 
         public uint RetryDelay;
-        
+
         //A null-terminated ASCII string that specifies the DN prefix to be used for building message recipients. 
-        [HelpAttribute(StringEncoding.ASCII, true, 1)]
-        public string DnPrefix;
-        
+
+        public MAPIString DnPrefix;
+
         //A null-terminated Unicode string that specifies the display name of the user who is specified in the UserDn field of the Connect request type request body. 
-        [HelpAttribute(StringEncoding.Unicode, true, 2)]
-        public string DisplayName;
-        
+
+        public MAPIString DisplayName;
+
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        
+
         // An array of bytes that constitute the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
@@ -112,8 +112,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -125,8 +125,10 @@ namespace MAPIInspector.Parsers
                 this.PollsMax = ReadUint();
                 this.RetryCount = ReadUint();
                 this.RetryDelay = ReadUint();
-                this.DnPrefix = ReadString();
-                this.DisplayName = ReadString(Encoding.Unicode);
+                this.DnPrefix = new MAPIString(Encoding.ASCII);
+                this.DnPrefix.Parse(s);
+                this.DisplayName = new MAPIString(Encoding.Unicode);
+                this.DisplayName.Parse(s);
             }
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
@@ -152,19 +154,19 @@ namespace MAPIInspector.Parsers
     {
         // An unsigned integer that specify to the server how to build the ROP responses in the RopBuffer field of the Execute request type success response body.
         public uint Flags;
-        
+
         // An unsigned integer that specifies the size, in bytes, of the RopBuffer field.
         public uint RopBufferSize;
-        
+
         // An structure of bytes that constitute the ROP request payload. 
         public rgbInputBuffer RopBuffer;
-        
+
         // An unsigned integer that specifies the maximum size for the RopBuffer field of the Execute request type success response body.
         public uint MaxRopOut;
-        
+
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        
+
         // An array of bytes that constitute the auxiliary payload data sent from the client. 
         public ExtendedBuffer AuxiliaryBuffer;
 
@@ -200,31 +202,31 @@ namespace MAPIInspector.Parsers
     public class ExecuteResponseBody : BaseStructure
     {
         // A string array that informs the client as to the state of processing a request on the server
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
-        
+
+        public MAPIString[] MetaTags;
+
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
-        
+
+        public MAPIString[] AdditionalHeaders;
+
         // An unsigned integer that specifies the status of the request.
         public uint StatusCode;
-        
+
         // An unsigned integer that specifies the return status of the operation.
         public uint ErrorCode;
-        
+
         // The reserved flag. The server MUST set this field to 0x00000000 and the client MUST ignore this field.
         public uint Flags;
-        
+
         // An unsigned integer that specifies the size, in bytes, of the RopBuffer field.
         public uint RopBufferSize;
-        
+
         // A structure of bytes that constitute the ROP responses payload. 
         public rgbOutputBufferPack RopBuffer;
-        
+
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        
+
         // An array of bytes that constitute the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
@@ -235,8 +237,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -263,7 +265,6 @@ namespace MAPIInspector.Parsers
         }
     }
 
-
     #endregion
 
     #region 2.2.4.3	Disconnect
@@ -275,7 +276,7 @@ namespace MAPIInspector.Parsers
     {
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        
+
         // An array of bytes that constitute the auxiliary payload data sent from the client. 
         public ExtendedBuffer AuxiliaryBuffer;
 
@@ -306,22 +307,22 @@ namespace MAPIInspector.Parsers
     public class DisconnectResponseBody : BaseStructure
     {
         // A string array that informs the client as to the state of processing a request on the server
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
-        
+
+        public MAPIString[] MetaTags;
+
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
-        
+
+        public MAPIString[] AdditionalHeaders;
+
         // An unsigned integer that specifies the status of the request.
         public uint StatusCode;
-        
+
         // An unsigned integer that specifies the return status of the operation.
         public uint ErrorCode;
-        
+
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        
+
         // An array of bytes that constitute the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
@@ -332,8 +333,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -367,10 +368,10 @@ namespace MAPIInspector.Parsers
     {
         // Reserved. The client MUST set this field to 0x00000000 and the server MUST ignore this field.
         public uint Flags;
-        
+
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        
+
         // An array of bytes that constitute the auxiliary payload data sent from the client. 
         public ExtendedBuffer AuxiliaryBuffer;
         public override void Parse(Stream s)
@@ -398,25 +399,25 @@ namespace MAPIInspector.Parsers
     public class NotificationWaitResponseBody : BaseStructure
     {
         // A string array that informs the client as to the state of processing a request on the server
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
-        
+
+        public MAPIString[] MetaTags;
+
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
-        
+
+        public MAPIString[] AdditionalHeaders;
+
         // An unsigned integer that specifies the status of the request.
         public uint StatusCode;
-        
+
         // An unsigned integer that specifies the return status of the operation.
         public uint ErrorCode;
-        
+
         //An unsigned integer that indicates whether an event is pending on the Session Context. 
         public uint EventPending;
-        
+
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        
+
         // An array of bytes that constitute the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
@@ -427,8 +428,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -454,7 +455,7 @@ namespace MAPIInspector.Parsers
     }
 
     #endregion
-    #endregion 
+    #endregion
 
     #region 2.2.5	Request Types for Address Book Server Endpoint
 
@@ -466,16 +467,16 @@ namespace MAPIInspector.Parsers
     {
         // An unsigned integer that specify the authentication type for the connection.
         public uint Flags;
-        
+
         // A Boolean value that specifies whether the State field is present.
         public byte HasState;
 
         // A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container. 
         public STAT State;
-        
+
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
         public uint AuxiliaryBufferSize;
-        
+
         // An array of bytes that constitute the auxiliary payload data sent from the client.
         public ExtendedBuffer AuxiliaryBuffer;
 
@@ -517,25 +518,25 @@ namespace MAPIInspector.Parsers
     class BindResponse : BaseStructure
     {
         // A string array that informs the client as to the state of processing a request on the server.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
-        
+
+        public MAPIString[] MetaTags;
+
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
-        
+
+        public MAPIString[] AdditionalHeaders;
+
         // An unsigned integer that specifies the status of the request.
         public uint StatusCode;
-        
+
         // An unsigned integer that specifies the return status of the operation.
         public uint ErrorCode;
-        
+
         // A GUID that is associated with a specific address book server.
         public Guid ServerGuid;
-        
+
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.  
         public uint AuxiliaryBufferSize;
-        
+
         // An array of bytes that constitute the auxiliary payload data returned from the server.
         public ExtendedBuffer AuxiliaryBuffer;
 
@@ -546,8 +547,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -593,7 +594,7 @@ namespace MAPIInspector.Parsers
         /// Parse the HTTP payload of session.
         /// </summary>
         /// <param name="s">An stream of HTTP payload of session</param>
-        public override void Parse (Stream s)
+        public override void Parse(Stream s)
         {
             base.Parse(s);
             this.Reserved = ReadUint();
@@ -617,12 +618,12 @@ namespace MAPIInspector.Parsers
     public class UnbindResponse : BaseStructure
     {
         // A string array that informs the client as to the state of processing a request on the server.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request.
         public uint StatusCode;
@@ -643,8 +644,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -742,12 +743,10 @@ namespace MAPIInspector.Parsers
     public class CompareMinIdsResponse : BaseStructure
     {
         // A string array that informs the client as to the state of processing a request on the server.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
@@ -769,11 +768,11 @@ namespace MAPIInspector.Parsers
         /// </summary>
         /// <param name="s">An stream containing CompareMinIdsResponse structure.</param>
         public override void Parse(Stream s)
-        {          
+        {
             base.Parse(s);
 
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -817,7 +816,7 @@ namespace MAPIInspector.Parsers
         public uint NameCount;
 
         // An array of null-terminated ASCII strings which are distinguished names (DNs) to be mapped to Minimal Entry IDs. 
-        public string NameValues;
+        public MAPIString NameValues;
 
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         public uint AuxiliaryBufferSize;
@@ -842,12 +841,10 @@ namespace MAPIInspector.Parsers
     public class DnToMinIdResponse : BaseStructure
     {
         // A string array that informs the client as to the state of processing a request on the server.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
@@ -877,8 +874,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -899,7 +896,7 @@ namespace MAPIInspector.Parsers
                 }
                 this.MinimalIds = lm.ToArray();
             }
-            
+
             this.AuxiliaryBufferSize = ReadUint();
 
             if (this.AuxiliaryBufferSize > 0)
@@ -1051,12 +1048,10 @@ namespace MAPIInspector.Parsers
     public class GetMatchesResponse : BaseStructure
     {
         // A string array that informs the client as to the state of processing a request on the server.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
@@ -1104,8 +1099,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -1141,9 +1136,10 @@ namespace MAPIInspector.Parsers
                     this.Columns.Parse(s);
                     this.RowCount = ReadUint();
                     List<AddressBookPropertyRow> addressBookPropRow = new List<AddressBookPropertyRow>();
-                    for (int i = 0; i < this.RowCount; i++ )
+                    for (int i = 0; i < this.RowCount; i++)
                     {
                         AddressBookPropertyRow addressPropRow = new AddressBookPropertyRow(this.Columns);
+                        addressPropRow.Parse(s);
                         addressBookPropRow.Add(addressPropRow);
                     }
                     this.RowData = addressBookPropRow.ToArray();
@@ -1194,7 +1190,7 @@ namespace MAPIInspector.Parsers
             this.MinimalId.Parse(s);
             this.CodePage = ReadUint();
             this.AuxiliaryBufferSize = ReadUint();
-            if(this.AuxiliaryBufferSize > 0)
+            if (this.AuxiliaryBufferSize > 0)
             {
                 this.AuxiliaryBuffer = new ExtendedBuffer();
                 this.AuxiliaryBuffer.Parse(s);
@@ -1208,12 +1204,10 @@ namespace MAPIInspector.Parsers
     public class GetPropListResponse : BaseStructure
     {
         // A string array that informs the client as to the state of processing a request on the server.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
@@ -1240,8 +1234,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -1332,12 +1326,10 @@ namespace MAPIInspector.Parsers
     public class GetPropsResponse : BaseStructure
     {
         // A string array that informs the client as to the state of processing a request on the server.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
@@ -1367,8 +1359,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -1440,12 +1432,12 @@ namespace MAPIInspector.Parsers
                 this.State.Parse(s);
             }
             this.HasVersion = ReadBoolean();
-            if(this.HasVersion)
+            if (this.HasVersion)
             {
                 this.Version = ReadUint();
             }
             this.AuxiliaryBufferSize = ReadUint();
-            if(this.AuxiliaryBufferSize >0)
+            if (this.AuxiliaryBufferSize > 0)
             {
                 this.AuxiliaryBuffer = new ExtendedBuffer();
                 this.AuxiliaryBuffer.Parse(s);
@@ -1459,12 +1451,10 @@ namespace MAPIInspector.Parsers
     public class GetSpecialTableResponse : BaseStructure
     {
         // A string array that informs the client as to the state of processing a request on the server.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
@@ -1503,8 +1493,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -1525,14 +1515,14 @@ namespace MAPIInspector.Parsers
                 {
                     this.RowsCount = ReadUint();
                     List<AddressBookPropertyValueList> listAddressValue = new List<AddressBookPropertyValueList>();
-                    for(int i = 0; i< this.RowsCount; i++)
+                    for (int i = 0; i < this.RowsCount; i++)
                     {
                         AddressBookPropertyValueList addressValueList = new AddressBookPropertyValueList();
                         addressValueList.Parse(s);
                         listAddressValue.Add(addressValueList);
                     }
                     this.Rows = listAddressValue.ToArray();
-                }               
+                }
             }
 
             this.AuxiliaryBufferSize = ReadUint();
@@ -1561,8 +1551,7 @@ namespace MAPIInspector.Parsers
         public bool HasTemplateDn;
 
         // A null-terminated ASCII string that specifies the DN of the template requested. 
-        [HelpAttribute(StringEncoding.ASCII, false, 1)]
-        public string TemplateDn;
+        public MAPIString TemplateDn;
 
         // An unsigned integer that specifies the code page of the template for which information is requested.
         public uint CodePage;
@@ -1588,8 +1577,8 @@ namespace MAPIInspector.Parsers
             this.HasTemplateDn = ReadBoolean();
             if (this.HasTemplateDn)
             {
-                this.TemplateDn = ReadString();
-                this.ModifyIsExistAttribute(this, "TemplateDn");
+                this.TemplateDn = new MAPIString(Encoding.ASCII);
+                this.TemplateDn.Parse(s);
             }
             this.CodePage = ReadUint();
             this.LocaleId = ReadUint();
@@ -1608,12 +1597,10 @@ namespace MAPIInspector.Parsers
     public class GetTemplateInfoResponse : BaseStructure
     {
         // A string array that informs the client as to the state of processing a request on the server.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
@@ -1643,8 +1630,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -1753,12 +1740,10 @@ namespace MAPIInspector.Parsers
     public class ModLinkAttResponse : BaseStructure
     {
         // A string array that informs the client as to the state of processing a request on the server.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
@@ -1779,8 +1764,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -1877,12 +1862,10 @@ namespace MAPIInspector.Parsers
     public class ModPropsResponse : BaseStructure
     {
         // A string array that informs the client as to the state of processing a request on the server.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
@@ -1903,8 +1886,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -2006,12 +1989,10 @@ namespace MAPIInspector.Parsers
     public class QueryRowsResponse : BaseStructure
     {
         // A string array that informs the client as to the state of processing a request on the server.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
@@ -2050,8 +2031,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -2134,12 +2115,10 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class QueryColumnsResponse : BaseStructure
     {
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
@@ -2166,8 +2145,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -2272,12 +2251,10 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class ResolveNamesResponse : BaseStructure
     {
-         [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
@@ -2321,9 +2298,9 @@ namespace MAPIInspector.Parsers
         /// <param name="s">An stream containing ResolveNamesResponse structure.</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            base.Parse(s);
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -2353,7 +2330,7 @@ namespace MAPIInspector.Parsers
                     this.PropertyTags.Parse(s);
                     this.RowCount = ReadUint();
                     List<AddressBookPropertyRow> addressPRList = new List<AddressBookPropertyRow>();
-                    for (int i = 0; i< this.RowCount; i++)
+                    for (int i = 0; i < this.RowCount; i++)
                     {
                         AddressBookPropertyRow addressPR = new AddressBookPropertyRow(this.PropertyTags);
                         addressPR.Parse(s);
@@ -2444,12 +2421,10 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class ResortRestrictionResponse : BaseStructure
     {
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
@@ -2485,8 +2460,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -2521,9 +2496,7 @@ namespace MAPIInspector.Parsers
                     this.AuxiliaryBuffer.Parse(s);
                 }
             }
-            
         }
-
     }
     #endregion 2.2.5.15
 
@@ -2622,12 +2595,10 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class SeekEntriesResponse : BaseStructure
     {
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
@@ -2666,8 +2637,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -2691,6 +2662,7 @@ namespace MAPIInspector.Parsers
                         for (int i = 0; i < this.RowCount; i++)
                         {
                             AddressBookPropertyRow addressPropRow = new AddressBookPropertyRow(this.Columns);
+                            addressPropRow.Parse(s);
                             addressBookPropRow.Add(addressPropRow);
                         }
                         this.RowData = addressBookPropRow.ToArray();
@@ -2744,8 +2716,8 @@ namespace MAPIInspector.Parsers
             {
                 this.State = new STAT();
                 this.State.Parse(s);
-                this.DeltaRequested = ReadBoolean();
             }
+            this.DeltaRequested = ReadBoolean();
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
             {
@@ -2760,12 +2732,10 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class UpdateStatResponse : BaseStructure
     {
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
@@ -2798,8 +2768,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -2841,8 +2811,7 @@ namespace MAPIInspector.Parsers
         public uint Flags;
 
         // A null-terminated Unicode string that specifies the distinguished name (DN) of the mailbox server for which to look up the URL.
-        [HelpAttribute(StringEncoding.Unicode, true, 2)]
-        public string ServerDn;
+        public MAPIString ServerDn;
 
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         public uint AuxiliaryBufferSize;
@@ -2859,7 +2828,8 @@ namespace MAPIInspector.Parsers
             base.Parse(s);
 
             this.Flags = ReadUint();
-            this.ServerDn = ReadString(Encoding.Unicode);
+            this.ServerDn = new MAPIString(Encoding.Unicode);
+            this.ServerDn.Parse(s);
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
             {
@@ -2875,19 +2845,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class GetMailboxUrlResponse : BaseStructure
     {
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
 
+        // An unsigned integer that specifies the return status of the operation.
+        public uint ErrorCode;
+
         // A null-terminated Unicode string that specifies URL of the EMSMDB server.
-        [HelpAttribute(StringEncoding.Unicode, true, 2)]
-        public string ServerUrl;
+        public MAPIString ServerUrl;
 
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         public uint AuxiliaryBufferSize;
@@ -2902,8 +2872,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -2911,7 +2881,8 @@ namespace MAPIInspector.Parsers
             this.StatusCode = ReadUint();
             if (this.StatusCode == 0)
             {
-                this.ServerUrl = ReadString(Encoding.Unicode);
+                this.ErrorCode = ReadUint();
+                this.ServerUrl = new MAPIString(Encoding.Unicode, "\0");
             }
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
@@ -2934,15 +2905,13 @@ namespace MAPIInspector.Parsers
         public uint Flags;
 
         // A null-terminated Unicode string that specifies the distinguished name (DN) of the user's mailbox. 
-        [HelpAttribute(StringEncoding.Unicode, true, 2)]
-        public string UserDn;
+        public MAPIString UserDn;
 
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         public uint AuxiliaryBufferSize;
 
         // An array of bytes that constitute the auxiliary payload data sent from the client. 
         public ExtendedBuffer AuxiliaryBuffer;
-
 
         /// <summary>
         /// Parse the GetAddressBookUrlRequest structure.
@@ -2953,7 +2922,8 @@ namespace MAPIInspector.Parsers
             base.Parse(s);
 
             this.Flags = ReadUint();
-            this.UserDn = ReadString(Encoding.Unicode);
+            this.UserDn = new MAPIString(Encoding.Unicode);
+            this.UserDn.Parse(s);
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
             {
@@ -2968,19 +2938,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class GetAddressBookUrlResponse : BaseStructure
     {
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] MetaTags;
+        public MAPIString[] MetaTags;
 
         // A string array that specifies additional header information.
-        [HelpAttribute(StringEncoding.ASCII, true, 2)]
-        public string[] AdditionalHeaders;
+        public MAPIString[] AdditionalHeaders;
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
-        [HelpAttribute(StringEncoding.Unicode, true, 2)]
+
+        // An unsigned integer that specifies the return status of the operation.
+        public uint ErrorCode;
 
         // A null-terminated Unicode string that specifies the URL of the NSPI server.
-        public string ServerUrl;
+        public MAPIString ServerUrl;
 
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         public uint AuxiliaryBufferSize;
@@ -2995,8 +2965,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            List<string> metaTags = new List<string>();
-            List<string> additionalHeaders = new List<string>();
+            List<MAPIString> metaTags = new List<MAPIString>();
+            List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
             this.MetaTags = metaTags.ToArray();
@@ -3004,7 +2974,9 @@ namespace MAPIInspector.Parsers
             this.StatusCode = ReadUint();
             if (this.StatusCode == 0)
             {
-                this.ServerUrl = ReadString(Encoding.Unicode);
+                this.ErrorCode = ReadUint();
+                this.ServerUrl = new MAPIString(Encoding.Unicode);
+                this.ServerUrl.Parse(s);
             }
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
@@ -3043,7 +3015,7 @@ namespace MAPIInspector.Parsers
         /// </summary>
         /// <param name="propertyDataType">The PropertyDataType for this structure</param>
         /// <param name="ptypMultiCountSize">The CountWideEnum for this structure</param>
-        public AddressBookPropertyValue (PropertyDataType propertyDataType, CountWideEnum ptypMultiCountSize = CountWideEnum.fourBytes)
+        public AddressBookPropertyValue(PropertyDataType propertyDataType, CountWideEnum ptypMultiCountSize = CountWideEnum.fourBytes)
         {
             this.propertyDataType = propertyDataType;
             this.countWide = ptypMultiCountSize;
@@ -3055,16 +3027,15 @@ namespace MAPIInspector.Parsers
         /// <param name="s">An stream containing AddressBookPropertyValue structure.</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
-            bool hasValue = (propertyDataType == PropertyDataType.PtypString) || (propertyDataType == PropertyDataType.PtypString8) || 
-                            (propertyDataType == PropertyDataType.PtypBinary) || (propertyDataType == PropertyDataType.PtypMultipleInteger16) || 
-                            (propertyDataType == PropertyDataType.PtypMultipleInteger32) || (propertyDataType == PropertyDataType.PtypMultipleFloating32) || 
-                            (propertyDataType == PropertyDataType.PtypMultipleFloating64) || (propertyDataType == PropertyDataType.PtypMultipleCurrency) || 
-                            (propertyDataType == PropertyDataType.PtypMultipleFloatingTime) || (propertyDataType == PropertyDataType.PtypMultipleInteger64) || 
-                            (propertyDataType == PropertyDataType.PtypMultipleString) || (propertyDataType == PropertyDataType.PtypMultipleString8) || 
-                            (propertyDataType == PropertyDataType.PtypMultipleTime) || (propertyDataType == PropertyDataType.PtypMultipleGuid) || 
+            base.Parse(s);
+            bool hasValue = (propertyDataType == PropertyDataType.PtypString) || (propertyDataType == PropertyDataType.PtypString8) ||
+                            (propertyDataType == PropertyDataType.PtypBinary) || (propertyDataType == PropertyDataType.PtypMultipleInteger16) ||
+                            (propertyDataType == PropertyDataType.PtypMultipleInteger32) || (propertyDataType == PropertyDataType.PtypMultipleFloating32) ||
+                            (propertyDataType == PropertyDataType.PtypMultipleFloating64) || (propertyDataType == PropertyDataType.PtypMultipleCurrency) ||
+                            (propertyDataType == PropertyDataType.PtypMultipleFloatingTime) || (propertyDataType == PropertyDataType.PtypMultipleInteger64) ||
+                            (propertyDataType == PropertyDataType.PtypMultipleString) || (propertyDataType == PropertyDataType.PtypMultipleString8) ||
+                            (propertyDataType == PropertyDataType.PtypMultipleTime) || (propertyDataType == PropertyDataType.PtypMultipleGuid) ||
                             (propertyDataType == PropertyDataType.PtypMultipleBinary);
-	
             if (hasValue)
             {
                 this.HasValue = ReadBoolean();
@@ -3106,7 +3077,7 @@ namespace MAPIInspector.Parsers
         /// <param name="s">An stream containing AddressBookTaggedPropertyValue structure.</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.PropertyType = (PropertyDataType)ReadUshort();
             this.PropertyId = ReadUshort();
             AddressBookPropertyValue addressBookValue = new AddressBookPropertyValue(this.PropertyType);
@@ -3134,10 +3105,10 @@ namespace MAPIInspector.Parsers
         /// <param name="s">An stream containing AddressBookPropertyValueList structure.</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.PropertyValueCount = ReadUint();
             List<AddressBookTaggedPropertyValue> tempABTP = new List<AddressBookTaggedPropertyValue>();
-            for(int i = 0; i < PropertyValueCount; i++)
+            for (int i = 0; i < PropertyValueCount; i++)
             {
                 AddressBookTaggedPropertyValue abtp = new AddressBookTaggedPropertyValue();
                 abtp.Parse(s);
@@ -3168,7 +3139,7 @@ namespace MAPIInspector.Parsers
         /// <param name="s">An stream containing AddressBookTypedPropertyValue structure.</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.PropertyType = (PropertyDataType)ReadUshort();
             AddressBookPropertyValue addressBookPropValue = new AddressBookPropertyValue(this.PropertyType);
             addressBookPropValue.Parse(s);
@@ -3207,12 +3178,12 @@ namespace MAPIInspector.Parsers
         /// <param name="s">An stream containing AddressBookFlaggedPropertyValue structure.</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.Flag = ReadByte();
             if (this.Flag != 0x01)
             {
                 if (this.Flag == 0x00)
-                {                    
+                {
                     AddressBookPropertyValue addressPropValue = new AddressBookPropertyValue(this.propertyDataType);
                     addressPropValue.Parse(s);
                     this.PropertyValue = addressPropValue;
@@ -3238,7 +3209,7 @@ namespace MAPIInspector.Parsers
         public PropertyDataType PropertyType;
 
         // An unsigned integer. This flag MUST be set one of three possible values: 0x0, 0x1, or 0xA, which determines what is conveyed in the PropertyValue field. 
-	    public byte Flag;
+        public byte Flag;
 
         // An AddressBookPropertyValue structure, as specified in section 2.2.1.1, unless Flag field is set to 0x01
         public AddressBookPropertyValue PropertyValue;
@@ -3249,13 +3220,13 @@ namespace MAPIInspector.Parsers
         /// <param name="s">An stream containing AddressBookFlaggedPropertyValueWithType structure.</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.PropertyType = (PropertyDataType)ReadUshort();
             this.Flag = ReadByte();
             if (this.Flag != 0x01)
             {
                 if (this.Flag == 0x00)
-                {                    
+                {
                     AddressBookPropertyValue addressPropValue = new AddressBookPropertyValue(PropertyType);
                     addressPropValue.Parse(s);
                     this.PropertyValue = addressPropValue;
@@ -3308,9 +3279,9 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
             this.Flags = ReadByte();
-            
+
             List<object> result = new List<object>();
-        
+
             if (largePropTagArray is LargePropertyTagArray)
             {
                 foreach (var propTag in largePropTagArray.PropertyTags)
@@ -3346,7 +3317,7 @@ namespace MAPIInspector.Parsers
                             addrRowValue = flagPropValue;
                         }
                     }
-                
+
                     result.Add(addrRowValue);
                 }
             }
@@ -3377,7 +3348,7 @@ namespace MAPIInspector.Parsers
             base.Parse(s);
             this.PropertyTagCount = ReadUint();
             List<PropertyTag> tempPT = new List<PropertyTag>();
-            for(int i = 0; i < PropertyTagCount; i++)
+            for (int i = 0; i < PropertyTagCount; i++)
             {
                 PropertyTag p = new PropertyTag();
                 p.Parse(s);
@@ -3398,7 +3369,7 @@ namespace MAPIInspector.Parsers
     {
         // The RPC_HEADER_EXT structure provides information about the payload.
         public RPC_HEADER_EXT RPC_HEADER_EXT;
-        
+
         // A structure of bytes that constitute the auxiliary payload data returned from the server. 
         public AuxiliaryBufferPayload[] Payload;
 
@@ -3444,7 +3415,7 @@ namespace MAPIInspector.Parsers
                     length += buffer.AUX_HEADER.Size;
                 }
                 this.Payload = payload.ToArray();
-            }           
+            }
         }
     }
     #endregion
@@ -3457,13 +3428,13 @@ namespace MAPIInspector.Parsers
     {
         // The version of the structure. This value MUST be set to 0x0000.
         public ushort Version;
-        
+
         // The flags that specify how data that follows this header MUST be interpreted. 
         public RpcHeaderFlags Flags;
-        
+
         // The total length of the payload data that follows the RPC_HEADER_EXT structure. 
         public ushort Size;
-        
+
         // The length of the payload data after it has been uncompressed.
         public ushort SizeActual;
 
@@ -3489,10 +3460,10 @@ namespace MAPIInspector.Parsers
     {
         //The data that follows the RPC_HEADER_EXT structure is compressed. 
         Compressed = 0x0001,
-        
+
         //The data following the RPC_HEADER_EXT structure has been obfuscated. 
         XorMagic = 0x0002,
-        
+
         //No other RPC_HEADER_EXT structure follows the data of the current RPC_HEADER_EXT structure. 
         Last = 0x0004
     }
@@ -3507,7 +3478,7 @@ namespace MAPIInspector.Parsers
     {
         // An AUX_HEADER structure that provides information about the auxiliary block structures that follow it. 
         public AUX_HEADER AUX_HEADER;
-        
+
         // An object that constitute the auxiliary buffer payload data.
         public object AuxiliaryBlock;
 
@@ -3611,7 +3582,7 @@ namespace MAPIInspector.Parsers
                             this.AuxiliaryBlock = auxiliaryBlock;
                             break;
                         }
-                    case AuxiliaryBlockType_1.AUX_TYPE_PERF_BG_MDB_SUCCESS:                        
+                    case AuxiliaryBlockType_1.AUX_TYPE_PERF_BG_MDB_SUCCESS:
                         {
                             AUX_PERF_MDB_SUCCESS auxiliaryBlock = new AUX_PERF_MDB_SUCCESS();
                             auxiliaryBlock.Parse(s);
@@ -3843,7 +3814,7 @@ namespace MAPIInspector.Parsers
         /// <param name="s">A stream containing the AUX_PERF_REQUESTID structure</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.SessionID = ReadUshort();
             this.RequestID = ReadUshort();
         }
@@ -3872,13 +3843,13 @@ namespace MAPIInspector.Parsers
         /// <param name="s">A stream containing the AUX_PERF_SESSIONINFO structure</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.SessionID = ReadUshort();
             this.Reserved = ReadUshort();
             this.SessionGuid = ReadGuid();
         }
     }
-    #endregion 
+    #endregion
 
     #region Section 2.2.2.2.3   AUX_PERF_SESSIONINFO_V2 Auxiliary Block Structure
     /// <summary>
@@ -3959,22 +3930,19 @@ namespace MAPIInspector.Parsers
         public ushort Reserved;
 
         // A null-terminated Unicode string that contains the client computer name. 
-        [HelpAttribute(StringEncoding.Unicode, false, 2)]
-        public string MachineName;
+        public MAPIString MachineName;
 
         // A null-terminated Unicode string that contains the user's account name. 
-        [HelpAttribute(StringEncoding.Unicode, false, 2)]
-        public string UserName;
+        public MAPIString UserName;
 
         // The client's IP address. 
         public byte?[] ClientIP;
 
         // The client's IP subnet mask. 
         public byte?[] ClientIPMask;
-        
+
         // A null-terminated Unicode string that contains the client network adapter name.
-        [HelpAttribute(StringEncoding.Unicode, false, 2)]
-        public string AdapterName;
+        public MAPIString AdapterName;
 
         // The client's network adapter MAC address. 
         public byte?[] MacAddress;
@@ -3985,7 +3953,7 @@ namespace MAPIInspector.Parsers
         /// <param name="s">A stream containing the AUX_PERF_CLIENTINFO structure</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.AdapterSpeed = ReadUint();
             this.ClientID = ReadUshort();
             this.MachineNameOffset = ReadUshort();
@@ -4001,14 +3969,14 @@ namespace MAPIInspector.Parsers
             this.Reserved = ReadUshort();
             if (this.MachineNameOffset != 0)
             {
-                this.MachineName = ReadString(Encoding.Unicode);
-                ModifyIsExistAttribute(this, "MachineName");
+                this.MachineName = new MAPIString(Encoding.Unicode);
+                this.MachineName.Parse(s);
             }
 
             if (this.UserNameOffset != 0)
             {
-                this.UserName = ReadString(Encoding.Unicode);
-                ModifyIsExistAttribute(this, "UserName");
+                this.UserName = new MAPIString(Encoding.Unicode);
+                this.UserName.Parse(s);
             }
 
             if (this.ClientIPSize > 0 && this.ClientIPOffset != 0)
@@ -4023,8 +3991,8 @@ namespace MAPIInspector.Parsers
 
             if (this.AdapterNameOffset != 0)
             {
-                this.AdapterName = ReadString(Encoding.Unicode);
-                ModifyIsExistAttribute(this, "AdapterName");
+                this.AdapterName = new MAPIString(Encoding.Unicode);
+                this.AdapterName.Parse(s);
             }
 
             if (this.MacAddressSize > 0 && this.MacAddressOffset != 0)
@@ -4045,14 +4013,14 @@ namespace MAPIInspector.Parsers
         CLIENTMODE_CACHED = 0x02
     };
 
-    #endregion 
+    #endregion
 
     #region  Section 2.2.2.2.5   AUX_PERF_SERVERINFO Auxiliary Block Structure
 
     /// <summary>
     ///  A class indicates the AUX_PERF_SERVERINFO Auxiliary Block Structure
     /// </summary>
-    public class  AUX_PERF_SERVERINFO: BaseStructure
+    public class AUX_PERF_SERVERINFO : BaseStructure
     {
         // The client-assigned server identification number.
         public ushort ServerID;
@@ -4067,12 +4035,10 @@ namespace MAPIInspector.Parsers
         public ushort ServerNameOffset;
 
         // A null-terminated Unicode string that contains the DN of the server. 
-        [HelpAttribute(StringEncoding.Unicode, false, 2)]
-        public string ServerDN;
+        public MAPIString ServerDN;
 
         // A null-terminated Unicode string that contains the server name. 
-        [HelpAttribute(StringEncoding.Unicode, false, 2)]
-        public string ServerName;
+        public MAPIString ServerName;
 
         /// <summary>
         /// Parse the AUX_PERF_SERVERINFO structure.
@@ -4080,20 +4046,20 @@ namespace MAPIInspector.Parsers
         /// <param name="s">A stream containing the AUX_PERF_SERVERINFO structure</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.ServerID = ReadUshort();
             this.ServerType = (ServerType)ReadUshort();
             this.ServerDNOffset = ReadUshort();
             this.ServerNameOffset = ReadUshort();
             if (this.ServerDNOffset != 0)
             {
-                this.ServerDN = ReadString(Encoding.Unicode);
-                ModifyIsExistAttribute(this, "ServerDN");
+                this.ServerDN = new MAPIString(Encoding.Unicode);
+                this.ServerDN.Parse(s);
             }
             if (this.ServerNameOffset != 0)
             {
-                this.ServerName = ReadString(Encoding.Unicode);
-                ModifyIsExistAttribute(this, "ServerName");
+                this.ServerName = new MAPIString(Encoding.Unicode);
+                this.ServerName.Parse(s);
             }
         }
     }
@@ -4115,7 +4081,7 @@ namespace MAPIInspector.Parsers
     /// <summary>
     ///  A class indicates the AUX_PERF_PROCESSINFO Auxiliary Block Structure
     /// </summary>
-    public class AUX_PERF_PROCESSINFO :BaseStructure
+    public class AUX_PERF_PROCESSINFO : BaseStructure
     {
         // The client-assigned process identification number.
         public ushort ProcessID;
@@ -4133,8 +4099,7 @@ namespace MAPIInspector.Parsers
         public ushort Reserved_2;
 
         // A null-terminated Unicode string that contains the client process name. 
-        [HelpAttribute(StringEncoding.Unicode, false, 2)]
-        public string ProcessName;
+        public MAPIString ProcessName;
 
         /// <summary>
         /// Parse the AUX_PERF_PROCESSINFO structure.
@@ -4142,7 +4107,7 @@ namespace MAPIInspector.Parsers
         /// <param name="s">A stream containing the AUX_PERF_PROCESSINFO structure</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.ProcessID = ReadUshort();
             this.Reserved_1 = ReadUshort();
             this.ProcessGuid = ReadGuid();
@@ -4150,8 +4115,8 @@ namespace MAPIInspector.Parsers
             this.Reserved_2 = ReadUshort();
             if (ProcessNameOffset != 0)
             {
-                this.ProcessName = ReadString(Encoding.Unicode);
-                ModifyIsExistAttribute(this,"ProcessName");
+                this.ProcessName = new MAPIString(Encoding.Unicode);
+                this.ProcessName.Parse(s);
             }
         }
     }
@@ -4181,7 +4146,7 @@ namespace MAPIInspector.Parsers
         /// <param name="s">A stream containing the AUX_PERF_DEFMDB_SUCCESS structure</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.TimeSinceRequest = ReadUint();
             this.TimeToCompleteRequest = ReadUint();
             this.RequestID = ReadUshort();
@@ -4214,21 +4179,21 @@ namespace MAPIInspector.Parsers
 
         // Padding to enforce alignment of the data on a 4-byte field. 
         public byte[] Reserved;
-        
+
         /// <summary>
         /// Parse the AUX_PERF_DEFGC_SUCCESS structure.
         /// </summary>
         /// <param name="s">A stream containing the AUX_PERF_DEFGC_SUCCESS structure</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.ServerID = ReadUshort();
             this.SessionID = ReadUshort();
             this.TimeSinceRequest = ReadUint();
             this.TimeToCompleteRequest = ReadUint();
             this.RequestOperation = ReadByte();
             this.Reserved = ReadBytes(3);
-        } 
+        }
     }
     #endregion
 
@@ -4262,7 +4227,7 @@ namespace MAPIInspector.Parsers
         /// <param name="s">A stream containing the AUX_PERF_MDB_SUCCESS structure</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.ClientID = ReadUshort();
             this.ServerID = ReadUshort();
             this.SessionID = ReadUshort();
@@ -4277,7 +4242,7 @@ namespace MAPIInspector.Parsers
     /// <summary>
     ///  A class indicates the AUX_PERF_MDB_SUCCESS_V2 Auxiliary Block Structure
     /// </summary>
-    public class AUX_PERF_MDB_SUCCESS_V2: BaseStructure
+    public class AUX_PERF_MDB_SUCCESS_V2 : BaseStructure
     {
         // The process identification number.
         public ushort ProcessID;
@@ -4358,7 +4323,7 @@ namespace MAPIInspector.Parsers
         /// <param name="s">A stream containing the AUX_PERF_GC_SUCCESS structure</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.ClientID = ReadUshort();
             this.ServerID = ReadUshort();
             this.SessionID = ReadUshort();
@@ -4400,14 +4365,14 @@ namespace MAPIInspector.Parsers
 
         // Padding to enforce alignment of the data on a 4-byte field. 
         public byte[] Reserved;
-        
+
         /// <summary>
         /// Parse the AUX_PERF_GC_SUCCESS_V2 structure.
         /// </summary>
         /// <param name="s">A stream containing the AUX_PERF_GC_SUCCESS_V2 structure</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.ProcessID = ReadUshort();
             this.ClientID = ReadUshort();
             this.ServerID = ReadUshort();
@@ -4459,7 +4424,7 @@ namespace MAPIInspector.Parsers
         /// <param name="s">A stream containing the AUX_PERF_FAILURE structure</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.ClientID = ReadUshort();
             this.ServerID = ReadUshort();
             this.SessionID = ReadUshort();
@@ -4518,7 +4483,7 @@ namespace MAPIInspector.Parsers
         /// <param name="s">A stream containing the AUX_PERF_FAILURE_V2 structure</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.ProcessID = ReadUshort();
             this.ClientID = ReadUshort();
             this.ServerID = ReadUshort();
@@ -4553,18 +4518,18 @@ namespace MAPIInspector.Parsers
         /// <param name="s">A stream containing the AUX_CLIENT_CONTROL structure</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.EnableFlags = (EnableFlags)ReadUint();
             this.ExpiryTime = ReadUint();
         }
     }
 
-    public enum EnableFlags: uint
+    public enum EnableFlags : uint
     {
         ENABLE_PERF_SENDTOSERVER = 0x00000001,
-        ENABLE_COMPRESSION       = 0x00000004,
-        ENABLE_HTTP_TUNNELING    = 0x00000008,
-        ENABLE_PERF_SENDGCDATA   = 0x00000010
+        ENABLE_COMPRESSION = 0x00000004,
+        ENABLE_HTTP_TUNNELING = 0x00000008,
+        ENABLE_PERF_SENDGCDATA = 0x00000010
     };
     #endregion
 
@@ -4616,8 +4581,8 @@ namespace MAPIInspector.Parsers
         }
     }
 
-    #endregion 
-    
+    #endregion
+
     #region Section 2.2.2.2.17   AUX_EXORGINFO Auxiliary Block Structure
     /// <summary>
     /// A class indicates the AUX_EXORGINFO Auxiliary Block Structure
@@ -4632,7 +4597,7 @@ namespace MAPIInspector.Parsers
         /// <param name="s">A stream containing the AUX_EXORGINFO structure</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.OrgFlags = (OrgFlags)ReadUint();
         }
     }
@@ -4729,8 +4694,7 @@ namespace MAPIInspector.Parsers
         public ConnectionFlags ConnectionFlags;
 
         // A null-terminated Unicode string that contains opaque connection context information to be logged by the server.
-        [HelpAttribute(StringEncoding.Unicode, false, 2)]
-        public string ConnectionContextInfo;
+        public MAPIString ConnectionContextInfo;
 
         /// <summary>
         /// Parse the AUX_CLIENT_CONNECTION_INFO structure.
@@ -4746,12 +4710,11 @@ namespace MAPIInspector.Parsers
             this.ConnectionFlags = (ConnectionFlags)ReadUint();
             if (OffsetConnectionContextInfo != 0)
             {
-                this.ConnectionContextInfo = ReadString(Encoding.Unicode);
-                ModifyIsExistAttribute(this, "ConnectionContextInfo");
+                this.ConnectionContextInfo = new MAPIString(Encoding.Unicode);
+                this.ConnectionContextInfo.Parse(s);
             }
         }
     }
-
 
     // ConnectionFlags designating the mode of operation.
     public enum ConnectionFlags : uint
@@ -4771,21 +4734,20 @@ namespace MAPIInspector.Parsers
         public ushort OffsetServerSessionContextInfo;
 
         // A null-terminated Unicode string that contains opaque server session context information to be logged by the client. 
-        [HelpAttribute(StringEncoding.Unicode, false, 2)]
-        public string ServerSessionContextInfo;
-        
+        public MAPIString ServerSessionContextInfo;
+
         /// <summary>
         /// Parse the AUX_SERVER_SESSION_INFO structure.
         /// </summary>
         /// <param name="s">A stream containing the AUX_SERVER_SESSION_INFO structure</param>
         public override void Parse(Stream s)
         {
- 	        base.Parse(s);
+            base.Parse(s);
             this.OffsetServerSessionContextInfo = ReadUshort();
             if (OffsetServerSessionContextInfo != 0)
             {
-                this.ServerSessionContextInfo = ReadString(Encoding.Unicode);
-                ModifyIsExistAttribute(this,"ServerSessionContextInfo");
+                this.ServerSessionContextInfo = new MAPIString(Encoding.Unicode);
+                this.ServerSessionContextInfo.Parse(s);
             }
         }
     }
@@ -4813,24 +4775,19 @@ namespace MAPIInspector.Parsers
         public ushort DeviceFirmwareVersionOffset;
 
         // A null-terminated Unicode string that contains the name of the manufacturer of the device. 
-        [HelpAttribute(StringEncoding.Unicode, false, 2)]
-        public string DeviceManufacturer;
+        public MAPIString DeviceManufacturer;
 
         //  A null-terminated Unicode string that contains the model name of the device. 
-        [HelpAttribute(StringEncoding.Unicode, false, 2)]
-        public string DeviceModel;
+        public MAPIString DeviceModel;
 
         // A null-terminated Unicode string that contains the serial number of the device. 
-        [HelpAttribute(StringEncoding.Unicode, false, 2)]
-        public string DeviceSerialNumber;
+        public MAPIString DeviceSerialNumber;
 
         // A null-terminated Unicode string that contains the version number of the device. 
-        [HelpAttribute(StringEncoding.Unicode, false, 2)]
-        public string DeviceVersion;
+        public MAPIString DeviceVersion;
 
         // A null-terminated Unicode string that contains the firmware version of the device. 
-        [HelpAttribute(StringEncoding.Unicode, false, 2)]
-        public string DeviceFirmwareVersion;
+        public MAPIString DeviceFirmwareVersion;
 
         /// <summary>
         /// Parse the AUX_PROTOCOL_DEVICE_IDENTIFICATION structure.
@@ -4846,34 +4803,34 @@ namespace MAPIInspector.Parsers
             this.DeviceFirmwareVersionOffset = ReadUshort();
             if (this.DeviceManufacturerOffset != 0)
             {
-                this.DeviceManufacturer = ReadString(Encoding.Unicode);
-                ModifyIsExistAttribute(this, "DeviceManufacturer");
+                this.DeviceManufacturer = new MAPIString(Encoding.Unicode);
+                this.DeviceManufacturer.Parse(s);
             }
 
             if (this.DeviceModelOffset != 0)
             {
-                this.DeviceModel = ReadString(Encoding.Unicode);
-                ModifyIsExistAttribute(this, "DeviceModel");
+                this.DeviceModel = new MAPIString(Encoding.Unicode);
+                this.DeviceModel.Parse(s);
             }
 
             if (this.DeviceSerialNumberOffset != 0)
             {
-                this.DeviceSerialNumber = ReadString(Encoding.Unicode);
-                ModifyIsExistAttribute(this, "DeviceSerialNumber");
+                this.DeviceSerialNumber = new MAPIString(Encoding.Unicode);
+                this.DeviceSerialNumber.Parse(s);
             }
 
             if (this.DeviceVersionOffset != 0)
             {
-                this.DeviceVersion = ReadString(Encoding.Unicode);
-                ModifyIsExistAttribute(this, "DeviceVersion");
+                this.DeviceVersion = new MAPIString(Encoding.Unicode);
+                this.DeviceVersion.Parse(s);
             }
 
             if (this.DeviceFirmwareVersionOffset != 0)
             {
-                this.DeviceFirmwareVersion = ReadString(Encoding.Unicode);
-                ModifyIsExistAttribute(this, "DeviceFirmwareVersion");
+                this.DeviceFirmwareVersion = new MAPIString(Encoding.Unicode);
+                this.DeviceFirmwareVersion.Parse(s);
             }
-        }     
+        }
     }
     #endregion
 
@@ -4886,10 +4843,10 @@ namespace MAPIInspector.Parsers
     {
         // The size of the AUX_HEADER structure plus any additional payload data.
         public ushort Size;
-        
+
         // The version information of the payload data.
         public PayloadDataVersion Version;
-        
+
         // The type of auxiliary block data structure. The Type should be AuxiliaryBlockType_1 or AuxiliaryBlockType_2.
         public object Type;
 
@@ -5015,7 +4972,7 @@ namespace MAPIInspector.Parsers
 
                 if (isCompressedXOR)
                 {
-                    MapiInspector.MAPIInspector.payLoadCompresssedXOR = payloadBytes; 
+                    MapiInspector.MAPIInspector.payLoadCompresssedXOR = payloadBytes;
                 }
                 Stream stream = new MemoryStream(payloadBytes);
                 this.Payload = new ROPInputBuffer();
@@ -5098,7 +5055,7 @@ namespace MAPIInspector.Parsers
             base.Parse(s);
             List<rgbOutputBuffer> rgbOutputBufferList = new List<rgbOutputBuffer>();
             long StartPosition = s.Position;
-            while (s.Position - StartPosition < this.RopBufferSize )
+            while (s.Position - StartPosition < this.RopBufferSize)
             {
                 rgbOutputBuffer buffer = new rgbOutputBuffer();
                 buffer.Parse(s);
@@ -5116,31 +5073,34 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class ParseMAPIMethod : BaseStructure
     {
-        public void ParseAddtionlHeader(Stream s, out List<string> metaTags, out List<string> additionalHeaders)
+        public void ParseAddtionlHeader(Stream s, out List<MAPIString> metaTags, out List<MAPIString> additionalHeaders)
         {
             base.Parse(s);
             string str = null;
-            List<string> tempmetaTags = new List<string>();
-            List<string> tempadditionalHeaders = new List<string>();
+            List<MAPIString> tempmetaTags = new List<MAPIString>();
+            List<MAPIString> tempadditionalHeaders = new List<MAPIString>();
             while (str != "")
             {
-                str = ReadString("\r\n");
+                str = ReadString(Encoding.ASCII, "\r\n");
+                MAPIString tempString = new MAPIString(Encoding.ASCII, "\r\n");
+                tempString.Value = str;
                 switch (str)
                 {
                     case "PROCESSING":
                     case "PENDING":
                     case "DONE":
-                        tempmetaTags.Add(str);
+                        tempmetaTags.Add(tempString);
                         break;
                     default:
                         if (str != "")
                         {
-                            tempadditionalHeaders.Add(str);
+                            tempadditionalHeaders.Add(tempString);
                             break;
                         }
                         else
                         {
-                            tempadditionalHeaders.Add("");
+                            tempString.Value = "";
+                            tempadditionalHeaders.Add(tempString);
                             break;
                         }
                 }
@@ -5416,5 +5376,5 @@ namespace MAPIInspector.Parsers
             return outStream;
         }
     }
-    #endregion 
+    #endregion
 }

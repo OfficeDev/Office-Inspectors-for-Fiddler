@@ -553,7 +553,6 @@ namespace MAPIInspector.Parsers
         }
     }
 
-
     /// <summary>
     ///  This type is specified in MS-OXORULE section 2.2.5.1.1 ActionFlavor structure when ActionType is relate to REPLY
     /// </summary>
@@ -644,7 +643,9 @@ namespace MAPIInspector.Parsers
             this.StoreEIDSize = ReadUshort();
             if (FolderInThisStore)
             {
-                this.StoreEID = ReadString(Encoding.ASCII, "", StoreEIDSize);
+                MAPIString storeEID = new MAPIString(Encoding.ASCII, "", StoreEIDSize);
+                storeEID.Parse(s);
+                this.StoreEID = storeEID;
             }
             else
             {
@@ -676,7 +677,7 @@ namespace MAPIInspector.Parsers
         public uint StoreEIDSize;
 
         // This field is not used and can be set to any non-null value by the client and the server. 
-        public string StoreEID;
+        public MAPIString StoreEID;
 
         // An integer that specifies the size, in bytes, of the FolderEID field.
         public uint FolderEIDSize;
@@ -692,7 +693,8 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
             this.StoreEIDSize = ReadUint();
-            this.StoreEID = ReadString(Encoding.ASCII, "", (int)StoreEIDSize);
+            this.StoreEID = new MAPIString(Encoding.ASCII, "", (int)StoreEIDSize);
+            this.StoreEID.Parse(s);
             this.FolderEIDSize = ReadUint();
             FolderEntryID folderEID = new FolderEntryID();
             this.FolderEID = folderEID;

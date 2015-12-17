@@ -196,44 +196,6 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Read a string value from stream according to string terminator
-        /// </summary>
-        /// <param name="terminator">The string terminator</param>
-        /// <returns>A string value</returns>
-        protected string ReadString(string terminator = "\0")
-        {
-            StringBuilder value = new StringBuilder();
-            int length = terminator.Length;
-            bool terminated = false;
-
-            while (!terminated)
-            {
-                int b = stream.ReadByte();
-                if (b == -1)
-                {
-                    throw new Exception();
-                }
-
-                value.Append((char)b);
-                if (value.Length < length)
-                {
-                    continue;
-                }
-                int i;
-                for (i = length - 1; i >= 0; i--)
-                {
-                    if (terminator[i] != value[value.Length - length + i])
-                    {
-                        break;
-                    }
-                }
-                terminated = i < 0;
-            }
-
-            return value.Remove(value.Length - length, length).ToString();
-        }
-
-        /// <summary>
         /// Read string value from stream according to string terminator and Encoding method
         /// </summary>
         /// <param name="encoding">The character Encoding</param>
@@ -357,6 +319,48 @@ namespace MAPIInspector.Parsers
             int current = startIndex;
 
             TreeNode res = new TreeNode(t.Name);
+            if (t.Name == "MAPIString")
+            {
+                int os = 0;
+                FieldInfo[] infoString = t.GetFields();
+
+                string terminator = (string)infoString[2].GetValue(obj);
+                TreeNode node = new TreeNode(string.Format("{0}:{1}", infoString[0].Name, infoString[0].GetValue(obj)));
+                // If the StringLength is not equal 0, the StringLength will be os value.
+                if (infoString[3].GetValue(obj).ToString() != "0")
+                {
+                    os = ((int)infoString[3].GetValue(obj));
+                }
+                // If the Encoding is Unicode.
+                else if (infoString[1].GetValue(obj).ToString() == "System.Text.UnicodeEncoding")
+                {
+                    if (infoString[0].GetValue(obj) != null)
+                    {
+                        os = ((string)infoString[0].GetValue(obj)).Length * 2;
+                    }
+                    if (infoString[4].GetValue(obj).ToString() != "False")
+                    {
+                        os -= 1;
+                    }
+                    os += terminator.Length * 2;
+                }
+                //If the Encoding is ASCII.
+                else
+                {
+                    if (infoString[0].GetValue(obj) != null)
+                    {
+                        os = ((string)infoString[0].GetValue(obj)).Length;
+                    }
+                    os += terminator.Length;
+                }
+
+                offset = os;
+                Position positionString = new Position(current, os);
+                node.Tag = positionString;
+                res.Nodes.Add(node);
+                res.Tag = positionString;
+                return res;
+            }
 
             // Check whether the data type is simple type
             if (Enum.IsDefined(typeof(DataType), t.Name))
@@ -368,6 +372,13 @@ namespace MAPIInspector.Parsers
                 // If the data type is not simple type, we will loop each field, check the data type and then parse the value in different format
                 FieldInfo[] info = t.GetFields();
                 int BitLength = 0;
+
+                // The is only for FastTransfer stream parse, Polymorphic in PropValue and NamedPropInfo 
+                if (obj is PropValue || obj is NamedPropInfo)
+                {
+                    info = MoveFirstNFieldsBehind(info, info.Length - 2);
+                }
+
                 for (int i = 0; i < info.Length; i++)
                 {
                     int os = 0;
@@ -395,26 +406,21 @@ namespace MAPIInspector.Parsers
                             Type fieldType = type;
                             TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, info[i].GetValue(obj).ToString()));
                             res.Nodes.Add(tn);
-                            if (type.Name == "String")
+                            if (type.Name == "UInt64")
                             {
-                                object[] attributes = info[i].GetCustomAttributes(typeof(HelpAttribute), false);
-                                if (((HelpAttribute)(attributes[0])).IsExist == true)
+                                if (info[i].GetCustomAttributesData().Count == 0)
                                 {
-                                    if (((HelpAttribute)(attributes[0])).Encode == StringEncoding.Unicode)
-                                    {
-                                        os = ((string)info[i].GetValue(obj)).Length * 2;
-                                    }
-                                    else
-                                    {
-                                        os = ((string)info[i].GetValue(obj)).Length;
-                                    }
-
-                                    os += (int)((HelpAttribute)(attributes[0])).TerminatorLength;
+                                    os = 8;
+                                }
+                                else
+                                {
+                                    object[] attributes = info[i].GetCustomAttributes(typeof(BytesAttribute), false);
+                                    os = (int)((BytesAttribute)attributes[0]).ByteLength;
                                 }
                             }
                             else if (type.Name == "DateTime")
                             {
-                                os = 4;
+                                os = 8;
                             }
                             // Check if it is bit.
                             else if (type.Name == "Byte" && info[i].GetCustomAttributesData().Count != 0 && info[i].GetCustomAttributes(typeof(BitAttribute), false) != null)
@@ -456,6 +462,24 @@ namespace MAPIInspector.Parsers
                         if (type.Name == "String")
                         {
                             os = ((string)info[i].GetValue(obj)).Length;
+                        }
+                        // Modify the bit os for the NotificationFlagsT in MSOXCNOTIF
+                        else if (info[i].GetCustomAttributesData().Count != 0 && info[i].GetCustomAttributes(typeof(BitAttribute), false) != null)
+                        {
+                            BitAttribute attribute = (BitAttribute)info[i].GetCustomAttributes(typeof(BitAttribute), false)[0];
+                            if ((BitLength) % 8 != 0)
+                            {
+                                current -= 1;
+                            }
+                            if (attribute.BitLength % 8 == 0)
+                            {
+                                os += attribute.BitLength / 8;
+                            }
+                            else
+                            {
+                                os += attribute.BitLength / 8 + 1;
+                            }
+                            BitLength += attribute.BitLength;
                         }
                         else
                         {
@@ -507,21 +531,9 @@ namespace MAPIInspector.Parsers
                                 TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
                                 res.Nodes.Add(tn);
 
-                                if (elementType.Name == "String")
+                                for (int j = 0; j < arr.Length; j++)
                                 {
-                                    for (int j = 0; j < arr.Length; j++)
-                                    {
-                                        os += ((string[])(arr))[j].Length;
-                                        object[] attributes = info[i].GetCustomAttributes(typeof(HelpAttribute), false);
-                                        os += (int)((HelpAttribute)(attributes[0])).TerminatorLength;
-                                    }
-                                }
-                                else
-                                {
-                                    for (int j = 0; j < arr.Length; j++)
-                                    {
-                                        os += Marshal.SizeOf(elementType);
-                                    }
+                                    os += Marshal.SizeOf(elementType);
                                 }
 
                                 Position ps = new Position(current, os);
@@ -548,43 +560,46 @@ namespace MAPIInspector.Parsers
                                 int arros = 0;
                                 for (int k = 0; k < arr.Length; k++)
                                 {
-                                    // If the item in array contains array (byte or other simple type), display the value in one line and set the offset and length.
-                                    if (a[k].GetType().IsArray && a[k].GetType().GetElementType().Name == "Byte")
+                                    if (a[k] != null)
                                     {
-                                        StringBuilder result = new StringBuilder("[");
-                                        Position ps;
-                                        foreach (var ar in (byte[])a[k])
+                                        // If the item in array contains array (byte or other simple type), display the value in one line and set the offset and length.
+                                        if (a[k].GetType().IsArray && a[k].GetType().GetElementType().Name == "Byte")
                                         {
-                                            result.Append(ar.ToString() + ",");
-                                        }
-                                        result.Remove(result.Length - 1, 1);
-                                        result.Append("]");
-                                        if (arr.Length == 1)
-                                        {
-                                            tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
+                                            StringBuilder result = new StringBuilder("[");
+                                            Position ps;
+                                            foreach (var ar in (byte[])a[k])
+                                            {
+                                                result.Append(ar.ToString() + ",");
+                                            }
+                                            result.Remove(result.Length - 1, 1);
+                                            result.Append("]");
+                                            if (arr.Length == 1)
+                                            {
+                                                tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
+                                                os = ((byte[])a[k]).Length;
+                                                ps = new Position(current, os);
+                                                tn.Tag = ps;
+                                            }
+                                            else
+                                            {
+                                                tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
+                                                tnArr.Nodes.Add(tn);
+                                                os = ((byte[])a[k]).Length;
+                                                ps = new Position(current, os);
+                                                tn.Tag = ps;
+                                            }
                                             os = ((byte[])a[k]).Length;
                                             ps = new Position(current, os);
-                                            tn.Tag = ps;
+                                            tnArr.Tag = ps;
                                         }
+                                        // If the item in array is complex type, loop call the function to add it to tree.
                                         else
                                         {
-                                            tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
+                                            tn = AddNodesForTree(a[k], current, out os);
                                             tnArr.Nodes.Add(tn);
-                                            os = ((byte[])a[k]).Length;
-                                            ps = new Position(current, os);
+                                            Position ps = new Position(current, os);
                                             tn.Tag = ps;
                                         }
-                                        os = ((byte[])a[k]).Length;
-                                        ps = new Position(current, os);
-                                        tnArr.Tag = ps;
-                                    }
-                                    // If the item in array is complex type, loop call the function to add it to tree.
-                                    else
-                                    {
-                                        tn = AddNodesForTree(a[k], current, out os);
-                                        tnArr.Nodes.Add(tn);
-                                        Position ps = new Position(current, os);
-                                        tn.Tag = ps;
                                     }
 
                                     current += os;
@@ -595,7 +610,7 @@ namespace MAPIInspector.Parsers
                                 tnArr.Tag = pss;
 
                                 // Special handling for the array field data type when its name is Payload and it's compressed or XOR: recalculating the offset and position.
-								if (fieldNameForAut == "Payload" && isCompressedXOR)
+                                if (fieldNameForAut == "Payload" && isCompressedXOR)
                                 {
                                     tnArr = TreeNodeForCompressed(tnArr, current - arros, true);
                                     string text = tnArr.Text.Replace("Payload", "Payload(CompressedOrObfuscated)");
@@ -626,7 +641,7 @@ namespace MAPIInspector.Parsers
                         {
                             string fieldName = info[i].Name;
                             TreeNode node = new TreeNode();
-                            
+
                             // The below logical is used to check whether the payload is compressed or XOR.
                             if (fieldName == "RPC_HEADER_EXT")
                             {
@@ -657,6 +672,13 @@ namespace MAPIInspector.Parsers
                             {
                                 node = AddNodesForTree(info[i].GetValue(obj), current, out os);
                             }
+
+                            // Add the specific type(FastTransfer stream type) for TransferBuffer and TransferData fields.
+                            if (fieldName == "TransferBuffer" || fieldName == "TransferData")
+                            {
+                                fieldName = string.Format(fieldName + ": " + info[i].GetValue(obj).GetType().Name);
+                            }
+
                             node.Text = fieldName;
                             res.Nodes.Add(node);
                             current += os;
@@ -674,15 +696,6 @@ namespace MAPIInspector.Parsers
 
         #region Helper for AddNodesForTree function
         /// <summary>
-        /// String encoding enum
-        /// </summary>
-        public enum StringEncoding
-        {
-            ASCII,
-            Unicode
-        }
-
-        /// <summary>
         /// Record start position and byte counts consumed 
         /// </summary>
         public class Position
@@ -697,60 +710,6 @@ namespace MAPIInspector.Parsers
                 this.Offset = offset;
                 this.IsAuxiliayPayload = false;
             }
-        }
-
-        /// <summary>
-        /// Custom attribute for string type
-        /// </summary>
-        [AttributeUsage(AttributeTargets.All)]
-        public class HelpAttribute : System.Attribute
-        {
-            public StringEncoding Encode { get; set; }
-            public uint TerminatorLength { get; set; }
-            public bool IsExist { get; set; }
-            public HelpAttribute(StringEncoding encode, bool isExist, uint length = 0)
-            {
-                this.Encode = encode;
-                this.TerminatorLength = length;
-                this.IsExist = isExist;
-            }
-        }
-        /// <summary>
-        /// Custom attribute for bit length
-        /// </summary>
-        [AttributeUsage(AttributeTargets.All)]
-        public class BitAttribute : System.Attribute
-        {
-            public readonly int BitLength;
-            public BitAttribute(int bitLength)
-            {
-                this.BitLength = bitLength;
-            }
-
-        }
-
-        /// <summary>
-        /// Modify custom attribute for string type
-        /// </summary>
-        public void ModifyIsExistAttribute(object obj, string fieldName)
-        {
-            Type type = obj.GetType();
-            FieldInfo f = type.GetField(fieldName);
-            object[] attributes = f.GetCustomAttributes(typeof(HelpAttribute), false);
-            HelpAttribute attribute = (HelpAttribute)attributes[0];
-            attribute.IsExist = true;
-        }
-        /// <summary>
-        /// Modify Encode and TerminatorLength attribute for string type.
-        /// </summary>
-        public void ModifyEncodingAttribute(object obj, string fieldName, StringEncoding encoding, uint length)
-        {
-            Type type = obj.GetType();
-            FieldInfo f = type.GetField(fieldName);
-            object[] attributes = f.GetCustomAttributes(typeof(HelpAttribute), false);
-            HelpAttribute attribute = (HelpAttribute)attributes[0];
-            attribute.Encode = encoding;
-            attribute.TerminatorLength = length;
         }
 
         /// <summary>
@@ -789,6 +748,33 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
+        /// Moving the number of fields in FieldInfo from begining to the end
+        /// </summary>
+        public static FieldInfo[] MoveFirstNFieldsBehind(FieldInfo[] field, int n)
+        {
+            FieldInfo[] NewField = new FieldInfo[field.Length];
+
+            if (n < 0 || n > field.Length)
+            {
+                throw new InvalidOperationException(string.Format("Moving Failed because the length ({0}) need to move is exceeded the fields' length ({1}).", n, field.Length));
+            }
+            else
+            {
+                int i = 0;
+                for (; i < field.Length - n; i++)
+                {
+                    NewField[i] = field[n + i];
+                }
+
+                for (; i < field.Length; i++)
+                {
+                    NewField[i] = field[i - (field.Length - n)];
+                }
+                return NewField;
+            }
+        }
+
+        /// <summary>
         /// The data type enum
         /// </summary>
         public enum DataType
@@ -811,7 +797,42 @@ namespace MAPIInspector.Parsers
             UInt64,
             DateTime
         }
-
         #endregion
+    }
+
+    /// <summary>
+    /// Custom attribute for bit length
+    /// </summary>
+    [AttributeUsage(AttributeTargets.All)]
+    public class BitAttribute : System.Attribute
+    {
+        public readonly int BitLength;
+        public BitAttribute(int bitLength)
+        {
+            this.BitLength = bitLength;
+        }
+
+    }
+
+    /// <summary>
+    /// Custom attribute for bytes length
+    /// </summary>
+    [AttributeUsage(AttributeTargets.All)]
+    public class BytesAttribute : System.Attribute
+    {
+        public readonly uint ByteLength;
+        public BytesAttribute(uint byteLength)
+        {
+            this.ByteLength = byteLength;
+        }
+    }
+
+    /// <summary>
+    /// String encoding enum
+    /// </summary>
+    public enum StringEncoding
+    {
+        ASCII,
+        Unicode
     }
 }

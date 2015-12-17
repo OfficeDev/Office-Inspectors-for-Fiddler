@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-
 namespace MAPIInspector.Parsers
 {
     #region 2.2.2.1	Table ROP Constants
@@ -370,13 +369,18 @@ namespace MAPIInspector.Parsers
         // A list of PropertyRow structures. 
         public PropertyRow[] RowData;
 
-        // TODO: need the other rop information
         // Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1). 
-        PropertyTag[] propertiesBySetColum;
-        public RopQueryRowsResponse(PropertyTag[] PropertyTags)
+        private PropertyTag[] propertiesBySetColum;
+
+        /// <summary>
+        /// The construe function for RopQueryRowsResponse
+        /// </summary>
+        /// <param name="propertiesBySetColum">Property Tags got from RopSetColumn</param>
+        public RopQueryRowsResponse(PropertyTag[] propertiesBySetColum)
         {
-            this.propertiesBySetColum = PropertyTags;
+            this.propertiesBySetColum = propertiesBySetColum;
         }
+
         /// <summary>
         /// Parse the RopQueryRows structure.
         /// </summary>
@@ -394,14 +398,17 @@ namespace MAPIInspector.Parsers
             {
                 this.Origin = (Bookmarks)ReadByte();
                 this.RowCount = ReadUshort();
-                List<PropertyRow> tempPropertyRows = new List<PropertyRow>();
-                for (int i = 0; i < RowCount; i++)
+                if (this.RowCount != 0)
                 {
-                    PropertyRow tempPropertyRow = new PropertyRow(this.propertiesBySetColum);
-                    tempPropertyRow.Parse(s);
-                    tempPropertyRows.Add(tempPropertyRow);
+                    List<PropertyRow> tempPropertyRows = new List<PropertyRow>();
+                    for (int i = 0; i < RowCount; i++)
+                    {
+                        PropertyRow tempPropertyRow = new PropertyRow(this.propertiesBySetColum);
+                        tempPropertyRow.Parse(s);
+                        tempPropertyRows.Add(tempPropertyRow);
+                    }
+                    this.RowData = tempPropertyRows.ToArray();
                 }
-                this.RowData = tempPropertyRows.ToArray();
             }
         }
     }
@@ -1094,18 +1101,17 @@ namespace MAPIInspector.Parsers
         // A Boolean that indicates whether the RowData field is present.
         public PropertyRow RowData;
 
-        // TODO: need the other rop information
         // Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1). 
-        public PropertyTag[] propertiesBySetColum;
+        private PropertyTag[] propertiesBySetColum;
 
-        ///// <summary>
-        ///// The Constructor to set the property tag.
-        ///// </summary>
-        ///// <param name="PropertyTags">The property tag</param>
-        //public RopFindRowResponse(PropertyTag[] PropertyTags)
-        //{
-        //    this.propertiesBySetColum = PropertyTags;
-        //}
+        /// <summary>
+        /// The construe function for RopFindRowsResponse
+        /// </summary>
+        /// <param name="propertiesBySetColum">Property Tags got from RopSetColumn</param>
+        public RopFindRowResponse(PropertyTag[] propertiesBySetColum)
+        {
+            this.propertiesBySetColum = propertiesBySetColum;
+        }
 
         /// <summary>
         /// Parse the RopFindRowResponse structure.
@@ -1130,7 +1136,6 @@ namespace MAPIInspector.Parsers
                     this.RowData = tempPropertyRow;
                     this.RowData.Parse(s);
                 }
-
             }
         }
     }
@@ -1331,18 +1336,18 @@ namespace MAPIInspector.Parsers
         // A list of PropertyRow structures. The number of structures contained in this field is specified by the RowCount field.
         public PropertyRow[] RowData;
 
-        // TODO: need the other rop information
         // Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1). 
-        PropertyTag[] propertiesBySetColum;
+        private PropertyTag[] propertiesBySetColum;
 
         /// <summary>
-        /// The constructor method to set the property tag.
+        /// The construe function for RopExpandRowsResponse
         /// </summary>
-        /// <param name="PropertyTags">The property tag</param>
-        public RopExpandRowResponse(PropertyTag[] PropertyTags)
+        /// <param name="propertiesBySetColum">Property Tags got from RopSetColumn</param>
+        public RopExpandRowResponse(PropertyTag[] propertiesBySetColum)
         {
-            this.propertiesBySetColum = PropertyTags;
+            this.propertiesBySetColum = propertiesBySetColum;
         }
+
         /// <summary>
         /// Parse the RopExpandRowResponse structure.
         /// </summary>
@@ -1358,6 +1363,7 @@ namespace MAPIInspector.Parsers
 
             if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
             {
+                this.ExpandedRowCount = ReadUint();
                 this.RowCount = ReadUshort();
                 List<PropertyRow> tempPropertyRows = new List<PropertyRow>();
                 for (int i = 0; i < RowCount; i++)
