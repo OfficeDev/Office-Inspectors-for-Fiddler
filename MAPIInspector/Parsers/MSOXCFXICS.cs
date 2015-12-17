@@ -12,7 +12,7 @@ namespace MAPIInspector.Parsers
     /// <summary>
     /// Represents CN structure contains a change number that identifies a version of a messaging object. 
     /// </summary>
-    public class CN : BaseStructure 
+    public class CN : BaseStructure
     {
         // A 16-bit unsigned integer identifying the server replica in which the messaging object was last changed.
         public ushort replicaId;
@@ -37,11 +37,11 @@ namespace MAPIInspector.Parsers
     /// <summary>
     /// Represents an external identifier for an entity within a data store.
     /// </summary>
-    public class XID : BaseStructure 
+    public class XID : BaseStructure
     {
         // A GUID that identifies the namespace that the identifier specified by LocalId belongs to
         public Guid namespaceGuid;
-        
+
         // A variable binary value that contains the ID of the entity in the namespace specified by NamespaceGuid.
         public byte[] localId;
 
@@ -73,14 +73,14 @@ namespace MAPIInspector.Parsers
     /// <summary>
     /// Contains a set of XIDs that represent change numbers of messaging objects in different replicas. 
     /// </summary>
-    public class PredecessorChangeList : BaseStructure 
+    public class PredecessorChangeList : BaseStructure
     {
         // A SizedXid list.
         public SizedXid[] sizedXidList;
 
         // A unsigned int value specifies the length in bytes of the sizedXidList.
         private int length;
-        
+
         /// <summary>
         /// Initializes a new instance of the PredecessorChangeList structure.
         /// </summary>
@@ -98,7 +98,7 @@ namespace MAPIInspector.Parsers
         {
             int position = (int)stream.Position;
             List<SizedXid> interSizeXid = new List<SizedXid>();
-            for (int i = 0; i < this.length;)
+            for (int i = 0; i < this.length; )
             {
                 SizedXid tmpSizedXid = new SizedXid();
                 tmpSizedXid.Parse(stream);
@@ -113,7 +113,7 @@ namespace MAPIInspector.Parsers
     /// <summary>
     /// SizedXid structure.
     /// </summary>
-    public class SizedXid : BaseStructure 
+    public class SizedXid : BaseStructure
     {
         // An unsigned 8-bit integer.
         public byte xidSize;
@@ -126,7 +126,7 @@ namespace MAPIInspector.Parsers
         /// </summary>
         /// <param name="stream">A stream contains SizedXid.</param>
         public void Parse(FastTransferStream stream)
-        { 
+        {
             this.xidSize = stream.ReadByte();
             this.xid = new XID((int)this.xidSize);
             this.xid.Parse(stream);
@@ -206,7 +206,7 @@ namespace MAPIInspector.Parsers
             byte tmp = stream.ReadByte();
             stream.Position -= 1;
 
-            List<Command> commands = new List<Command>(); 
+            List<Command> commands = new List<Command>();
             while (tmp != 0X00)
             {
                 switch (tmp)
@@ -222,15 +222,15 @@ namespace MAPIInspector.Parsers
                         commands.Add(PushCommand);
                         if ((CommonStackLength += (uint)(PushCommand as PushCommand).Command) < 6)
                         {
-                             CommonStackCollection.Add((PushCommand as PushCommand).Command);
-                             CommonStackLength += (uint)(PushCommand as PushCommand).Command; 
+                            CommonStackCollection.Add((PushCommand as PushCommand).Command);
+                            CommonStackLength += (uint)(PushCommand as PushCommand).Command;
                         }
                         break;
                     case 0x50:
                         Command PopCommand = new PopCommand();
                         PopCommand.Parse(stream);
                         commands.Add(PopCommand);
-                        CommonStackLength -= CommonStackCollection[CommonStackCollection.Count - 1]; 
+                        CommonStackLength -= CommonStackCollection[CommonStackCollection.Count - 1];
                         break;
                     case 0x42:
                         Command BitmaskCommand = new BitmaskCommand();
@@ -259,7 +259,6 @@ namespace MAPIInspector.Parsers
     /// Represents a command in GLOBSET.
     /// </summary>
     public class Command : BaseStructure
-
     {
         /// <summary>
         /// Parse from a FastTransferStream
@@ -273,12 +272,12 @@ namespace MAPIInspector.Parsers
     /// <summary>
     /// Represent a push command.
     /// </summary>
-    public class PushCommand : Command 
+    public class PushCommand : Command
     {
         // An integer that specifies the number of high-order bytes that the GLOBCNT structures
         public byte Command;
 
-         // A byte array that contains the bytes shared by the GLOBCNT structures
+        // A byte array that contains the bytes shared by the GLOBCNT structures
         public byte[] CommonBytes;
 
         /// <summary>
@@ -493,9 +492,9 @@ namespace MAPIInspector.Parsers
             this.PropertyTags = new PropertyTagWithGroupPropertyName[this.PropertyTagCount];
             for (int i = 0; i < this.PropertyTagCount; i++)
             {
-               PropertyTagWithGroupPropertyName tmpName = new PropertyTagWithGroupPropertyName();
-               tmpName.Parse(stream);
-               PropertyTags[i] = tmpName;
+                PropertyTagWithGroupPropertyName tmpName = new PropertyTagWithGroupPropertyName();
+                tmpName.Parse(stream);
+                PropertyTags[i] = tmpName;
             }
         }
     }
@@ -505,7 +504,7 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class PropertyTagWithGroupPropertyName : BaseStructure
     {
-         // An unsigned integer that identifies the data type of the property value, as specified by the table in section 2.11.1.
+        // An unsigned integer that identifies the data type of the property value, as specified by the table in section 2.11.1.
         public PropertyDataType PropertyType;
 
         // An unsigned integer that identifies the property.
@@ -522,7 +521,7 @@ namespace MAPIInspector.Parsers
         {
             this.PropertyType = (PropertyDataType)stream.ReadUInt16();
             this.PropertyId = stream.ReadUInt16();
-            if (this.PropertyId >= 0x0008)
+            if (this.PropertyId >= 0x8000)
             {
                 this.groupPropertyName = new GroupPropertyName();
                 this.groupPropertyName.Parse(stream);
@@ -568,7 +567,7 @@ namespace MAPIInspector.Parsers
             else if (this.Kind == 0x00000001)
             {
                 this.NameSize = stream.ReadUInt32();
-                this.Name = new MAPIString(Encoding.Unicode);
+                this.Name = new MAPIString(Encoding.Unicode, "", (int)this.NameSize / 2);
                 this.Name.Parse(stream);
             }
         }
@@ -592,7 +591,7 @@ namespace MAPIInspector.Parsers
         public LongTermId FolderLongTermId;
 
         // An unsigned 32-bit integer value that determines how many elements exist in ServerDNArray. 
-        public uint ServerDNCount;  
+        public uint ServerDNCount;
 
         // An unsigned 32-bit integer value that determines how many of the leading elements in ServerDNArray have the same,lowest, network access cost.
         public uint CheapServerDNCount;
@@ -621,7 +620,7 @@ namespace MAPIInspector.Parsers
         }
     }
     #endregion
-    
+
     #region 2.2.3.1.1.1 RopFastTransferSourceCopyProperties
     /// <summary>
     ///  A class indicates the RopFastTransferSourceCopyProperties ROP Request Buffer.
@@ -1089,8 +1088,8 @@ namespace MAPIInspector.Parsers
             }
 
             if ((AdditionalErrorCodes)ReturnValue == AdditionalErrorCodes.ServerBusy)
-            { 
-                this.BackoffTime = ReadUint(); 
+            {
+                this.BackoffTime = ReadUint();
             }
         }
     }
@@ -1153,7 +1152,7 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-             HelpMethod help = new HelpMethod();
+            HelpMethod help = new HelpMethod();
             this.ReturnValue = help.FormatErrorCode(ReadUint());
         }
     }
@@ -1224,7 +1223,7 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.OutputHandleIndex = ReadByte();
-             HelpMethod help = new HelpMethod();
+            HelpMethod help = new HelpMethod();
             this.ReturnValue = help.FormatErrorCode(ReadUint());
         }
     }
@@ -1263,11 +1262,11 @@ namespace MAPIInspector.Parsers
             this.LogonId = ReadByte();
             this.InputHandleIndex = ReadByte();
             this.TransferDataSize = ReadUshort();
-            
+
             byte[] Buffer = ReadBytes((int)this.TransferDataSize);
             FastTransferStream TransferStream = new FastTransferStream(Buffer, true);
 
-            switch (DecodingContext.StreamType_Getbuffer)
+            switch (DecodingContext.StreamType_Putbuffer)
             {
                 case FastTransferStreamType.TopFolder:
                     this.TransferData = new TopFolder(TransferStream);
@@ -1444,7 +1443,7 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.OutputHandleIndex = ReadByte();
-             HelpMethod help = new HelpMethod();
+            HelpMethod help = new HelpMethod();
             this.ReturnValue = help.FormatErrorCode(ReadUint());
         }
     }
@@ -1511,7 +1510,7 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-             HelpMethod help = new HelpMethod();
+            HelpMethod help = new HelpMethod();
             this.ReturnValue = help.FormatErrorCode(ReadUint());
         }
     }
@@ -1578,7 +1577,7 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-             HelpMethod help = new HelpMethod();
+            HelpMethod help = new HelpMethod();
             this.ReturnValue = help.FormatErrorCode(ReadUint());
         }
     }
@@ -1637,7 +1636,7 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-             HelpMethod help = new HelpMethod();
+            HelpMethod help = new HelpMethod();
             this.ReturnValue = help.FormatErrorCode(ReadUint());
         }
     }
@@ -1700,7 +1699,7 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.OutputHandleIndex = ReadByte();
-             HelpMethod help = new HelpMethod();
+            HelpMethod help = new HelpMethod();
             this.ReturnValue = help.FormatErrorCode(ReadUint());
         }
     }
@@ -1766,7 +1765,7 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.OutputHandleIndex = ReadByte();
-             HelpMethod help = new HelpMethod();
+            HelpMethod help = new HelpMethod();
             this.ReturnValue = help.FormatErrorCode(ReadUint());
         }
     }
@@ -1798,7 +1797,7 @@ namespace MAPIInspector.Parsers
 
         // An array of TaggedPropertyValue structures that specify extra properties on the message.
         public TaggedPropertyValue[] PropertyValues;
-        
+
         /// <summary>
         /// Parse the RopSynchronizationImportMessageChangeRequest structure.
         /// </summary>
@@ -1976,7 +1975,7 @@ namespace MAPIInspector.Parsers
 
         // An unsigned integer that specifies the size of the SourceFolderId field.
         public uint SourceFolderIdSize;
-        
+
         // An array of bytes that identifies the parent folder of the source message.
         public byte[] SourceFolderId;
 
@@ -1997,7 +1996,7 @@ namespace MAPIInspector.Parsers
 
         // An array of bytes that identifies the destination message. 
         public byte[] DestinationMessageId;
-        
+
         // An unsigned integer that specifies the size of the ChangeNumber field.
         public uint ChangeNumberSize;
 
@@ -2138,7 +2137,7 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-             HelpMethod help = new HelpMethod();
+            HelpMethod help = new HelpMethod();
             this.ReturnValue = help.FormatErrorCode(ReadUint());
         }
     }
@@ -2214,7 +2213,7 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.InputHandleIndex = ReadByte();
-             HelpMethod help = new HelpMethod();
+            HelpMethod help = new HelpMethod();
             this.ReturnValue = help.FormatErrorCode(ReadUint());
         }
     }
@@ -2226,7 +2225,7 @@ namespace MAPIInspector.Parsers
     {
         // An unsigned integer that specifies the size of the MessageId field.
         public ushort MessageIdSize;
-        
+
         // An array of bytes that identifies the message to be marked as read or unread.
         public byte[] MessageId;
 
@@ -2299,7 +2298,7 @@ namespace MAPIInspector.Parsers
         public Guid? ReplGuid;
 
         // An array of bytes that specifies the first value in the reserved range.
-        public byte?[] GlobalCount;  
+        public byte?[] GlobalCount;
 
         /// <summary>
         /// Parse the RopGetLocalReplicaIdsResponse structure.
@@ -2395,7 +2394,7 @@ namespace MAPIInspector.Parsers
 
             this.RopId = (RopIdType)ReadByte();
             this.OutputHandleIndex = ReadByte();
-             HelpMethod help = new HelpMethod();
+            HelpMethod help = new HelpMethod();
             this.ReturnValue = help.FormatErrorCode(ReadUint());
         }
     }
@@ -2444,7 +2443,8 @@ namespace MAPIInspector.Parsers
         /// </summary>
         /// <param name="buffer">A bytes array.</param>
         /// <param name="writable">Whether the stream supports writing.</param>
-        public FastTransferStream(byte[] buffer, bool writable): base(buffer, 0, buffer.Length, writable, true)
+        public FastTransferStream(byte[] buffer, bool writable)
+            : base(buffer, 0, buffer.Length, writable, true)
         {
         }
 
@@ -2824,7 +2824,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the PropValue class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public PropValue(FastTransferStream stream): base(stream)
+        public PropValue(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -2905,7 +2906,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the PropInfo class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        protected PropInfo(FastTransferStream stream): base(stream)
+        protected PropInfo(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -2937,7 +2939,7 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(stream);
             this.PropID = stream.ReadUInt16();
-            
+
             if (this.PropID >= 0x8000)
             {
                 this.NamedPropInfo = NamedPropInfo.ParseFrom(stream) as NamedPropInfo;
@@ -2957,7 +2959,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the FixedPropTypePropValue class.
         /// </summary>
         /// <param name="stream">A FastTransferStream</param>
-        public FixedPropTypePropValue(FastTransferStream stream): base(stream)
+        public FixedPropTypePropValue(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -3055,7 +3058,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the VarPropTypePropValue class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public VarPropTypePropValue(FastTransferStream stream): base(stream)
+        public VarPropTypePropValue(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -3090,7 +3094,7 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(stream);
             this.Length = stream.ReadInt32();
-            
+
             if (LexicalTypeHelper.IsCodePageType(this.PropType))
             {
                 CodePageType type = (CodePageType)this.PropType;
@@ -3143,7 +3147,7 @@ namespace MAPIInspector.Parsers
                                 int begionPosition = (int)stream.Position;
                                 int EveLength = this.Length;
                                 List<IDSET_REPLID> InterIDSET_REPLID = new List<IDSET_REPLID>();
-                                while(EveLength > 0)
+                                while (EveLength > 0)
                                 {
                                     IDSET_REPLID tmpIDSET_REPLID = new IDSET_REPLID();
                                     tmpIDSET_REPLID.Parse(stream);
@@ -3160,7 +3164,7 @@ namespace MAPIInspector.Parsers
                                 int begionPosition = (int)stream.Position;
                                 int EveLength = this.Length;
                                 List<IDSET_REPLGUID> InterIDSET_REPLGUID = new List<IDSET_REPLGUID>();
-                                while(EveLength > 0)
+                                while (EveLength > 0)
                                 {
                                     IDSET_REPLGUID tmpIDSET_REPLGUID = new IDSET_REPLGUID();
                                     tmpIDSET_REPLGUID.Parse(stream);
@@ -3170,26 +3174,26 @@ namespace MAPIInspector.Parsers
                                 this.ValueArray = InterIDSET_REPLGUID.ToArray();
                             }
                         }
-                        else 
+                        else
                         {
                             this.ValueArray = stream.ReadBlock(this.Length);
                         }
                         break;
                     case PropertyDataType.PtypString:
-                            PtypString pstring = new PtypString();
-                            pstring.Parse(stream);
-                            this.ValueArray = pstring;
-                            break;
+                        PtypString pstring = new PtypString();
+                        pstring.Parse(stream);
+                        this.ValueArray = pstring;
+                        break;
                     case PropertyDataType.PtypString8:
-                            PtypString8 pstring8 = new PtypString8();
-                            pstring8.Parse(stream);
-                            this.ValueArray = pstring8;
-                            break;
+                        PtypString8 pstring8 = new PtypString8();
+                        pstring8.Parse(stream);
+                        this.ValueArray = pstring8;
+                        break;
                     case PropertyDataType.PtypServerId:
-                            PtypServerId pserverId = new PtypServerId();
-                            pserverId.Parse(stream);
-                            this.ValueArray = pserverId;
-                            break;
+                        PtypServerId pserverId = new PtypServerId();
+                        pserverId.Parse(stream);
+                        this.ValueArray = pserverId;
+                        break;
                     case PropertyDataType.PtypObject_Or_PtypEmbeddedTable:
                         this.ValueArray = stream.ReadBlock(this.Length);
                         break;
@@ -3219,7 +3223,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the MvPropTypePropValue class.
         /// </summary>
         /// <param name="stream">A FastTransferStream</param>
-        public MvPropTypePropValue(FastTransferStream stream): base(stream)
+        public MvPropTypePropValue(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -3310,7 +3315,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the NamedPropInfo class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public NamedPropInfo(FastTransferStream stream): base(stream)
+        public NamedPropInfo(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -3365,7 +3371,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the DispidNamedPropInfo class.
         /// </summary>
         /// <param name="stream">A FastTransferStream</param>
-        public DispidNamedPropInfo(FastTransferStream stream): base(stream)
+        public DispidNamedPropInfo(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -3412,7 +3419,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the NameNamedPropInfo class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public NameNamedPropInfo(FastTransferStream stream): base(stream)
+        public NameNamedPropInfo(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -3493,7 +3501,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the PropList class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public PropList(FastTransferStream stream): base(stream)
+        public PropList(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -3540,7 +3549,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the MetaPropValue class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public MetaPropValue(FastTransferStream stream): base(stream)
+        public MetaPropValue(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -3604,7 +3614,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the TopFolder class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public TopFolder(FastTransferStream stream): base(stream)
+        public TopFolder(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -3660,7 +3671,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the FolderContent class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public FolderContent(FastTransferStream stream): base(stream)
+        public FolderContent(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -3686,7 +3698,7 @@ namespace MAPIInspector.Parsers
                 List<SubFolder> InterSubFolders = new List<SubFolder>();
                 if (stream.VerifyMetaProperty(MetaProperties.MetaTagNewFXFolder))
                 {
-                    this.MetaTagNewFXFolder = new MetaPropValue(stream); 
+                    this.MetaTagNewFXFolder = new MetaPropValue(stream);
                 }
                 else
                 {
@@ -3695,7 +3707,7 @@ namespace MAPIInspector.Parsers
 
                 if (stream.VerifyMetaProperty(MetaProperties.MetaTagFXDelProp))
                 {
-                    this.MetaTagFXDelProp = new MetaPropValue(stream); 
+                    this.MetaTagFXDelProp = new MetaPropValue(stream);
                 }
 
                 if (!stream.IsEndOfStream)
@@ -3734,7 +3746,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the folderContentNoDelProps class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public FolderContentNoDelProps(FastTransferStream stream): base(stream)
+        public FolderContentNoDelProps(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -3797,7 +3810,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the SubFolder class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public SubFolder(FastTransferStream stream): base(stream)
+        public SubFolder(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -3851,7 +3865,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the SubFolderNoDelProps class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public SubFolderNoDelProps(FastTransferStream stream): base(stream)
+        public SubFolderNoDelProps(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -3899,7 +3914,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the FolderMessages class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public FolderMessages(FastTransferStream stream): base(stream)
+        public FolderMessages(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -3952,7 +3968,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the FolderMessages class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public MetaTagFxDelPropMessageList(FastTransferStream stream): base(stream)
+        public MetaTagFxDelPropMessageList(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -3989,7 +4006,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the FolderMessagesNoDelProps class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public FolderMessagesNoDelProps(FastTransferStream stream): base(stream)
+        public FolderMessagesNoDelProps(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4050,7 +4068,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the Message class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public Message(FastTransferStream stream): base(stream)
+        public Message(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4107,7 +4126,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the MessageContent class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public MessageContent(FastTransferStream stream): base(stream)
+        public MessageContent(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4153,7 +4173,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the MessageChildren class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public MessageChildren(FastTransferStream stream): base(stream)
+        public MessageChildren(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4167,7 +4188,7 @@ namespace MAPIInspector.Parsers
             List<Recipient> InterRecipients = new List<Recipient>();
             if (stream.VerifyMetaProperty(MetaProperties.MetaTagFXDelProp))
             {
-                this.FxdelPropsBeforeRecipient = new MetaPropValue(stream); 
+                this.FxdelPropsBeforeRecipient = new MetaPropValue(stream);
             }
 
             if (Recipient.Verify(stream))
@@ -4181,7 +4202,7 @@ namespace MAPIInspector.Parsers
 
             if (stream.VerifyMetaProperty(MetaProperties.MetaTagFXDelProp))
             {
-                this.FxdelPropsBeforeAttachment = new MetaPropValue(stream); 
+                this.FxdelPropsBeforeAttachment = new MetaPropValue(stream);
             }
 
             while (Attachment.Verify(stream))
@@ -4212,7 +4233,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the Recipient class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public Recipient(FastTransferStream stream): base(stream)
+        public Recipient(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4257,7 +4279,7 @@ namespace MAPIInspector.Parsers
         public Markers StartMarker;
 
         // A PidTagAttachNumber property.
-        public PropValue PidTagAttachNumber;
+        public FixedPropTypePropValue PidTagAttachNumber;
 
         // Attachment content.
         public AttachmentContent AttachmentContent;
@@ -4269,7 +4291,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the Attachment class.
         /// </summary>
         /// <param name="stream">a FastTransferStream</param>
-        public Attachment(FastTransferStream stream): base(stream)
+        public Attachment(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4292,11 +4315,11 @@ namespace MAPIInspector.Parsers
             if (stream.ReadMarker() == Markers.NewAttach)
             {
                 this.StartMarker = Markers.NewAttach;
-                this.PidTagAttachNumber = new PropValue(stream);
+                this.PidTagAttachNumber = new FixedPropTypePropValue(stream);
                 this.AttachmentContent = new AttachmentContent(stream);
                 if (stream.ReadMarker() == Markers.EndAttach)
                 {
-                    this.EndMarker  = Markers.EndAttach;
+                    this.EndMarker = Markers.EndAttach;
                 }
                 else
                 {
@@ -4321,7 +4344,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the AttachmentContent class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public AttachmentContent(FastTransferStream stream): base(stream)
+        public AttachmentContent(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4367,7 +4391,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the EmbeddedMessage class.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        public EmbeddedMessage(FastTransferStream stream): base(stream)
+        public EmbeddedMessage(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4393,7 +4418,7 @@ namespace MAPIInspector.Parsers
                 this.MessageContent = new MessageContent(stream);
                 if (stream.ReadMarker() == Markers.EndEmbed)
                 {
-                    this.EndMarker  = Markers.EndEmbed;
+                    this.EndMarker = Markers.EndEmbed;
                 }
                 else
                 {
@@ -4415,7 +4440,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the MessageList class.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        public MessageList(FastTransferStream stream): base(stream)
+        public MessageList(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4453,7 +4479,7 @@ namespace MAPIInspector.Parsers
     {
         // MetaTagEcWaring indicates a MetaTagEcWaring property.
         public MetaPropValue MetaTagEcWaring;
-        
+
         // Message indicates a Message object.
         public Message Message;
 
@@ -4461,7 +4487,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the MetaTagEcWaringMessage class.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        public MetaTagEcWaringMessage(FastTransferStream stream) : base(stream)
+        public MetaTagEcWaringMessage(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4489,7 +4516,7 @@ namespace MAPIInspector.Parsers
             }
 
             if (Message.Verify(stream))
-            { 
+            {
                 this.Message = new Message(stream);
             }
         }
@@ -4510,7 +4537,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the Deletions class.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        public Deletions(FastTransferStream stream): base(stream)
+        public Deletions(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4553,7 +4581,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the FolderChange class.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        public FolderChange(FastTransferStream stream): base(stream)
+        public FolderChange(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4589,6 +4618,12 @@ namespace MAPIInspector.Parsers
         // The start marker of GroupInfo.
         public Markers StartMarker;
 
+        // The propertyTag for ProgressInformation.
+        public uint propertiesTag;
+
+        // The count of the PropList.
+        public uint propertiesLength;
+
         // A propList value.
         public PropertyGroupInfo PropList;
 
@@ -4596,7 +4631,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the GroupInfo class.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        public GroupInfo(FastTransferStream stream): base(stream)
+        public GroupInfo(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4619,6 +4655,8 @@ namespace MAPIInspector.Parsers
             if (stream.ReadMarker() == Markers.IncrSyncGroupInfo)
             {
                 this.StartMarker = Markers.IncrSyncGroupInfo;
+                this.propertiesTag = stream.ReadUInt32();
+                this.propertiesLength = stream.ReadUInt32();
                 PropertyGroupInfo tmpGroupInfo = new PropertyGroupInfo();
                 tmpGroupInfo.Parse(stream);
                 this.PropList = tmpGroupInfo;
@@ -4633,7 +4671,7 @@ namespace MAPIInspector.Parsers
     {
         // The start marker of ProgressPerMessage.
         public Markers StartMarker;
-        
+
         // A propList value.
         public PropList PropList;
 
@@ -4641,7 +4679,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the ProgressPerMessage class.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        public ProgressPerMessage(FastTransferStream stream): base(stream)
+        public ProgressPerMessage(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4677,6 +4716,12 @@ namespace MAPIInspector.Parsers
         // The start marker of progressTotal.
         public Markers StartMarker;
 
+        // The propertyTag for ProgressInformation.
+        public uint propertiesTag;
+
+        // The count of the PropList.
+        public uint propertiesLength;
+
         // A propList value.
         public ProgressInformation PropList;
 
@@ -4684,7 +4729,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the progressTotal class.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        public ProgressTotal(FastTransferStream stream): base(stream)
+        public ProgressTotal(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4707,6 +4753,8 @@ namespace MAPIInspector.Parsers
             if (stream.ReadMarker() == Markers.IncrSyncProgressMode)
             {
                 this.StartMarker = Markers.IncrSyncProgressMode;
+                this.propertiesTag = stream.ReadUInt32();
+                this.propertiesLength = stream.ReadUInt32();
                 ProgressInformation tmpProgressInfo = new ProgressInformation();
                 tmpProgressInfo.Parse(stream);
                 this.PropList = tmpProgressInfo;
@@ -4729,7 +4777,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the ReadStateChange class.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        public ReadStateChanges(FastTransferStream stream): base(stream)
+        public ReadStateChanges(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4775,7 +4824,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the State class.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        public State(FastTransferStream stream): base(stream)
+        public State(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4838,7 +4888,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the ContentsSync class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public ContentsSync(FastTransferStream stream): base(stream)
+        public ContentsSync(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4912,7 +4963,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the ProgressPerMessageChange class.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        public ProgressPerMessageChange(FastTransferStream stream): base(stream)
+        public ProgressPerMessageChange(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4962,7 +5014,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the HierarchySync class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public HierarchySync(FastTransferStream stream): base(stream)
+        public HierarchySync(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -4985,7 +5038,7 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
-            List<FolderChange>  InterFolderChanges= new List<FolderChange>();
+            List<FolderChange> InterFolderChanges = new List<FolderChange>();
             while (FolderChange.Verify(stream))
             {
                 InterFolderChanges.Add(new FolderChange(stream));
@@ -5017,14 +5070,15 @@ namespace MAPIInspector.Parsers
         // A MessageChangeFull value.
         public MessageChangeFull MessageChangeFull;
 
-         // A MessageChangePartial value.
+        // A MessageChangePartial value.
         public MessageChangePartial MesageChangePartial;
 
         /// <summary>
         /// Initializes a new instance of the MessageChange class.
         /// </summary>
         /// <param name="stream">A FastTransferStream object.</param>
-        public MessageChange(FastTransferStream stream): base(stream)
+        public MessageChange(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -5044,7 +5098,7 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
-            if(MessageChangeFull.Verify(stream))
+            if (MessageChangeFull.Verify(stream))
             {
                 this.MessageChangeFull = new MessageChangeFull(stream);
             }
@@ -5079,7 +5133,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the MessageChangeFull class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public MessageChangeFull(FastTransferStream stream): base(stream)
+        public MessageChangeFull(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -5129,7 +5184,7 @@ namespace MAPIInspector.Parsers
 
         // A MetaTagIncrSyncGroupId property.
         public MetaPropValue MetaTagIncrSyncGroupId;
-        
+
         // the MessageChangePartial marker.
         public Markers Marker;
 
@@ -5146,7 +5201,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the MessageChangePartial class.
         /// </summary>
         /// <param name="stream">A FastTransferStream object.</param>
-        public MessageChangePartial(FastTransferStream stream): base(stream)
+        public MessageChangePartial(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -5177,7 +5233,7 @@ namespace MAPIInspector.Parsers
             {
                 this.Marker = Markers.IncrSyncChgPartial;
                 this.messageChangeHeader = new PropList(stream);
-                
+
                 while (stream.VerifyMetaProperty(MetaProperties.MetaTagIncrementalSyncMessagePartial))
                 {
                     InterMessagePartialList.Add(new SyncMessagePartialPropList(stream));
@@ -5199,7 +5255,7 @@ namespace MAPIInspector.Parsers
     {
         // A MetaTagIncrementalSyncMessagePartial property.
         public MetaPropValue Meta_SyncMessagePartial;
-        
+
         // A PropList value.
         PropList PropList;
 
@@ -5207,7 +5263,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the SyncMessagePartialPropList class.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        public SyncMessagePartialPropList(FastTransferStream stream): base(stream)
+        public SyncMessagePartialPropList(FastTransferStream stream)
+            : base(stream)
         {
         }
 
@@ -5251,10 +5308,10 @@ namespace MAPIInspector.Parsers
         {
             foreach (Markers ma in Enum.GetValues(typeof(Markers)))
             {
-                if((uint)ma == Marker)
+                if ((uint)ma == Marker)
                 {
                     return true;
-                }   
+                }
             }
 
             return false;
@@ -5640,7 +5697,7 @@ namespace MAPIInspector.Parsers
     public enum SourceOperation : byte
     {
         CopyTo = 0x01,
-        CopyProperties  =0x02,
+        CopyProperties = 0x02,
         CopyMessages = 0x03,
         CopyFolder = 0x04,
     }
@@ -5686,7 +5743,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned 48-bit integer identifying the folder within its Store object.
         /// </summary>
-        [BytesAttribute(6)] 
+        [BytesAttribute(6)]
         public ulong GlobalCounter;
 
         /// <summary>
@@ -5698,7 +5755,8 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the LongTermId structure.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        public LongTermId(FastTransferStream stream): base(stream)
+        public LongTermId(FastTransferStream stream)
+            : base(stream)
         {
         }
 

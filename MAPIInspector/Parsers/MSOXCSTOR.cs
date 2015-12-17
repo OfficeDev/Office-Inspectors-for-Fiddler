@@ -433,10 +433,12 @@ namespace MAPIInspector.Parsers
 
                 for (int i = 0; i < this.RowCount; i++)
                 {
+                    // PidTagMessageClass is defined as PtypString8 due to Open Specification said all characters in this property MUST be from the 
+                    // ASCII characters 0x20 through 0x7F. 
                     PropertyTag[] Properties_GetReceiveFolderTable = new PropertyTag[3] 
                     { new PropertyTag(PropertyDataType.PtypInteger64, PidTagPropertyEnum.PidTagFolderId),
-                      new PropertyTag(PropertyDataType.PtypString, PidTagPropertyEnum.PidTagMessageClass),
-                      new PropertyTag(PropertyDataType.PtypInteger64, PidTagPropertyEnum.PidTagLastModificationTime)
+                      new PropertyTag(PropertyDataType.PtypString8, PidTagPropertyEnum.PidTagMessageClass),
+                      new PropertyTag(PropertyDataType.PtypTime, PidTagPropertyEnum.PidTagLastModificationTime)
                     };
                     PropertyRow ProRow = new PropertyRow(Properties_GetReceiveFolderTable);
                     ProRow.Parse(s);

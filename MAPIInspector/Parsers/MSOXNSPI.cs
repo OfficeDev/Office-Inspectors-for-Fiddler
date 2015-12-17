@@ -75,7 +75,7 @@ namespace MAPIInspector.Parsers
         /// </summary>
         /// <param name="s">The stream to parse</param>
         public override void Parse(Stream s)
-        {           
+        {
             base.Parse(s);
             this.MinEntryID = ReadUint();
         }
@@ -163,7 +163,7 @@ namespace MAPIInspector.Parsers
         public DisplayTypeValues DisplayTypeString;
 
         // The DN (1) of the object specified by this Permanent Entry ID. 
-        public MAPIString DistinguishedName ;
+        public MAPIString DistinguishedName;
 
         /// <summary>
         /// Parse the PermanentEntryID payload of session.
@@ -859,7 +859,7 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public enum TableSortOrders : uint
     {
-        SortTypeDisplayName = 0x00000000, 
+        SortTypeDisplayName = 0x00000000,
         SortTypePhoneticDisplayName = 0x00000003,
         SortTypeDisplayName_RO = 0x000003E8,
         SortTypeDisplayName_W = 0x000003E9

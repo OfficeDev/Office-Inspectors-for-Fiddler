@@ -233,6 +233,10 @@ namespace MAPIInspector.Parsers
         // Various structures. The 
         public NotificationData NotificationData;
 
+        // Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1). 
+        private PropertyTag[] propertiesBySetColum;
+
+
         /// <summary>
         /// Parse the RopNotifyResponse structure.
         /// </summary>
@@ -244,7 +248,7 @@ namespace MAPIInspector.Parsers
             this.RopId = (RopIdType)ReadByte();
             this.NotificationHandle = ReadUint();
             this.LogonId = ReadByte();
-            this.NotificationData = new NotificationData();
+            this.NotificationData = new NotificationData(this.NotificationHandle);
             this.NotificationData.Parse(s);
         }
     }
@@ -325,8 +329,20 @@ namespace MAPIInspector.Parsers
         // A null-terminated string containing the message class of the new mail. 
         public MAPIString MessageClass; //  A null-terminated string containing the message class of the new mail. The string is in Unicode if the UnicodeFlag field is set to TRUE (0x01). The string is in ASCII if UnicodeFlag is set to FALSE (0x00). 
 
+        // A Server object handle that specifies the notification Server object associated with this notification event.
+        private uint NotificationHandle;
+
         // Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1). 
         private PropertyTag[] propertiesBySetColum;
+
+        /// <summary>
+        /// The construe function for NotificationData
+        /// </summary>
+        /// <param name="propertiesBySetColum">Property Tags got from RopSetColumn</param>
+        public NotificationData(uint NotificationHandle)
+        {
+            this.NotificationHandle = NotificationHandle;
+        }
 
         /// <summary>
         /// Parse the NotificationData structure.
@@ -375,19 +391,16 @@ namespace MAPIInspector.Parsers
             }
             if (NotificationFlags.Value.NotificationType == NotificationTypesEnum.TableModified && (TableEventType == TableEventTypeEnum.TableRowAdded || TableEventType == TableEventTypeEnum.TableRowModified))
             {
-                // If the related property tags is alreadby in dictionary and this session is not parsed
-                if (DecodingContext.SetColumnsPropertyTags != null && DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
+                if (DecodingContext.SetColumnProTagMap_Handle != null && DecodingContext.SetColumnProTagMap_Handle.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID) && DecodingContext.SetColumnProTagMap_Handle[MapiInspector.MAPIInspector.currentParsingSessionID].ContainsKey(this.NotificationHandle))
                 {
-                    this.propertiesBySetColum = DecodingContext.SetColumnsPropertyTags[MapiInspector.MAPIInspector.currentParsingSessionID];
-                    this.TableRowData = new PropertyRow(propertiesBySetColum);
-                    this.TableRowData.Parse(s);
+                    propertiesBySetColum = DecodingContext.SetColumnProTagMap_Handle[MapiInspector.MAPIInspector.currentParsingSessionID][this.NotificationHandle];
                 }
-                // If the related property tags is not exist.
                 else
                 {
-                    throw new MissingInformationException("Missing LogonFlags information for RopNotifyResponse", (ushort)RopIdType.RopNotify, null);
+                    throw new MissingInformationException("Missing PropertyTags information for RopNotifyResponse", (ushort)RopIdType.RopNotify, NotificationHandle);
                 }
-
+                this.TableRowData = new PropertyRow(propertiesBySetColum);
+                this.TableRowData.Parse(s);
             }
             if (NotificationFlags.Value.NotificationType != NotificationTypesEnum.TableModified && NotificationFlags.Value.NotificationType != NotificationTypesEnum.ObjectCopied)
             {
@@ -411,7 +424,7 @@ namespace MAPIInspector.Parsers
                 this.OldFolderId = new FolderID();
                 this.OldFolderId.Parse(s);
             }
-            if (NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectMoved || (NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectCopied) && (((int)NotificationFlags.Value.NotificationDataAvailability & 0x8000) != 0))
+            if ((NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectMoved || NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectCopied) && (((int)NotificationFlags.Value.NotificationDataAvailability & 0x8000) != 0))
             {
                 this.OldMessageId = new MessageID();
                 this.OldMessageId.Parse(s);

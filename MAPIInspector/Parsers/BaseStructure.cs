@@ -325,7 +325,7 @@ namespace MAPIInspector.Parsers
                 FieldInfo[] infoString = t.GetFields();
 
                 string terminator = (string)infoString[2].GetValue(obj);
-                TreeNode node = new TreeNode(string.Format("{0}:{1}", infoString[0].Name, infoString[0].GetValue(obj).ToString()));
+                TreeNode node = new TreeNode(string.Format("{0}:{1}", infoString[0].Name, infoString[0].GetValue(obj)));
                 // If the StringLength is not equal 0, the StringLength will be os value.
                 if (infoString[3].GetValue(obj).ToString() != "0")
                 {
@@ -334,7 +334,10 @@ namespace MAPIInspector.Parsers
                 // If the Encoding is Unicode.
                 else if (infoString[1].GetValue(obj).ToString() == "System.Text.UnicodeEncoding")
                 {
-                    os = ((string)infoString[0].GetValue(obj)).Length * 2;
+                    if (infoString[0].GetValue(obj) != null)
+                    {
+                        os = ((string)infoString[0].GetValue(obj)).Length * 2;
+                    }
                     if (infoString[4].GetValue(obj).ToString() != "False")
                     {
                         os -= 1;
@@ -344,7 +347,10 @@ namespace MAPIInspector.Parsers
                 //If the Encoding is ASCII.
                 else
                 {
-                    os = ((string)infoString[0].GetValue(obj)).Length;
+                    if (infoString[0].GetValue(obj) != null)
+                    {
+                        os = ((string)infoString[0].GetValue(obj)).Length;
+                    }
                     os += terminator.Length;
                 }
 
@@ -355,7 +361,7 @@ namespace MAPIInspector.Parsers
                 res.Tag = positionString;
                 return res;
             }
-			
+
             // Check whether the data type is simple type
             if (Enum.IsDefined(typeof(DataType), t.Name))
             {
@@ -554,43 +560,46 @@ namespace MAPIInspector.Parsers
                                 int arros = 0;
                                 for (int k = 0; k < arr.Length; k++)
                                 {
-                                    // If the item in array contains array (byte or other simple type), display the value in one line and set the offset and length.
-                                    if (a[k].GetType().IsArray && a[k].GetType().GetElementType().Name == "Byte")
+                                    if (a[k] != null)
                                     {
-                                        StringBuilder result = new StringBuilder("[");
-                                        Position ps;
-                                        foreach (var ar in (byte[])a[k])
+                                        // If the item in array contains array (byte or other simple type), display the value in one line and set the offset and length.
+                                        if (a[k].GetType().IsArray && a[k].GetType().GetElementType().Name == "Byte")
                                         {
-                                            result.Append(ar.ToString() + ",");
-                                        }
-                                        result.Remove(result.Length - 1, 1);
-                                        result.Append("]");
-                                        if (arr.Length == 1)
-                                        {
-                                            tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
+                                            StringBuilder result = new StringBuilder("[");
+                                            Position ps;
+                                            foreach (var ar in (byte[])a[k])
+                                            {
+                                                result.Append(ar.ToString() + ",");
+                                            }
+                                            result.Remove(result.Length - 1, 1);
+                                            result.Append("]");
+                                            if (arr.Length == 1)
+                                            {
+                                                tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
+                                                os = ((byte[])a[k]).Length;
+                                                ps = new Position(current, os);
+                                                tn.Tag = ps;
+                                            }
+                                            else
+                                            {
+                                                tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
+                                                tnArr.Nodes.Add(tn);
+                                                os = ((byte[])a[k]).Length;
+                                                ps = new Position(current, os);
+                                                tn.Tag = ps;
+                                            }
                                             os = ((byte[])a[k]).Length;
                                             ps = new Position(current, os);
-                                            tn.Tag = ps;
+                                            tnArr.Tag = ps;
                                         }
+                                        // If the item in array is complex type, loop call the function to add it to tree.
                                         else
                                         {
-                                            tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
+                                            tn = AddNodesForTree(a[k], current, out os);
                                             tnArr.Nodes.Add(tn);
-                                            os = ((byte[])a[k]).Length;
-                                            ps = new Position(current, os);
+                                            Position ps = new Position(current, os);
                                             tn.Tag = ps;
                                         }
-                                        os = ((byte[])a[k]).Length;
-                                        ps = new Position(current, os);
-                                        tnArr.Tag = ps;
-                                    }
-                                    // If the item in array is complex type, loop call the function to add it to tree.
-                                    else
-                                    {
-                                        tn = AddNodesForTree(a[k], current, out os);
-                                        tnArr.Nodes.Add(tn);
-                                        Position ps = new Position(current, os);
-                                        tn.Tag = ps;
                                     }
 
                                     current += os;

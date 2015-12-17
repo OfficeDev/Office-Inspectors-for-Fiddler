@@ -67,6 +67,11 @@ namespace MapiInspector
         public static int logonRelatedSessionID { get; set; }
 
         /// <summary>
+        /// Record all sessions in Fiddler.
+        /// </summary>
+        public static Session[] allSessions;
+
+        /// <summary>
         /// The requestDic is used to save the session id and its parsed execute request.
         /// </summary>
         private Dictionary<int, object> requestDic = new Dictionary<int, object>();
@@ -354,12 +359,15 @@ namespace MapiInspector
                 // parsing the previous sessions until DecodingContext.SessionLogonFlag contains currentSessionID. 
                 do
                 {
-                    MAPIRequest = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
-                    MapiInspector.MAPIInspector.logonRelatedSessionID = ThisSessionID;
-                    if (MAPIRequest != null && MAPIRequest.GetType().Name == "ExecuteRequestBody" && !requestDic.ContainsKey(allSessions[currentSessionID].id))
+                    if (IsMapihttpSession(currentSessionID, TrafficDirection.In))
                     {
-                        requestDic.Add(allSessions[currentSessionID].id, MAPIRequest);
-                        requestBytesForHexview.Add(allSessions[currentSessionID].id, bytesForHexView);
+                        MAPIRequest = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                        MapiInspector.MAPIInspector.logonRelatedSessionID = ThisSessionID;
+                        if (MAPIRequest != null && MAPIRequest.GetType().Name == "ExecuteRequestBody" && !requestDic.ContainsKey(allSessions[currentSessionID].id))
+                        {
+                            requestDic.Add(allSessions[currentSessionID].id, MAPIRequest);
+                            requestBytesForHexview.Add(allSessions[currentSessionID].id, bytesForHexView);
+                        }
                     }
                     currentSessionID--;
                 }
@@ -395,150 +403,153 @@ namespace MapiInspector
                 // parsing the previous sessions until DecodingContext.StreamType_Getbuffer has value. 
                 do
                 {
-                    // If currentSessionID is not contained in responseDic, do parse this response structure, else not. 
-                    if (!(responseDic != null && responseDic.ContainsKey(currentSessionID) && responseBytesForHexview != null && responseBytesForHexview.ContainsKey(currentSessionID)))
+                    if (IsMapihttpSession(currentSessionID, TrafficDirection.Out))
                     {
-                        int sessionIdBeforeBreack = currentSessionID;
-                        MAPIResponse = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
-                        currentSessionID = sessionIdBeforeBreack;
-                        if (!responseDic.ContainsKey(currentSessionID))
+                        // If currentSessionID is not contained in responseDic, do parse this response structure, else not. 
+                        if (!(responseDic != null && responseDic.ContainsKey(currentSessionID) && responseBytesForHexview != null && responseBytesForHexview.ContainsKey(currentSessionID)))
                         {
-                            responseDic.Add(currentSessionID, MAPIResponse);
-                            responseBytesForHexview.Add(currentSessionID, bytesForHexView);
-                        }
-                    }
-
-                    if (DecodingContext.CopyTo_OutputHandles != null && DecodingContext.CopyTo_OutputHandles.ContainsKey(currentSessionID))
-                    {
-                        if (DecodingContext.CopyTo_OutputHandles[currentSessionID] == DecodingContext.GetBuffer_InPutHandles[ThisSessionID])
-                        {
-                            // If CopyTo output handle is equal to the GetBuffer input handle, need to do further parse for CopyTo request.
-                            if (!(requestDic != null && requestDic.ContainsKey(currentSessionID) && requestBytesForHexview != null && requestBytesForHexview.ContainsKey(currentSessionID)))
+                            int sessionIdBeforeBreack = currentSessionID;
+                            MAPIResponse = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                            currentSessionID = sessionIdBeforeBreack;
+                            if (!responseDic.ContainsKey(currentSessionID))
                             {
-                                int sessionIdBeforeBreack = currentSessionID;
-                                MAPIRequest = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
-                                currentSessionID = sessionIdBeforeBreack;
-                                if (!requestDic.ContainsKey(currentSessionID))
-                                {
-                                    requestDic.Add(currentSessionID, MAPIRequest);
-                                    requestBytesForHexview.Add(currentSessionID, bytesForHexView);
-                                }
-                            }
-
-                            if (DecodingContext.ObjectHandles.ContainsKey(DecodingContext.CopyTo_InputHandles[currentSessionID]))
-                            {
-                                ObjectHandlesType ObjectHandleType = DecodingContext.ObjectHandles[DecodingContext.CopyTo_InputHandles[currentSessionID]];
-                                switch (ObjectHandleType)
-                                {
-                                    case ObjectHandlesType.FolderHandles:
-                                        DecodingContext.StreamType_Getbuffer = FastTransferStreamType.folderContent;
-                                        break;
-                                    case ObjectHandlesType.MessageHandles:
-                                        DecodingContext.StreamType_Getbuffer = FastTransferStreamType.MessageContent;
-                                        break;
-                                    case ObjectHandlesType.AttachmentHandles:
-                                        DecodingContext.StreamType_Getbuffer = FastTransferStreamType.attachmentContent;
-                                        break;
-                                    default:
-                                        throw new Exception("The ObjectHandlesType is not right.");
-                                }
+                                responseDic.Add(currentSessionID, MAPIResponse);
+                                responseBytesForHexview.Add(currentSessionID, bytesForHexView);
                             }
                         }
-                    }
-                    else if (DecodingContext.CopyProperties_OutputHandles != null && DecodingContext.CopyProperties_OutputHandles.ContainsKey(currentSessionID))
-                    {
-                        if (DecodingContext.CopyProperties_OutputHandles[currentSessionID] == DecodingContext.GetBuffer_InPutHandles[ThisSessionID])
-                        {
-                            // If CopyProperties output handle is equal to the GetBuffer input handle, need to do further parse for CopyProperties request.
-                            if (!(requestDic != null && requestDic.ContainsKey(currentSessionID) && requestBytesForHexview != null && requestBytesForHexview.ContainsKey(currentSessionID)))
-                            {
-                                int sessionIdBeforeBreack = currentSessionID;
-                                MAPIRequest = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
-                                currentSessionID = sessionIdBeforeBreack;
-                                if (!requestDic.ContainsKey(currentSessionID))
-                                {
-                                    requestDic.Add(currentSessionID, MAPIRequest);
-                                    requestBytesForHexview.Add(currentSessionID, bytesForHexView);
-                                }
-                            }
 
-                            // when ObjectHandles contains object handle in copyProperties rop, the FastTransferStream type can be determined by the ObjectHandlesType.
-                            if (DecodingContext.ObjectHandles.ContainsKey(DecodingContext.CopyProperties_InputHandles[currentSessionID]))
-                            {
-                                ObjectHandlesType ObjectHandleType = DecodingContext.ObjectHandles[DecodingContext.CopyProperties_InputHandles[currentSessionID]];
-                                switch (ObjectHandleType)
-                                {
-                                    case ObjectHandlesType.FolderHandles:
-                                        DecodingContext.StreamType_Getbuffer = FastTransferStreamType.folderContent;
-                                        break;
-                                    case ObjectHandlesType.MessageHandles:
-                                        DecodingContext.StreamType_Getbuffer = FastTransferStreamType.MessageContent;
-                                        break;
-                                    case ObjectHandlesType.AttachmentHandles:
-                                        DecodingContext.StreamType_Getbuffer = FastTransferStreamType.attachmentContent;
-                                        break;
-                                    default:
-                                        throw new Exception("The ObjectHandlesType is not right.");
-                                }
-                            }
-                        }
-                    }
-                    else if (DecodingContext.SyncConfigure_OutputHandles != null && DecodingContext.SyncConfigure_OutputHandles.ContainsKey(currentSessionID))
-                    {
-                        if (DecodingContext.SyncConfigure_OutputHandles[currentSessionID] == DecodingContext.GetBuffer_InPutHandles[ThisSessionID])
+                        if (DecodingContext.CopyTo_OutputHandles != null && DecodingContext.CopyTo_OutputHandles.ContainsKey(currentSessionID))
                         {
-                            if (!(requestDic != null && requestDic.ContainsKey(currentSessionID) && requestBytesForHexview != null && requestBytesForHexview.ContainsKey(currentSessionID)))
+                            if (DecodingContext.CopyTo_OutputHandles[currentSessionID] == DecodingContext.GetBuffer_InPutHandles[ThisSessionID])
                             {
-                                MAPIRequest = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
-                                if (!requestDic.ContainsKey(currentSessionID))
+                                // If CopyTo output handle is equal to the GetBuffer input handle, need to do further parse for CopyTo request.
+                                if (!(requestDic != null && requestDic.ContainsKey(currentSessionID) && requestBytesForHexview != null && requestBytesForHexview.ContainsKey(currentSessionID)))
                                 {
-                                    requestDic.Add(currentSessionID, MAPIRequest);
-                                    requestBytesForHexview.Add(currentSessionID, bytesForHexView);
-                                }
-                            }
-                            obj = requestDic[currentSessionID];
-
-                            foreach (var Rop in (obj as ExecuteRequestBody).RopBuffer.Payload.RopsList)
-                            {
-                                if (Rop is RopSynchronizationConfigureRequest)
-                                {
-                                    if ((Rop as RopSynchronizationConfigureRequest).SynchronizationType == SynchronizationType.Contents)
+                                    int sessionIdBeforeBreack = currentSessionID;
+                                    MAPIRequest = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                                    currentSessionID = sessionIdBeforeBreack;
+                                    if (!requestDic.ContainsKey(currentSessionID))
                                     {
-                                        DecodingContext.StreamType_Getbuffer = FastTransferStreamType.contentsSync;
+                                        requestDic.Add(currentSessionID, MAPIRequest);
+                                        requestBytesForHexview.Add(currentSessionID, bytesForHexView);
                                     }
-                                    else
+                                }
+
+                                if (DecodingContext.ObjectHandles.ContainsKey(DecodingContext.CopyTo_InputHandles[currentSessionID]))
+                                {
+                                    ObjectHandlesType ObjectHandleType = DecodingContext.ObjectHandles[DecodingContext.CopyTo_InputHandles[currentSessionID]];
+                                    switch (ObjectHandleType)
                                     {
-                                        DecodingContext.StreamType_Getbuffer = FastTransferStreamType.hierarchySync;
+                                        case ObjectHandlesType.FolderHandles:
+                                            DecodingContext.StreamType_Getbuffer = FastTransferStreamType.folderContent;
+                                            break;
+                                        case ObjectHandlesType.MessageHandles:
+                                            DecodingContext.StreamType_Getbuffer = FastTransferStreamType.MessageContent;
+                                            break;
+                                        case ObjectHandlesType.AttachmentHandles:
+                                            DecodingContext.StreamType_Getbuffer = FastTransferStreamType.attachmentContent;
+                                            break;
+                                        default:
+                                            throw new Exception("The ObjectHandlesType is not right.");
                                     }
                                 }
                             }
                         }
-                    }
-                    else if (DecodingContext.CopyFolder_OutputHandles != null && DecodingContext.CopyFolder_OutputHandles.ContainsKey(currentSessionID))
-                    {
-                        if (DecodingContext.CopyFolder_OutputHandles[currentSessionID] == DecodingContext.GetBuffer_InPutHandles[ThisSessionID])
+                        else if (DecodingContext.CopyProperties_OutputHandles != null && DecodingContext.CopyProperties_OutputHandles.ContainsKey(currentSessionID))
                         {
-                            DecodingContext.StreamType_Getbuffer = FastTransferStreamType.TopFolder;
+                            if (DecodingContext.CopyProperties_OutputHandles[currentSessionID] == DecodingContext.GetBuffer_InPutHandles[ThisSessionID])
+                            {
+                                // If CopyProperties output handle is equal to the GetBuffer input handle, need to do further parse for CopyProperties request.
+                                if (!(requestDic != null && requestDic.ContainsKey(currentSessionID) && requestBytesForHexview != null && requestBytesForHexview.ContainsKey(currentSessionID)))
+                                {
+                                    int sessionIdBeforeBreack = currentSessionID;
+                                    MAPIRequest = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                                    currentSessionID = sessionIdBeforeBreack;
+                                    if (!requestDic.ContainsKey(currentSessionID))
+                                    {
+                                        requestDic.Add(currentSessionID, MAPIRequest);
+                                        requestBytesForHexview.Add(currentSessionID, bytesForHexView);
+                                    }
+                                }
+
+                                // when ObjectHandles contains object handle in copyProperties rop, the FastTransferStream type can be determined by the ObjectHandlesType.
+                                if (DecodingContext.ObjectHandles.ContainsKey(DecodingContext.CopyProperties_InputHandles[currentSessionID]))
+                                {
+                                    ObjectHandlesType ObjectHandleType = DecodingContext.ObjectHandles[DecodingContext.CopyProperties_InputHandles[currentSessionID]];
+                                    switch (ObjectHandleType)
+                                    {
+                                        case ObjectHandlesType.FolderHandles:
+                                            DecodingContext.StreamType_Getbuffer = FastTransferStreamType.folderContent;
+                                            break;
+                                        case ObjectHandlesType.MessageHandles:
+                                            DecodingContext.StreamType_Getbuffer = FastTransferStreamType.MessageContent;
+                                            break;
+                                        case ObjectHandlesType.AttachmentHandles:
+                                            DecodingContext.StreamType_Getbuffer = FastTransferStreamType.attachmentContent;
+                                            break;
+                                        default:
+                                            throw new Exception("The ObjectHandlesType is not right.");
+                                    }
+                                }
+                            }
                         }
-                    }
-                    else if (DecodingContext.CopyMessage_OutputHandles != null && DecodingContext.CopyMessage_OutputHandles.ContainsKey(currentSessionID))
-                    {
-                        if (DecodingContext.CopyMessage_OutputHandles[currentSessionID] == DecodingContext.GetBuffer_InPutHandles[ThisSessionID])
+                        else if (DecodingContext.SyncConfigure_OutputHandles != null && DecodingContext.SyncConfigure_OutputHandles.ContainsKey(currentSessionID))
                         {
-                            DecodingContext.StreamType_Getbuffer = FastTransferStreamType.MessageList;
+                            if (DecodingContext.SyncConfigure_OutputHandles[currentSessionID] == DecodingContext.GetBuffer_InPutHandles[ThisSessionID])
+                            {
+                                if (!(requestDic != null && requestDic.ContainsKey(currentSessionID) && requestBytesForHexview != null && requestBytesForHexview.ContainsKey(currentSessionID)))
+                                {
+                                    MAPIRequest = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                                    if (!requestDic.ContainsKey(currentSessionID))
+                                    {
+                                        requestDic.Add(currentSessionID, MAPIRequest);
+                                        requestBytesForHexview.Add(currentSessionID, bytesForHexView);
+                                    }
+                                }
+                                obj = requestDic[currentSessionID];
+
+                                foreach (var Rop in (obj as ExecuteRequestBody).RopBuffer.Payload.RopsList)
+                                {
+                                    if (Rop is RopSynchronizationConfigureRequest)
+                                    {
+                                        if ((Rop as RopSynchronizationConfigureRequest).SynchronizationType == SynchronizationType.Contents)
+                                        {
+                                            DecodingContext.StreamType_Getbuffer = FastTransferStreamType.contentsSync;
+                                        }
+                                        else
+                                        {
+                                            DecodingContext.StreamType_Getbuffer = FastTransferStreamType.hierarchySync;
+                                        }
+                                    }
+                                }
+                            }
                         }
-                    }
-                    else if (DecodingContext.SyncGetTransferState_OutputHandles != null && DecodingContext.SyncGetTransferState_OutputHandles.ContainsKey(currentSessionID))
-                    {
-                        if (DecodingContext.SyncGetTransferState_OutputHandles[currentSessionID] == DecodingContext.GetBuffer_InPutHandles[ThisSessionID])
+                        else if (DecodingContext.CopyFolder_OutputHandles != null && DecodingContext.CopyFolder_OutputHandles.ContainsKey(currentSessionID))
                         {
-                            DecodingContext.StreamType_Getbuffer = FastTransferStreamType.state;
+                            if (DecodingContext.CopyFolder_OutputHandles[currentSessionID] == DecodingContext.GetBuffer_InPutHandles[ThisSessionID])
+                            {
+                                DecodingContext.StreamType_Getbuffer = FastTransferStreamType.TopFolder;
+                            }
                         }
-                    }
-                    else
-                    {
-                        currentSessionID--;
-                        continue;
+                        else if (DecodingContext.CopyMessage_OutputHandles != null && DecodingContext.CopyMessage_OutputHandles.ContainsKey(currentSessionID))
+                        {
+                            if (DecodingContext.CopyMessage_OutputHandles[currentSessionID] == DecodingContext.GetBuffer_InPutHandles[ThisSessionID])
+                            {
+                                DecodingContext.StreamType_Getbuffer = FastTransferStreamType.MessageList;
+                            }
+                        }
+                        else if (DecodingContext.SyncGetTransferState_OutputHandles != null && DecodingContext.SyncGetTransferState_OutputHandles.ContainsKey(currentSessionID))
+                        {
+                            if (DecodingContext.SyncGetTransferState_OutputHandles[currentSessionID] == DecodingContext.GetBuffer_InPutHandles[ThisSessionID])
+                            {
+                                DecodingContext.StreamType_Getbuffer = FastTransferStreamType.state;
+                            }
+                        }
+                        else
+                        {
+                            currentSessionID--;
+                            continue;
+                        }
                     }
 
                     currentSessionID--;
@@ -563,19 +574,22 @@ namespace MapiInspector
             }
             else if ((RopIdType)sourceRopID == RopIdType.RopFastTransferSourceCopyProperties)
             {
-               int ThisSessionID = MAPIInspector.currentParsingSessionID;
+                int ThisSessionID = MAPIInspector.currentParsingSessionID;
                 currentSessionID -= 1;
 
                 // parsing the previous sessions until DecodingContext.ObjectHandles contains the parameters value(confirmed the type of input server object in CopyProperties is a folder or message or attachment). 
                 do
                 {
-                    if (!(responseDic != null && responseDic.ContainsKey(currentSessionID) && responseBytesForHexview != null && responseBytesForHexview.ContainsKey(currentSessionID)))
+                    if (IsMapihttpSession(currentSessionID, TrafficDirection.Out))
                     {
-                        MAPIResponse = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
-                        if (!responseDic.ContainsKey(currentSessionID))
+                        if (!(responseDic != null && responseDic.ContainsKey(currentSessionID) && responseBytesForHexview != null && responseBytesForHexview.ContainsKey(currentSessionID)))
                         {
-                            responseDic.Add(currentSessionID, MAPIResponse);
-                            responseBytesForHexview.Add(currentSessionID, bytesForHexView);
+                            MAPIResponse = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                            if (!responseDic.ContainsKey(currentSessionID))
+                            {
+                                responseDic.Add(currentSessionID, MAPIResponse);
+                                responseBytesForHexview.Add(currentSessionID, bytesForHexView);
+                            }
                         }
                     }
                     currentSessionID--;
@@ -600,13 +614,16 @@ namespace MapiInspector
                 // parsing the previous sessions until DecodingContext.ObjectHandles contains the parameters value(make sure the input object handle in CopyTo is a folder or message or attachment). 
                 do
                 {
-                    if (!(responseDic != null && responseDic.ContainsKey(currentSessionID) && responseBytesForHexview != null && responseBytesForHexview.ContainsKey(currentSessionID)))
+                    if (IsMapihttpSession(currentSessionID, TrafficDirection.Out))
                     {
-                        MAPIResponse = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
-                        if (!responseDic.ContainsKey(currentSessionID))
+                        if (!(responseDic != null && responseDic.ContainsKey(currentSessionID) && responseBytesForHexview != null && responseBytesForHexview.ContainsKey(currentSessionID)))
                         {
-                            responseDic.Add(currentSessionID, MAPIResponse);
-                            responseBytesForHexview.Add(currentSessionID, bytesForHexView);
+                            MAPIResponse = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                            if (!responseDic.ContainsKey(currentSessionID))
+                            {
+                                responseDic.Add(currentSessionID, MAPIResponse);
+                                responseBytesForHexview.Add(currentSessionID, bytesForHexView);
+                            }
                         }
                     }
                     currentSessionID--;
@@ -642,81 +659,83 @@ namespace MapiInspector
                 // parsing the previous sessions until DecodingContext.StreamType_PutBuffer has value. 
                 do
                 {
-                    // If currentSessionID is not contained in responseDic do parse this response structure, else not. 
-                    if (!(responseDic != null && responseDic.ContainsKey(currentSessionID) && responseBytesForHexview != null && responseBytesForHexview.ContainsKey(currentSessionID)))
+                    if (IsMapihttpSession(currentSessionID, TrafficDirection.Out))
                     {
-                        int sessionIdBeforeBreack = currentSessionID;
-                        MAPIResponse = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
-                        currentSessionID = sessionIdBeforeBreack;
-
-                        if (!responseDic.ContainsKey(currentSessionID))
+                        // If currentSessionID is not contained in responseDic do parse this response structure, else not. 
+                        if (!(responseDic != null && responseDic.ContainsKey(currentSessionID) && responseBytesForHexview != null && responseBytesForHexview.ContainsKey(currentSessionID)))
                         {
-                            responseDic.Add(currentSessionID, MAPIResponse);
-                            responseBytesForHexview.Add(currentSessionID, bytesForHexView);
-                        }
-                    }
+                            int sessionIdBeforeBreack = currentSessionID;
+                            MAPIResponse = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                            currentSessionID = sessionIdBeforeBreack;
 
-                    if (DecodingContext.DestinationConfigure_OutputHandles != null && DecodingContext.DestinationConfigure_OutputHandles.ContainsKey(currentSessionID))
-                    {
-                        if (DecodingContext.DestinationConfigure_OutputHandles[currentSessionID] == DecodingContext.PutBuffer_InPutHandles[ThisSessionID])
-                        {
-                            // If DestinationConfigure output handle is equal to the PutBuffer input handle, need to do further parse for DestinationConfigure request.
-                            if (!(requestDic != null && requestDic.ContainsKey(currentSessionID) && requestBytesForHexview != null && requestBytesForHexview.ContainsKey(currentSessionID)))
+                            if (!responseDic.ContainsKey(currentSessionID))
                             {
-                                MAPIRequest = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
-                                if (!requestDic.ContainsKey(currentSessionID))
-                                {
-                                    requestDic.Add(currentSessionID, MAPIRequest);
-                                    requestBytesForHexview.Add(currentSessionID, bytesForHexView);
-                                }
+                                responseDic.Add(currentSessionID, MAPIResponse);
+                                responseBytesForHexview.Add(currentSessionID, bytesForHexView);
                             }
-                            obj = requestDic[currentSessionID];
+                        }
 
-                            // If DestinationConfigure output handle is equal to the PutBuffer input handle and DestinationConfigure request has parsed, will get the stream type according to the SourceOperation field in RopSynchronizationConfigureRequest.
-                            foreach (var Rop in (obj as ExecuteRequestBody).RopBuffer.Payload.RopsList)
+                        if (DecodingContext.DestinationConfigure_OutputHandles != null && DecodingContext.DestinationConfigure_OutputHandles.ContainsKey(currentSessionID))
+                        {
+                            if (DecodingContext.DestinationConfigure_OutputHandles[currentSessionID] == DecodingContext.PutBuffer_InPutHandles[ThisSessionID])
                             {
-                                if (Rop is RopFastTransferDestinationConfigureRequest)
+                                // If DestinationConfigure output handle is equal to the PutBuffer input handle, need to do further parse for DestinationConfigure request.
+                                if (!(requestDic != null && requestDic.ContainsKey(currentSessionID) && requestBytesForHexview != null && requestBytesForHexview.ContainsKey(currentSessionID)))
                                 {
-                                    if ((Rop as RopFastTransferDestinationConfigureRequest).SourceOperation == SourceOperation.CopyFolder)
+                                    MAPIRequest = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                                    if (!requestDic.ContainsKey(currentSessionID))
                                     {
-                                        DecodingContext.StreamType_Putbuffer = FastTransferStreamType.TopFolder;
+                                        requestDic.Add(currentSessionID, MAPIRequest);
+                                        requestBytesForHexview.Add(currentSessionID, bytesForHexView);
                                     }
-                                    else if ((Rop as RopFastTransferDestinationConfigureRequest).SourceOperation == SourceOperation.CopyMessages)
+                                }
+                                obj = requestDic[currentSessionID];
+
+                                // If DestinationConfigure output handle is equal to the PutBuffer input handle and DestinationConfigure request has parsed, will get the stream type according to the SourceOperation field in RopSynchronizationConfigureRequest.
+                                foreach (var Rop in (obj as ExecuteRequestBody).RopBuffer.Payload.RopsList)
+                                {
+                                    if (Rop is RopFastTransferDestinationConfigureRequest)
                                     {
-                                        DecodingContext.StreamType_Putbuffer = FastTransferStreamType.MessageList;
-                                    }
-                                    else
-                                    {
-                                        // when ObjectHandles contains object handle in DestinationConfigure rop, the FastTransferStream type can be determined by the ObjectHandlesType.
-                                        if (DecodingContext.ObjectHandles.ContainsKey(DecodingContext.DestinationConfigure_InputHandles[currentSessionID]))
+                                        if ((Rop as RopFastTransferDestinationConfigureRequest).SourceOperation == SourceOperation.CopyFolder)
                                         {
-                                            ObjectHandlesType ObjectHandleType = DecodingContext.ObjectHandles[DecodingContext.CopyProperties_InputHandles[currentSessionID]];
-                                            switch (ObjectHandleType)
+                                            DecodingContext.StreamType_Putbuffer = FastTransferStreamType.TopFolder;
+                                        }
+                                        else if ((Rop as RopFastTransferDestinationConfigureRequest).SourceOperation == SourceOperation.CopyMessages)
+                                        {
+                                            DecodingContext.StreamType_Putbuffer = FastTransferStreamType.MessageList;
+                                        }
+                                        else
+                                        {
+                                            // when ObjectHandles contains object handle in DestinationConfigure rop, the FastTransferStream type can be determined by the ObjectHandlesType.
+                                            if (DecodingContext.ObjectHandles.ContainsKey(DecodingContext.DestinationConfigure_InputHandles[currentSessionID]))
                                             {
-                                                case ObjectHandlesType.FolderHandles:
-                                                    DecodingContext.StreamType_Getbuffer = FastTransferStreamType.folderContent;
-                                                    break;
-                                                case ObjectHandlesType.MessageHandles:
-                                                    DecodingContext.StreamType_Getbuffer = FastTransferStreamType.MessageContent;
-                                                    break;
-                                                case ObjectHandlesType.AttachmentHandles:
-                                                    DecodingContext.StreamType_Getbuffer = FastTransferStreamType.attachmentContent;
-                                                    break;
-                                                default:
-                                                    throw new Exception("The ObjectHandlesType is not right.");
+                                                ObjectHandlesType ObjectHandleType = DecodingContext.ObjectHandles[DecodingContext.DestinationConfigure_InputHandles[currentSessionID]];
+                                                switch (ObjectHandleType)
+                                                {
+                                                    case ObjectHandlesType.FolderHandles:
+                                                        DecodingContext.StreamType_Putbuffer = FastTransferStreamType.folderContent;
+                                                        break;
+                                                    case ObjectHandlesType.MessageHandles:
+                                                        DecodingContext.StreamType_Putbuffer = FastTransferStreamType.MessageContent;
+                                                        break;
+                                                    case ObjectHandlesType.AttachmentHandles:
+                                                        DecodingContext.StreamType_Putbuffer = FastTransferStreamType.attachmentContent;
+                                                        break;
+                                                    default:
+                                                        throw new Exception("The ObjectHandlesType is not right.");
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
                         }
+                        else
+                        {
+                            currentSessionID--;
+                            continue;
+                        }
                     }
-                    else
-                    {
-                        currentSessionID--;
-                        continue;
-                    }
-
                     currentSessionID--;
                 }
                 while (DecodingContext.StreamType_Putbuffer == 0);
@@ -745,11 +764,14 @@ namespace MapiInspector
                 // parsing the previous sessions until DecodingContext.ObjectHandles contains the parameters value(make sure the input object handle in RopFastTransferDestinationConfigure is a folder or message or attachment). 
                 do
                 {
-                    if (!(responseDic != null && responseDic.ContainsKey(currentSessionID) && responseBytesForHexview != null && responseBytesForHexview.ContainsKey(currentSessionID)))
+                    if (IsMapihttpSession(currentSessionID, TrafficDirection.Out))
                     {
-                        MAPIResponse = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
-                        responseDic.Add(currentSessionID, MAPIResponse);
-                        responseBytesForHexview.Add(currentSessionID, bytesForHexView);
+                        if (!(responseDic != null && responseDic.ContainsKey(currentSessionID) && responseBytesForHexview != null && responseBytesForHexview.ContainsKey(currentSessionID)))
+                        {
+                            MAPIResponse = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                            responseDic.Add(currentSessionID, MAPIResponse);
+                            responseBytesForHexview.Add(currentSessionID, bytesForHexView);
+                        }
                     }
                     currentSessionID--;
                 }
@@ -800,12 +822,15 @@ namespace MapiInspector
                 // parsing the previous sessions until DecodingContext.SessionLogonFlag contains currentSessionID. 
                 do
                 {
-                    MAPIRequest = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
-                    MapiInspector.MAPIInspector.logonRelatedSessionID = ThisSessionID;
-                    if (MAPIRequest != null && MAPIRequest.GetType().Name == "ExecuteRequestBody" && !requestDic.ContainsKey(allSessions[currentSessionID].id))
+                    if (IsMapihttpSession(currentSessionID, TrafficDirection.In))
                     {
-                        requestDic.Add(allSessions[currentSessionID].id, MAPIRequest);
-                        requestBytesForHexview.Add(allSessions[currentSessionID].id, bytesForHexView);
+                        MAPIRequest = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                        MapiInspector.MAPIInspector.logonRelatedSessionID = ThisSessionID;
+                        if (MAPIRequest != null && MAPIRequest.GetType().Name == "ExecuteRequestBody" && !requestDic.ContainsKey(allSessions[currentSessionID].id))
+                        {
+                            requestDic.Add(allSessions[currentSessionID].id, MAPIRequest);
+                            requestBytesForHexview.Add(allSessions[currentSessionID].id, bytesForHexView);
+                        }
                     }
                     currentSessionID--;
                 }
@@ -821,7 +846,7 @@ namespace MapiInspector
                 obj = requestDic[ThisSessionID];
                 bytes = requestBytesForHexview[ThisSessionID];
             }
-            else if ((RopIdType)sourceRopID == RopIdType.RopQueryRows || (RopIdType)sourceRopID == RopIdType.RopFindRow || (RopIdType)sourceRopID == RopIdType.RopExpandRow || (RopIdType)sourceRopID == RopIdType.RopNotify) // MSOXCTABL rop
+            else if ((RopIdType)sourceRopID == RopIdType.RopQueryRows || (RopIdType)sourceRopID == RopIdType.RopFindRow || (RopIdType)sourceRopID == RopIdType.RopExpandRow) // MSOXCTABL rop
             {
                 int ThisSessionID = MAPIInspector.currentParsingSessionID;
                 currentSessionID -= 1;
@@ -835,12 +860,39 @@ namespace MapiInspector
                     }
                     currentSessionID--;
                 }
-                while (DecodingContext.SetColumnsPropertyTags == null || !DecodingContext.SetColumnsPropertyTags.ContainsKey(ThisSessionID));
-
-                if (DecodingContext.SetColumnsPropertyTags.ContainsKey(ThisSessionID))
+                while (DecodingContext.SetColumnProTagMap_Handle == null || !DecodingContext.SetColumnProTagMap_Handle.ContainsKey(ThisSessionID) || !DecodingContext.SetColumnProTagMap_Handle[ThisSessionID].ContainsKey((uint)parameters.GetHashCode()));
+                if (DecodingContext.SetColumnProTagMap_Handle.ContainsKey(ThisSessionID) || DecodingContext.SetColumnProTagMap_Index.ContainsKey(currentSessionID))
                 {
                     MAPIResponse = ParseHTTPPayload(this.BaseHeaders, ThisSessionID, allSessions[ThisSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
-                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody" && !requestDic.ContainsKey(currentSessionID))
+                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody" && !responseDic.ContainsKey(ThisSessionID))
+                    {
+                        responseDic.Add(ThisSessionID, MAPIResponse);
+                        responseBytesForHexview.Add(ThisSessionID, bytesForHexView);
+                    }
+                }
+                obj = responseDic[ThisSessionID];
+                bytes = responseBytesForHexview[ThisSessionID];
+            }
+            else if ((RopIdType)sourceRopID == RopIdType.RopNotify)
+            {
+                int ThisSessionID = MAPIInspector.currentParsingSessionID;
+                currentSessionID -= 1;
+                do
+                {
+                    MAPIRequest = ParseHTTPPayload(this.BaseHeaders, ThisSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                    if (MAPIRequest != null && MAPIRequest.GetType().Name == "ExecuteRequestBody" && !requestDic.ContainsKey(allSessions[currentSessionID].id))
+                    {
+                        requestDic.Add(allSessions[currentSessionID].id, MAPIRequest);
+                        requestBytesForHexview.Add(allSessions[currentSessionID].id, bytesForHexView);
+                    }
+                    currentSessionID--;
+                }
+                while (DecodingContext.SetColumnProTagMap_Handle == null || !DecodingContext.SetColumnProTagMap_Handle.ContainsKey(ThisSessionID) || !DecodingContext.SetColumnProTagMap_Handle[ThisSessionID].ContainsKey((uint)parameters.GetHashCode()));
+
+                if (DecodingContext.SetColumnProTagMap_Handle.ContainsKey(ThisSessionID) || DecodingContext.SetColumnProTagMap_Index.ContainsKey(currentSessionID))
+                {
+                    MAPIResponse = ParseHTTPPayload(this.BaseHeaders, ThisSessionID, allSessions[ThisSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody" && !responseDic.ContainsKey(ThisSessionID))
                     {
                         responseDic.Add(ThisSessionID, MAPIResponse);
                         responseBytesForHexview.Add(ThisSessionID, bytesForHexView);
@@ -860,14 +912,14 @@ namespace MapiInspector
                 else
                 {
                     MAPIRequest = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
-                    if (MAPIRequest.GetType().Name == "ExecuteRequestBody")
+                    if (MAPIRequest.GetType().Name == "ExecuteRequestBody" && requestDic != null && !requestDic.ContainsKey(ThisSessionID))
                     {
                         requestDic.Add(ThisSessionID, MAPIRequest);
                         requestBytesForHexview.Add(ThisSessionID, bytesForHexView);
                     }
 
                     MAPIResponse = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
-                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody")
+                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody" && responseDic != null && !responseDic.ContainsKey(ThisSessionID))
                     {
                         responseDic.Add(ThisSessionID, MAPIResponse);
                         responseBytesForHexview.Add(ThisSessionID, bytesForHexView);
@@ -1356,6 +1408,30 @@ namespace MapiInspector
             {
                 return;
             }
+        }
+        public bool IsMapihttpSession(int sessionId, TrafficDirection direction)
+        {
+            Session os = allSessions[sessionId];
+            if (os != null)
+            {
+                if (direction == TrafficDirection.In)
+                {
+                    return os.RequestHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
+                }
+                else if (direction == TrafficDirection.Out && os.ResponseHeaders.Exists("X-ResponseCode"))
+                {
+                    string xResponseCode = os.ResponseHeaders["X-ResponseCode"];
+                    if (xResponseCode == "0")
+                    {
+                        return os.ResponseHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
+                    }
+                    else if (xResponseCode != "")
+                    {
+                        return os.ResponseHeaders.ExistsAndContains("Content-Type", "text/html");
+                    }
+                }
+            }
+            return false;
         }
 
         /// <summary>

@@ -13,7 +13,7 @@ namespace MAPIInspector.Parsers
     {
         // An unsigned integer that specifies the type of ROP.
         public RopIdType RopId;
-        
+
         // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
         public byte LogonId;
 
@@ -47,7 +47,7 @@ namespace MAPIInspector.Parsers
             this.WantUnicode = ReadUshort();
             this.PropertyTagCount = ReadUshort();
             List<PropertyTag> tmpPropertyTags = new List<PropertyTag>();
-            for (int i = 0; i < this.PropertyTagCount;  i++ )
+            for (int i = 0; i < this.PropertyTagCount; i++)
             {
                 PropertyTag tmppropertytag = new PropertyTag();
                 tmppropertytag.Parse(s);
@@ -67,13 +67,13 @@ namespace MAPIInspector.Parsers
 
         // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         public byte InputHandleIndex;
-        
+
         // An unsigned integer that specifies the status of the ROP.
         public object ReturnValue;
 
         // A PropertyRow structure. 
         public PropertyRow RowData;
-   
+
         /// <summary>
         /// Parse the RopGetPropertiesSpecificResponse structure.
         /// </summary>
@@ -366,7 +366,7 @@ namespace MAPIInspector.Parsers
 
         // An unsigned integer that specifies the number of bytes used for the PropertyValueCount field and the PropertyValues field.
         public ushort PropertyValueSize;
-        
+
         // An unsigned integer that specifies the number of structures listed in the PropertyValues field.
         public ushort PropertyValueCount;
 
@@ -709,7 +709,7 @@ namespace MAPIInspector.Parsers
                 this.IdCount = ReadUshort();
                 this.PropertyIds = ConvertArray(new ushort[(int)this.IdCount]);
                 this.PropertyNames = new PropertyName[(int)this.IdCount];
-                for(int i = 0; i < this.IdCount; i++)
+                for (int i = 0; i < this.IdCount; i++)
                 {
                     PropertyIds[i] = ReadUshort();
                 }
@@ -1054,7 +1054,7 @@ namespace MAPIInspector.Parsers
 
         // An array of unsigned 16-bit integers.
         public ushort[] PropertyIds;
-       
+
         /// <summary>
         /// Parse the RopGetNamesFromPropertyIdsRequest structure.
         /// </summary>
@@ -1235,7 +1235,7 @@ namespace MAPIInspector.Parsers
             this.LogonId = ReadByte();
             this.InputHandleIndex = ReadByte();
             this.ByteCount = ReadUshort();
-            if(this.ByteCount == 0xBABE)
+            if (this.ByteCount == 0xBABE)
             {
                 this.MaximumByteCount = ReadUint();
             }
@@ -2056,7 +2056,7 @@ namespace MAPIInspector.Parsers
     [Flags]
     public enum CopyFlags : byte
     {
-	    Move = 0x01,
+        Move = 0x01,
         NoOverwrite = 0x02,
     }
 

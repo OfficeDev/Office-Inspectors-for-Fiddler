@@ -1139,6 +1139,7 @@ namespace MAPIInspector.Parsers
                     for (int i = 0; i < this.RowCount; i++)
                     {
                         AddressBookPropertyRow addressPropRow = new AddressBookPropertyRow(this.Columns);
+                        addressPropRow.Parse(s);
                         addressBookPropRow.Add(addressPropRow);
                     }
                     this.RowData = addressBookPropRow.ToArray();
@@ -2661,6 +2662,7 @@ namespace MAPIInspector.Parsers
                         for (int i = 0; i < this.RowCount; i++)
                         {
                             AddressBookPropertyRow addressPropRow = new AddressBookPropertyRow(this.Columns);
+                            addressPropRow.Parse(s);
                             addressBookPropRow.Add(addressPropRow);
                         }
                         this.RowData = addressBookPropRow.ToArray();
@@ -2714,8 +2716,8 @@ namespace MAPIInspector.Parsers
             {
                 this.State = new STAT();
                 this.State.Parse(s);
-                this.DeltaRequested = ReadBoolean();
             }
+            this.DeltaRequested = ReadBoolean();
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
             {
@@ -2851,6 +2853,9 @@ namespace MAPIInspector.Parsers
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
 
+        // An unsigned integer that specifies the return status of the operation.
+        public uint ErrorCode;
+
         // A null-terminated Unicode string that specifies URL of the EMSMDB server.
         public MAPIString ServerUrl;
 
@@ -2876,7 +2881,8 @@ namespace MAPIInspector.Parsers
             this.StatusCode = ReadUint();
             if (this.StatusCode == 0)
             {
-                this.ServerUrl = new MAPIString(Encoding.Unicode);
+                this.ErrorCode = ReadUint();
+                this.ServerUrl = new MAPIString(Encoding.Unicode, "\0");
             }
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
@@ -2917,6 +2923,7 @@ namespace MAPIInspector.Parsers
 
             this.Flags = ReadUint();
             this.UserDn = new MAPIString(Encoding.Unicode);
+            this.UserDn.Parse(s);
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
             {
@@ -2938,6 +2945,9 @@ namespace MAPIInspector.Parsers
 
         // An unsigned integer that specifies the status of the request. 
         public uint StatusCode;
+
+        // An unsigned integer that specifies the return status of the operation.
+        public uint ErrorCode;
 
         // A null-terminated Unicode string that specifies the URL of the NSPI server.
         public MAPIString ServerUrl;
@@ -2964,6 +2974,7 @@ namespace MAPIInspector.Parsers
             this.StatusCode = ReadUint();
             if (this.StatusCode == 0)
             {
+                this.ErrorCode = ReadUint();
                 this.ServerUrl = new MAPIString(Encoding.Unicode);
                 this.ServerUrl.Parse(s);
             }

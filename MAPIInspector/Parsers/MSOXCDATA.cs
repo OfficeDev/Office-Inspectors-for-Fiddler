@@ -29,7 +29,13 @@ namespace MAPIInspector.Parsers
         public bool ReducedUnicode;
 
         /// <summary>
-        /// 
+        /// A The Constructor of MAPIString without parameters.
+        /// </summary>
+        public MAPIString()
+        { }
+
+        /// <summary>
+        /// A The Constructor of MAPIString with parameters.
         /// </summary>
         /// <param name="encode"></param>
         /// <param name="terminator"></param>
@@ -3117,13 +3123,9 @@ namespace MAPIInspector.Parsers
             switch (this.StringType)
             {
                 case StringTypeEnum.NoPresent:
-                    {
-                        this.String = null;
-                        break;
-                    }
                 case StringTypeEnum.Empty:
                     {
-                        this.String.Value = string.Empty;
+                        this.String = null;
                         break;
                     }
                 case StringTypeEnum.CharacterString:
@@ -3134,7 +3136,7 @@ namespace MAPIInspector.Parsers
                     }
                 case StringTypeEnum.ReducedUnicodeCharacterString:
                     {
-                        this.String = new MAPIString(Encoding.Unicode, "\0", 0, true);
+                        this.String = new MAPIString(Encoding.ASCII);
                         this.String.Parse(s);
                         break;
                     }

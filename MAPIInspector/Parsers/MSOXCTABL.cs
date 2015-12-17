@@ -373,6 +373,15 @@ namespace MAPIInspector.Parsers
         private PropertyTag[] propertiesBySetColum;
 
         /// <summary>
+        /// The construe function for RopQueryRowsResponse
+        /// </summary>
+        /// <param name="propertiesBySetColum">Property Tags got from RopSetColumn</param>
+        public RopQueryRowsResponse(PropertyTag[] propertiesBySetColum)
+        {
+            this.propertiesBySetColum = propertiesBySetColum;
+        }
+
+        /// <summary>
         /// Parse the RopQueryRows structure.
         /// </summary>
         /// <param name="s">An stream containing RopQueryRows structure.</param>
@@ -391,16 +400,6 @@ namespace MAPIInspector.Parsers
                 this.RowCount = ReadUshort();
                 if (this.RowCount != 0)
                 {
-                    // If the related property tags is alreadby in dictionary and this session is not parsed
-                    if (DecodingContext.SetColumnsPropertyTags != null && DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
-                    {
-                        this.propertiesBySetColum = DecodingContext.SetColumnsPropertyTags[MapiInspector.MAPIInspector.currentParsingSessionID];
-                    }
-                    // If the related property tags is not exist.
-                    else
-                    {
-                        throw new MissingInformationException("Missing LogonFlags information for RopQueryRowsResponse", (ushort)RopIdType.RopQueryRows, null);
-                    }
                     List<PropertyRow> tempPropertyRows = new List<PropertyRow>();
                     for (int i = 0; i < RowCount; i++)
                     {
@@ -1106,6 +1105,15 @@ namespace MAPIInspector.Parsers
         private PropertyTag[] propertiesBySetColum;
 
         /// <summary>
+        /// The construe function for RopFindRowsResponse
+        /// </summary>
+        /// <param name="propertiesBySetColum">Property Tags got from RopSetColumn</param>
+        public RopFindRowResponse(PropertyTag[] propertiesBySetColum)
+        {
+            this.propertiesBySetColum = propertiesBySetColum;
+        }
+
+        /// <summary>
         /// Parse the RopFindRowResponse structure.
         /// </summary>
         /// <param name="s">An stream containing RopFindRowResponse structure.</param>
@@ -1124,21 +1132,10 @@ namespace MAPIInspector.Parsers
                 this.HasRowData = ReadBoolean();
                 if ((bool)HasRowData)
                 {
-                    // If the related property tags is alreadby in dictionary and this session is not parsed
-                    if (DecodingContext.SetColumnsPropertyTags != null && DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
-                    {
-                        this.propertiesBySetColum = DecodingContext.SetColumnsPropertyTags[MapiInspector.MAPIInspector.currentParsingSessionID];
-                    }
-                    // If the related property tags is not exist.
-                    else
-                    {
-                        throw new MissingInformationException("Missing LogonFlags information for RopFindRowResponse", (ushort)RopIdType.RopFindRow, null);
-                    }
                     PropertyRow tempPropertyRow = new PropertyRow(propertiesBySetColum);
                     this.RowData = tempPropertyRow;
                     this.RowData.Parse(s);
                 }
-
             }
         }
     }
@@ -1343,6 +1340,15 @@ namespace MAPIInspector.Parsers
         private PropertyTag[] propertiesBySetColum;
 
         /// <summary>
+        /// The construe function for RopExpandRowsResponse
+        /// </summary>
+        /// <param name="propertiesBySetColum">Property Tags got from RopSetColumn</param>
+        public RopExpandRowResponse(PropertyTag[] propertiesBySetColum)
+        {
+            this.propertiesBySetColum = propertiesBySetColum;
+        }
+
+        /// <summary>
         /// Parse the RopExpandRowResponse structure.
         /// </summary>
         /// <param name="s">An stream containing RopExpandRowResponse structure.</param>
@@ -1359,19 +1365,6 @@ namespace MAPIInspector.Parsers
             {
                 this.ExpandedRowCount = ReadUint();
                 this.RowCount = ReadUshort();
-                if (this.RowCount != 0)
-                {
-                    // If the related property tags is alreadby in dictionary and this session is not parsed
-                    if (DecodingContext.SetColumnsPropertyTags != null && DecodingContext.SetColumnsPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
-                    {
-                        this.propertiesBySetColum = DecodingContext.SetColumnsPropertyTags[MapiInspector.MAPIInspector.currentParsingSessionID];
-                    }
-                    // If the related property tags is not exist.
-                    else
-                    {
-                        throw new MissingInformationException("Missing LogonFlags information for RopExpandRowResponse", (ushort)RopIdType.RopExpandRow, null);
-                    }
-                }
                 List<PropertyRow> tempPropertyRows = new List<PropertyRow>();
                 for (int i = 0; i < RowCount; i++)
                 {
