@@ -402,13 +402,13 @@ namespace MAPIInspector.Parsers
                 this.TableRowData = new PropertyRow(propertiesBySetColum);
                 this.TableRowData.Parse(s);
             }
-            if (NotificationFlags.Value.NotificationType != NotificationTypesEnum.TableModified && NotificationFlags.Value.NotificationType != NotificationTypesEnum.ObjectCopied)
+            if (NotificationFlags.Value.NotificationType != NotificationTypesEnum.TableModified && NotificationFlags.Value.NotificationType != NotificationTypesEnum.Extended)
             {
 
                 this.FolderId = new FolderID();
                 this.FolderId.Parse(s);
             }
-            if (NotificationFlags.Value.NotificationType != NotificationTypesEnum.TableModified && NotificationFlags.Value.NotificationType != NotificationTypesEnum.ObjectCopied && (((int)NotificationFlags.Value.NotificationDataAvailability & 0x8000) != 0))
+            if (NotificationFlags.Value.NotificationType != NotificationTypesEnum.TableModified && NotificationFlags.Value.NotificationType != NotificationTypesEnum.Extended && (((int)NotificationFlags.Value.NotificationDataAvailability & 0x8000) != 0))
             {
                 this.MessageId = new MessageID();
                 this.MessageId.Parse(s);

@@ -563,7 +563,8 @@ namespace MapiInspector
                 }
 
                 // After get StreamType for this session id (GetBuffer Rop). Do parse for response structure of this session.
-                MAPIResponse = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                MAPIResponse = ParseHTTPPayload(this.BaseHeaders, ThisSessionID, allSessions[ThisSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+
                 if (MAPIResponse.GetType().Name == "ExecuteResponseBody")
                 {
                     responseDic.Add(ThisSessionID, MAPIResponse);
@@ -1411,6 +1412,15 @@ namespace MapiInspector
         }
         public bool IsMapihttpSession(int sessionId, TrafficDirection direction)
         {
+            List<Session> AllSessionsList = new List<Session>();
+            Session session0 = new Session(new byte[0], new byte[0]);
+            AllSessionsList.AddRange(FiddlerApplication.UI.GetAllSessions());
+            AllSessionsList.Sort(delegate(Session p1, Session p2)
+            {
+                return p1.id.CompareTo(p2.id);
+            });
+            AllSessionsList.Insert(0, session0);
+            Session[] allSessions = AllSessionsList.ToArray();
             Session os = allSessions[sessionId];
             if (os != null)
             {
