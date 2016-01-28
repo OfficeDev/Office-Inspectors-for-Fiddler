@@ -14,12 +14,6 @@ function CalcMethodCol(oS : Session) {
     switch (sRequestType) {
         case "Execute":
             return "MS-OXCROPS";  
-        case "Connect":
-        case "Disconnect":
-        case "NotificationWait":
-            return "MS-OXCMAPIHTTP";
-        case "Bind":
-            return "MS-OXNSPI";
         default:
             return "MS-OXCMAPIHTTP";
     }
