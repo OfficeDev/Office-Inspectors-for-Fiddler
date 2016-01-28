@@ -810,13 +810,13 @@ namespace MAPIInspector.Parsers
         public uint Reserved;
 
         // A Boolean value that specifies whether the NameCount and NameValues fields are present.
-        public byte HasNames;
+        public bool HasNames;
 
         // An unsigned integer that specifies the number of null-terminated Unicode strings in the NameValues field. 
         public uint NameCount;
 
         // An array of null-terminated ASCII strings which are distinguished names (DNs) to be mapped to Minimal Entry IDs. 
-        public MAPIString NameValues;
+        public MAPIString[] NameValues;
 
         // An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         public uint AuxiliaryBufferSize;
@@ -831,6 +831,27 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
+            this.Reserved = ReadUint();
+            this.HasNames = ReadBoolean();
+            this.NameCount = ReadUint();
+            List<MAPIString> nameValues = new List<MAPIString>();
+            for(int i=0; i< this.NameCount; i++)
+            {
+                MAPIString mapiString = new MAPIString(Encoding.ASCII);
+                mapiString.Parse(s);
+                nameValues.Add(mapiString);
+            }
+            this.NameValues = nameValues.ToArray();
+            this.AuxiliaryBufferSize = ReadUint();
+            if (this.AuxiliaryBufferSize > 0)
+            {
+                this.AuxiliaryBuffer = new ExtendedBuffer();
+                this.AuxiliaryBuffer.Parse(s);
+            }
+            else
+            {
+                this.AuxiliaryBuffer = null;
+            }
         }
 
     }
