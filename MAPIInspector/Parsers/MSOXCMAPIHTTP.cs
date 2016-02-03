@@ -5166,235 +5166,112 @@ namespace MAPIInspector.Parsers
         /// <param name="inputStream">The input stream needed to be decompressed.</param>
         /// <param name="actualSize">The expected size of the decompressed output stream.</param>
         /// <returns>Returns the decompressed stream.</returns>
-        public static byte[] LZ77Decompress(byte[] inputStream, int actualSize)
+        public static byte[] LZ77Decompress(byte[] inputStream, int actualLength)
         {
-            if (inputStream == null)
+            byte? shareByteCache = null;
+            int bitMaskIndex = 0;
+            uint bitMask = 0x00000000;
+            int inputPosition = 0;
+            int outputPosition = 0;
+            byte[] outputBuffer = new byte[actualLength];
+
+            while (inputPosition < inputStream.Length)
             {
-                throw new ArgumentNullException("inputStream");
-            }
-
-            #region Variables
-            // To distinguish data from metadata in the compressed byte stream. [MS-OXCRPC], section 3.1.7.2.2.1.
-            int bitMask;
-
-            // Indicates the bit representing the next byte to be processed is "1".
-            uint bitMaskPointer;
-
-            // The count of bitmask.
-            uint bitMaskCount;
-
-            // Metadata offset.
-            int offset;
-
-            // The length of metadata.
-            int length;
-
-            // The container of redundant information which is used to reduce the size of input data.
-            int metadata;
-
-            // The length of metadata. For more detail, refer to [MS-OXCRPC], section 3.1.7.2.2.4.
-            int metadataLength;
-
-            // The additive length contained by the nibble of shared byte.
-            int lengthInSharedByte;
-
-            // The byte follows the bitmask.
-            byte nextByte;
-
-            // The byte follows the initial 2-byte metadata whenever the match length is greater than nine.
-            // The nibble of this byte is "reserved" for the next metadata instance when the length is greater than nine.
-            // For more detail, refer to [MS-OXCRPC], section 3.1.7.2.2.4.
-            byte sharedByte;
-
-            // Indicates which nibble of shared byte to be used. True indicates high-order nibble, false indicates low-order nibble.
-            bool useSharedByteHighOrderNibble;
-
-            // The count of bytes in inStream.
-            int inputBytesCount;
-
-            // The count of bytes in outStream.
-            int outCount;
-            #endregion
-
-            #region Consts
-            // Means the first 31 bytes are actual data. (1000 0000 0000 0000 0000 0000 0000 0000)
-            // Uses as the beginning of checking bitmask.
-            const uint BitMaskOf31ActualData = 0x80000000;
-
-            // The high-order 13 bits are a first complement of the offset. (1111 1111 1111 1000)
-            const int BitMaskOfHigh13AreFirstComplementOfOffset = 0xFFF8;
-
-            // The size of metadata. [MS-OXCRPC], section 3.1.7.2.2.3.
-            const int SizeOfMetadata = sizeof(short);
-
-            // The size of shared byte.
-            const int SizeOfSharedByte = sizeof(byte);
-
-            // The low-order three bits are the length. [MS-OXCRPC], section 3.1.7.2.2.3.
-            const int OffsetOfLengthInMetadata = 3;
-
-            // The three bits in the original two bytes of metadata with value b'111'
-            const int BitSetLower3Bits = 0x7;
-
-            // The size of nibble in shared byte.
-            const int SizeOfNibble = 4;
-
-            // The minimum match is 3 bytes. [MS-OXCRPC], section 3.1.7.2.2.4.
-            const int SizeOfMinimumMatch = 3;
-
-            // Three low-order bits of the 2-bytes metadata allow for the expression of lengths from 3 to 9.
-            // Because 3 is the minimum match and b'111' is reserved.
-            // So every time the match length is greater than 9, there will be an additional byte follows the initial 2-byte metadata.
-            // Refer to [MS-OXCRPC], section 3.1.7.2.2.4.
-            const int MatchLengthWithAdditionalByte = 10;
-
-            // The shared byte with value 1111.
-            const byte SharedByteSetLow4Bits = 0xF;
-
-            // The next byte with value 11111111.
-            const byte NextByteSetAllBits = 0xFF;
-
-            // The size of final two bytes which is used to calculate the match length equal or greater than 280.
-            const int SizeOfFinalTwoBytes = 4;
-
-            // Each bit in bitmask (4 bytes) can distinguish data from metadata in the compressed byte stream.
-            const int CountOfBitmask = 32;
-
-            #endregion
-
-            byte[] outStream = new byte[actualSize];
-            int size = inputStream.Length;
-
-            outCount = 0;
-            inputBytesCount = 0;
-            useSharedByteHighOrderNibble = false;
-            sharedByte = 0;
-            while (inputBytesCount < size)
-            {
-                bitMask = BitConverter.ToInt32(inputStream, inputBytesCount);
-
-                // The size of bitmask is 4 bytes.
-                inputBytesCount += sizeof(uint);
-                bitMaskPointer = BitMaskOf31ActualData;
-                bitMaskCount = 0;
-                do
+                // If the bitMaskIndex = 0, it represents the entire "bitMask" has been
+                // consumed or we are just starting to do the decompress.
+                if (bitMaskIndex == 0)
                 {
-                    // The size of RPC_HEADER_EXT.
-                    if (inputBytesCount < size)
+                    bitMask = BitConverter.ToUInt32(inputStream, inputPosition);
+                    inputPosition += 4;
+                    bitMaskIndex = 32;
+                    continue;
+                }
+
+                bool hasMetaData = (bitMask & 0x80000000) != 0;
+                bitMask = bitMask << 1;
+                bitMaskIndex--;
+
+                // If it's data, just copy.
+                if (!hasMetaData)
+                {
+                    outputBuffer[outputPosition] = inputStream[inputPosition];
+                    outputPosition++;
+                    inputPosition++;
+                }
+                // Otherwise copy the data specified by metadata (offset, length) pair
+                else
+                {
+                    int offset = 0;
+                    int length = 0;
+                    GetMetaDataValue(inputStream, ref inputPosition, ref shareByteCache, out offset, out length);
+                    while (length != 0)
                     {
-                        // If the next byte in inStream is not metadata
-                        if ((bitMask & bitMaskPointer) == 0)
-                        {
-                            outStream[outCount] = inputStream[inputBytesCount];
-                            outCount++;
-                            inputBytesCount++;
 
-                            // Move to the next bitmask.
-                            bitMaskPointer >>= 1;
-                            bitMaskCount++;
-                        }
-                        else
-                        {
-                            // If next set of bytes is metadata, count offset and length
-                            // This protocol assumes the metadata is two bytes in length
-                            metadata = BitConverter.ToInt16(inputStream, inputBytesCount);
-
-                            // The high-order 13 bits are a first complement of the offset
-                            offset = (metadata & BitMaskOfHigh13AreFirstComplementOfOffset) >> OffsetOfLengthInMetadata;
-                            offset++;
-
-                            #region Count Length
-                            // If three bits in the original two bytes of metadata is not b'111', length equals to bit value plus 3. (Less than 10)
-                            if ((metadata & BitSetLower3Bits) != BitSetLower3Bits)
-                            {
-                                length = (int)(metadata & BitSetLower3Bits) + SizeOfMinimumMatch;
-                                metadataLength = SizeOfMetadata;
-                            }
-                            else
-                            {
-                                // If three bits in the original two bytes of metadata is b'111', need shared byte. (Larger than 9)
-                                // First time use low-order nibble
-                                if (!useSharedByteHighOrderNibble)
-                                {
-                                    sharedByte = inputStream[inputBytesCount + SizeOfMetadata];
-                                    lengthInSharedByte = sharedByte & SharedByteSetLow4Bits;
-
-                                    // Next time will use high-order nibble of shared byte.
-                                    useSharedByteHighOrderNibble = true;
-                                    metadataLength = SizeOfMetadata + SizeOfSharedByte;
-                                }
-                                else
-                                {
-                                    // Next time use high-order nibble
-                                    lengthInSharedByte = sharedByte >> SizeOfNibble;
-
-                                    // Next time will use low-order nibble of shared byte.
-                                    useSharedByteHighOrderNibble = false;
-                                    metadataLength = SizeOfMetadata;
-                                }
-
-                                // If length in shared byte is not b'1111', length equals to 3+7+lengthInSharedByte
-                                if (lengthInSharedByte != SharedByteSetLow4Bits)
-                                {
-                                    length = MatchLengthWithAdditionalByte + lengthInSharedByte;
-                                }
-                                else
-                                {
-                                    // If length in shared byte is b'1111'(larger than 24), next byte will be use.
-                                    if (useSharedByteHighOrderNibble)
-                                    {
-                                        nextByte = inputStream[inputBytesCount + SizeOfMetadata + 1];
-                                    }
-                                    else
-                                    {
-                                        nextByte = inputStream[inputBytesCount + SizeOfMetadata];
-                                    }
-
-                                    // If next byte is not b'11111111', length equals to 3+7+lengthInSharedByte + nextByte
-                                    if (nextByte != NextByteSetAllBits)
-                                    {
-                                        length = MatchLengthWithAdditionalByte + lengthInSharedByte + nextByte;
-                                        metadataLength++;
-                                    }
-                                    else
-                                    {
-                                        // If next byte is b'11111111' (larger than 279), use the next two bytes to represent length
-                                        // These two bytes represent a length of 277+3 (minimum match length)
-                                        length = (int)BitConverter.ToInt16(inputStream, inputBytesCount + SizeOfFinalTwoBytes) + SizeOfMinimumMatch;
-                                        metadataLength += SizeOfMinimumMatch;
-                                    }
-                                }
-                            }
-                            #endregion
-
-                            for (int counter = 0; counter < length; counter++)
-                            {
-                                outStream[outCount + counter] = outStream[outCount - offset + counter];
-                            }
-
-                            inputBytesCount += metadataLength;
-                            outCount += length;
-
-                            // Move to the next bitmask.
-                            bitMaskPointer >>= 1;
-                            bitMaskCount++;
-                        }
-                    }
-                    else
-                    {
-                        break;
+                        outputBuffer[outputPosition] = outputBuffer[outputPosition - offset];
+                        outputPosition++;
+                        length--;
                     }
                 }
-                while (bitMaskCount != CountOfBitmask);
             }
+            return outputBuffer;
+        }
 
-            // If the output stream's length doesn't equal to the expected size, the decompression is failed.
-            if (outCount != actualSize)
+        /// <summary>
+        /// The function is used to get the metadata from raw request data
+        /// </summary>
+        /// <param name="encodedBuffer">The raw request data</param>
+        /// <param name="decodingPosition">The decoding position for the raw request data</param>
+        /// <param name="shareByteCache">The shared bytes stack</param>
+        /// <param name="offset">The returned offset value</param>
+        /// <param name="length">The returned length value</param>
+        public static void GetMetaDataValue(byte[] encodedBuffer, ref int decodingPosition, ref byte? shareByteCache, out int offset, out int length)
+        {
+            // Initialize: To encode a length between 3 and 9, we use the 3 bits that are "in-line" in the 2-byte metadata.
+            ushort inlineMetadata = 0;
+            inlineMetadata = BitConverter.ToUInt16(encodedBuffer, decodingPosition);
+            decodingPosition += 2;
+
+            offset = inlineMetadata >> 3;
+            offset++;
+            length = inlineMetadata & 0x0007;
+
+            // Add the minimum match - 3 bytes
+            length += 3;
+
+            // Every other time that the length is greater than 9, 
+            // an additional byte follows the initial 2-byte metadata
+            if (length > 9)
             {
-                throw new InvalidOperationException(string.Format("Decompression failed because decompressed byte array length ({0}) doesn't equal to the expected length ({1}).", outCount, actualSize));
+                int additiveLength = 0;
+                if (shareByteCache != null)
+                {
+                    additiveLength = (shareByteCache.Value >> 4) & 0x0f;
+                    shareByteCache = null;
+                }
+                else
+                {
+                    shareByteCache = encodedBuffer[decodingPosition];
+                    decodingPosition++;
+                    additiveLength = shareByteCache.Value & 0x0f;
+                }
+
+                length += additiveLength;
             }
 
-            return outStream;
+            // If the length is more than 24, the next byte is also used in the length calculation
+            if (length > 24)
+            {
+                length += encodedBuffer[decodingPosition];
+                decodingPosition++;
+            }
+
+            // For lengths that are equal to 280 or greater, the length is calculated only 
+            // from these last 2 bytes and is not added to the previous length bits.
+            if (length > 279)
+            {
+                length = BitConverter.ToInt16(encodedBuffer, decodingPosition) + 3;
+                decodingPosition += 2;
+            }
         }
     }
     #endregion
