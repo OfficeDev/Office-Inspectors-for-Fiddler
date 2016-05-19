@@ -1,3 +1,0 @@
-C:\Users\v-clya\Documents\GitHub\Office-Inspectors-for-Fiddler\MAPIInspector\Source\obj\Debug\MAPIInspector.csprojResolveAssemblyReference.cache
-C:\Users\v-clya\Documents\GitHub\Office-Inspectors-for-Fiddler\MAPIInspector\Source\obj\Debug\MapiInspector.MAPIControl.resources
-C:\Users\v-clya\Documents\GitHub\Office-Inspectors-for-Fiddler\MAPIInspector\Source\obj\Debug\MAPIInspector.csproj.GenerateResource.Cache
