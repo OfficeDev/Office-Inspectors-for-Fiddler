@@ -1,6 +1,11 @@
-# MAPI and FSSHTTPWOPI Inspectors for Fiddler
-This tutorial shows you how to install MAPI and FSSHTTPandWOPI Inspectors for Fiddler.
+#Microsoft Office Inspectors for Fiddler
+This README document provides the instruction on installing Microsoft Office Inspectors for Fiddler. 
 
+The MAPI Inspector captures traffic between Outlook and Exchange. The FSSHTTPandWOPI Inspector captures traffic between client and SharePoint. You may choose to install one or both inspectors.
+
+For details on how to use the inspectors: see [*MAPI Inspector for Fiddler User Guide*](https://github.com/OfficeDev/MAPI-Inspector-for-Fiddler/wiki), see also [*FSSHTTPandWOPI Inspector for Fiddler User Guide*](https://github.com/OfficeDev/Office-Inspectors-for-Fiddler/wiki/FSSHTTPandWOPI).
+
+##Overview
 The Messaging Application Programming Interface (MAPI) Inspector for [Fiddler](http://www.telerik.com/fiddler) decodes the MAPI message payload of an HTTP POST request and response according to [MS-OXCMAPIHTTP](https://msdn.microsoft.com/en-us/library/Dn530952(v=EXCHG.80).aspx). The MAPI Inspector is displayed under the *Inspectors* tab in Fiddler.
 
 In addition to the MAPI Inspector, the File Synchronization via SOAP over HTTP Protocol (FSSHTTP) and the Web Application Open Platform Interface Protocol (WOPI)—combined as FSSHTTPandWOPI—also has a plug-in inspector for Fiddler which decodes:
@@ -10,10 +15,6 @@ In addition to the MAPI Inspector, the File Synchronization via SOAP over HTTP P
 The FSSHTTPandWOPI Inspector is displayed under the *Inspectors* tab in Fiddler and decodes the message payload according to [MS-FSSHTTP](https://msdn.microsoft.com/en-us/library/dd943623%28v=office.12%29.aspx), [MS-FSSHTTPB](https://msdn.microsoft.com/en-us/library/dd965780%28v=office.12%29.aspx), [MS-FSSHTTPD](https://msdn.microsoft.com/en-us/library/ee365790%28v=office.12%29.aspx) and [MS-WOPI](https://msdn.microsoft.com/en-us/library/hh622722%28v=office.12%29.aspx).
 
 This repository also includes Jscript that adds an *MS Protocol* column in the Fiddler web session panel. The *MS Protocol* column displays protocols that are relevant to MAPI, FSSHTTP, and WOPI messages, thereby allowing you to easily identify which HTTP requests and responses contain the respective message payloads.
-
-This README document provides the instruction on installing one or both inspectors. 
-
-For details on how to use the inspectors: see [*MAPI Inspector for Fiddler User Guide*](https://github.com/OfficeDev/MAPI-Inspector-for-Fiddler/wiki), see also [*FSSHTTPandWOPI Inspector for Fiddler User Guide*](https://github.com/OfficeDev/Office-Inspectors-for-Fiddler/wiki/FSSHTTPandWOPI).
 
 ## Installation 
 First install the latest [Fiddler](http://www.telerik.com/fiddler) tool and then run it. Note that Fiddler must be run at least once before installing any inspectors. To install the inspector of your choice (MAPI, FSSHTTPWOPI) or to install both, add the respective DLL files and the scripts.
