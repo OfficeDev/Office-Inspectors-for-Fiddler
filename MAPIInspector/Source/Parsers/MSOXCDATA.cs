@@ -13,7 +13,7 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class MAPIString : BaseStructure
     {
-        // The string vaule
+        // The string value
         public string Value;
 
         // The string Encoding : ASCII or Unicode
@@ -3327,7 +3327,7 @@ namespace MAPIInspector.Parsers
                 this.RestrictCount = ReadUint();
             }
             List<RestrictionType> tempRestricts = new List<RestrictionType>();
-            for (int length = 0; length < (int)RestrictCount; length++)
+            for (int length = 0; length < RestrictCount.GetHashCode(); length++)
             {
                 RestrictionType tempRestriction = new RestrictionType();
                 tempRestriction.Parse(s);
@@ -3380,7 +3380,7 @@ namespace MAPIInspector.Parsers
                 this.RestrictCount = ReadUint();
             }
             List<RestrictionType> tempRestricts = new List<RestrictionType>();
-            for (int length = 0; length < (int)RestrictCount; length++)
+            for (int length = 0; length < RestrictCount.GetHashCode(); length++)
             {
                 RestrictionType tempRestriction = new RestrictionType();
                 tempRestriction.Parse(s);
