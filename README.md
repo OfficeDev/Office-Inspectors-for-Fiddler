@@ -1,14 +1,14 @@
 #Microsoft Office Inspectors for Fiddler
 This README document provides the instruction on installing Microsoft Office Inspectors for Fiddler. 
 
-The MAPI Inspector captures traffic between Outlook and Exchange. The FSSHTTPandWOPI Inspector captures traffic between client and SharePoint. You may choose to install one or both inspectors.
+The MAPI Inspector evaluates the captured traffic between Outlook and Exchange; whereas the FSSHTTPandWOPI Inspector evaluates the captured traffic between client and SharePoint. These Microsoft Office Inspects are able to display the protocol content in a user-friendly format. You may choose to install one or both inspectors. 
 
 For details on how to use the inspectors: see [*MAPI Inspector for Fiddler User Guide*](https://github.com/OfficeDev/MAPI-Inspector-for-Fiddler/wiki), see also [*FSSHTTPandWOPI Inspector for Fiddler User Guide*](https://github.com/OfficeDev/Office-Inspectors-for-Fiddler/wiki/FSSHTTPandWOPI).
 
 ##Overview
 The Messaging Application Programming Interface (MAPI) Inspector for [Fiddler](http://www.telerik.com/fiddler) decodes the MAPI message payload of an HTTP POST request and response according to [MS-OXCMAPIHTTP](https://msdn.microsoft.com/en-us/library/Dn530952(v=EXCHG.80).aspx). The MAPI Inspector is displayed under the *Inspectors* tab in Fiddler.
 
-In addition to the MAPI Inspector, the File Synchronization via SOAP over HTTP Protocol (FSSHTTP) and the Web Application Open Platform Interface Protocol (WOPI)—combined as FSSHTTPandWOPI—also has a plug-in inspector for Fiddler which decodes:
+In addition to the MAPI Inspector, the File Synchronization via SOAP over HTTP Protocol (FSSHTTP) and the Web Application Open Platform Interface Protocol (WOPI)â€”combined as FSSHTTPandWOPIâ€”also has a plug-in inspector for Fiddler which decodes:
 * FSSHTTP protocol message that enables one or more clients to synchronize changes done on shared files stored on a server.
 * WOPI protocol message that enables a client to access and change files stored by a server. 
 
