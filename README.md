@@ -1,7 +1,7 @@
 #Microsoft Office Inspectors for Fiddler
 This README document provides the instruction on installing Microsoft Office Inspectors for Fiddler. 
 
-The MAPI Inspector evaluates the captured traffic between Outlook and Exchange; whereas the FSSHTTPandWOPI Inspector evaluates the captured traffic between client and SharePoint. These Microsoft Office Inspects are able to display the protocol content in a user-friendly format. You may choose to install one or both inspectors. 
+The MAPI Inspector evaluates the captured traffic between Outlook and Exchange; whereas the FSSHTTPandWOPI Inspector evaluates the captured traffic between client and SharePoint. These Microsoft Office Inspectors are able to display the protocol content in a user-friendly format. You may choose to install one or both inspectors. 
 
 For details on how to use the inspectors: see [*MAPI Inspector for Fiddler User Guide*](https://github.com/OfficeDev/MAPI-Inspector-for-Fiddler/wiki), see also [*FSSHTTPandWOPI Inspector for Fiddler User Guide*](https://github.com/OfficeDev/Office-Inspectors-for-Fiddler/wiki/FSSHTTPandWOPI).
 
