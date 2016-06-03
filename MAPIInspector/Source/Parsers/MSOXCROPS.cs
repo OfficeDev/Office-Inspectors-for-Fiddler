@@ -1466,7 +1466,7 @@ namespace MAPIInspector.Parsers
                         case RopIdType.RopGetPropertiesSpecific:
                             if (!(DecodingContext.SessionPropertyTags != null && DecodingContext.SessionPropertyTags.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID)))
                             {
-                                throw new MissingInformationException("Missing PropertyTags information for RopFastTransferSourceCopyProperties", (ushort)CurrentByte, null);
+                                throw new MissingInformationException("Missing PropertyTags information for RopGetPropertiesSpecific", (ushort)CurrentByte, null);
                             }
                             RopGetPropertiesSpecificResponse RopGetPropertiesSpecificResponse = new RopGetPropertiesSpecificResponse();
                             RopGetPropertiesSpecificResponse.Parse(s);

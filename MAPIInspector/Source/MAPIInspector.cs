@@ -334,14 +334,14 @@ namespace MapiInspector
                 else
                 {
                     MAPIRequest = ParseHTTPPayload(this.BaseHeaders, this.session.id, this.session.requestBodyBytes, TrafficDirection.In, out bytesForHexView);
-                    if (MAPIRequest.GetType().Name == "ExecuteRequestBody")
+                    if (MAPIRequest.GetType().Name == "ExecuteRequestBody" && requestDic != null && !requestDic.ContainsKey(this.session.id))
                     {
                         requestDic.Add(this.session.id, MAPIRequest);
                         requestBytesForHexview.Add(this.session.id, bytesForHexView);
                     }
 
                     MAPIResponse = ParseHTTPPayload(this.BaseHeaders, this.session.id, this.session.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
-                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody")
+                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody" && responseDic != null && !responseDic.ContainsKey(this.session.id))
                     {
                         responseDic.Add(this.session.id, MAPIResponse);
                         responseBytesForHexview.Add(this.session.id, bytesForHexView);
@@ -389,11 +389,11 @@ namespace MapiInspector
                 currentSessionID -= 1;
                 DecodingContext.StreamType_Getbuffer = 0;
 
-                // If GetBuffer_InPutHandles dose not contain the key ThisSessionID(GetBuffer Rop), parsering the RopFastTransferSourceGetBuffer request to get the input server object firstly.
+                // If GetBuffer_InPutHandles dose not contain the key ThisSessionID(GetBuffer Rop), parsing the RopFastTransferSourceGetBuffer request to get the input server object firstly.
                 if (DecodingContext.GetBuffer_InPutHandles == null || !DecodingContext.GetBuffer_InPutHandles.ContainsKey(ThisSessionID))
                 {
                     MAPIRequest = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
-                    if (MAPIRequest.GetType().Name == "ExecuteRequestBody")
+                    if (MAPIRequest.GetType().Name == "ExecuteRequestBody" && requestDic != null && !requestDic.ContainsKey(ThisSessionID))
                     {
                         requestDic.Add(ThisSessionID, MAPIRequest);
                         requestBytesForHexview.Add(ThisSessionID, bytesForHexView);
@@ -565,7 +565,7 @@ namespace MapiInspector
                 // After get StreamType for this session id (GetBuffer Rop). Do parse for response structure of this session.
                 MAPIResponse = ParseHTTPPayload(this.BaseHeaders, ThisSessionID, allSessions[ThisSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
 
-                if (MAPIResponse.GetType().Name == "ExecuteResponseBody")
+                if (MAPIResponse.GetType().Name == "ExecuteResponseBody" && responseDic != null && !responseDic.ContainsKey(ThisSessionID))
                 {
                     responseDic.Add(ThisSessionID, MAPIResponse);
                     responseBytesForHexview.Add(ThisSessionID, bytesForHexView);
@@ -599,7 +599,7 @@ namespace MapiInspector
 
                 // After confirmed the type of input server object in CopyProperties(such as folder). Parsing the response structure of this session.
                 MAPIRequest = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
-                if (MAPIRequest.GetType().Name == "ExecuteRequestBody")
+                if (MAPIRequest.GetType().Name == "ExecuteRequestBody" && requestDic != null && !requestDic.ContainsKey(ThisSessionID))
                 {
                     requestDic.Add(ThisSessionID, MAPIRequest);
                     requestBytesForHexview.Add(ThisSessionID, bytesForHexView);
@@ -632,7 +632,7 @@ namespace MapiInspector
                 while (!(DecodingContext.SessionObjectHandles.ContainsKey(currentSessionID + 1) && DecodingContext.SessionObjectHandles[currentSessionID + 1].ContainsKey(parameters.GetHashCode())));
 
                 MAPIRequest = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
-                if (MAPIRequest.GetType().Name == "ExecuteRequestBody")
+                if (MAPIRequest.GetType().Name == "ExecuteRequestBody" && requestDic != null && !requestDic.ContainsKey(ThisSessionID))
                 {
                     requestDic.Add(ThisSessionID, MAPIRequest);
                     requestBytesForHexview.Add(ThisSessionID, bytesForHexView);
@@ -650,7 +650,7 @@ namespace MapiInspector
                 if (DecodingContext.PutBuffer_InPutHandles == null || !DecodingContext.PutBuffer_InPutHandles.ContainsKey(ThisSessionID))
                 {
                     MAPIResponse = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
-                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody")
+                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody" && responseDic != null && !responseDic.ContainsKey(ThisSessionID))
                     {
                         responseDic.Add(ThisSessionID, MAPIResponse);
                         responseBytesForHexview.Add(ThisSessionID, bytesForHexView);
@@ -749,7 +749,7 @@ namespace MapiInspector
 
                 // After get StreamType. Do parse for request structure of this session.
                 MAPIRequest = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
-                if (MAPIRequest.GetType().Name == "ExecuteRequestBody")
+                if (MAPIRequest.GetType().Name == "ExecuteRequestBody" && requestDic != null && !requestDic.ContainsKey(ThisSessionID))
                 {
                     requestDic.Add(ThisSessionID, MAPIRequest);
                     requestBytesForHexview.Add(ThisSessionID, bytesForHexView);
@@ -779,7 +779,7 @@ namespace MapiInspector
                 while (!(DecodingContext.SessionObjectHandles.ContainsKey(currentSessionID + 1) && DecodingContext.SessionObjectHandles[currentSessionID + 1].ContainsKey(parameters.GetHashCode())));
 
                 MAPIRequest = ParseHTTPPayload(allSessions[ThisSessionID].RequestHeaders, ThisSessionID, allSessions[ThisSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
-                if (MAPIRequest.GetType().Name == "ExecuteRequestBody")
+                if (MAPIRequest.GetType().Name == "ExecuteRequestBody" && requestDic != null && !requestDic.ContainsKey(ThisSessionID))
                 {
                     requestDic.Add(ThisSessionID, MAPIRequest);
                     requestBytesForHexview.Add(ThisSessionID, bytesForHexView);
@@ -798,14 +798,14 @@ namespace MapiInspector
                 else
                 {
                     MAPIRequest = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].requestBodyBytes, TrafficDirection.In, out bytesForHexView);
-                    if (MAPIRequest.GetType().Name == "ExecuteRequestBody")
+                    if (MAPIRequest.GetType().Name == "ExecuteRequestBody" && requestDic != null && !requestDic.ContainsKey(currentSessionID))
                     {
                         requestDic.Add(currentSessionID, MAPIRequest);
                         requestBytesForHexview.Add(currentSessionID, bytesForHexView);
                     }
 
                     MAPIResponse = ParseHTTPPayload(allSessions[currentSessionID].RequestHeaders, currentSessionID, allSessions[currentSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
-                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody")
+                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody" && responseDic != null && !responseDic.ContainsKey(currentSessionID))
                     {
                         responseDic.Add(currentSessionID, MAPIResponse);
                         responseBytesForHexview.Add(currentSessionID, bytesForHexView);
@@ -865,7 +865,7 @@ namespace MapiInspector
                 if (DecodingContext.SetColumnProTagMap_Handle.ContainsKey(ThisSessionID) || DecodingContext.SetColumnProTagMap_Index.ContainsKey(currentSessionID))
                 {
                     MAPIResponse = ParseHTTPPayload(this.BaseHeaders, ThisSessionID, allSessions[ThisSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
-                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody" && !responseDic.ContainsKey(ThisSessionID))
+                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody" && responseDic != null && responseDic.ContainsKey(ThisSessionID))
                     {
                         responseDic.Add(ThisSessionID, MAPIResponse);
                         responseBytesForHexview.Add(ThisSessionID, bytesForHexView);
@@ -893,7 +893,7 @@ namespace MapiInspector
                 if (DecodingContext.SetColumnProTagMap_Handle.ContainsKey(ThisSessionID) || DecodingContext.SetColumnProTagMap_Index.ContainsKey(currentSessionID))
                 {
                     MAPIResponse = ParseHTTPPayload(this.BaseHeaders, ThisSessionID, allSessions[ThisSessionID].responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
-                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody" && !responseDic.ContainsKey(ThisSessionID))
+                    if (MAPIResponse.GetType().Name == "ExecuteResponseBody" && responseDic!= null && !responseDic.ContainsKey(ThisSessionID))
                     {
                         responseDic.Add(ThisSessionID, MAPIResponse);
                         responseBytesForHexview.Add(ThisSessionID, bytesForHexView);
