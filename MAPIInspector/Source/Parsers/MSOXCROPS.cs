@@ -858,15 +858,28 @@ namespace MAPIInspector.Parsers
                         RopSetColumnsRequest request = ropRequest as RopSetColumnsRequest;
                         uint objectHandleKey = this.ServerObjectHandleTable[request.InputHandleIndex];
 
-                        if (objectHandleKey != 0xFFFF)
+                        if (objectHandleKey != 0xFFFFFFFF) // when the object handle is not equal to 0xFFFFFFFF, if the objectHandleKey has contianed in HandleIndexMapForSetColumns, reset this key value, else add objectHandleKey and Property Tags to the dictionary.
                         {
-                            // Add the Handle value and Property Tags to the dictionary when the object handle is not equal to 0xFFFFFFFF
-                            HandleMapForSetColumns.Add(objectHandleKey, request.PropertyTags);
+                            if (HandleIndexMapForSetColumns.ContainsKey(objectHandleKey))
+                            {
+                                HandleMapForSetColumns[objectHandleKey] = request.PropertyTags;
+                            }
+                            else
+                            {
+                                HandleMapForSetColumns.Add(objectHandleKey, request.PropertyTags);
+                            }
                         }
                         else
                         {
-                            // Add the Handle value and Property Tags to the dictionary when the object handle is equal to 0xFFFFFFFF
-                            HandleIndexMapForSetColumns.Add(request.InputHandleIndex, request.PropertyTags);
+                            // when the object handle is equal to 0xFFFFFFFF, if the InputHandleIndex has contianed in HandleIndexMapForSetColumns, reset this key value, else add InputHandleIndex and Property Tags to the dictionary.
+                            if (HandleIndexMapForSetColumns.ContainsKey(request.InputHandleIndex))
+                            {
+                                HandleIndexMapForSetColumns[request.InputHandleIndex] = request.PropertyTags;
+                            }
+                            else
+                            {
+                                HandleIndexMapForSetColumns.Add(request.InputHandleIndex, request.PropertyTags);
+                            }
                         }
                     }
                     else if (ropRequest is RopReleaseRequest)
