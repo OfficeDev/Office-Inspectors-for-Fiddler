@@ -1057,7 +1057,7 @@ namespace MAPIInspector.Parsers
             this.ResponseHandleIndex = ReadByte();
             this.InputHandleIndex = ReadByte();
             this.ReadFlags = (ReadFlags)this.ReadByte();
-            if ((((byte)DecodingContext.SessionLogonFlag[MapiInspector.MAPIInspector.currentParsingSessionID] & (byte)LogonFlags.Private) != (byte)LogonFlags.Private))
+            if ((((byte)DecodingContext.SessionLogonFlagMapLogId[MapiInspector.MAPIInspector.currentParsingSessionID][this.LogonId] & (byte)LogonFlags.Private) != (byte)LogonFlags.Private))
             {
                 this.ClientData = ConvertArray(ReadBytes(24));
             }

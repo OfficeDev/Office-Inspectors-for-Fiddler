@@ -1130,7 +1130,7 @@ namespace MAPIInspector.Parsers
             this.DataOffset = ReadUint();
             this.DataSize = ReadUshort();
             this.Data = ReadBytes((int)this.DataSize);
-            if (this.DataOffset == 0 && (((byte)DecodingContext.SessionLogonFlag[MapiInspector.MAPIInspector.currentParsingSessionID] & (byte)LogonFlags.Private) == (byte)LogonFlags.Private))
+            if (this.DataOffset == 0 && (((byte)DecodingContext.SessionLogonFlagMapLogId[MapiInspector.MAPIInspector.currentParsingSessionID][LogonId] & (byte)LogonFlags.Private) == (byte)LogonFlags.Private))
             {
                 this.ReplGuid = ReadGuid();
             }

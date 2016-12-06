@@ -88,7 +88,7 @@ namespace MAPIInspector.Parsers
             this.ReturnValue = help.FormatErrorCode(ReadUint());
             if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
             {
-                this.RowData = new PropertyRow(DecodingContext.SessionPropertyTags[MapiInspector.MAPIInspector.currentParsingSessionID]);
+                this.RowData = new PropertyRow(DecodingContext.GetPropertiesSpec_propertyTags[MapiInspector.MAPIInspector.currentParsingSessionID][this.InputHandleIndex]);
                 this.RowData.Parse(s);
             }
         }

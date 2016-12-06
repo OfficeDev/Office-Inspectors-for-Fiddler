@@ -323,22 +323,21 @@ namespace MAPIInspector.Parsers
             {
                 int os = 0;
                 FieldInfo[] infoString = t.GetFields();
-
-                string terminator = (string)infoString[2].GetValue(obj);
+                string terminator = (string)infoString[3].GetValue(obj);
                 TreeNode node = new TreeNode(string.Format("{0}:{1}", infoString[0].Name, infoString[0].GetValue(obj)));
                 // If the StringLength is not equal 0, the StringLength will be os value.
-                if (infoString[3].GetValue(obj).ToString() != "0")
+                if (infoString[4].GetValue(obj).ToString() != "0")
                 {
-                    os = ((int)infoString[3].GetValue(obj));
+                    os = ((int)infoString[4].GetValue(obj));
                 }
                 // If the Encoding is Unicode.
-                else if (infoString[1].GetValue(obj).ToString() == "System.Text.UnicodeEncoding")
+                else if (infoString[2].GetValue(obj).ToString() == "System.Text.UnicodeEncoding")
                 {
                     if (infoString[0].GetValue(obj) != null)
                     {
                         os = ((string)infoString[0].GetValue(obj)).Length * 2;
                     }
-                    if (infoString[4].GetValue(obj).ToString() != "False")
+                    if (infoString[5].GetValue(obj).ToString() != "False")
                     {
                         os -= 1;
                     }
