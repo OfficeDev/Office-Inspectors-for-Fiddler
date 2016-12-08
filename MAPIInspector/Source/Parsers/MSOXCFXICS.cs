@@ -5481,9 +5481,9 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// Struct contains int value and byte array block.
+    /// This class contains int value and byte array block.
     /// </summary>
-    public struct LengthOfBlock
+    public class LengthOfBlock
     {
         private int totalSize;
         private byte[] BlockSize;
