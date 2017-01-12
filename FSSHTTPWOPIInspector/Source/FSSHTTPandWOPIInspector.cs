@@ -515,7 +515,7 @@ namespace FSSHTTPandWOPIInspector
                     foreach (SubResponseElementGenericType subres in res.SubResponse)
                     {
                         if (subres.SubResponseData == null)
-                            return;
+                            continue;
 
                         if (subres.SubResponseData.Text != null && subres.SubResponseData.Text.Length > 0)
                         {
