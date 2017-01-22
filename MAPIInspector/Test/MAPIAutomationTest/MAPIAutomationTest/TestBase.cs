@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using System.Linq;
@@ -8,6 +9,12 @@ using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Threading;
 using System.Configuration;
 using System.Collections.Generic;
+using System.Management.Automation;
+using System.Windows.Automation;
+
+using System.Runtime.InteropServices.ComTypes;
+using System.Text;
+using Microsoft.Win32;
 
 namespace MAPIAutomationTest
 {
@@ -20,8 +27,11 @@ namespace MAPIAutomationTest
         protected static Outlook.MAPIFolder sentMailFolder;
         protected static Outlook.MAPIFolder publicFolders;
         protected static Outlook.MAPIFolder deletedItemsFolders;
+        protected static Outlook.MAPIFolder draftsFolders;
         protected static int waittime_window;
         protected static int waittime_item;
+        public static string testingfolderPath;
+        public static string testName;
 
         public TestContext TestContext { get; set; }
         #endregion
@@ -32,37 +42,89 @@ namespace MAPIAutomationTest
         [TestInitialize]
         public void Initialize()
         {
-            GetTestCatgoryInformation(TestContext.FullyQualifiedTestClassName);
+            GetTestCatgoryInformation();
             EndStartedOutLook();
+            MessageParser.StartFiddler();
             string outLookPath = ConfigurationManager.AppSettings["OutLookPath"].ToString();
             waittime_window = Int32.Parse(ConfigurationManager.AppSettings["WaitTimeWindow"].ToString());
             waittime_item = Int32.Parse(ConfigurationManager.AppSettings["WaitTimeItem"].ToString());
             Process p = Process.Start(outLookPath);
-            Thread.Sleep(waittime_window);
-            oApp = Marshal.GetActiveObject("Outlook.Application") as Microsoft.Office.Interop.Outlook.Application;
+
+            AutomationElement outlookWindow = null;
+            var desktop = AutomationElement.RootElement;
+            string userName = ConfigurationManager.AppSettings["Office365Account"].ToString();
+            var condition_Outlook = new PropertyCondition(AutomationElement.NameProperty, "Inbox - " + userName + " - Outlook");
+
+            int count = 0;
+            while (outlookWindow == null)
+            {
+                outlookWindow = desktop.FindFirst(TreeScope.Children, condition_Outlook);
+                Thread.Sleep(waittime_item / 10);
+                count += waittime_item;
+                if (count >= waittime_window)
+                {
+                    break;
+                }
+            }
+
+            try
+            {
+                Process[] pp = Process.GetProcesses();
+                if (pp.Count() > 0)
+                {
+                    foreach (Process pp1 in pp)
+                    {
+                        if (pp1.ProcessName != "OUTLOOK" && pp1.MainWindowHandle != IntPtr.Zero)
+                        {
+                            AutomationElement element = AutomationElement.FromHandle(pp1.MainWindowHandle);
+                            if (element != null)
+                            {
+                                element.SetFocus();
+                            }
+                            break;
+                        }
+                    }
+                }
+                Thread.Sleep(waittime_item);
+                oApp = Marshal.GetActiveObject("Outlook.Application") as Outlook.Application;
+            }
+            catch
+            {
+                throw new Exception("Get active outlook application failed, please check if outlook is running");
+            }
+
             inboxFolders = oApp.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderInbox);
             sentMailFolder = oApp.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderSentMail);
             publicFolders = oApp.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olPublicFoldersAllPublicFolders);
             deletedItemsFolders = oApp.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderDeletedItems);
+            draftsFolders = oApp.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderDrafts);
         }
 
+        /// <summary>
+        /// Test clean up
+        /// </summary>
+        [TestCleanup]
+        public void CleanUp()
+        {
+            EndStartedOutLook();
+            MessageParser.CloseFiddler();
+        }
         /// <summary>
         /// End all started outlook application
         /// </summary>
         protected static void EndStartedOutLook()
         {
             // Check whether there is an Outlook process running.
-            while (Process.GetProcessesByName("OUTLOOK").Count() > 0)
+            if (Process.GetProcessesByName("OUTLOOK").Count() > 0)
             {
                 Outlook.Application oAppExist;
                 try
                 {
                     oAppExist = Marshal.GetActiveObject("Outlook.Application") as Microsoft.Office.Interop.Outlook.Application;
                 }
-                catch (System.Exception e)
+                catch (Exception e)
                 {
-                    // try some other way to get the object
-                    oAppExist = Activator.CreateInstance(Type.GetTypeFromProgID("Outlook.Application")) as Microsoft.Office.Interop.Outlook.Application;
+                    throw new Exception("Get the running Outlook application failed");
                 }
                 ReleaseObj(oAppExist);
             }
@@ -73,22 +135,38 @@ namespace MAPIAutomationTest
         /// </summary>
         public static void UpdateOutlookConfiguration(bool isEnable)
         {
-            string scriptPath = ConfigurationManager.AppSettings["PowershellScript_path"].ToString();
             string outlookVersion = ConfigurationManager.AppSettings["OutlookVersion"].ToString();
-            var newProcessInfo = new System.Diagnostics.ProcessStartInfo();
-            newProcessInfo.FileName = ConfigurationManager.AppSettings["Powershellpath"].ToString();
-            newProcessInfo.Verb = "runas";
-            newProcessInfo.Arguments = scriptPath + " " + outlookVersion + "" + isEnable.ToString();
-            newProcessInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            System.Diagnostics.Process.Start(newProcessInfo);
+            string scriptPath = ConfigurationManager.AppSettings["PowershellScript_path"].ToString();
+            string fullPath = Path.GetFullPath(scriptPath);
+            int last = fullPath.LastIndexOf("MAPIAutomationTest");
+            string directoryPath = fullPath.Substring(0, last);
+            string scriptAbsolutePath = directoryPath + scriptPath.Substring(scriptPath.LastIndexOf(@"\") + 1);
+
+            // Configure the PowerShell execution policy to run script
+            using (PowerShell PowerShellInstance = PowerShell.Create())
+            {
+                string script = "Set-ExecutionPolicy -Scope currentuser -ExecutionPolicy bypass; Get-ExecutionPolicy"; // the second command to know the ExecutionPolicy level
+                PowerShellInstance.AddScript(script);
+                var someResult = PowerShellInstance.Invoke();
+            }
+
+            // Run script to set the outlook configuration as enable or not.
+            Process cmd = new Process();
+            cmd.StartInfo.FileName = "cmd.exe";
+            cmd.StartInfo.Verb = "runas";
+            cmd.StartInfo.Arguments = "/user:Administrator cmd /c " + "powershell " + scriptAbsolutePath + " " + outlookVersion + " " + isEnable.ToString();
+            cmd.Start();
+            cmd.WaitForExit();
+
         }
 
         /// <summary>
         /// Get test method CachedMode information
         /// </summary>
-        public void GetTestCatgoryInformation(string className)
+        public void GetTestCatgoryInformation()
         {
-            MethodBase method = typeof(CachedModeCase).GetMethod(TestContext.TestName);
+            Type classType = Type.GetType(TestContext.FullyQualifiedTestClassName);
+            MethodBase method = classType.GetMethod(TestContext.TestName);
             object[] CustomAttributes = method.GetCustomAttributes(typeof(TestCategoryAttribute), true);
             if (CustomAttributes.Length > 0)
             {
@@ -105,6 +183,10 @@ namespace MAPIAutomationTest
                     }
                 }
             }
+
+            // Initialize the test output folder path
+            testingfolderPath = TestContext.TestDeploymentDir;
+            testName = TestContext.TestName;
         }
 
         /// <summary>
@@ -136,8 +218,7 @@ namespace MAPIAutomationTest
             {
                 obj = null;
             }
-
-            Thread.Sleep(waittime_item*15);
+            Thread.Sleep(waittime_item);
         }
     }
 }

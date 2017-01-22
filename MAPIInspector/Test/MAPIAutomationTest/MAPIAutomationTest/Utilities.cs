@@ -12,6 +12,8 @@ namespace MAPIAutomationTest
 {
     class Utilities
     {
+        private static int wait = Int32.Parse(ConfigurationManager.AppSettings["WaitTimeItem"].ToString());
+        
         /// <summary>
         /// Create a new note
         /// </summary>
@@ -250,7 +252,7 @@ namespace MAPIAutomationTest
                 {
                     do
                     {
-                        Thread.Sleep(Int32.Parse(ConfigurationManager.AppSettings["WaitTimeItem"].ToString()));
+                        Thread.Sleep(wait);
                         oItem = mapiFolder.Items.GetFirst();
                         Count++;
                         if (Count >= 30)
@@ -442,20 +444,47 @@ namespace MAPIAutomationTest
         /// Remove all subfolders in folder
         /// </summary>
         /// <param name="pFolder">MAPIFolder</param>
-        public static void RemoveAllSubFolders(Outlook.MAPIFolder pFolder)
+        /// <param name="isCachMode">bool value indicates if in cached mode</param>
+        public static void RemoveAllSubFolders(Outlook.MAPIFolder pFolder, bool isCachMode)
         {
             Outlook.Folders folders = pFolder.Folders;
             try
             {
                 while (folders.Count != 0)
                 {
+                    if(isCachMode)
+                    {
+                        Thread.Sleep(wait * 10);
+                    }
                     folders.Remove(folders.Count);
+                    Thread.Sleep(wait);
                 }
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
+        }
+
+        /// <summary>
+        /// Add a subfolder in parent folder
+        /// </summary>
+        /// <param name="parent">parent folder</param>
+        /// <param name="subFolder">new folder name</param>
+        /// <returns>the new created folder</returns>
+        public static Outlook.MAPIFolder AddSubFolder(Outlook.MAPIFolder parent, string subFolder)
+        {
+            Outlook.MAPIFolder testFolder;
+            try
+            {
+                testFolder = parent.Folders[subFolder];
+            }
+            catch
+            {
+                testFolder = parent.Folders.Add(subFolder);
+            }
+            
+            return testFolder;
         }
 
         /// <summary>
@@ -477,13 +506,34 @@ namespace MAPIAutomationTest
                 {
                     break;
                 }
-                int wait = Int32.Parse(ConfigurationManager.AppSettings["WaitTimeItem"].ToString());
                 Thread.Sleep(wait);
                 waitTime += wait;
                 element = parent.FindFirst(scop, condition);
             }
 
             return element;
+        }
+
+        public static void SelectDropdownItem(AutomationElement dropdownBox, string itemToSelect, bool navigateToParent = true)
+        {
+            var expandCollapsePattern = (ExpandCollapsePattern)dropdownBox.GetCurrentPattern(ExpandCollapsePatternIdentifiers.Pattern);
+            expandCollapsePattern.Expand();
+            expandCollapsePattern.Collapse();
+
+            var listItem = dropdownBox.FindFirst(TreeScope.Subtree, new PropertyCondition(AutomationElement.NameProperty, itemToSelect));
+
+            if (navigateToParent)
+            {
+                var controlViewWalker = TreeWalker.ControlViewWalker;
+                listItem = controlViewWalker.GetParent(listItem);
+            }
+
+            object selectionItemPattern;
+            if (listItem.TryGetCurrentPattern(SelectionItemPattern.Pattern, out selectionItemPattern))
+            {
+                var selectPattern = (SelectionItemPattern)selectionItemPattern;
+                selectPattern.Select();
+            }
         }
     }
 }

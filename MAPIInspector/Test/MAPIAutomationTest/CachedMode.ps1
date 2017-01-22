@@ -5,35 +5,6 @@ param (
 
 $path = ""
 
-if ($OutlookVersion -eq "Outlook2010")
-{
-	$path = "HKCU:\SOFTWARE\Policies\Microsoft\Office\14.0\Outlook\Cached Mode"
-}
-
-if ($OutlookVersion -eq "Outlook2013")
-{
-	$path = "HKCU:\SOFTWARE\Policies\Microsoft\Office\15.0\Outlook\Cached Mode"
-}
-
-if ($OutlookVersion -eq "Outlook2016")
-{
-	$path = "HKCU:\SOFTWARE\Policies\Microsoft\Office\16.0\Outlook\Cached Mode"
-}
-
-if (!(Test-RegistryValue -path $path -name "enable") -eq "true")
-{
-	New-Item -Path $path -Force
-}
-
-if ($IsEnable -eq "true")
-{
-	New-ItemProperty -Path $path -Name "Enable" -Value 1 -PropertyType "DWORD" -Force
-}
-else
-{
-	New-ItemProperty -Path $path -Name "Enable" -Value 0 -PropertyType "DWORD" -Force
-}
-
 
 Function Test-RegistryValue {
     param(
@@ -63,4 +34,33 @@ Function Test-RegistryValue {
             $false
         }
     }
+}
+
+if ($OutlookVersion -eq "Outlook2010")
+{
+	$path = "HKCU:\SOFTWARE\Policies\Microsoft\Office\14.0\Outlook\Cached Mode"
+}
+
+if ($OutlookVersion -eq "Outlook2013")
+{
+	$path = "HKCU:\SOFTWARE\Policies\Microsoft\Office\15.0\Outlook\Cached Mode"
+}
+
+if ($OutlookVersion -eq "Outlook2016")
+{
+	$path = "HKCU:\SOFTWARE\Policies\Microsoft\Office\16.0\Outlook\Cached Mode"
+}
+
+if (!(Test-RegistryValue -path $path -name "enable") -eq "true")
+{
+	New-Item -Path $path -Force
+}
+
+if ($IsEnable -eq "true")
+{
+	New-ItemProperty -Path $path -Name "Enable" -Value 1 -PropertyType "DWORD" -Force
+}
+else
+{
+	New-ItemProperty -Path $path -Name "Enable" -Value 0 -PropertyType "DWORD" -Force
 }
