@@ -248,7 +248,8 @@ namespace MAPIAutomationTest
             try
             {
                 oItem = mapiFolder.Items.GetFirst();
-                if (oItem.Subject != itemSubject)
+                
+                if (oItem == null  || oItem.Subject != itemSubject)
                 {
                     do
                     {
@@ -315,30 +316,33 @@ namespace MAPIAutomationTest
         public static void DeleteAllItemInMAPIFolder(Outlook.MAPIFolder mapiFolder)
         {
             Outlook.MailItem oItem;
-            int count = mapiFolder.Items.Count;
-            if (count == 0)
+            if (mapiFolder.Items != null)
             {
-                return;
-            }
-            else
-            {
-                try
+                int count = mapiFolder.Items.Count;
+                if (count == 0)
                 {
-                    do
-                    {
-                        oItem = mapiFolder.Items.GetFirst();
-                        if (oItem != null)
-                        {
-                            oItem.Delete();
-                            count--;
-                        }
-                    } while (count > 0);
-
+                    return;
                 }
-                // Return Error Message
-                catch (Exception e)
+                else
                 {
-                    throw new Exception(e.Message);
+                    try
+                    {
+                        do
+                        {
+                            oItem = (Outlook.MailItem)mapiFolder.Items.GetFirst();
+                            if (oItem != null)
+                            {
+                                oItem.Delete();
+                                count--;
+                            }
+                        } while (count > 0);
+
+                    }
+                    // Return Error Message
+                    catch (Exception e)
+                    {
+                        throw new Exception(e.Message);
+                    }
                 }
             }
         }

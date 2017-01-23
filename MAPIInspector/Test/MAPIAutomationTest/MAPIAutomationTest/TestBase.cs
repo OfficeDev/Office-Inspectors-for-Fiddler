@@ -106,6 +106,8 @@ namespace MAPIAutomationTest
         [TestCleanup]
         public void CleanUp()
         {
+            Utilities.DeleteAllItemInMAPIFolder(sentMailFolder);
+            Utilities.DeleteAllItemInMAPIFolder(deletedItemsFolders);
             EndStartedOutLook();
             MessageParser.CloseFiddler();
         }

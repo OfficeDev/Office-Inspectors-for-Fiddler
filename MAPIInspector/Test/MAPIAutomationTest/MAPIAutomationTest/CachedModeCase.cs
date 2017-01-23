@@ -27,7 +27,7 @@ namespace MAPIAutomationTest
             // Add a email attach for new created mail
             Outlook.MailItem omailWithAttach = Utilities.AddAttachsToEmail(omail, new object[] { mailAttach });
             // Send mail
-            Utilities.SendEmail(omail);
+            Utilities.SendEmail(omailWithAttach);
             // Get the latest send mail from send mail folder
             Outlook.MailItem omailSend = Utilities.GetNewestItemInMAPIFolder(sentMailFolder, "message mail");
 

@@ -31,6 +31,8 @@ namespace MAPIAutomationTest
             // Get this mail in public Folder and update some properties of it
             Outlook.MailItem oitem = Utilities.GetNewestItemInMAPIFolder(firstUserFolder, "GetMessageStatus");
             Utilities.UpdateItemProperties(oitem);
+            // Clean up firstUserFolder
+            Utilities.DeleteAllItemInMAPIFolder(firstUserFolder);
 
             bool result = MessageParser.ParseMessage();
             Assert.IsTrue(result, "Case failed, check the details information in error.txt file.");
@@ -50,6 +52,8 @@ namespace MAPIAutomationTest
             // Get this mail and display it
             Outlook.MailItem oitem = Utilities.GetNewestItemInMAPIFolder(firstUserFolder, "RopReadRecipients");
             Utilities.DisplayAndCloseItem(oitem);
+            // Clean up firstUserFolder
+            Utilities.DeleteAllItemInMAPIFolder(firstUserFolder);
 
             bool result = MessageParser.ParseMessage();
             Assert.IsTrue(result, "Case failed, check the details information in error.txt file.");
@@ -371,6 +375,11 @@ namespace MAPIAutomationTest
             ValuePattern Pattern_textGoValue = (ValuePattern)item_textSearch.GetCurrentPattern(ValuePattern.Pattern);
             item_textSearch.SetFocus();
             Pattern_textGoValue.SetValue("hi");
+
+            Condition cd_close = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Close"));
+            AutomationElement item_close = Utilities.WaitForElement(window_AddressWin, cd_close, TreeScope.Descendants, 10);
+            InvokePattern Pattern_close = (InvokePattern)item_close.GetCurrentPattern(InvokePattern.Pattern);
+            Pattern_close.Invoke();
 
             bool result = MessageParser.ParseMessage();
             Assert.IsTrue(result, "Case failed, check the details information in error.txt file.");
