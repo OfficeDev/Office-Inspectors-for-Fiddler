@@ -47,23 +47,26 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Fiddler, Version=4.6.3.50306, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="EQATEC.Analytics.Monitor">
+      <HintPath>..\ExternalReference\EQATEC.Analytics.Monitor.dll</HintPath>
+    </Reference>
+    <Reference Include="Fiddler, Version=4.6.3.44034, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Program Files (x86)\Fiddler2\Fiddler.exe</HintPath>
       <Aliases>FiddlerExe</Aliases>
     </Reference>
     <Reference Include="FiddlerCore, Version=2.6.3.50306, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\FiddlerCoreAPI\FiddlerCore.dll</HintPath>
+      <HintPath>..\ExternalReference\FiddlerCore.dll</HintPath>
       <Aliases>FiddlerCore</Aliases>
     </Reference>
     <Reference Include="ionic.zip.reduced, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\FiddlerCoreAPI\ionic.zip.reduced.dll</HintPath>
+      <HintPath>..\ExternalReference\ionic.zip.reduced.dll</HintPath>
     </Reference>
     <Reference Include="MAPIFiddlerInspector, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Fiddler2\Inspectors\MAPIFiddlerInspector.dll</HintPath>
+      <HintPath>..\ExternalReference\MAPIFiddlerInspector.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Office.Interop.Outlook, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
@@ -119,6 +122,9 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\ExternalReference\FiddlerCore.dll" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

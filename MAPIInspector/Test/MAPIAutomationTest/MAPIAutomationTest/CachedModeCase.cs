@@ -1,14 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Threading;
 using System.Windows.Automation;
 using System.Configuration;
-
 
 namespace MAPIAutomationTest
 {
@@ -18,6 +13,7 @@ namespace MAPIAutomationTest
     {
         #region MS-OXCMSG
         [TestCategory("CachedMode"), TestMethod]
+        // RopOpenEmbeddedMessage
         public void SendEmailSuccess()
         {
             // Create a simple mail
@@ -78,6 +74,7 @@ namespace MAPIAutomationTest
 
         #region MS-OXORULE
         [TestCategory("CachedMode"), TestMethod]
+        // RopModifyRules RopGetRulesTable
         public void CreateNewRule()
         {
             Outlook.AddressEntry currentUser = oApp.Session.CurrentUser.AddressEntry;
@@ -117,6 +114,7 @@ namespace MAPIAutomationTest
 
         #region MS-OXCPRPT
         [TestCategory("CachedMode"), TestMethod]
+        // RopCommitStream
         public void JunkAddRemoveRecipert()
         {
             // Get account name
@@ -142,8 +140,15 @@ namespace MAPIAutomationTest
             clickPattern_JunkOptions.Invoke();
 
             // Get Junk E-mail Options window
-            var condition_JunkWindow = new PropertyCondition(AutomationElement.NameProperty, "Junk E-mail Options - " + userName);
+            PropertyCondition condition_JunkWindow;
+            condition_JunkWindow = new PropertyCondition(AutomationElement.NameProperty, "Junk Email Options - " + userName);
             AutomationElement window_JunkWindow = Utilities.WaitForElement(window_outlook, condition_JunkWindow, TreeScope.Children, 10);
+            
+            if (window_JunkWindow == null)
+            {
+                condition_JunkWindow = new PropertyCondition(AutomationElement.NameProperty, "Junk E-mail Options - " + userName);
+                window_JunkWindow = Utilities.WaitForElement(window_outlook, condition_JunkWindow, TreeScope.Children, 10);
+            }
 
             // Get and click "safe Recipients" button
             Condition cd_SafeRecipent = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.TabItem), new PropertyCondition(AutomationElement.NameProperty, "Safe Recipients"));

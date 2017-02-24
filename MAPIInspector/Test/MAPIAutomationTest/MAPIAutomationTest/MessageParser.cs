@@ -20,22 +20,118 @@ namespace MAPIAutomationTest
     public class MessageParser
     {
         public static List<FiddlerCore.Fiddler.Session> oAllSessions;
+        public static FiddlerCore.Fiddler.Proxy oSecureEndpoint;
+        public static string sSecureEndpointHostname = "localhost";
+        public static int iSecureEndpointPort = 7777;
 
         /// <summary>
         /// Start Fiddler application to get the capture file
         /// </summary>
         public static void StartFiddler()
         {
-            FiddlerCore.Fiddler.FiddlerApplication.AfterSessionComplete += FiddlerApplication_AfterSessionComplete;
+            oAllSessions = new List<FiddlerCore.Fiddler.Session>();
+
+            FiddlerCore.Fiddler.FiddlerApplication.BeforeRequest += delegate(FiddlerCore.Fiddler.Session oS)
+            {
+                // Console.WriteLine("Before request for:\t" + oS.fullUrl);
+                // In order to enable response tampering, buffering mode MUST
+                // be enabled; this allows FiddlerCore to permit modification of
+                // the response in the BeforeResponse handler rather than streaming
+                // the response to the client as the response comes in.
+                oS.bBufferResponse = false;
+                Monitor.Enter(oAllSessions);
+                oAllSessions.Add(oS);
+                Monitor.Exit(oAllSessions);
+
+                // Set this property if you want FiddlerCore to automatically authenticate by
+                // answering Digest/Negotiate/NTLM/Kerberos challenges itself
+                // oS["X-AutoAuth"] = "(default)";
+
+                /* If the request is going to our secure endpoint, we'll echo back the response.
+                
+                Note: This BeforeRequest is getting called for both our main proxy tunnel AND our secure endpoint, 
+                so we have to look at which Fiddler port the client connected to (pipeClient.LocalPort) to determine whether this request 
+                was sent to secure endpoint, or was merely sent to the main proxy tunnel (e.g. a CONNECT) in order to *reach* the secure endpoint.
+
+                As a result of this, if you run the demo and visit https://localhost:7777 in your browser, you'll see
+
+                Session list contains...
+                 
+                    1 CONNECT http://localhost:7777
+                    200                                         <-- CONNECT tunnel sent to the main proxy tunnel, port 8877
+
+                    2 GET https://localhost:7777/
+                    200 text/html                               <-- GET request decrypted on the main proxy tunnel, port 8877
+
+                    3 GET https://localhost:7777/               
+                    200 text/html                               <-- GET request received by the secure endpoint, port 7777
+                */
+
+                if ((oS.oRequest.pipeClient.LocalPort == iSecureEndpointPort) && (oS.hostname == sSecureEndpointHostname))
+                {
+                    oS.utilCreateResponseAndBypassServer();
+                    oS.oResponse.headers.SetStatus(200, "Ok");
+                    oS.oResponse["Content-Type"] = "text/html; charset=UTF-8";
+                    oS.oResponse["Cache-Control"] = "private, max-age=0";
+                    oS.utilSetResponseBody("<html><body>Request for httpS://" + sSecureEndpointHostname + ":" + iSecureEndpointPort.ToString() + " received. Your request was:<br /><plaintext>" + oS.oRequest.headers.ToString());
+                }
+            };
+
+
+            FiddlerCore.Fiddler.FiddlerApplication.AfterSessionComplete += delegate(FiddlerCore.Fiddler.Session oS)
+            {
+                //Console.WriteLine("Finished session:\t" + oS.fullUrl); 
+                Console.Title = ("Session list contains: " + oAllSessions.Count.ToString() + " sessions");
+            };
+
+
+            string sSAZInfo = "NoSAZ";
+            sSAZInfo = Assembly.GetAssembly(typeof(Ionic.Zip.ZipFile)).FullName;
+
+            // You can load Transcoders from any different assembly if you'd like, using the ImportTranscoders(string AssemblyPath) 
+            // overload.
+            //
+            //if (!FiddlerApplication.oTranscoders.ImportTranscoders(Assembly.GetExecutingAssembly()))
+            //{
+            //    Console.WriteLine("This assembly was not compiled with a SAZ-exporter");
+            //}
+
+            Fiddler.DNZSAZProvider.fnObtainPwd = () =>
+            {
+                Console.WriteLine("Enter the password (or just hit Enter to cancel):");
+                string sResult = Console.ReadLine();
+                Console.WriteLine();
+                return sResult;
+            };
+
+            FiddlerCore.Fiddler.FiddlerApplication.oSAZProvider = new Fiddler.DNZSAZProvider();
+
+            // For the purposes of this demo, we'll forbid connections to HTTPS 
+            // sites that use invalid certificates. Change this from the default only
+            // if you know EXACTLY what that implies.
+            FiddlerCore.Fiddler.CONFIG.IgnoreServerCertErrors = false;
+
+            // ... but you can allow a specific (even invalid) certificate by implementing and assigning a callback...
+            // FiddlerApplication.OnValidateServerCertificate += new System.EventHandler<ValidateServerCertificateEventArgs>(CheckCert);
+
+            FiddlerCore.Fiddler.FiddlerApplication.Prefs.SetBoolPref("fiddler.network.streaming.abortifclientaborts", true);
+
+            // For forward-compatibility with updated FiddlerCore libraries, it is strongly recommended that you 
+            // start with the DEFAULT options and manually disable specific unwanted options.
+            FiddlerCore.Fiddler.FiddlerCoreStartupFlags oFCSF = FiddlerCore.Fiddler.FiddlerCoreStartupFlags.Default;
+            int iPort = 8877;
             if (!FiddlerCore.Fiddler.FiddlerApplication.IsStarted())
             {
-                FiddlerCore.Fiddler.FiddlerApplication.Startup(8888, FiddlerCore.Fiddler.FiddlerCoreStartupFlags.Default);
+                FiddlerCore.Fiddler.FiddlerApplication.Startup(iPort, oFCSF);
             }
+                     
+            oSecureEndpoint = FiddlerCore.Fiddler.FiddlerApplication.CreateProxyEndpoint(iSecureEndpointPort, true, sSecureEndpointHostname);
 
+            /*
             // Inside your main object, create a list to hold the sessions
             // This generic list type requires your source file includes #using System.Collections.Generic.
             oAllSessions = new List<FiddlerCore.Fiddler.Session>();
-            MessageParser.ClearSessions();
+            //MessageParser.ClearSessions();
 
             // Inside your attached event handlers, add the session to the list:
             FiddlerCore.Fiddler.FiddlerApplication.BeforeRequest += delegate (FiddlerCore.Fiddler.Session oS)
@@ -43,6 +139,10 @@ namespace MAPIAutomationTest
                 Monitor.Enter(oAllSessions);
                 oAllSessions.Add(oS);
                 Monitor.Exit(oAllSessions);
+            };
+
+            FiddlerCore.Fiddler.FiddlerApplication.AfterSessionComplete += delegate(FiddlerCore.Fiddler.Session oS)
+            {
             };
 
             string sSAZInfo = "NoSAZ";
@@ -57,17 +157,12 @@ namespace MAPIAutomationTest
             };
 
             FiddlerCore.Fiddler.FiddlerApplication.oSAZProvider = new Fiddler.DNZSAZProvider();
-        }
 
-        /// <summary>
-        /// Add the event for fiddler application
-        /// </summary>
-        /// <param name="oSession">All sessions in Fiddler</param>
-        public static void FiddlerApplication_AfterSessionComplete(FiddlerCore.Fiddler.Session oSession)
-        {
-            // Ignore HTTPS connect requests
-            if (oSession.RequestMethod == "CONNECT")
-                return;
+            if (!FiddlerCore.Fiddler.FiddlerApplication.IsStarted())
+            {
+                FiddlerCore.Fiddler.FiddlerApplication.Startup(8888, FiddlerCore.Fiddler.FiddlerCoreStartupFlags.Default);
+            }
+            */
         }
 
         /// <summary>
@@ -92,17 +187,19 @@ namespace MAPIAutomationTest
             string sFilenamePath = TestBase.testingfolderPath + Path.DirectorySeparatorChar + testName;
             string sFileName = DateTime.Now.ToString("hh-mm-ss") + ".saz";
             string fullName = sFilenamePath + Path.DirectorySeparatorChar + sFileName;
+            List<FiddlerCore.Fiddler.Session> oAllSessionsNew = new List<FiddlerCore.Fiddler.Session>();
+            oAllSessionsNew = oAllSessions;
             try
             {
                 try
                 {
-                    Monitor.Enter(oAllSessions);
+                    Monitor.Enter(oAllSessionsNew);
                     string sPassword = null;
                     if (!Directory.Exists(sFilenamePath))
                     {
                         Directory.CreateDirectory(sFilenamePath);
                     }
-                    bSuccess = FiddlerCore.Fiddler.Utilities.WriteSessionArchive(fullName, oAllSessions.ToArray(), sPassword, false);
+                    bSuccess = FiddlerCore.Fiddler.Utilities.WriteSessionArchive(fullName, oAllSessionsNew.ToArray(), sPassword, false);
                     if (bSuccess)
                     {
                         fileName = fullName;
@@ -110,7 +207,7 @@ namespace MAPIAutomationTest
                 }
                 finally
                 {
-                    Monitor.Exit(oAllSessions);
+                    Monitor.Exit(oAllSessionsNew);
                 }
             }
             catch (Exception eX)
@@ -174,6 +271,8 @@ namespace MAPIAutomationTest
         /// </summary>
         public static void CloseFiddler()
         {
+            if (null != oSecureEndpoint) oSecureEndpoint.Dispose();
+            //oSecureEndpoint.Detach();
             FiddlerCore.Fiddler.FiddlerApplication.Shutdown();
             Thread.Sleep(500);
         }

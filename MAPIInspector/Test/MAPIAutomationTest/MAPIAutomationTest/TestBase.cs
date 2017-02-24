@@ -8,13 +8,8 @@ using System.Runtime.InteropServices;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using System.Threading;
 using System.Configuration;
-using System.Collections.Generic;
 using System.Management.Automation;
 using System.Windows.Automation;
-
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using Microsoft.Win32;
 
 namespace MAPIAutomationTest
 {
@@ -36,6 +31,18 @@ namespace MAPIAutomationTest
         public TestContext TestContext { get; set; }
         #endregion
 
+        [AssemblyInitialize()]
+        public static void AssemblyInit(TestContext context)
+        {
+            MessageParser.StartFiddler();
+        }
+
+        [AssemblyCleanup()]
+        public static void AssemblyCleanup()
+        {
+            MessageParser.CloseFiddler();
+        }
+
         /// <summary>
         /// Test initialization
         /// </summary>
@@ -44,7 +51,8 @@ namespace MAPIAutomationTest
         {
             GetTestCatgoryInformation();
             EndStartedOutLook();
-            MessageParser.StartFiddler();
+            Thread.Sleep(10000);
+            MessageParser.ClearSessions();
             string outLookPath = ConfigurationManager.AppSettings["OutLookPath"].ToString();
             waittime_window = Int32.Parse(ConfigurationManager.AppSettings["WaitTimeWindow"].ToString());
             waittime_item = Int32.Parse(ConfigurationManager.AppSettings["WaitTimeItem"].ToString());
@@ -60,32 +68,37 @@ namespace MAPIAutomationTest
             {
                 outlookWindow = desktop.FindFirst(TreeScope.Children, condition_Outlook);
                 Thread.Sleep(waittime_item / 10);
-                count += waittime_item;
+                count += (waittime_item / 10);
                 if (count >= waittime_window)
                 {
                     break;
                 }
             }
 
-            try
+
+            Process[] pp = Process.GetProcesses();
+            if (pp.Count() > 0)
             {
-                Process[] pp = Process.GetProcesses();
-                if (pp.Count() > 0)
+                foreach (Process pp1 in pp)
                 {
-                    foreach (Process pp1 in pp)
+                    if (pp1.ProcessName != "OUTLOOK" && pp1.ProcessName != "explorer" && pp1.MainWindowHandle != IntPtr.Zero)
                     {
-                        if (pp1.ProcessName != "OUTLOOK" && pp1.MainWindowHandle != IntPtr.Zero)
+                        AutomationElement element = AutomationElement.FromHandle(pp1.MainWindowHandle);
+                        if (element != null)
                         {
-                            AutomationElement element = AutomationElement.FromHandle(pp1.MainWindowHandle);
-                            if (element != null)
+                            try
                             {
                                 element.SetFocus();
                             }
-                            break;
+                            catch { continue; }
                         }
+                        break;
                     }
                 }
-                Thread.Sleep(waittime_item);
+            }
+            Thread.Sleep(waittime_item);
+            try
+            {
                 oApp = Marshal.GetActiveObject("Outlook.Application") as Outlook.Application;
             }
             catch
@@ -95,7 +108,6 @@ namespace MAPIAutomationTest
 
             inboxFolders = oApp.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderInbox);
             sentMailFolder = oApp.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderSentMail);
-            publicFolders = oApp.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olPublicFoldersAllPublicFolders);
             deletedItemsFolders = oApp.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderDeletedItems);
             draftsFolders = oApp.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderDrafts);
         }
@@ -108,9 +120,10 @@ namespace MAPIAutomationTest
         {
             Utilities.DeleteAllItemInMAPIFolder(sentMailFolder);
             Utilities.DeleteAllItemInMAPIFolder(deletedItemsFolders);
+            Utilities.DeleteAllItemInMAPIFolder(inboxFolders);
             EndStartedOutLook();
-            MessageParser.CloseFiddler();
         }
+
         /// <summary>
         /// End all started outlook application
         /// </summary>
@@ -140,9 +153,6 @@ namespace MAPIAutomationTest
             string outlookVersion = ConfigurationManager.AppSettings["OutlookVersion"].ToString();
             string scriptPath = ConfigurationManager.AppSettings["PowershellScript_path"].ToString();
             string fullPath = Path.GetFullPath(scriptPath);
-            int last = fullPath.LastIndexOf("MAPIAutomationTest");
-            string directoryPath = fullPath.Substring(0, last);
-            string scriptAbsolutePath = directoryPath + scriptPath.Substring(scriptPath.LastIndexOf(@"\") + 1);
 
             // Configure the PowerShell execution policy to run script
             using (PowerShell PowerShellInstance = PowerShell.Create())
@@ -156,10 +166,9 @@ namespace MAPIAutomationTest
             Process cmd = new Process();
             cmd.StartInfo.FileName = "cmd.exe";
             cmd.StartInfo.Verb = "runas";
-            cmd.StartInfo.Arguments = "/user:Administrator cmd /c " + "powershell " + scriptAbsolutePath + " " + outlookVersion + " " + isEnable.ToString();
+            cmd.StartInfo.Arguments = "/user:Administrator cmd /c " + "powershell " + fullPath + " " + outlookVersion + " " + isEnable.ToString();
             cmd.Start();
             cmd.WaitForExit();
-
         }
 
         /// <summary>
