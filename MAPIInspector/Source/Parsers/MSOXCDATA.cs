@@ -1278,6 +1278,7 @@ namespace MAPIInspector.Parsers
             foreach (PropertyTag tempPropTag in PropTags)
             {
                 object rowPropValue = null;
+                tempPropTag.PropertyType = ConvertToPropType((ushort)tempPropTag.PropertyType);
 
                 if (this.Flag == 0x00)
                 {
@@ -1653,6 +1654,13 @@ namespace MAPIInspector.Parsers
         PtypObject_Or_PtypEmbeddedTable = 0x000D,
     }
 
+    // Section 2.11.1.3   Multivalue Property Value Instances
+    public enum PropertyDataTypeFlag : ushort
+    {
+        MutltiValue = 0x1000,
+        MultivalueInstance = 0x2000,
+    }
+
     /// <summary>
     /// 2 bytes; a 16-bit integer. [MS-DTYP]: INT16
     /// </summary>
@@ -1880,8 +1888,17 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            Int64 temp = ReadINT64();
-            this.Value = DateTime.FromBinary(temp);
+            try
+            {
+                ulong temp = ReadUlong();
+                DateTime startdate = new DateTime(1601, 1, 1).AddMilliseconds(temp / 10000);
+                this.Value = startdate.ToLocalTime();
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                // Bug #1431841 under task 1245867 is used to log this issue
+                this.Value = new DateTime();
+            }
         }
     }
 
@@ -2367,6 +2384,9 @@ namespace MAPIInspector.Parsers
         // COUNT values are typically used to specify the size of an associated field.
         public object Count;
 
+        // TDI #99147
+        public ushort undefinedCount;
+
         // The arrary of string value.
         public MAPIString[] Value;
 
@@ -2390,6 +2410,7 @@ namespace MAPIInspector.Parsers
             base.Parse(s);
             HelpMethod help = new HelpMethod();
             this.Count = help.ReadCount(this.countWide, s);
+            this.undefinedCount = ReadUshort();
             List<MAPIString> tempvalue = new List<MAPIString>();
             MAPIString str;
             for (int i = 0; i < this.Count.GetHashCode();i++ )
@@ -2943,7 +2964,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.PropertyType = (PropertyDataType)ReadUshort();
+            this.PropertyType = ConvertToPropType(ReadUshort());
             PropertyValue propertyValue = new PropertyValue();
             this.PropertyValue = propertyValue.ReadPropertyValue(this.PropertyType, s, countWide);
 
@@ -3076,7 +3097,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.PropertyType = (PropertyDataType)ReadUshort();
+            this.PropertyType = ConvertToPropType(ReadUshort());
             this.Flag = ReadByte();
             if (this.Flag == 0x00)
             {

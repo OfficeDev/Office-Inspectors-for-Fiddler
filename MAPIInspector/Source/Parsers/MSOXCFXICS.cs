@@ -3192,6 +3192,8 @@ namespace MAPIInspector.Parsers
                         break;
                     case PropertyDataType.PtypServerId:
                         PtypServerId pserverId = new PtypServerId();
+                        // There will be a TDI to log this issue, PtypServerId in MSOXCFXICS does not contain Length element
+                        stream.Position -= 4;
                         pserverId.Parse(stream);
                         this.ValueArray = pserverId;
                         break;

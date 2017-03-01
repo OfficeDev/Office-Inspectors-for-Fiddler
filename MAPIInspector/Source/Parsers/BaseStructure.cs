@@ -797,6 +797,16 @@ namespace MAPIInspector.Parsers
             DateTime
         }
         #endregion
+
+        /// <summary>
+        /// Convert a value to PropertyDataType
+        /// </summary>
+        /// <param name="typeValue"></param>
+        /// <returns>PropertyDataType type</returns>
+        public PropertyDataType ConvertToPropType(ushort typeValue)
+        {
+            return (PropertyDataType)(typeValue & (ushort)~PropertyDataTypeFlag.MultivalueInstance);
+        }
     }
 
     /// <summary>

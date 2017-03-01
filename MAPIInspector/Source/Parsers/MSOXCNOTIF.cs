@@ -387,9 +387,9 @@ namespace MAPIInspector.Parsers
             }
             if (NotificationFlags.Value.NotificationType == NotificationTypesEnum.TableModified && (TableEventType == TableEventTypeEnum.TableRowAdded || TableEventType == TableEventTypeEnum.TableRowModified))
             {
-                if (DecodingContext.SetColumnProTagMap_Handle != null && DecodingContext.SetColumnProTagMap_Handle.ContainsKey(this.NotificationHandle) )
+                if (DecodingContext.PropertyTagsForNotify != null && DecodingContext.PropertyTagsForNotify.ContainsKey(this.NotificationHandle))
                 {
-                    propertiesBySetColum = DecodingContext.SetColumnProTagMap_Handle[this.NotificationHandle];
+                    propertiesBySetColum = DecodingContext.PropertyTagsForNotify[this.NotificationHandle];
                 }
                 else
                 {
