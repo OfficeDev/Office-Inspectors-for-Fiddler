@@ -959,13 +959,9 @@ namespace MAPIInspector.Parsers
             else
             {
                 byte[] ropListBytes = ReadBytes(this.RopSize - 2);
-                foreach (byte b in ropListBytes)
-                {
-                    ropsList.Add(b);
-                }
-                this.RopsList = ropsList.ToArray();
+                ropsList.AddRange(ropListBytes.Cast<object>().ToArray());
             }
-
+            this.RopsList = ropsList.ToArray();
             while (s.Position < s.Length)
             {
                 uint ServerObjectHandle = ReadUint();
@@ -1996,10 +1992,7 @@ namespace MAPIInspector.Parsers
             else
             {
                 byte[] ropListBytes = ReadBytes(this.RopSize - 2);
-                foreach (byte b in ropListBytes)
-                {
-                    ropsList.Add(b);
-                }
+                ropsList.AddRange(ropListBytes.Cast<object>().ToArray());
             }
 
             this.RopsList = ropsList.ToArray();

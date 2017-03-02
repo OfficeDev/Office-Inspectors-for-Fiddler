@@ -1059,7 +1059,7 @@ namespace MAPIInspector.Parsers
             this.ReadFlags = (ReadFlags)this.ReadByte();
             if ((((byte)DecodingContext.SessionLogonFlagMapLogId[MapiInspector.MAPIInspector.currentParsingSessionID][this.LogonId] & (byte)LogonFlags.Private) != (byte)LogonFlags.Private))
             {
-                // There will be a TDI to log this issue, public Folder mode does not contains a ClientData element
+                // Both public mode and private mode don't contain ClientData element
                 // this.ClientData = ConvertArray(ReadBytes(24));
             }
         }

@@ -1119,13 +1119,21 @@ namespace MapiInspector
                             }
                             currentSessionID++;
                         }
-                        while (DecodingContext.PropertyTagsForNotify.Count == 0 || !DecodingContext.PropertyTagsForNotify.ContainsKey(parameters[1]) || currentSessionID > ThisSessionID);
+                        while (currentSessionID >= ThisSessionID || !(DecodingContext.PropertyTagsForNotify.Count > 0 && DecodingContext.PropertyTagsForNotify.ContainsKey(parameters[1])));
                     }
                 }
 
-                ParseResponseMessage(ThisSessionID, allSessions, true);
-                obj = responseDic[ThisSessionID];
-                bytes = responseBytesForHexview[ThisSessionID];
+                if (DecodingContext.PropertyTagsForNotify.ContainsKey(parameters[1]))
+                {
+                    ParseResponseMessage(ThisSessionID, allSessions, true);
+                    obj = responseDic[ThisSessionID];
+                    bytes = responseBytesForHexview[ThisSessionID];
+                }
+                else
+                {
+                    obj = string.Format("RopNotify cannot be parsed successfully due to missing the PropertyTags for handle {0}, check whether the trace is complete.", parameters[1]);
+                    bytes = new byte[0];
+                }
             }
             else if ((RopIdType)sourceRopID == RopIdType.RopBufferTooSmall)
             {
@@ -1709,6 +1717,7 @@ namespace MapiInspector
                     parserResult = this.ParseHTTPPayload(this.BaseHeaders, this.session.id, this.session.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
                 }
                 DisplayObject(parserResult, bytesForHexView);
+                DecodingContext.PropertyTagsForNotify = new Dictionary<uint, PropertyTag[]>();
                 isLooperCall = true;
             }
             else

@@ -1896,7 +1896,7 @@ namespace MAPIInspector.Parsers
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                // Bug #1431841 under task 1245867 is used to log this issue
+                // Used to deal special date of PidTagMessageDeliveryTime property
                 this.Value = new DateTime();
             }
         }
