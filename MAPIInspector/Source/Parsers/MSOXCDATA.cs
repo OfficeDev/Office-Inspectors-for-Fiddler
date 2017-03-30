@@ -16,6 +16,9 @@ namespace MAPIInspector.Parsers
         // The string value
         public string Value;
 
+        // TDI#76879 tell us the real MapiHttp traffic will add the magic byte 'FF' for the string or binary based property value.
+        public byte? MagicNumber;
+
         // The string Encoding : ASCII or Unicode
         public Encoding Encode;
 
@@ -52,6 +55,15 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
+            if(ReadByte() == 0xff)
+            {
+                this.MagicNumber = 0xff;
+            }
+            else
+            {
+                s.Position -= 1;
+            }
+            
             this.Value = ReadString(Encode, Terminator, StringLength, ReducedUnicode);
         }
     }
@@ -1266,6 +1278,7 @@ namespace MAPIInspector.Parsers
             foreach (PropertyTag tempPropTag in PropTags)
             {
                 object rowPropValue = null;
+                tempPropTag.PropertyType = ConvertToPropType((ushort)tempPropTag.PropertyType);
 
                 if (this.Flag == 0x00)
                 {
@@ -1534,7 +1547,19 @@ namespace MAPIInspector.Parsers
                 this.TransmittableDisplayName.Parse(s);
             }
             this.RecipientColumnCount = ReadUshort();
-            PropertyRow tempPropertyRow = new PropertyRow(PropTags);
+            List<PropertyTag> PropTagsActually = new List<PropertyTag>();
+            if(this.PropTags.Length >= this.RecipientColumnCount)
+            {
+                for (int i = 0; i < this.RecipientColumnCount; i++)
+                {
+                    PropTagsActually.Add(this.PropTags[i]);
+                }
+            }
+            else
+            {
+                throw new Exception(String.Format("Request format error: the RecipientColumnCount {0} should be less than RecipientColumns count {1}", this.RecipientColumnCount, this.PropTags.Length));
+            }
+            PropertyRow tempPropertyRow = new PropertyRow(PropTagsActually.ToArray());
             this.RecipientProperties = tempPropertyRow;
             this.RecipientProperties.Parse(s);
         }
@@ -1627,6 +1652,13 @@ namespace MAPIInspector.Parsers
 
         // IN FUTURE: How to distinguish PtypObject from PtypEmbeddedTable since they share the same value
         PtypObject_Or_PtypEmbeddedTable = 0x000D,
+    }
+
+    // Section 2.11.1.3   Multivalue Property Value Instances
+    public enum PropertyDataTypeFlag : ushort
+    {
+        MutltiValue = 0x1000,
+        MultivalueInstance = 0x2000,
     }
 
     /// <summary>
@@ -1856,8 +1888,17 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            Int64 temp = ReadINT64();
-            this.Value = DateTime.FromBinary(temp);
+            try
+            {
+                ulong temp = ReadUlong();
+                DateTime startdate = new DateTime(1601, 1, 1).AddMilliseconds(temp / 10000);
+                this.Value = startdate.ToLocalTime();
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                // Used to deal special date of PidTagMessageDeliveryTime property
+                this.Value = new DateTime();
+            }
         }
     }
 
@@ -2082,10 +2123,9 @@ namespace MAPIInspector.Parsers
             this.Count = help.ReadCount(this.countWide, s);
             this.undefinedCount = ReadUshort();
             List<Int16> tempvalue = new List<Int16>();
-            for (int i = 0; i < this.Count.GetHashCode(); )
+            for (int i = 0; i < this.Count.GetHashCode(); i++)
             {
                 tempvalue.Add(ReadINT16());
-                i = i + sizeof(Int16);
             }
             this.Value = tempvalue.ToArray();
         }
@@ -2127,10 +2167,9 @@ namespace MAPIInspector.Parsers
             this.Count = help.ReadCount(this.countWide, s);
             this.undefinedCount = ReadUshort();
             List<Int32> tempvalue = new List<Int32>();
-            for (int i = 0; i < this.Count.GetHashCode(); )
+            for (int i = 0; i < this.Count.GetHashCode(); i++)
             {
                 tempvalue.Add(ReadINT32());
-                i = i + sizeof(Int32);
             }
             this.Value = tempvalue.ToArray();
         }
@@ -2169,10 +2208,9 @@ namespace MAPIInspector.Parsers
             HelpMethod help = new HelpMethod();
             this.Count = help.ReadCount(this.countWide, s);
             List<float> tempvalue = new List<float>();
-            for (int i = 0; i < this.Count.GetHashCode(); )
+            for (int i = 0; i < this.Count.GetHashCode(); i++)
             {
                 tempvalue.Add(ReadINT32());
-                i = i + sizeof(float);
             }
             this.Value = tempvalue.ToArray();
         }
@@ -2210,10 +2248,9 @@ namespace MAPIInspector.Parsers
             HelpMethod help = new HelpMethod();
             this.Count = help.ReadCount(this.countWide, s);
             List<double> tempvalue = new List<double>();
-            for (int i = 0; i < this.Count.GetHashCode(); )
+            for (int i = 0; i < this.Count.GetHashCode(); i++)
             {
                 tempvalue.Add(ReadINT64());
-                i = i + sizeof(double);
             }
             this.Value = tempvalue.ToArray();
         }
@@ -2251,10 +2288,9 @@ namespace MAPIInspector.Parsers
             HelpMethod help = new HelpMethod();
             this.Count = help.ReadCount(this.countWide, s);
             List<Int64> tempvalue = new List<Int64>();
-            for (int i = 0; i < this.Count.GetHashCode(); )
+            for (int i = 0; i < this.Count.GetHashCode(); i++)
             {
                 tempvalue.Add(ReadINT64());
-                i = i + sizeof(Int64);
             }
             this.Value = tempvalue.ToArray();
         }
@@ -2292,10 +2328,9 @@ namespace MAPIInspector.Parsers
             HelpMethod help = new HelpMethod();
             this.Count = help.ReadCount(this.countWide, s);
             List<double> tempvalue = new List<double>();
-            for (int i = 0; i < this.Count.GetHashCode(); )
+            for (int i = 0; i < this.Count.GetHashCode(); i++)
             {
                 tempvalue.Add(ReadINT64());
-                i = i + sizeof(double);
             }
             this.Value = tempvalue.ToArray();
         }
@@ -2333,10 +2368,9 @@ namespace MAPIInspector.Parsers
             HelpMethod help = new HelpMethod();
             this.Count = help.ReadCount(this.countWide, s);
             List<Int64> tempvalue = new List<Int64>();
-            for (int i = 0; i < this.Count.GetHashCode(); )
+            for (int i = 0; i < this.Count.GetHashCode(); i++)
             {
                 tempvalue.Add(ReadINT64());
-                i = i + sizeof(Int64);
             }
             this.Value = tempvalue.ToArray();
         }
@@ -2350,7 +2384,7 @@ namespace MAPIInspector.Parsers
         // COUNT values are typically used to specify the size of an associated field.
         public object Count;
 
-        // Workaround, need to update once the COUNT wide of PtypMultipleBinary is confirmed.
+        // TDI #99147
         public ushort undefinedCount;
 
         // The arrary of string value.
@@ -2379,12 +2413,11 @@ namespace MAPIInspector.Parsers
             this.undefinedCount = ReadUshort();
             List<MAPIString> tempvalue = new List<MAPIString>();
             MAPIString str;
-            for (int i = 0; i < this.Count.GetHashCode(); )
+            for (int i = 0; i < this.Count.GetHashCode();i++ )
             {
                 str = new MAPIString(Encoding.Unicode);
                 str.Parse(s);
                 tempvalue.Add(str);
-                i = i + str.Value.ToString().Length * 2 + 2;
             }
             this.Value = tempvalue.ToArray();
         }
@@ -2423,12 +2456,11 @@ namespace MAPIInspector.Parsers
             this.Count = help.ReadCount(this.countWide, s);
             List<MAPIString> tempvalue = new List<MAPIString>();
             MAPIString str;
-            for (int i = 0; i < this.Count.GetHashCode(); )
+            for (int i = 0; i < this.Count.GetHashCode(); i++)
             {
                 str = new MAPIString(Encoding.ASCII);
                 str.Parse(s);
                 tempvalue.Add(str);
-                i = i + str.Value.Length + 1;
             }
             this.Value = tempvalue.ToArray();
         }
@@ -2466,12 +2498,11 @@ namespace MAPIInspector.Parsers
             HelpMethod help = new HelpMethod();
             this.Count = help.ReadCount(this.countWide, s);
             List<PtypTime> tempvalue = new List<PtypTime>();
-            for (int i = 0; i < this.Count.GetHashCode(); )
+            for (int i = 0; i < this.Count.GetHashCode(); i++)
             {
                 PtypTime time = new PtypTime();
                 time.Parse(s);
                 tempvalue.Add(time);
-                i = i + sizeof(Int64);
             }
             this.Value = tempvalue.ToArray();
         }
@@ -2509,10 +2540,9 @@ namespace MAPIInspector.Parsers
             HelpMethod help = new HelpMethod();
             this.Count = help.ReadCount(this.countWide, s);
             List<Guid> tempvalue = new List<Guid>();
-            for (int i = 0; i < this.Count.GetHashCode(); )
+            for (int i = 0; i < this.Count.GetHashCode(); i++)
             {
                 tempvalue.Add(ReadGuid());
-                i = i + tempvalue[i].ToByteArray().Length;
             }
             this.Value = tempvalue.ToArray();
         }
@@ -2554,12 +2584,11 @@ namespace MAPIInspector.Parsers
             this.Count = help.ReadCount(this.countWide, s);
             this.undefinedCount = ReadUshort();
             List<PtypBinary> tempvalue = new List<PtypBinary>();
-            for (int i = 0; i < this.Count.GetHashCode(); )
+            for (int i = 0; i < this.Count.GetHashCode(); i++)
             {
                 PtypBinary binary = new PtypBinary(CountWideEnum.twoBytes);
                 binary.Parse(s);
                 tempvalue.Add(binary);
-                i = i + 2 + binary.Count.GetHashCode();
             }
             this.Value = tempvalue.ToArray();
 
@@ -2935,7 +2964,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.PropertyType = (PropertyDataType)ReadUshort();
+            this.PropertyType = ConvertToPropType(ReadUshort());
             PropertyValue propertyValue = new PropertyValue();
             this.PropertyValue = propertyValue.ReadPropertyValue(this.PropertyType, s, countWide);
 
@@ -3068,7 +3097,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.PropertyType = (PropertyDataType)ReadUshort();
+            this.PropertyType = ConvertToPropType(ReadUshort());
             this.Flag = ReadByte();
             if (this.Flag == 0x00)
             {

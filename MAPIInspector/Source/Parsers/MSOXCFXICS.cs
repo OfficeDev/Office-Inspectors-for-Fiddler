@@ -96,10 +96,10 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A stream contains PredecessorChangeList.</param>
         public void Parse(FastTransferStream stream)
         {
-            int position = (int)stream.Position;
             List<SizedXid> interSizeXid = new List<SizedXid>();
             for (int i = 0; i < this.length; )
             {
+                int position = (int)stream.Position;
                 SizedXid tmpSizedXid = new SizedXid();
                 tmpSizedXid.Parse(stream);
                 interSizeXid.Add(tmpSizedXid);
@@ -220,7 +220,7 @@ namespace MAPIInspector.Parsers
                         Command PushCommand = new PushCommand();
                         PushCommand.Parse(stream);
                         commands.Add(PushCommand);
-                        if ((CommonStackLength += (uint)(PushCommand as PushCommand).Command) < 6)
+                        if ((CommonStackLength + (uint)(PushCommand as PushCommand).Command) < 6)
                         {
                             CommonStackCollection.Add((PushCommand as PushCommand).Command);
                             CommonStackLength += (uint)(PushCommand as PushCommand).Command;
@@ -231,6 +231,7 @@ namespace MAPIInspector.Parsers
                         PopCommand.Parse(stream);
                         commands.Add(PopCommand);
                         CommonStackLength -= CommonStackCollection[CommonStackCollection.Count - 1];
+                        CommonStackCollection.RemoveAt(CommonStackCollection.Count - 1);
                         break;
                     case 0x42:
                         Command BitmaskCommand = new BitmaskCommand();
@@ -3191,6 +3192,8 @@ namespace MAPIInspector.Parsers
                         break;
                     case PropertyDataType.PtypServerId:
                         PtypServerId pserverId = new PtypServerId();
+                        // PtypServerId in MSOXCFXICS does not contain Length element
+                        stream.Position -= 4;
                         pserverId.Parse(stream);
                         this.ValueArray = pserverId;
                         break;
@@ -3257,7 +3260,7 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(stream);
             PropertyDataType type = (PropertyDataType)this.PropType;
-            this.Length = stream.ReadInt16();
+            this.Length=stream.ReadInt32();
             switch (type)
             {
                 case PropertyDataType.PtypMultipleInteger16:
@@ -4943,7 +4946,7 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                throw new Exception("The ContentsSync cannot be parsed successfully. The IncrSyncEnd Marker is missed.");
+               throw new Exception("The ContentsSync cannot be parsed successfully. The IncrSyncEnd Marker is missed.");
             }
         }
     }
@@ -5479,9 +5482,9 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// Struct contains int value and byte array block.
+    /// This class contains int value and byte array block.
     /// </summary>
-    public struct LengthOfBlock
+    public class LengthOfBlock
     {
         private int totalSize;
         private byte[] BlockSize;

@@ -233,10 +233,6 @@ namespace MAPIInspector.Parsers
         // Various structures. The 
         public NotificationData NotificationData;
 
-        // Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1). 
-        private PropertyTag[] propertiesBySetColum;
-
-
         /// <summary>
         /// Parse the RopNotifyResponse structure.
         /// </summary>
@@ -391,13 +387,13 @@ namespace MAPIInspector.Parsers
             }
             if (NotificationFlags.Value.NotificationType == NotificationTypesEnum.TableModified && (TableEventType == TableEventTypeEnum.TableRowAdded || TableEventType == TableEventTypeEnum.TableRowModified))
             {
-                if (DecodingContext.SetColumnProTagMap_Handle != null && DecodingContext.SetColumnProTagMap_Handle.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID) && DecodingContext.SetColumnProTagMap_Handle[MapiInspector.MAPIInspector.currentParsingSessionID].ContainsKey(this.NotificationHandle))
+                if (DecodingContext.PropertyTagsForNotify != null && DecodingContext.PropertyTagsForNotify.ContainsKey(this.NotificationHandle))
                 {
-                    propertiesBySetColum = DecodingContext.SetColumnProTagMap_Handle[MapiInspector.MAPIInspector.currentParsingSessionID][this.NotificationHandle];
+                    propertiesBySetColum = DecodingContext.PropertyTagsForNotify[this.NotificationHandle];
                 }
                 else
                 {
-                    throw new MissingInformationException("Missing PropertyTags information for RopNotifyResponse", (ushort)RopIdType.RopNotify, NotificationHandle);
+                    throw new MissingInformationException("Missing PropertyTags information for RopNotifyResponse", (ushort)RopIdType.RopNotify, new uint[] {0,NotificationHandle });
                 }
                 this.TableRowData = new PropertyRow(propertiesBySetColum);
                 this.TableRowData.Parse(s);
