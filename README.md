@@ -1,11 +1,11 @@
-#Microsoft Office Inspectors for Fiddler
+﻿# Microsoft Office Inspectors for Fiddler
 This README document provides the instruction on installing Microsoft Office Inspectors for Fiddler. 
 
 The MAPI Inspector evaluates the captured traffic between Outlook and Exchange; whereas the FSSHTTPandWOPI Inspector evaluates the captured traffic between client and SharePoint. These Microsoft Office Inspectors are able to display the protocol content in a user-friendly format. You may choose to install one or both inspectors. 
 
 For details on how to use the inspectors: see [*MAPI Inspector for Fiddler User Guide*](https://github.com/OfficeDev/MAPI-Inspector-for-Fiddler/wiki), see also [*FSSHTTPandWOPI Inspector for Fiddler User Guide*](https://github.com/OfficeDev/Office-Inspectors-for-Fiddler/wiki/FSSHTTPandWOPI).
 
-##Overview
+## Overview
 The Messaging Application Programming Interface (MAPI) Inspector for [Fiddler](http://www.telerik.com/fiddler) decodes the MAPI message payload of an HTTP POST request and response according to [MS-OXCMAPIHTTP](https://msdn.microsoft.com/en-us/library/Dn530952(v=EXCHG.80).aspx). The MAPI Inspector is displayed under the *Inspectors* tab in Fiddler.
 
 In addition to the MAPI Inspector, the File Synchronization via SOAP over HTTP Protocol (FSSHTTP) and the Web Application Open Platform Interface Protocol (WOPI)—combined as FSSHTTPandWOPI—also has a plug-in inspector for Fiddler which decodes:
@@ -19,7 +19,7 @@ This repository also includes Jscript that adds an *MS Protocol* column in the F
 ## Installation 
 First install the latest [Fiddler](http://www.telerik.com/fiddler) tool and then run it. Note that Fiddler must be run at least once before installing any inspectors. To install the inspector of your choice (MAPI, FSSHTTPWOPI) or to install both, add the respective DLL files and the scripts.
 
-###Inspector DLL###
+### Inspector DLL ###
 1. Copy the file MAPIFiddlerInspector.dll into the C:\Program Files\Fiddler2\Inspectors directory. Alternatively, you can clone this repository, build the MAPIFiddlerInspector.dll, and copy the built .dll to your C:\Program Files\Fiddler2\Inspectors directory.
 
    Follow the same process if you wish to use FSSHTTPAndWOPIFiddlerInspector.dll.
@@ -28,7 +28,7 @@ First install the latest [Fiddler](http://www.telerik.com/fiddler) tool and then
 
     ![alt tag](/README-Images/InspectorsTabs.png)
 
-###Script ###
+### Script ###
 
 1. From the *Rules* menu, which is shown in the following screenshot, click *Customize Rules*.
     
