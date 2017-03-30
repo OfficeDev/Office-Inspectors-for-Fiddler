@@ -19,7 +19,7 @@ This repository also includes Jscript that adds an *MS Protocol* column in the F
 ## Installation 
 First install the latest [Fiddler](http://www.telerik.com/fiddler) tool and then run it. Note that Fiddler must be run at least once before installing any inspectors. To install the inspector of your choice (MAPI, FSSHTTPWOPI) or to install both, add the respective DLL files and the scripts.
 
-### Inspector DLL ###
+### Inspector DLL 
 1. Copy the file MAPIFiddlerInspector.dll into the C:\Program Files\Fiddler2\Inspectors directory. Alternatively, you can clone this repository, build the MAPIFiddlerInspector.dll, and copy the built .dll to your C:\Program Files\Fiddler2\Inspectors directory.
 
    Follow the same process if you wish to use FSSHTTPAndWOPIFiddlerInspector.dll.
@@ -28,7 +28,7 @@ First install the latest [Fiddler](http://www.telerik.com/fiddler) tool and then
 
     ![alt tag](/README-Images/InspectorsTabs.png)
 
-### Script ###
+### Script 
 
 1. From the *Rules* menu, which is shown in the following screenshot, click *Customize Rules*.
     
