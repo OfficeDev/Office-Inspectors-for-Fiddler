@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
 
 namespace MAPIInspector.Parsers
 {
@@ -1173,8 +1172,8 @@ namespace MAPIInspector.Parsers
         // An unsigned integer that specifies the type of ROP.
         public RopIdType RopId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
-        public byte InputHandleIndex;
+        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        public byte OutputHandleIndex;
 
         // An unsigned integer that specifies the status of the ROP.
         public object ReturnValue;
@@ -1185,13 +1184,13 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopOpenStreamResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopOpenStreamResponse structure.</param>
+        /// <param name="s">A stream containing RopOpenStreamResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
 
             this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.OutputHandleIndex = ReadByte();
             HelpMethod help = new HelpMethod();
             this.ReturnValue = help.FormatErrorCode(ReadUint());
             if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
