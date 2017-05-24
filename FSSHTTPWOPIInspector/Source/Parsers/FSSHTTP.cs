@@ -6,6 +6,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
     using System.ComponentModel;
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
 
     /// <summary>
     /// Envelope message for request, defined in section 2.2.2.1
@@ -19,6 +20,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
     /// <summary>
     /// Envelope body for request, defined in section 2.2.2.1
     /// </summary>
+    [XmlRoot("Body")]
     public class RequestEnvelopeBody
     {
         [XmlElementAttribute("RequestVersion", Namespace = "http://schemas.microsoft.com/sharepoint/soap/")]
@@ -46,6 +48,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
     public class Request
     {
         [XmlElementAttribute()]
+        GenericPropertiesType GenericProperties { get; set; }
+
+        [XmlElementAttribute()]
         public SubRequestElementGenericType[] SubRequest { get; set; }
 
         [XmlAttribute()]
@@ -54,17 +59,42 @@ namespace FSSHTTPandWOPIInspector.Parsers
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string Interval { get; set; }
 
-        /// <remarks/>
         [XmlAttribute(DataType = "integer")]
         public string MetaData { get; set; }
 
-        /// <remarks/>
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string RequestToken { get; set; }
+
+        [XmlAttribute()]
+        public string UserAgent { get; set; }
+
+        [XmlAttribute()]
+        public string UserAgentClient { get; set; }
+
+        [XmlAttribute()]
+        public string UserAgentPlatform { get; set; }
+
+        [XmlAttribute()]
+        public string Build { get; set; }
+
+        [XmlAttribute()]
+        public string ParentFolderResourceID { get; set; }
+
+        [XmlAttribute()]
+        public bool ShouldReturnDisambiguatedFileName { get; set; }
+
+        [XmlIgnore]
+        public bool ShouldReturnDisambiguatedFileNameSpecified { get; set; }
+
+        [XmlAttribute()]
+        public string ResourceID { get; set; }
+
+        [XmlAttribute()]
+        public string UseResourceID { get; set; }
     }
 
     /// <summary>
-    /// Subrequest type, defined in section 2.2.4.3
+    /// Subrequest type, defined in section 2.2.4.5
     /// </summary>
     public class SubRequestType
     {
@@ -79,7 +109,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
     }
 
     /// <summary>
-    /// A generic subrequest type, defined in section 2.2.4.2
+    /// A generic subrequest type, defined in section 2.2.4.4
     /// </summary>
     public class SubRequestElementGenericType : SubRequestType
     {
@@ -90,13 +120,10 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
         [XmlAttribute()]
         public SubRequestAttributeType Type { get; set; }
-
-        [XmlAttribute()]
-        public string fileName { get; set; }
     }
 
     /// <summary>
-    /// A generic subrequest data type, defined in section 2.2.4.1
+    /// A generic subrequest data type, defined in section 2.2.4.3
     /// </summary>
     public class SubRequestDataGenericType
     {
@@ -116,12 +143,6 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public string ClientID { get; set; }
 
         [XmlAttribute()]
-        public bool AllowFallbackToExclusive { get; set; }
-
-        [XmlIgnore]
-        public bool AllowFallbackToExclusiveSpecified { get; set; }
-
-        [XmlAttribute()]
         public bool ReleaseLockOnConversionToExclusiveFailure { get; set; }
 
         [XmlIgnore]
@@ -132,6 +153,12 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
         [XmlAttribute(DataType = "integer")]
         public string Timeout { get; set; }
+
+        [XmlAttribute()]
+        public string AllowFallbackToExclusive { get; set; }
+
+        [XmlIgnore]
+        public bool AllowFallbackToExclusiveSpecified { get; set; }
 
         [XmlAttribute()]
         public string ExclusiveLockID { get; set; }
@@ -150,6 +177,12 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
         [XmlAttribute()]
         public string Value { get; set; }
+
+        [XmlAttribute()]
+        public string NewFileName { get; set; }
+
+        [XmlAttribute()]
+        public string Version { get; set; } //FileVersionNumberType 
 
         [XmlAttribute]
         public bool Coalesce { get; set; }
@@ -216,6 +249,40 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
         [XmlIgnoreAttribute()]
         public bool EditorsTableRequestTypeSpecified { get; set; }
+
+        [XmlAttribute()]
+        public FileOperationRequestTypes FileOperation { get; set; }
+
+        [XmlIgnoreAttribute()]
+        public bool FileOperationSpecified { get; set; }
+
+        [XmlAttribute()]
+        public VersioningRequestTypes VersioningRequestType { get; set; }
+
+        [XmlIgnoreAttribute()]
+        public bool VersioningRequestTypeSpecified { get; set; }
+
+    }
+
+
+    /// <summary>
+    /// A GenericPropertiesType, defined in section 2.2.4.1
+    /// </summary>
+    public class GenericPropertiesType
+    {
+        public PropertyType[] Property { get; set; }
+    }
+
+    /// <summary>
+    /// PropertyType, defined in section 2.2.4.2
+    /// </summary>
+    public class PropertyType
+    {
+        [XmlAttribute()]
+        public ushort Id { get; set; }
+
+        [XmlAttribute()]
+        public ushort Value { get; set; }
     }
 
     /// <summary>
@@ -235,7 +302,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
     /// <summary>
     /// The VersionType complex type contains information about the version of the cell storage service message.
-    /// Defined in section 2.2.4.7
+    /// Defined in section 2.2.4.9
     /// </summary>
     public class VersionType
     {
@@ -273,6 +340,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
         InvalidUrl,
         FileNotExistsOrCannotBeCreated,
         FileUnauthorizedAccess,
+        PathNotFound,
+        ResourceIdDoesNotExist,
+        ResourceIdDoesNotMatch,
         InvalidSubRequest,
         SubRequestFail,
         BlockedFileType,
@@ -337,6 +407,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string RequestToken { get; set; }
 
+        [XmlAttribute(DataType = "integer")]
+        public string HealthScore { get; set; }
+
         [XmlAttribute()]
         public GenericErrorCodeTypes ErrorCode { get; set; }
 
@@ -354,12 +427,15 @@ namespace FSSHTTPandWOPIInspector.Parsers
     }
 
     /// <summary>
-    /// Subresponse type, defined in section 2.2.4.6
+    /// Subresponse type, defined in section 2.2.4.8
     /// </summary>
     public class SubResponseType
     {
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string SubRequestToken { get; set; }
+
+        [XmlAttribute()]
+        public string ServerCorrelationId { get; set; }
 
         [XmlAttribute()]
         public string ErrorCode { get; set; }
@@ -372,7 +448,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
     }
 
     /// <summary>
-    /// A generic subresponse type, defined in section 2.2.4.5
+    /// A generic subresponse type, defined in section 2.2.4.7
     /// </summary>
     public class SubResponseElementGenericType : SubResponseType
     {
@@ -384,7 +460,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
     }
 
     /// <summary>
-    /// A generic subresponse data type, defined in section 2.2.4.4
+    /// A generic subresponse data type, defined in section 2.2.4.6
     /// </summary>
     public class SubResponseDataGenericType
     {
@@ -394,9 +470,17 @@ namespace FSSHTTPandWOPIInspector.Parsers
         [XmlElementAttribute()]
         public object IncludeObject { get; set; }
 
+        [XmlElementAttribute()]
         public GetDocMetaInfoPropertySetType DocProps { get; set; }
 
+        [XmlElementAttribute()]
         public GetDocMetaInfoPropertySetType FolderProps { get; set; }
+
+        [XmlElementAttribute()]
+        public VersioningUserTableType UserTable { get; set; }
+
+        [XmlElementAttribute()]
+        public VersioningVersionListType Versions { get; set; }
 
         [XmlTextAttribute()]
         public string[] Text { get; set; }
@@ -404,11 +488,17 @@ namespace FSSHTTPandWOPIInspector.Parsers
         [XmlElementAttribute()]
         public object TextObject { get; set; }
 
+
+
+
         [XmlAttribute()]
         public string Etag { get; set; }
 
         [XmlAttribute(DataType = "integer")]
         public string CreateTime { get; set; }
+
+        [XmlAttribute(DataType = "integer")]
+        public string LastModifiedTime { get; set; }
 
         [XmlAttribute(DataType = "NCName")]
         public string ModifiedBy { get; set; }
@@ -447,7 +537,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public string ServerTime { get; set; }
 
         [XmlAttribute()]
-        public LockTypes LockType { get; set; }
+        public string LockType { get; set; }
 
         [XmlIgnore()]
         public bool LockTypeSpecified { get; set; }
@@ -466,9 +556,6 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
         [XmlIgnore()]
         public bool ExclusiveLockReturnReasonSpecified { get; set; }
-
-        [XmlAttribute(DataType = "integer")]
-        public string LastModifiedTime { get; set; }
     }
 
     /// <summary>
@@ -492,6 +579,108 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
         [XmlAttribute()]
         public string Value { get; set; }
+    }
+
+    /// <summary>
+    /// VersioningUserTableType section 2.3.1.40
+    /// </summary>
+    public class VersioningUserTableType
+    {
+        [XmlElementAttribute()]
+        public UserTableType UserTable { get; set; }
+    }
+
+    /// <summary>
+    /// UserTableType subelement type defined in section 2.3.1.40
+    /// </summary>
+    public class UserTableType
+    {
+        [XmlElementAttribute()]
+        public UserDataType[] User { get; set; }
+    }
+
+    /// <summary>
+    /// VersioningVersionListType 2.3.1.41
+    /// </summary>
+    public class VersioningVersionListType
+    {
+        [XmlElementAttribute()]
+        public VersionsType Versions { get; set; }
+    }
+
+    /// <summary>
+    /// VersionsType: subelement type defined in 2.3.1.41
+    /// </summary>
+    public class VersionsType
+    {
+        [XmlElementAttribute()]
+        public FileVersionDataType[] Version { get; set; }
+    }
+
+    /// <summary>
+    /// UserDataType 2.3.1.42
+    /// </summary>
+    public class UserDataType
+    {
+        [XmlAttribute(DataType = "integer")]
+        public string UserId { get; set; }
+
+        [XmlAttribute()]
+        public string UserLogin { get; set; }
+
+        [XmlAttribute()]
+        public string UserName { get; set; }
+
+        [XmlAttribute()]
+        public string UserEmailAddress { get; set; }
+    }
+
+    /// <summary>
+    /// FileVersionDataType 2.3.1.43
+    /// </summary>
+    public class FileVersionDataType
+    {
+        [XmlAttribute()]
+        public string IsCurrent { get; set; }
+
+        [XmlAttribute()]
+        public string Number { get; set; }
+
+        [XmlAttribute()]
+        public string LastModifiedTime { get; set; }
+
+        [XmlAttribute()]
+        public string UserId { get; set; }
+
+        [XmlElementAttribute()]
+        public EventType Events { get; set; }
+    }
+
+    /// <summary>
+    /// EventType subelement type defined in 2.3.1.43
+    /// </summary>
+    public class EventType
+    {
+        [XmlElementAttribute()]
+        public FileVersionEventDataType[] Event { get; set; }
+    }
+
+    /// <summary>
+    /// FileVersionEventDataType 2.3.1.44
+    /// </summary>
+    public class FileVersionEventDataType
+    {
+        [XmlAttribute()]
+        public string Id { get; set; }
+
+        [XmlAttribute()]
+        public string Type { get; set; }
+
+        [XmlAttribute()]
+        public string CreateTime { get; set; }
+
+        [XmlAttribute()]
+        public string UserId { get; set; }
     }
 
     /// <summary>
@@ -673,6 +862,23 @@ namespace FSSHTTPandWOPIInspector.Parsers
     }
 
     /// <summary>
+    /// The FileOperationRequestTypes is used to represent the type of file operation subrequest. Defined in 2.3.2.8
+    /// </summary>
+    public enum FileOperationRequestTypes
+    {
+        Rename,
+    }
+
+    /// <summary>
+    /// The VersioningRequestTypes is used to represent the type of Versioning subrequest. Defined in 2.3.2.9
+    /// </summary>
+    public enum VersioningRequestTypes
+    {
+        GetVersionList,
+        RestoreVersion,
+    }
+
+    /// <summary>
     ///  Represent the type of cell storage service subrequest.Defined in 2.2.5.11
     /// </summary>
     public enum SubRequestAttributeType
@@ -686,6 +892,11 @@ namespace FSSHTTPandWOPIInspector.Parsers
         GetDocMetaInfo,
         GetVersions,
         EditorsTable,
+        AmIAlone,
+        LockStatus,
+        FileOperation,
+        Versioning,
+        Properties,
     }
 
     /// <summary>
@@ -698,5 +909,6 @@ namespace FSSHTTPandWOPIInspector.Parsers
         OnFail,
         OnNotSupported,
         OnSuccessOrNotSupported,
+        Invalid, //MSFSSHTTP2010 #531
     }
 }

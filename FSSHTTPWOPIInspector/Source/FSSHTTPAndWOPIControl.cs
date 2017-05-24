@@ -16,6 +16,10 @@ namespace FSSHTTPandWOPIInspector
            {
                 return this.TreeView;
            }
+            set
+            {
+                this.TreeView = value;
+            }
         }
 
         public HexBox FSSHTTPandWOPIHexBox
@@ -34,11 +38,11 @@ namespace FSSHTTPandWOPIInspector
             }
         }
 
-        public SplitContainer FSSHTTPandWOPISplitContainer
+        public ContainerControl FSSHTTPandWOPIContainer
         {
             get
             {
-                return this.splitContainer;
+                return this.Container;
             }
         }
     }

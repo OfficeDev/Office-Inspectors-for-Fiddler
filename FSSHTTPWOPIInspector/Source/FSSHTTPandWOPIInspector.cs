@@ -55,6 +55,21 @@ namespace FSSHTTPandWOPIInspector
         public List<byte[]> FSSHTTPBBytes { get; set; }
 
         /// <summary>
+        /// Bool value indicate wether errorCode in FSSHTTP response is duplicate
+        /// </summary>
+        public bool isErrorCodeDuplicate;
+
+        /// <summary>
+        /// string value used record the validation error information
+        /// </summary>
+        public static string validationErrors;
+
+        /// <summary>
+        /// Boolean value to check whether next frame is editors table element
+        /// </summary>
+        public static bool isNextEditorTable;
+
+        /// <summary>
         /// Gets the direction of the traffic
         /// </summary>
         public TrafficDirection Direction
@@ -138,10 +153,12 @@ namespace FSSHTTPandWOPIInspector
             this.FSSHTTPandWOPIControl.FSSHTTPandWOPIRichTextBox.Clear();
             this.FSSHTTPandWOPIControl.FSSHTTPandWOPIHexBox.Visible = false;
             this.FSSHTTPBBytes = new List<byte[]>();
+            this.isErrorCodeDuplicate = false;
             byte[] empty = new byte[0];
             this.FSSHTTPandWOPIControl.FSSHTTPandWOPIHexBox.ByteProvider = new StaticByteProvider(empty);
             this.FSSHTTPandWOPIControl.FSSHTTPandWOPIHexBox.ByteProvider.ApplyChanges();
-            this.FSSHTTPandWOPIControl.FSSHTTPandWOPISplitContainer.Panel2Collapsed = true;
+            //this.FSSHTTPandWOPIControl.FSSHTTPandWOPISplitContainer.Panel2Collapsed = true;
+            //this.FSSHTTPandWOPIControl.FSSHTTPandWOPISplit.Visible = false;
         }
 
         /// <summary>
@@ -218,6 +235,7 @@ namespace FSSHTTPandWOPIInspector
         public object ParseHTTPPayloadForFSSHTTP(HTTPHeaders responseHeaders, byte[] bytesFromHTTP, TrafficDirection direction)
         {
             object objectOut = null;
+            string soapbody = "";
             byte[] emptyByte = new byte[0];
 
             if (bytesFromHTTP == null || bytesFromHTTP.Length == 0)
@@ -240,7 +258,7 @@ namespace FSSHTTPandWOPIInspector
                 if (SOAPRegex.Match(text).Success)
                 {
                     XmlDocument doc = new XmlDocument();
-                    string soapbody = SOAPRegex.Match(text).Value;
+                    soapbody = SOAPRegex.Match(text).Value;
 
                     if (direction == TrafficDirection.In)
                     {
@@ -273,6 +291,19 @@ namespace FSSHTTPandWOPIInspector
                 }
                 return objectOut;
             }
+            catch (InvalidOperationException e)
+            {
+                if (e.InnerException.Message.Contains("ErrorCode") && e.InnerException.StackTrace.Contains("AttributeDuplCheck"))
+                {
+                    objectOut = soapbody;
+                    isErrorCodeDuplicate = true;
+                }
+                else
+                {
+                    objectOut = e.ToString();
+                }
+                return objectOut;
+            }
             catch (Exception ex)
             {
                 objectOut = ex.ToString();
@@ -292,6 +323,7 @@ namespace FSSHTTPandWOPIInspector
         public object ParseHTTPPayloadForWOPI(HTTPHeaders requestHeaders, HTTPHeaders responseHeaders, string url, byte[] bytesFromHTTP, out string binaryStructureRopName, TrafficDirection direction)
         {
             object objectOut = null;
+            string res = "";
             binaryStructureRopName = string.Empty;
             try
             {
@@ -320,24 +352,52 @@ namespace FSSHTTPandWOPIInspector
                         case WOPIOperations.ExecuteCellStorageRequest:
                             byte[] cellreq = bytesFromHTTP;
                             MemoryStream ms;
-                            if (requestHeaders.Exists("Content-Encoding") && requestHeaders["Content-Encoding"] == "gzip")
+                            string req;
+                            if (text.Contains("<s:Envelope"))
                             {
-                                cellreq = Fiddler.Utilities.GzipExpand(cellreq);
-                                ms = new MemoryStream(cellreq);
+                                if (requestHeaders.Exists("Content-Encoding") && requestHeaders["Content-Encoding"] == "gzip")
+                                {
+                                    cellreq = Fiddler.Utilities.GzipExpand(cellreq);
+                                    ms = new MemoryStream(cellreq);
+                                }
+                                else
+                                {
+                                    ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(text ?? ""));
+                                }
+                                XmlSerializer serializer = new XmlSerializer(typeof(RequestEnvelope));
+                                RequestEnvelope Envelop = (RequestEnvelope)serializer.Deserialize(ms);
+                                objectOut = Envelop.Body;
+
+                                if (Envelop.Body.RequestCollection != null)
+                                {
+                                    TryParseFSSHTTPBRequestMessage(Envelop.Body.RequestCollection.Request, bytesFromHTTP);
+                                }
+                                break;
                             }
                             else
                             {
-                                ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(text ?? ""));
-                            }
-                            XmlSerializer serializer = new XmlSerializer(typeof(RequestEnvelope));
-                            RequestEnvelope requestEnvelop = (RequestEnvelope)serializer.Deserialize(ms);
-                            objectOut = requestEnvelop.Body;
+                                if (requestHeaders.Exists("Content-Encoding") && requestHeaders["Content-Encoding"] == "gzip")
+                                {
+                                    cellreq = Fiddler.Utilities.GzipExpand(cellreq);
+                                    string req_sub = System.Text.Encoding.UTF8.GetString(cellreq);
+                                    req = string.Format("{0}{1}{2}", @"<Body>", req_sub, "</Body>");
+                                }
+                                else
+                                {
+                                    req = string.Format("{0}{1}{2}", @"<Body>", text, "</Body>");
+                                }
+                                ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(req ?? ""));
+                                XmlSerializer serializer = new XmlSerializer(typeof(RequestEnvelopeBody));
+                                RequestEnvelopeBody body = (RequestEnvelopeBody)serializer.Deserialize(ms);
+                                objectOut = body;
 
-                            if (requestEnvelop.Body.RequestCollection != null)
-                            {
-                                TryParseFSSHTTPBRequestMessage(requestEnvelop.Body.RequestCollection.Request, bytesFromHTTP);
+                                if (body.RequestCollection != null)
+                                {
+                                    TryParseFSSHTTPBRequestMessage(body.RequestCollection.Request, bytesFromHTTP);
+                                }
+                                break;
                             }
-                            break;
+
                         case WOPIOperations.PutUserInfo:
                             objectOut = text;
                             break;
@@ -400,7 +460,6 @@ namespace FSSHTTPandWOPIInspector
                             {
                                 byte[] cellres = bytesFromHTTP;
                                 MemoryStream ms;
-                                string res;
                                 if (responseHeaders.Exists("Content-Encoding") && responseHeaders["Content-Encoding"] == "gzip")
                                 {
                                     cellres = Fiddler.Utilities.GzipExpand(cellres);
@@ -445,6 +504,19 @@ namespace FSSHTTPandWOPIInspector
                 }
                 return objectOut;
             }
+            catch (InvalidOperationException e)
+            {
+                if (e.InnerException.Message.Contains("ErrorCode") && e.InnerException.StackTrace.Contains("AttributeDuplCheck"))
+                {
+                    objectOut = res;
+                    isErrorCodeDuplicate = true;
+                }
+                else
+                {
+                    objectOut = e.ToString();
+                }
+                return objectOut;
+            }
             catch (Exception ex)
             {
                 objectOut = ex.ToString();
@@ -462,8 +534,12 @@ namespace FSSHTTPandWOPIInspector
             if (Requests == null)
                 return;
 
+            byte[][] includeTexts = GetOctetsBinaryForXOP(bytesFromHTTP, true).ToArray();
+            int index = 0;
+
             foreach (Request req in Requests)
             {
+
                 if (req.SubRequest != null && req.SubRequest.Length > 0)
                 {
                     foreach (SubRequestElementGenericType subreq in req.SubRequest)
@@ -485,9 +561,7 @@ namespace FSSHTTPandWOPIInspector
 
                             if (subreq.SubRequestData.Include != null)
                             {
-                                string binaryOctets = GetOctetsBinaryForXOP(bytesFromHTTP);
-                                byte[] FSSHTTPBIncludeBytes = GetFSSHTTPBBytesForXOP(binaryOctets, bytesFromHTTP);
-
+                                byte[] FSSHTTPBIncludeBytes = includeTexts[index++];
                                 FsshttpbRequest Fsshttpbreq = (FsshttpbRequest)ParseFSSHTTPBBytes(FSSHTTPBIncludeBytes, TrafficDirection.In);
                                 subreq.SubRequestData.IncludeObject = Fsshttpbreq;
                                 FSSHTTPBBytes.Add(FSSHTTPBIncludeBytes);
@@ -507,6 +581,9 @@ namespace FSSHTTPandWOPIInspector
         {
             if (Responses == null)
                 return;
+
+            byte[][] includeTexts = GetOctetsBinaryForXOP(bytesFromHTTP, false).ToArray();
+            int index = 0;
 
             foreach (Response res in Responses)
             {
@@ -528,9 +605,7 @@ namespace FSSHTTPandWOPIInspector
 
                         if (subres.SubResponseData.Include != null)
                         {
-                            string binaryOctets = GetOctetsBinaryForXOP(bytesFromHTTP);
-                            byte[] FSSHTTPBIncludeBytes = GetFSSHTTPBBytesForXOP(binaryOctets, bytesFromHTTP);
-
+                            byte[] FSSHTTPBIncludeBytes = includeTexts[index++];
                             FsshttpbResponse Fsshttpbres = (FsshttpbResponse)ParseFSSHTTPBBytes(FSSHTTPBIncludeBytes, TrafficDirection.Out);
                             subres.SubResponseData.IncludeObject = Fsshttpbres;
                             FSSHTTPBBytes.Add(FSSHTTPBIncludeBytes);
@@ -588,27 +663,73 @@ namespace FSSHTTPandWOPIInspector
         /// <param name="RopNameforBinaryStructure">The string value used to as the name of tree node for object which is bianry value</param>
         public void DisplayObject(object obj, string RopNameforBinaryStructure)
         {
-            if (obj == null)
+            try
             {
-                return;
+                if (obj == null)
+                {
+                    return;
+                }
+                else if (obj.GetType().Name == "String")
+                {
+                    this.FSSHTTPandWOPIViewControl.BeginUpdate();
+                    this.FSSHTTPandWOPIControl.FSSHTTPandWOPIRichTextBox.Visible = true;
+
+                    if (isErrorCodeDuplicate)
+                    {
+                        string[] xmlFragments = obj.ToString().Split(new[] { '>' }, StringSplitOptions.RemoveEmptyEntries);
+                        int startNum = 0;
+                        int endNum = 0;
+                        for (int i = 0; i < xmlFragments.Length; i++)
+                        {
+                            xmlFragments[i] += ">";
+                            if (xmlFragments[i].Contains("</"))
+                            {
+                                endNum += 1;
+                            }
+                            int n = startNum - endNum;
+                            while (n > 0)
+                            {
+                                this.FSSHTTPandWOPIControl.FSSHTTPandWOPIRichTextBox.AppendText("    ");
+                                n--;
+                            }
+                            this.FSSHTTPandWOPIControl.FSSHTTPandWOPIRichTextBox.AppendText(xmlFragments[i]);
+                            this.FSSHTTPandWOPIControl.FSSHTTPandWOPIRichTextBox.AppendText("\n");
+                            if (!xmlFragments[i].Contains("</"))
+                            {
+                                startNum += 1;
+                            }
+
+                            if (xmlFragments[i].Contains("/>"))
+                            {
+                                endNum += 1;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        this.FSSHTTPandWOPIControl.FSSHTTPandWOPIRichTextBox.Text = obj.ToString();
+                    }
+
+                    this.FSSHTTPandWOPIViewControl.EndUpdate();
+                }
+                else
+                {
+                    this.FSSHTTPandWOPIViewControl.BeginUpdate();
+                    TreeAndHexViewAdjust(false);
+                    TreeNode topNode = BaseStructure.ObjectToTreeNode(obj, RopNameforBinaryStructure);
+                    topNode = BaseStructure.RemoveAnySpecifiedTreeNode(topNode);
+                    int index = 1;
+                    topNode = BaseStructure.AddserialNumForFSSHTTPBTreeNode(topNode, ref index);
+                    this.FSSHTTPandWOPIViewControl.Nodes.Add(topNode);
+                    this.FSSHTTPandWOPIViewControl.Nodes[this.FSSHTTPandWOPIViewControl.Nodes.Count - 1].EnsureVisible();
+                    topNode.ExpandAll();
+                    this.FSSHTTPandWOPIViewControl.EndUpdate();
+                }
             }
-            else if (obj.GetType().Name == "String")
+            catch (Exception e)
             {
-                this.FSSHTTPandWOPIViewControl.BeginUpdate();
                 this.FSSHTTPandWOPIControl.FSSHTTPandWOPIRichTextBox.Visible = true;
-                this.FSSHTTPandWOPIControl.FSSHTTPandWOPIRichTextBox.Text = obj.ToString();
-                this.FSSHTTPandWOPIViewControl.EndUpdate();
-            }
-            else
-            {
-                this.FSSHTTPandWOPIViewControl.BeginUpdate();
-                TreeNode topNode = BaseStructure.ObjectToTreeNode(obj, RopNameforBinaryStructure);
-                topNode = BaseStructure.RemoveAnySpecifiedTreeNode(topNode);
-                int index = 1;
-                topNode = BaseStructure.AddserialNumForFSSHTTPBTreeNode(topNode, ref index);
-                this.FSSHTTPandWOPIViewControl.Nodes.Add(topNode);
-                this.FSSHTTPandWOPIViewControl.Nodes[this.FSSHTTPandWOPIViewControl.Nodes.Count - 1].EnsureVisible();
-                topNode.ExpandAll();
+                this.FSSHTTPandWOPIControl.FSSHTTPandWOPIRichTextBox.Text = e.Message;
                 this.FSSHTTPandWOPIViewControl.EndUpdate();
             }
         }
@@ -702,6 +823,8 @@ namespace FSSHTTPandWOPIInspector
                         return WOPIOperations.RevokeRestrictedLink;
                     case "PUT":
                         return WOPIOperations.PutFile;
+                    case "RENAME_FILE":
+                        return WOPIOperations.RenameFile;
                     case "LOCK":
                         if (headers.Exists("X-WOPI-OldLock"))
                         {
@@ -769,9 +892,31 @@ namespace FSSHTTPandWOPIInspector
                 {
                     this.FSSHTTPandWOPIControl.FSSHTTPandWOPIHexBox.ByteProvider = new StaticByteProvider(FSSHTTPBBytes[((BaseStructure.Position)e.Node.Tag).Num - 1]); ;
                     this.FSSHTTPandWOPIControl.FSSHTTPandWOPIHexBox.Select(((BaseStructure.Position)e.Node.Tag).StartIndex, ((BaseStructure.Position)e.Node.Tag).Offset);
+
+                    TreeAndHexViewAdjust(true, this.FSSHTTPandWOPIControl.FSSHTTPandWOPIHexBox.Visible);
                     this.FSSHTTPandWOPIControl.FSSHTTPandWOPIHexBox.Visible = true;
-                    this.FSSHTTPandWOPIControl.FSSHTTPandWOPISplitContainer.Panel2Collapsed = false;
                 }
+            }
+        }
+
+        /// <summary>
+        /// The method is used to adjust two views size
+        /// </summary>
+        /// <param name="showHexView">A bool indicates whether hexview is appear.</param>
+        void TreeAndHexViewAdjust(bool showHexView, bool Visible = false)
+        {
+            if (showHexView)
+            {
+                if (!Visible)
+                {
+                    this.FSSHTTPandWOPIControl.FSSHTTPandWOPIHexBox.Size = new System.Drawing.Size(350, 475);
+                    this.FSSHTTPandWOPIControl.FSSHTTPandWOPITreeView.Size = new System.Drawing.Size(622, 475);
+                }
+            }
+            else
+            {
+                this.FSSHTTPandWOPIControl.FSSHTTPandWOPIHexBox.Size = new System.Drawing.Size(2, 475);
+                this.FSSHTTPandWOPIControl.FSSHTTPandWOPITreeView.Size = new System.Drawing.Size(1700, 475);
             }
         }
 
@@ -795,58 +940,78 @@ namespace FSSHTTPandWOPIInspector
         /// Get the string of octets binary in XOP package
         /// </summary>
         /// <param name="bytesFromHTTP">The raw data from HTTP layer</param>
-        /// <returns>string of the octets binary, the string value is equal to the Hex value of binary</returns>
-        public string GetOctetsBinaryForXOP(byte[] bytesFromHTTP)
+        /// <param name="IncludeTextLength">Out the length of octets binary</param>
+        /// <returns>A int value indicate the position of the octets binary in the bytesFromHTTP</returns>
+        public List<byte[]> GetOctetsBinaryForXOP(byte[] bytesFromHTTP, bool isRequest)
         {
-            Regex contentInBoundaryRegex = new Regex(@"(?<=2d2d)[\s\S]*(?=2d2d)"); // Accroding to [XOP10] "--" indicate the --MIME_boundary, and for each XOP package, there are 4 MIME_boundary, so this regex is used to get content between the first and the last MIME_boundary. 
-            Regex secondBoundaryRegex = new Regex(@"2d2d[\s\S]*(?=2d2d)"); //This regex is used to get content behind the second boundary.
-            Regex binaryOctetsRegex = new Regex(@"2d2d[\s\S]*0d0a0d0a"); // This regex is used to get the binary octets.
-            string binaryOctets = string.Empty;
             string HexString = BytearrayToString(bytesFromHTTP);
-
-            if (contentInBoundaryRegex.Match(HexString).Success)
+            Regex MIMEBoundaryRegex;
+            Regex octetsBinaryRegex;
+            bool bounaryContainUrn = true;
+            if (isRequest)
             {
-                string contentInBoundary = contentInBoundaryRegex.Match(HexString).Value;
-                if (secondBoundaryRegex.Match(contentInBoundary).Success)
+                MIMEBoundaryRegex = new Regex(@"2d2d75726e3a75756964");// MIME bounary is --urn:uuid
+                octetsBinaryRegex = new Regex(@"2d2d75726e3a75756964([\s\S]*?)(?=2d2d75726e3a75756964)");// This regex is used to get substring between two --urn:uuid.
+                if (MIMEBoundaryRegex.Matches(HexString).Count == 0)
                 {
-                    string contentBehindsecondBoundary = secondBoundaryRegex.Match(contentInBoundary).Value;
-                    if (binaryOctetsRegex.Match(contentBehindsecondBoundary).Success)
-                    {
-                        binaryOctets = binaryOctetsRegex.Replace(contentBehindsecondBoundary, string.Empty);
-                    }
-                    else
-                    {
-                        throw new Exception("Can't find FSSHTTPB resource.");
-                    }
-                }
-                else
-                {
-                    throw new Exception("Can't find FSSHTTPB resource.");
+                    MIMEBoundaryRegex = new Regex(@"2d2d75756964");// MIME bounary is --uuid
+                    octetsBinaryRegex = new Regex(@"2d2d75756964([\s\S]*?)(?=2d2d75756964)");// This regex is used to get substring between two --uuid.
+                    bounaryContainUrn = false;
                 }
             }
             else
             {
-                throw new Exception("Can't find FSSHTTPB resource.");
+                MIMEBoundaryRegex = new Regex(@"2d2d75756964");// MIME bounary is --uuid
+                octetsBinaryRegex = new Regex(@"2d2d75756964([\s\S]*?)(?=2d2d75756964)");// This regex is used to get substring between two --uuid.
             }
-            return binaryOctets;
-        }
 
-        /// <summary>
-        /// Get the byte array of the octets binary in XOP package
-        /// </summary>
-        /// <param name="OctetsBinaryString">string of the octets binary</param>
-        /// <param name="bytesFromHTTP">The raw data from HTTP layer</param>
-        /// <returns>the byte array of the octets binary in XOP package, also is the FSSHTTPB bytes</returns>
-        public byte[] GetFSSHTTPBBytesForXOP(string OctetsBinaryString, byte[] bytesFromHTTP)
-        {
-            string HexString = BytearrayToString(bytesFromHTTP);
-            byte[] FSSHTTPBBytes = new byte[OctetsBinaryString.Length / 2];
-
-            for (int i = 0; i < OctetsBinaryString.Length / 2; i++)
+            Regex IncludeRegex = new Regex(@"2d2d[\s\S]*0d0a0d0a"); // This regex is used to get the Include text(octets Binary minus include Header)
+            List<byte[]> IncludeTexts = new List<byte[]>();
+            if (MIMEBoundaryRegex.Matches(HexString).Count >= 3)
             {
-                FSSHTTPBBytes[i] = (byte)bytesFromHTTP[i + HexString.IndexOf(OctetsBinaryString) / 2];
+                // remove first MIME bounary from HexString
+                string firstMIMEBoundary = MIMEBoundaryRegex.Match(HexString).Value;
+                HexString = MIMEBoundaryRegex.Replace(HexString, string.Empty, 1);
+                int HistoryPosition = 0;
+                if (isRequest && bounaryContainUrn)
+                {
+                    HistoryPosition = 10; // 10 is the length of first --urn:uuid in bytesFromHTTP, it has been removed in HexString
+                }
+                else
+                {
+                    HistoryPosition = 6; // 6 is the length of first --uuid in bytesFromHTTP, it has been removed in HexString
+                }
+
+                int MIMEBoundaryEaroIndex = 0;
+                int LastIncludeLength = 0;
+                // Get all include text binary
+                while (octetsBinaryRegex.Matches(HexString).Count > 0)
+                {
+                    string octetsBinary = octetsBinaryRegex.Match(HexString).Value;
+                    string includeHeader = IncludeRegex.Match(octetsBinary).Value;
+                    string includeText = IncludeRegex.Replace(octetsBinary, string.Empty, 1);
+                    int ThisIncludePosition = HexString.IndexOf(includeText) / 2;// One char in byte array as a string 
+                    int ThisIncludeLength = includeText.Length / 2 - 2; // (-2) because behinde every include text there is a 0D0A
+
+                    byte[] includeByte = new byte[ThisIncludeLength];
+                    if (MIMEBoundaryEaroIndex == 0)
+                    {
+                        HistoryPosition += ThisIncludePosition;
+
+                    }
+                    else
+                    {
+                        HistoryPosition += (LastIncludeLength + includeHeader.Length / 2 + 2);// (+2) because behinde every include text there is a 0D0A
+                    }
+                    LastIncludeLength = ThisIncludeLength;
+                    Array.Copy(bytesFromHTTP, HistoryPosition, includeByte, 0, ThisIncludeLength);
+                    IncludeTexts.Add(includeByte);
+                    HexString = octetsBinaryRegex.Replace(HexString, string.Empty, 1);
+                    MIMEBoundaryEaroIndex++;
+                }
+                return IncludeTexts;
             }
-            return FSSHTTPBBytes;
+            return IncludeTexts;
         }
 
         /// <summary>
@@ -869,14 +1034,18 @@ namespace FSSHTTPandWOPIInspector
         }
 
         /// <summary>
-        /// Enable the WOPIAndHTTPHexView
+        /// Validation Message box method
         /// </summary>
-        /// <param name="FSSHTTPBBytes">The raw data for FSSHTTPB protocol </param>
-        public void EnalbeWOPIAndHTTPHexView(byte[] FSSHTTPBBytes)
+        public void ShowMessageValidation()
         {
-            this.FSSHTTPandWOPIControl.FSSHTTPandWOPIHexBox.Visible = true;
-            this.FSSHTTPandWOPIControl.FSSHTTPandWOPIHexBox.ByteProvider = new StaticByteProvider(FSSHTTPBBytes);
-            this.FSSHTTPandWOPIControl.FSSHTTPandWOPISplitContainer.Panel2Collapsed = false;
+            string caption = "Validation error";
+            MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+            DialogResult result;
+            result = MessageBox.Show(validationErrors, caption, buttons);
+            if (result == DialogResult.Yes)
+            {
+
+            }
         }
         #endregion
     }
