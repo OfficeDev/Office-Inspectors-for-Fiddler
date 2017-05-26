@@ -51,6 +51,8 @@ public static BindUIColumn("MS Protocol")
             return "RevokeRestrictedLink";
             case "PUT":
             return "PutFile";
+	    case "RENAME_FILE":
+            return "RenameFile";
             case "LOCK":
             if (sParams.RequestHeaders.Exists("X-WOPI-OldLock"))
             {
