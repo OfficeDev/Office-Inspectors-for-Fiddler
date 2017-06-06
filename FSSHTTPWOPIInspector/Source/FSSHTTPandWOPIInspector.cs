@@ -60,11 +60,6 @@ namespace FSSHTTPandWOPIInspector
         public bool isErrorCodeDuplicate;
 
         /// <summary>
-        /// string value used record the validation error information
-        /// </summary>
-        public static string validationErrors;
-
-        /// <summary>
         /// Boolean value to check whether next frame is editors table element
         /// </summary>
         public static bool isNextEditorTable;
@@ -1031,21 +1026,6 @@ namespace FSSHTTPandWOPIInspector
                 return true;
             }
             return false;
-        }
-
-        /// <summary>
-        /// Validation Message box method
-        /// </summary>
-        public void ShowMessageValidation()
-        {
-            string caption = "Validation error";
-            MessageBoxButtons buttons = MessageBoxButtons.YesNo;
-            DialogResult result;
-            result = MessageBox.Show(validationErrors, caption, buttons);
-            if (result == DialogResult.Yes)
-            {
-
-            }
         }
         #endregion
     }
