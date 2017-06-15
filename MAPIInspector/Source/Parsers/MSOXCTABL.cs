@@ -68,7 +68,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSetColumnsRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSetColumnsRequest structure.</param>
+        /// <param name="s">A stream containing RopSetColumnsRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -109,7 +109,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSetColumns structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSetColumns structure.</param>
+        /// <param name="s">A stream containing RopSetColumns structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -160,7 +160,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSortTableRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSortTableRequest structure.</param>
+        /// <param name="s">A stream containing RopSortTableRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -203,7 +203,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSortTableResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSortTableResponse structure.</param>
+        /// <param name="s">A stream containing RopSortTableResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -248,7 +248,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopRestrictRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopRestrictRequest structure.</param>
+        /// <param name="s">A stream containing RopRestrictRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -287,7 +287,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopRestrictResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopRestrictResponse structure.</param>
+        /// <param name="s">A stream containing RopRestrictResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -332,7 +332,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopQueryRowsRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopQueryRowsRequest structure.</param>
+        /// <param name="s">A stream containing RopQueryRowsRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -384,7 +384,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopQueryRows structure.
         /// </summary>
-        /// <param name="s">An stream containing RopQueryRows structure.</param>
+        /// <param name="s">A stream containing RopQueryRows structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -444,7 +444,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopAbortRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopAbortRequest structure.</param>
+        /// <param name="s">A stream containing RopAbortRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -475,7 +475,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopAbortResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopAbortResponse structure.</param>
+        /// <param name="s">A stream containing RopAbortResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -511,7 +511,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopGetStatusRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopGetStatusRequest structure.</param>
+        /// <param name="s">A stream containing RopGetStatusRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -542,7 +542,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopGetStatusResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopGetStatusResponse structure.</param>
+        /// <param name="s">A stream containing RopGetStatusResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -578,7 +578,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopQueryPositionRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopQueryPositionRequest structure.</param>
+        /// <param name="s">A stream containing RopQueryPositionRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -612,7 +612,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopQueryPositionResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopQueryPositionResponse structure.</param>
+        /// <param name="s">A stream containing RopQueryPositionResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -658,7 +658,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSeekRowRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSeekRowRequest structure.</param>
+        /// <param name="s">A stream containing RopSeekRowRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -695,7 +695,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSeekRowResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSeekRowResponse structure.</param>
+        /// <param name="s">A stream containing RopSeekRowResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -744,7 +744,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSeekRowBookmarkRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSeekRowBookmarkRequest structure.</param>
+        /// <param name="s">A stream containing RopSeekRowBookmarkRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -785,7 +785,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSeekRowBookmarkResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSeekRowBookmarkResponse structure.</param>
+        /// <param name="s">A stream containing RopSeekRowBookmarkResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -829,7 +829,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSeekRowFractionalRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSeekRowFractionalRequest structure.</param>
+        /// <param name="s">A stream containing RopSeekRowFractionalRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -858,7 +858,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSeekRowFractionalResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSeekRowFractionalResponse structure.</param>
+        /// <param name="s">A stream containing RopSeekRowFractionalResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -889,7 +889,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopCreateBookmarkRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopCreateBookmarkRequest structure.</param>
+        /// <param name="s">A stream containing RopCreateBookmarkRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -923,7 +923,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopCreateBookmarkResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopCreateBookmarkResponse structure.</param>
+        /// <param name="s">A stream containing RopCreateBookmarkResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -960,7 +960,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopQueryColumnsAllRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopQueryColumnsAllRequest structure.</param>
+        /// <param name="s">A stream containing RopQueryColumnsAllRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -994,7 +994,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopQueryColumnsAllResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopQueryColumnsAllResponse structure.</param>
+        /// <param name="s">A stream containing RopQueryColumnsAllResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1056,7 +1056,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFindRow structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFindRow structure.</param>
+        /// <param name="s">A stream containing RopFindRow structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1116,7 +1116,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFindRowResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFindRowResponse structure.</param>
+        /// <param name="s">A stream containing RopFindRowResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1174,7 +1174,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFreeBookmarkRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFreeBookmarkRequest structure.</param>
+        /// <param name="s">A stream containing RopFreeBookmarkRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1204,7 +1204,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFreeBookmarkResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFreeBookmarkResponse structure.</param>
+        /// <param name="s">A stream containing RopFreeBookmarkResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1235,7 +1235,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopResetTableRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopResetTableRequest structure.</param>
+        /// <param name="s">A stream containing RopResetTableRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1263,7 +1263,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopResetTableResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopResetTableResponse structure.</param>
+        /// <param name="s">A stream containing RopResetTableResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1300,7 +1300,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopExpandRowRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopExpandRowRequest structure.</param>
+        /// <param name="s">A stream containing RopExpandRowRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1351,7 +1351,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopExpandRowResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopExpandRowResponse structure.</param>
+        /// <param name="s">A stream containing RopExpandRowResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1399,7 +1399,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopCollapseRowRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopCollapseRowRequest structure.</param>
+        /// <param name="s">A stream containing RopCollapseRowRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1431,7 +1431,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopCollapseRowResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopCollapseRowResponse structure.</param>
+        /// <param name="s">A stream containing RopCollapseRowResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1473,7 +1473,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopGetCollapseStateRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopGetCollapseStateRequest structure.</param>
+        /// <param name="s">A stream containing RopGetCollapseStateRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1509,7 +1509,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopGetCollapseStateResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopGetCollapseStateResponse structure.</param>
+        /// <param name="s">A stream containing RopGetCollapseStateResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1552,7 +1552,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSetCollapseStateRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSetCollapseStateRequest structure.</param>
+        /// <param name="s">A stream containing RopSetCollapseStateRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1588,7 +1588,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSetCollapseStateResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSetCollapseStateResponse structure.</param>
+        /// <param name="s">A stream containing RopSetCollapseStateResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);

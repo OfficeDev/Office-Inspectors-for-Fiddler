@@ -38,7 +38,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -108,7 +108,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -173,14 +173,14 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
 
             this.Flags = ReadUint();
             this.RopBufferSize = ReadUint();
-            this.RopBuffer = new rgbInputBuffer();
+            this.RopBuffer = new rgbInputBuffer(this.RopBufferSize);
             this.RopBuffer.Parse(s);
             this.MaxRopOut = ReadUint();
             this.AuxiliaryBufferSize = ReadUint();
@@ -233,7 +233,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -283,7 +283,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -329,7 +329,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -424,7 +424,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -483,7 +483,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -543,7 +543,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -593,7 +593,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -640,7 +640,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -702,7 +702,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">An stream of HTTP payload of session</param>
+        /// <param name="s">A stream of HTTP payload of session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -766,7 +766,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the CompareMinIdsResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing CompareMinIdsResponse structure.</param>
+        /// <param name="s">A stream containing CompareMinIdsResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -827,7 +827,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the DnToMinIdRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing DnToMinIdRequest structure.</param>
+        /// <param name="s">A stream containing DnToMinIdRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -891,7 +891,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the DnToMinIdResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing DnToMinIdResponse structure.</param>
+        /// <param name="s">A stream containing DnToMinIdResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -954,7 +954,7 @@ namespace MAPIInspector.Parsers
         public bool HasMinimalIds;
 
         // An unsigned integer that specifies the number of structures present in the MinimalIds field. 
-        public uint MinimalIdCount;
+        public uint? MinimalIdCount;
 
         // An array of MinimalEntryID structures ([MS-OXNSPI] section 2.2.9.1) that constitute an Explicit Table. 
         public MinimalEntryID[] MinimalIds;
@@ -972,10 +972,10 @@ namespace MAPIInspector.Parsers
         public bool HasPropertyName;
 
         // The GUID of the property to be opened. 
-        public Guid PropertyNameGuid;
+        public Guid? PropertyNameGuid;
 
         // A 4-byte value that specifies the ID of the property to be opened. 
-        public uint PropertyNameId;
+        public uint? PropertyNameId;
 
         // An unsigned integer that specifies the number of rows the client is requesting.
         public uint RowCount;
@@ -995,7 +995,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetMatchesRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing GetMatchesRequest structure.</param>
+        /// <param name="s">A stream containing GetMatchesRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1116,7 +1116,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetMatchesResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing GetMatchesResponse structure.</param>
+        /// <param name="s">A stream containing GetMatchesResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1134,8 +1134,8 @@ namespace MAPIInspector.Parsers
                 this.HasState = ReadBoolean();
                 if (this.HasState)
                 {
-                    STAT stat = new STAT();
-                    stat.Parse(s);
+                    this.State = new STAT();
+                    this.State.Parse(s);
                 }
                 this.HasMinimalIds = ReadBoolean();
                 if (this.HasMinimalIds)
@@ -1202,7 +1202,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetPropListRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing GetPropListRequest structure.</param>
+        /// <param name="s">A stream containing GetPropListRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1251,7 +1251,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetPropListResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing GetPropListResponse structure.</param>
+        /// <param name="s">A stream containing GetPropListResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1315,7 +1315,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetPropsRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing GetPropsRequest structure.</param>
+        /// <param name="s">A stream containing GetPropsRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1376,7 +1376,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetPropsResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing GetPropsResponse structure.</param>
+        /// <param name="s">A stream containing GetPropsResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1441,7 +1441,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetSpecialTableRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing GetSpecialTableRequest structure.</param>
+        /// <param name="s">A stream containing GetSpecialTableRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1510,7 +1510,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetSpecialTableResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing GetSpecialTableResponse structure.</param>
+        /// <param name="s">A stream containing GetSpecialTableResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1589,7 +1589,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetTemplateInfoRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing GetTemplateInfoRequest structure.</param>
+        /// <param name="s">A stream containing GetTemplateInfoRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1647,7 +1647,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetTemplateInfoResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing GetTemplateInfoResponse structure.</param>
+        /// <param name="s">A stream containing GetTemplateInfoResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1713,7 +1713,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ModLinkAttRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing ModLinkAttRequest structure.</param>
+        /// <param name="s">A stream containing ModLinkAttRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1781,7 +1781,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ModLinkAttResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing ModLinkAttResponse structure.</param>
+        /// <param name="s">A stream containing ModLinkAttResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1845,7 +1845,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ModPropsRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing ModPropsRequest structure.</param>
+        /// <param name="s">A stream containing ModPropsRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1903,7 +1903,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ModPropsResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing ModPropsResponse structure.</param>
+        /// <param name="s">A stream containing ModPropsResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1967,7 +1967,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the QueryRowsRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing QueryRowsRequest structure.</param>
+        /// <param name="s">A stream containing QueryRowsRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2048,7 +2048,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the QueryRowsResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing QueryRowsResponse structure.</param>
+        /// <param name="s">A stream containing QueryRowsResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2116,7 +2116,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the QueryColumnsRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing QueryColumnsRequest structure.</param>
+        /// <param name="s">A stream containing QueryColumnsRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2162,7 +2162,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the QueryColumnsResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing QueryColumnsResponse structure.</param>
+        /// <param name="s">A stream containing QueryColumnsResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2234,7 +2234,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ResolveNamesRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing ResolveNamesRequest structure.</param>
+        /// <param name="s">A stream containing ResolveNamesRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2316,7 +2316,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ResolveNamesResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing ResolveNamesResponse structure.</param>
+        /// <param name="s">A stream containing ResolveNamesResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2404,7 +2404,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ResortRestrictionRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing ResortRestrictionRequest structure.</param>
+        /// <param name="s">A stream containing ResortRestrictionRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2477,7 +2477,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ResortRestrictionResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing ResortRestrictionResponse structure.</param>
+        /// <param name="s">A stream containing ResortRestrictionResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2566,7 +2566,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the SeekEntriesRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing SeekEntriesRequest structure.</param>
+        /// <param name="s">A stream containing SeekEntriesRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2654,7 +2654,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the SeekEntriesResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing SeekEntriesResponse structure.</param>
+        /// <param name="s">A stream containing SeekEntriesResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2727,7 +2727,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the UpdateStatRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing UpdateStatRequest structure.</param>
+        /// <param name="s">A stream containing UpdateStatRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2785,7 +2785,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the UpdateStatResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing UpdateStatResponse structure.</param>
+        /// <param name="s">A stream containing UpdateStatResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2843,7 +2843,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetMailboxUrlRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing GetMailboxUrlRequest structure.</param>
+        /// <param name="s">A stream containing GetMailboxUrlRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2889,7 +2889,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetMailboxUrlResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing GetMailboxUrlResponse structure.</param>
+        /// <param name="s">A stream containing GetMailboxUrlResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2937,7 +2937,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetAddressBookUrlRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing GetAddressBookUrlRequest structure.</param>
+        /// <param name="s">A stream containing GetAddressBookUrlRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2982,7 +2982,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetAddressBookUrlResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing GetAddressBookUrlResponse structure.</param>
+        /// <param name="s">A stream containing GetAddressBookUrlResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3045,7 +3045,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the AddressBookPropertyValue structure.
         /// </summary>
-        /// <param name="s">An stream containing AddressBookPropertyValue structure.</param>
+        /// <param name="s">A stream containing AddressBookPropertyValue structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3095,7 +3095,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the AddressBookTaggedPropertyValue structure.
         /// </summary>
-        /// <param name="s">An stream containing AddressBookTaggedPropertyValue structure.</param>
+        /// <param name="s">A stream containing AddressBookTaggedPropertyValue structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3123,7 +3123,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the AddressBookPropertyValueList structure.
         /// </summary>
-        /// <param name="s">An stream containing AddressBookPropertyValueList structure.</param>
+        /// <param name="s">A stream containing AddressBookPropertyValueList structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3157,7 +3157,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the AddressBookTypedPropertyValue structure.
         /// </summary>
-        /// <param name="s">An stream containing AddressBookTypedPropertyValue structure.</param>
+        /// <param name="s">A stream containing AddressBookTypedPropertyValue structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3196,7 +3196,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the AddressBookFlaggedPropertyValue structure.
         /// </summary>
-        /// <param name="s">An stream containing AddressBookFlaggedPropertyValue structure.</param>
+        /// <param name="s">A stream containing AddressBookFlaggedPropertyValue structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3238,7 +3238,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the AddressBookFlaggedPropertyValueWithType structure.
         /// </summary>
-        /// <param name="s">An stream containing AddressBookFlaggedPropertyValueWithType structure.</param>
+        /// <param name="s">A stream containing AddressBookFlaggedPropertyValueWithType structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3295,7 +3295,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the AddressBookPropertyRow structure.
         /// </summary>
-        /// <param name="s">An stream containing AddressBookPropertyRow structure.</param>
+        /// <param name="s">A stream containing AddressBookPropertyRow structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3363,7 +3363,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the LargePropertyTagArray structure.
         /// </summary>
-        /// <param name="s">An stream containing LargePropertyTagArray structure.</param>
+        /// <param name="s">A stream containing LargePropertyTagArray structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3397,7 +3397,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ExtendedBuffer. 
         /// </summary>
-        /// <param name="s">An stream of the extended buffers.</param>
+        /// <param name="s">A stream of the extended buffers.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3462,7 +3462,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RPC_HEADER_EXT. 
         /// </summary>
-        /// <param name="s">An stream related to the RPC_HEADER_EXT.</param>
+        /// <param name="s">A stream related to the RPC_HEADER_EXT.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3506,7 +3506,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the auxiliary buffer payload of session.
         /// </summary>
-        /// <param name="s">An stream of auxiliary buffer payload of session</param>
+        /// <param name="s">A stream of auxiliary buffer payload of session</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -4961,6 +4961,38 @@ namespace MAPIInspector.Parsers
     public class rgbInputBuffer : BaseStructure
     {
         // The RPC_HEADER_EXT structure provides information about the payload.
+        public ExtendedBuffer_Input[] buffers;
+
+        private uint RopBufferSize;
+
+        public rgbInputBuffer(uint buffersize)
+        {
+            this.RopBufferSize = buffersize;
+        }
+        /// <summary>
+        /// Parse the rgbInputBuffer. 
+        /// </summary>
+        /// <param name="s">A stream containing the rgbInputBuffer.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            List<ExtendedBuffer_Input> ExtendedBuffer_Inputs = new List<ExtendedBuffer_Input>();
+            while(this.RopBufferSize > 0)
+            {
+                ExtendedBuffer_Input ExtendedBuffer_Input = new ExtendedBuffer_Input();
+                ExtendedBuffer_Input.Parse(s);
+                ExtendedBuffer_Inputs.Add(ExtendedBuffer_Input);
+
+                this.RopBufferSize -= (uint)(ExtendedBuffer_Input.RPC_HEADER_EXT.Size + 8);
+            }
+           
+            this.buffers = ExtendedBuffer_Inputs.ToArray();
+        }
+    }
+
+    public class ExtendedBuffer_Input : BaseStructure
+    {
+        // The RPC_HEADER_EXT structure provides information about the payload.
         public RPC_HEADER_EXT RPC_HEADER_EXT;
         // A structure of bytes that constitute the ROP request payload. 
         public ROPInputBuffer Payload;
@@ -4968,7 +5000,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the rgbInputBuffer. 
         /// </summary>
-        /// <param name="s">An stream containing the rgbInputBuffer.</param>
+        /// <param name="s">A stream containing the rgbInputBuffer.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -5012,13 +5044,14 @@ namespace MAPIInspector.Parsers
     {
         // The RPC_HEADER_EXT structure provides information about the payload.
         public RPC_HEADER_EXT RPC_HEADER_EXT;
+        
         // A structure of bytes that constitute the ROP responses payload. 
-        public ROPOutputBuffer Payload;
+        public object Payload;
 
         /// <summary>
         /// Parse the rgbOutputBuffer. 
         /// </summary>
-        /// <param name="s">An stream containing the rgbOutputBuffer.</param>
+        /// <param name="s">A stream containing the rgbOutputBuffer.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -5046,8 +5079,18 @@ namespace MAPIInspector.Parsers
                     MapiInspector.MAPIInspector.payLoadCompresssedXOR = payloadBytes;
                 }
                 Stream stream = new MemoryStream(payloadBytes);
-                this.Payload = new ROPOutputBuffer();
-                this.Payload.Parse(stream);
+                if (MapiInspector.MAPIInspector.isOnlyGetServerHandle)
+                {
+                    ROPOutputBuffer_WithoutCROPS outputBufferWithoutCROPS = new ROPOutputBuffer_WithoutCROPS();
+                    outputBufferWithoutCROPS.Parse(stream);
+                    this.Payload = outputBufferWithoutCROPS;
+                }
+                else
+                {
+                    ROPOutputBuffer outputBuffer = new ROPOutputBuffer();
+                    outputBuffer.Parse(stream);
+                    this.Payload = outputBuffer;
+                }
             }
         }
     }
@@ -5070,7 +5113,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the rgbOutputBufferPack. 
         /// </summary>
-        /// <param name="s">An stream containing the rgbOutputBufferPack.</param>
+        /// <param name="s">A stream containing the rgbOutputBufferPack.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);

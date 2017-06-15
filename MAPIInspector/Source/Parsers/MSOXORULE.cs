@@ -73,7 +73,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ModifyRulesFlags structure.
         /// </summary>
-        /// <param name="s">An stream containing ModifyRulesFlags structure.</param>
+        /// <param name="s">A stream containing ModifyRulesFlags structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s); // TODO: need to modify the AddTreeNode method about the pos and length.  
@@ -197,7 +197,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopGetRulesTableRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopGetRulesTableRequest structure.</param>
+        /// <param name="s">A stream containing RopGetRulesTableRequest structure.</param>
         public override void Parse(System.IO.Stream s)
         {
             base.Parse(s);
@@ -226,7 +226,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopGetRulesTableResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopGetRulesTableResponse structure.</param>
+        /// <param name="s">A stream containing RopGetRulesTableResponse structure.</param>
         public override void Parse(System.IO.Stream s)
         {
             base.Parse(s);
@@ -268,7 +268,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopUpdateDeferredActionMessagesRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopUpdateDeferredActionMessagesRequest structure.</param>
+        /// <param name="s">A stream containing RopUpdateDeferredActionMessagesRequest structure.</param>
         public override void Parse(System.IO.Stream s)
         {
             base.Parse(s);
@@ -299,7 +299,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopUpdateDeferredActionMessagesResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopUpdateDeferredActionMessagesResponse structure.</param>
+        /// <param name="s">A stream containing RopUpdateDeferredActionMessagesResponse structure.</param>
         public override void Parse(System.IO.Stream s)
         {
             base.Parse(s);
