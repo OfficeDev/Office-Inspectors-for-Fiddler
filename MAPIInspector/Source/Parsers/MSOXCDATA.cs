@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using System.Windows.Forms;
-using MapiInspector;
-using System.Reflection;
-using Fiddler;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
@@ -32,13 +28,13 @@ namespace MAPIInspector.Parsers
         public bool ReducedUnicode;
 
         /// <summary>
-        /// A The Constructor of MAPIString without parameters.
+        /// The Constructor of MAPIString without parameters.
         /// </summary>
         public MAPIString()
         { }
 
         /// <summary>
-        /// A The Constructor of MAPIString with parameters.
+        /// The Constructor of MAPIString with parameters.
         /// </summary>
         /// <param name="encode"></param>
         /// <param name="terminator"></param>
@@ -1338,23 +1334,23 @@ namespace MAPIInspector.Parsers
     {
         // If this flag is b'1', a different transport is responsible for delivery to this recipient (1).
         [BitAttribute(1)]
-        public int R;
+        public byte R;
 
         // If this flag is b'1', the value of the TransmittableDisplayName field is the same as the value of the DisplayName field.
         [BitAttribute(1)]
-        public int S;
+        public byte S;
 
         // If this flag is b'1', the TransmittableDisplayName (section 2.8.3.2) field is included.
         [BitAttribute(1)]
-        public int T;
+        public byte T;
 
         // If this flag is b'1', the DisplayName (section 2.8.3.2) field is included.
         [BitAttribute(1)]
-        public int D;
+        public byte D;
 
         // If this flag is b'1', the EmailAddress (section 2.8.3.2) field is included.
         [BitAttribute(1)]
-        public int E;
+        public byte E;
 
         // This enumeration specifies the type of address. 
         [BitAttribute(3)]
@@ -1362,22 +1358,22 @@ namespace MAPIInspector.Parsers
 
         // If this flag is b'1', this recipient (1) has a non-standard address type and the AddressType field is included.
         [BitAttribute(1)]
-        public int O;
+        public byte O;
 
         // The server MUST set this to b'0000'.
         [BitAttribute(4)]
-        public int Reserved;
+        public byte Reserved;
 
         // If this flag is b'1', the SimpleDisplayName field is included.
         [BitAttribute(1)]
-        public int I;
+        public byte I;
         //If this flag is b'1', the associated string properties are in Unicode with a 2-byte terminating null character; if this flag is b'0', string properties are MBCS with a single terminating null character.
         [BitAttribute(1)]
-        public int U;
+        public byte U;
 
         // If b'1', this flag specifies that the recipient (1) does not support receiving rich text messages.
         [BitAttribute(1)]
-        public int N;
+        public byte N;
 
         /// <summary>
         /// Parse the RecipientFlags structure.

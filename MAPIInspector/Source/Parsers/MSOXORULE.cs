@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using System.Windows.Forms;
-using MapiInspector;
-using System.Reflection;
-using Fiddler;
 
 namespace MAPIInspector.Parsers
 {
@@ -513,19 +509,19 @@ namespace MAPIInspector.Parsers
 
         // Indicates that the message SHOULD<5> be forwarded as a Short Message Service (SMS) text message. 
         [BitAttribute(1)]
-        public int TM;
+        public byte TM;
 
         // Forwards the message as an attachment. This value MUST NOT be combined with other ActionFlavor flags.
         [BitAttribute(1)]
-        public int AT;
+        public byte AT;
 
         // Forwards the message without making any changes to the message. 
         [BitAttribute(1)]
-        public int NC;
+        public byte NC;
 
         // Preserves the sender information and indicates that the message was autoforwarded. 
         [BitAttribute(1)]
-        public int PR;
+        public byte PR;
 
         // The reserved bit.3 bytes.
         public byte[] Reserved_bits_1;
@@ -560,15 +556,15 @@ namespace MAPIInspector.Parsers
     {
         // The reserved bit.
         [BitAttribute(6)]
-        public int Reserved_bits_0;
+        public byte Reserved_bits_0;
 
         // Server will use fixed, server-defined text in the reply message and ignore the text in the reply template. 
         [BitAttribute(1)]
-        public int ST;
+        public byte ST;
 
         // The server SHOULD<6> not send the message to the message sender (the reply template MUST contain recipients (2) in this case).
         [BitAttribute(1)]
-        public int NS;
+        public byte NS;
 
         // The reserved bit.3 bytes
         public byte[] Reserved_bits_1;
