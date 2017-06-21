@@ -514,10 +514,19 @@ namespace MAPIInspector.Parsers
                                 }
                                 else
                                 {
+                                    // Array type just diaplay the first 30 values if the array length is more than 30.
+                                    int dispalylength = 30;
                                     result.Append("[");
                                     foreach (var ar in arr)
                                     {
                                         result.Append(ar.ToString() + ",");
+                                        
+                                        if(dispalylength <=1)
+                                        {
+                                            result.Insert(result.Length-1,"...");
+                                            break;
+                                        }
+                                        dispalylength--;
                                     }
                                     result.Remove(result.Length - 1, 1);
                                     result.Append("]");

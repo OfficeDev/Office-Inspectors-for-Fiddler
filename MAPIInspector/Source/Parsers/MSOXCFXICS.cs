@@ -658,7 +658,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFastTransferSourceCopyPropertiesRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFastTransferSourceCopyPropertiesRequest structure.</param>
+        /// <param name="s">A stream containing RopFastTransferSourceCopyPropertiesRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -698,7 +698,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFastTransferSourceCopyPropertiesResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFastTransferSourceCopyPropertiesResponse structure.</param>
+        /// <param name="s">A stream containing RopFastTransferSourceCopyPropertiesResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -747,7 +747,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFastTransferSourceCopyToRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFastTransferSourceCopyToRequest structure.</param>
+        /// <param name="s">A stream containing RopFastTransferSourceCopyToRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -787,7 +787,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFastTransferSourceCopyToResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFastTransferSourceCopyToResponse structure.</param>
+        /// <param name="s">A stream containing RopFastTransferSourceCopyToResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -833,7 +833,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFastTransferSourceCopyMessagesRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFastTransferSourceCopyMessagesRequest structure.</param>
+        /// <param name="s">A stream containing RopFastTransferSourceCopyMessagesRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -875,7 +875,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFastTransferSourceCopyMessagesResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFastTransferSourceCopyMessagesResponse structure.</param>
+        /// <param name="s">A stream containing RopFastTransferSourceCopyMessagesResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -915,7 +915,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFastTransferSourceCopyFolderRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFastTransferSourceCopyFolderRequest structure.</param>
+        /// <param name="s">A stream containing RopFastTransferSourceCopyFolderRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -946,7 +946,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFastTransferSourceCopyFolderResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFastTransferSourceCopyFolderResponse structure.</param>
+        /// <param name="s">A stream containing RopFastTransferSourceCopyFolderResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -983,7 +983,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFastTransferSourceGetBufferRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFastTransferSourceGetBufferRequest structure.</param>
+        /// <param name="s">A stream containing RopFastTransferSourceGetBufferRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1029,7 +1029,7 @@ namespace MAPIInspector.Parsers
         public ushort? TransferBufferSize;
 
         // An array of bytes that specifies FastTransferStream.
-        public SyntacticalBase TransferBuffer;
+        public object TransferBuffer;
 
         // An unsigned integer that specifies the number of milliseconds for the client to wait before trying this operation again
         public uint? BackoffTime;
@@ -1037,7 +1037,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFastTransferSourceGetBufferResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFastTransferSourceGetBufferResponse structure.</param>
+        /// <param name="s">A stream containing RopFastTransferSourceGetBufferResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1055,36 +1055,44 @@ namespace MAPIInspector.Parsers
                 this.Reserved = ReadByte();
                 this.TransferBufferSize = ReadUshort();
                 byte[] Buffer = ReadBytes((int)this.TransferBufferSize);
-                FastTransferStream TransferStream = new FastTransferStream(Buffer, true);
-
-                switch (DecodingContext.StreamType_Getbuffer)
+                if (this.TransferStatus.Value == Parsers.TransferStatus.Partial)
                 {
-                    case FastTransferStreamType.TopFolder:
-                        this.TransferBuffer = new TopFolder(TransferStream);
-                        break;
-                    case FastTransferStreamType.contentsSync:
-                        this.TransferBuffer = new ContentsSync(TransferStream);
-                        break;
-                    case FastTransferStreamType.hierarchySync:
-                        this.TransferBuffer = new HierarchySync(TransferStream);
-                        break;
-                    case FastTransferStreamType.state:
-                        this.TransferBuffer = new State(TransferStream);
-                        break;
-                    case FastTransferStreamType.folderContent:
-                        this.TransferBuffer = new FolderContent(TransferStream);
-                        break;
-                    case FastTransferStreamType.MessageContent:
-                        this.TransferBuffer = new MessageContent(TransferStream);
-                        break;
-                    case FastTransferStreamType.attachmentContent:
-                        this.TransferBuffer = new AttachmentContent(TransferStream);
-                        break;
-                    case FastTransferStreamType.MessageList:
-                        this.TransferBuffer = new MessageList(TransferStream);
-                        break;
-                    default:
-                        throw new Exception("The transferStream type is not right");
+                    this.TransferBuffer = Buffer;
+                }
+                else
+                {
+                    FastTransferStream TransferStream = new FastTransferStream(Buffer, true);
+
+                    switch (DecodingContext.StreamType_Getbuffer)
+                    {
+                        case FastTransferStreamType.TopFolder:
+                            this.TransferBuffer = new TopFolder(TransferStream);
+                            break;
+                        case FastTransferStreamType.contentsSync:
+                            this.TransferBuffer = new ContentsSync(TransferStream);
+                            break;
+                        case FastTransferStreamType.hierarchySync:
+                            this.TransferBuffer = new HierarchySync(TransferStream);
+                            break;
+                        case FastTransferStreamType.state:
+                            this.TransferBuffer = new State(TransferStream);
+                            break;
+                        case FastTransferStreamType.folderContent:
+                            this.TransferBuffer = new FolderContent(TransferStream);
+                            break;
+                        case FastTransferStreamType.MessageContent:
+                            this.TransferBuffer = new MessageContent(TransferStream);
+                            break;
+                        case FastTransferStreamType.attachmentContent:
+                            this.TransferBuffer = new AttachmentContent(TransferStream);
+                            break;
+                        case FastTransferStreamType.MessageList:
+                            this.TransferBuffer = new MessageList(TransferStream);
+                            break;
+                        default:
+                            throw new Exception("The transferStream type is not right");
+                    }
+                    DecodingContext.StreamType_Getbuffer = 0;
                 }
             }
 
@@ -1117,7 +1125,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopTellVersionRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopTellVersionRequest structure.</param>
+        /// <param name="s">A stream containing RopTellVersionRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1146,7 +1154,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopTellVersionResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopTellVersionResponse structure.</param>
+        /// <param name="s">A stream containing RopTellVersionResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1186,7 +1194,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFastTransferDestinationConfigureRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFastTransferDestinationConfigureRequest structure.</param>
+        /// <param name="s">A stream containing RopFastTransferDestinationConfigureRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1217,7 +1225,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFastTransferDestinationConfigureResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFastTransferDestinationConfigureResponse structure.</param>
+        /// <param name="s">A stream containing RopFastTransferDestinationConfigureResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1254,7 +1262,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFastTransferDestinationPutBufferRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFastTransferDestinationPutBufferRequest structure.</param>
+        /// <param name="s">A stream containing RopFastTransferDestinationPutBufferRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1287,6 +1295,7 @@ namespace MAPIInspector.Parsers
                 default:
                     throw new Exception("The transferStream type is not right");
             }
+            DecodingContext.StreamType_Putbuffer = 0;
         }
     }
 
@@ -1322,7 +1331,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopFastTransferDestinationPutBufferResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopFastTransferDestinationPutBufferResponse structure.</param>
+        /// <param name="s">A stream containing RopFastTransferDestinationPutBufferResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1337,6 +1346,119 @@ namespace MAPIInspector.Parsers
                 this.TransferStatus = ReadUshort();
                 this.InProgressCount = ReadUshort();
                 this.TotalStepCount = ReadUshort();
+                this.Reserved = ReadByte();
+                this.BufferUsedSize = ReadUshort();
+            }
+        }
+    }
+    #endregion
+
+    #region 2.2.3.1.2.3 RopFastTransferDestinationPutBufferExtended
+    /// <summary>
+    ///  A class indicates the RopFastTransferDestinationPutBufferExtended ROP Request Buffer.
+    /// </summary>
+    public class RopFastTransferDestinationPutBufferExtendedRequest : BaseStructure
+    {
+        // An unsigned integer that specifies the type of ROP.
+        public RopIdType RopId;
+
+        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        public byte LogonId;
+
+        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        public byte InputHandleIndex;
+
+        // An unsigned integer that specifies the size of the TransferData field. 
+        public ushort TransferDataSize;
+
+        // An array of bytes that contains the data to be uploaded to the destination fast transfer object.
+        public SyntacticalBase TransferData;
+
+        /// <summary>
+        /// Parse the RopFastTransferDestinationPutBufferExtendedRequest structure.
+        /// </summary>
+        /// <param name="s">A stream containing RopFastTransferDestinationPutBufferExtendedRequest structure.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.RopId = (RopIdType)ReadByte();
+            this.LogonId = ReadByte();
+            this.InputHandleIndex = ReadByte();
+            this.TransferDataSize = ReadUshort();
+
+            byte[] Buffer = ReadBytes((int)this.TransferDataSize);
+            FastTransferStream TransferStream = new FastTransferStream(Buffer, true);
+
+            switch (DecodingContext.StreamType_PutbufferExtended)
+            {
+                case FastTransferStreamType.TopFolder:
+                    this.TransferData = new TopFolder(TransferStream);
+                    break;
+                case FastTransferStreamType.folderContent:
+                    this.TransferData = new FolderContent(TransferStream);
+                    break;
+                case FastTransferStreamType.MessageContent:
+                    this.TransferData = new MessageContent(TransferStream);
+                    break;
+                case FastTransferStreamType.attachmentContent:
+                    this.TransferData = new AttachmentContent(TransferStream);
+                    break;
+                case FastTransferStreamType.MessageList:
+                    this.TransferData = new MessageList(TransferStream);
+                    break;
+                default:
+                    throw new Exception("The transferStream type is not right");
+            }
+            DecodingContext.StreamType_PutbufferExtended = 0;
+        }
+    }
+
+    /// <summary>
+    ///  A class indicates the RopFastTransferDestinationPutBufferExtended ROP Response Buffer.
+    /// </summary>
+    public class RopFastTransferDestinationPutBufferExtendedResponse : BaseStructure
+    {
+        // An unsigned integer that specifies the type of ROP.
+        public RopIdType RopId;
+
+        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        public byte InputHandleIndex;
+
+        // An unsigned integer that specifies the status of the ROP.
+        public object ReturnValue;
+
+        // the current status of the transfer.
+        public ushort? TransferStatus;
+
+        // An unsigned integer that specifies the number of steps that have been completed in the current operation.
+        public uint? InProgressCount;
+
+        // An unsigned integer that specifies the approximate total number of steps to be completed in the current operation.
+        public uint? TotalStepCount;
+
+        // Reserved.
+        public byte? Reserved;
+
+        // An unsigned integer that specifies the buffer size that was used.
+        public ushort? BufferUsedSize;
+
+        /// <summary>
+        /// Parse the RopFastTransferDestinationPutBufferExtendedResponse structure.
+        /// </summary>
+        /// <param name="s">A stream containing RopFastTransferDestinationPutBufferExtendedResponse structure.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.RopId = (RopIdType)ReadByte();
+            this.InputHandleIndex = ReadByte();
+            HelpMethod help = new HelpMethod();
+            this.ReturnValue = help.FormatErrorCode(ReadUint());
+
+            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            {
+                this.TransferStatus = ReadUshort();
+                this.InProgressCount = ReadUint();
+                this.TotalStepCount = ReadUint();
                 this.Reserved = ReadByte();
                 this.BufferUsedSize = ReadUshort();
             }
@@ -1389,7 +1511,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationConfigureRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationConfigureRequest structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationConfigureRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1437,7 +1559,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationConfigureResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationConfigureResponse structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationConfigureResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1474,7 +1596,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationUploadStateStreamBeginRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationUploadStateStreamBeginRequest structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationUploadStateStreamBeginRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1504,7 +1626,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationUploadStateStreamBeginResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationUploadStateStreamBeginResponse structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationUploadStateStreamBeginResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1541,7 +1663,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationUploadStateStreamContinueRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationUploadStateStreamContinueRequest structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationUploadStateStreamContinueRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1571,7 +1693,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationUploadStateStreamContinueResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationUploadStateStreamContinueResponse structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationUploadStateStreamContinueResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1602,7 +1724,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationUploadStateStreamEndRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationUploadStateStreamEndRequest structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationUploadStateStreamEndRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1630,7 +1752,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationUploadStateStreamEndResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationUploadStateStreamEndResponse structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationUploadStateStreamEndResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1664,7 +1786,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationGetTransferStateRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationGetTransferStateRequest structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationGetTransferStateRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1693,7 +1815,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationGetTransferStateResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationGetTransferStateResponse structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationGetTransferStateResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1729,7 +1851,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationOpenCollectorRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationOpenCollectorRequest structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationOpenCollectorRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1759,7 +1881,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationOpenCollectorResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationOpenCollectorResponse structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationOpenCollectorResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1802,7 +1924,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationImportMessageChangeRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationImportMessageChangeRequest structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationImportMessageChangeRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1843,7 +1965,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationImportMessageChangeResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationImportMessageChangeResponse structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationImportMessageChangeResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1892,7 +2014,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationImportHierarchyChangeRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationImportHierarchyChangeRequest structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationImportHierarchyChangeRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1940,7 +2062,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationImportHierarchyChangeResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationImportHierarchyChangeResponse structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationImportHierarchyChangeResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2007,7 +2129,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationImportMessageMoveRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationImportMessageMoveRequest structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationImportMessageMoveRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2048,7 +2170,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationImportMessageMoveResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationImportMessageMoveResponse structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationImportMessageMoveResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2094,7 +2216,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationImportDeletesRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationImportDeletesRequest structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationImportDeletesRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2131,7 +2253,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationImportDeletesResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationImportDeletesResponse structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationImportDeletesResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2168,7 +2290,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationImportReadStateChangesRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationImportReadStateChangesRequest structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationImportReadStateChangesRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2207,7 +2329,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSynchronizationImportReadStateChangesResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSynchronizationImportReadStateChangesResponse structure.</param>
+        /// <param name="s">A stream containing RopSynchronizationImportReadStateChangesResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2236,7 +2358,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the MessageReadState structure.
         /// </summary>
-        /// <param name="s">An stream containing MessageReadState structure.</param>
+        /// <param name="s">A stream containing MessageReadState structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2269,7 +2391,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopGetLocalReplicaIdsRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopGetLocalReplicaIdsRequest structure.</param>
+        /// <param name="s">A stream containing RopGetLocalReplicaIdsRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2304,7 +2426,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopGetLocalReplicaIdsResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopGetLocalReplicaIdsResponse structure.</param>
+        /// <param name="s">A stream containing RopGetLocalReplicaIdsResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2350,7 +2472,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSetLocalReplicaMidsetDeletedRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSetLocalReplicaMidsetDeletedRequest structure.</param>
+        /// <param name="s">A stream containing RopSetLocalReplicaMidsetDeletedRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2388,7 +2510,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSetLocalReplicaMidsetDeletedResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopSetLocalReplicaMidsetDeletedResponse structure.</param>
+        /// <param name="s">A stream containing RopSetLocalReplicaMidsetDeletedResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2414,7 +2536,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the LongTermIdRange structure.
         /// </summary>
-        /// <param name="s">An stream containing LongTermIdRange structure.</param>
+        /// <param name="s">A stream containing LongTermIdRange structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2898,7 +3020,7 @@ namespace MAPIInspector.Parsers
     public class PropInfo : LexicalBase
     {
         // The property id.
-        public ushort PropID;
+        public PidTagPropertyEnum PropID;
 
         // The namedPropInfo in lexical definition.
         public NamedPropInfo NamedPropInfo;
@@ -2939,9 +3061,9 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             base.Parse(stream);
-            this.PropID = stream.ReadUInt16();
+            this.PropID = (PidTagPropertyEnum)stream.ReadUInt16();
 
-            if (this.PropID >= 0x8000)
+            if ((ushort)this.PropID >= 0x8000)
             {
                 this.NamedPropInfo = NamedPropInfo.ParseFrom(stream) as NamedPropInfo;
             }
@@ -3002,13 +3124,16 @@ namespace MAPIInspector.Parsers
                     this.FixedValue = stream.ReadInt16();
                     break;
                 case PropertyDataType.PtypInteger32:
-                    if (this.PropInfo.PropID == 0x67A4)
+                    if ((ushort)this.PropInfo.PropID == 0x67A4)
                     {
                         CN tmpCN = new CN();
                         tmpCN.Parse(stream);
                         this.FixedValue = tmpCN;
                     }
-                    this.FixedValue = stream.ReadInt32();
+					else
+					{
+                    	this.FixedValue = stream.ReadInt32();
+					}
                     break;
                 case PropertyDataType.PtypFloating32:
                     this.FixedValue = stream.ReadFloating32();
@@ -3026,13 +3151,28 @@ namespace MAPIInspector.Parsers
                     this.FixedValue = stream.ReadBoolean();
                     break;
                 case PropertyDataType.PtypInteger64:
-                    if (base.PropInfo.PropID == 0x6714)
+                    if ((ushort)base.PropInfo.PropID == 0x6714)
                     {
                         CN tmpCN = new CN();
                         tmpCN.Parse(stream);
                         this.FixedValue = tmpCN;
                     }
-                    this.FixedValue = stream.ReadInt64();
+                    else if ((ushort)base.PropInfo.PropID == 0x674A)
+                    {
+                        MessageID tmpMID = new MessageID();
+                        tmpMID.Parse(stream);
+                        this.FixedValue = tmpMID;
+                    }
+                    else if ((ushort)base.PropInfo.PropID == 0x6748)
+                    {
+                        FolderID tmpFID = new FolderID();
+                        tmpFID.Parse(stream);
+                        this.FixedValue = tmpFID;
+                    }
+                    else
+                    {
+                        this.FixedValue = stream.ReadInt64();
+                    }
                     break;
                 case PropertyDataType.PtypTime:
                     this.FixedValue = stream.ReadTime();
@@ -3126,7 +3266,7 @@ namespace MAPIInspector.Parsers
                     case PropertyDataType.PtypInteger32:
                     case PropertyDataType.PtypBinary:
                         // PidTagParentSourceKey, PidTagParentSourceKey, PidTagChangeKey
-                        if (this.PropInfo.PropID == 0x65E0 || this.PropInfo.PropID == 0x65E1 || this.PropInfo.PropID == 0x65E2)
+                        if ((ushort)this.PropInfo.PropID == 0x65E0 || (ushort)this.PropInfo.PropID == 0x65E1 || (ushort)this.PropInfo.PropID == 0x65E2)
                         {
                             if (this.Length != 0)
                             {
@@ -3135,13 +3275,13 @@ namespace MAPIInspector.Parsers
                                 this.ValueArray = tmpXID;
                             }
                         }
-                        else if (this.PropInfo.PropID == 0x65E3) // PidTagPredecessorChangeList 
+                        else if ((ushort)this.PropInfo.PropID == 0x65E3) // PidTagPredecessorChangeList 
                         {
                             PredecessorChangeList tmpPredecessorChangeList = new PredecessorChangeList(this.Length);
                             tmpPredecessorChangeList.Parse(stream);
                             this.ValueArray = tmpPredecessorChangeList;
                         }
-                        else if (this.PropInfo.PropID == 0x402D || this.PropInfo.PropID == 0x402E || this.PropInfo.PropID == 0x67E5 || this.PropInfo.PropID == 0x4021 || this.PropInfo.PropID == 0x6793)
+                        else if ((ushort)this.PropInfo.PropID == 0x402D || (ushort)this.PropInfo.PropID == 0x402E || (ushort)this.PropInfo.PropID == 0x67E5 || (ushort)this.PropInfo.PropID == 0x4021 || (ushort)this.PropInfo.PropID == 0x6793)
                         {
                             if (this.Length != 0)
                             {
@@ -3158,7 +3298,7 @@ namespace MAPIInspector.Parsers
                                 this.ValueArray = InterIDSET_REPLID.ToArray();
                             }
                         }
-                        else if (this.PropInfo.PropID == 0x4017 || this.PropInfo.PropID == 0x6796 || this.PropInfo.PropID == 0x67DA || this.PropInfo.PropID == 0x67D2)
+                        else if ((ushort)this.PropInfo.PropID == 0x4017 || (ushort)this.PropInfo.PropID == 0x6796 || (ushort)this.PropInfo.PropID == 0x67DA || (ushort)this.PropInfo.PropID == 0x67D2)
                         {
                             if (this.Length != 0)
                             {
@@ -3604,6 +3744,9 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class TopFolder : SyntacticalBase
     {
+        // MetaTagDnPrefix
+        public MetaPropValue MetaTagDnPrefix;
+
         // The start marker of TopFolder.
         public Markers StartMarker;
 
@@ -3629,7 +3772,7 @@ namespace MAPIInspector.Parsers
         /// <returns>If the stream's current position contains a serialized TopFolder, return true, else false.</returns>
         public static bool Verify(FastTransferStream stream)
         {
-            return stream.VerifyMarker(Markers.StartTopFld);
+            return stream.VerifyUInt32() == (uint)MetaProperties.MetaTagDnPrefix || stream.VerifyMarker(Markers.StartTopFld);
         }
 
         /// <summary>
@@ -3638,6 +3781,10 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
+            if (stream.VerifyMetaProperty(MetaProperties.MetaTagDnPrefix))
+            {
+                this.MetaTagDnPrefix = new MetaPropValue(stream);
+            }
             if (stream.ReadMarker() == Markers.StartTopFld)
             {
                 this.StartMarker = Markers.StartTopFld;
@@ -3655,6 +3802,9 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class FolderContent : SyntacticalBase
     {
+        // MetaTagDnPrefix
+        public MetaPropValue MetaTagDnPrefix;
+
         // Contains the properties of the Folder object, which are possibly affected by property filters.
         public PropList PropList;
 
@@ -3686,7 +3836,7 @@ namespace MAPIInspector.Parsers
         /// <returns>If the stream's current position contains a serialized folderContent, return true, else false.</returns>
         public static bool Verify(FastTransferStream stream)
         {
-            return PropList.Verify(stream);
+            return !stream.IsEndOfStream && (stream.VerifyUInt32() == (uint)MetaProperties.MetaTagDnPrefix || PropList.Verify(stream));
         }
 
         /// <summary>
@@ -3695,6 +3845,10 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
+            if (stream.VerifyMetaProperty(MetaProperties.MetaTagDnPrefix))
+            {
+                this.MetaTagDnPrefix = new MetaPropValue(stream);
+            }
             this.PropList = new PropList(stream);
             if (!stream.IsEndOfStream)
             {
@@ -3761,7 +3915,7 @@ namespace MAPIInspector.Parsers
         /// <returns>If the stream's current position contains a serialized folderContentNoDelProps, return true, else false.</returns>
         public static bool Verify(FastTransferStream stream)
         {
-            return PropList.Verify(stream);
+            return !stream.IsEndOfStream && PropList.Verify(stream);
         }
 
         /// <summary>
@@ -4119,6 +4273,9 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class MessageContent : SyntacticalBase
     {
+        // MetaTagDnPrefix
+        public MetaPropValue MetaTagDnPrefix;
+
         // A propList value.
         public PropList PropList;
 
@@ -4141,7 +4298,7 @@ namespace MAPIInspector.Parsers
         /// <returns>If the stream's current position contains a serialized MessageContent, return true, else false.</returns>
         public static bool Verify(FastTransferStream stream)
         {
-            return PropList.Verify(stream);
+            return !stream.IsEndOfStream && (stream.VerifyUInt32() == (uint)MetaProperties.MetaTagDnPrefix || PropList.Verify(stream));
         }
 
         /// <summary>
@@ -4150,6 +4307,10 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
+            if (stream.VerifyMetaProperty(MetaProperties.MetaTagDnPrefix))
+            {
+                this.MetaTagDnPrefix = new MetaPropValue(stream);
+            }
             this.PropList = new PropList(stream);
             this.MessageChildren = new MessageChildren(stream);
         }
@@ -4337,6 +4498,9 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class AttachmentContent : SyntacticalBase
     {
+        // MetaTagDnPrefix
+        public MetaPropValue MetaTagDnPrefix;
+
         // A propList value.
         public PropList PropList;
 
@@ -4359,7 +4523,7 @@ namespace MAPIInspector.Parsers
         /// <returns>If the stream's current position contains a serialized attachmentContent, return true, else false.</returns>
         public static bool Verify(FastTransferStream stream)
         {
-            return PropList.Verify(stream);
+            return !stream.IsEndOfStream && (stream.VerifyUInt32() == (uint)MetaProperties.MetaTagDnPrefix || PropList.Verify(stream));
         }
 
         /// <summary>
@@ -4368,6 +4532,10 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
+            if (stream.VerifyMetaProperty(MetaProperties.MetaTagDnPrefix))
+            {
+                this.MetaTagDnPrefix = new MetaPropValue(stream);
+            }
             this.PropList = new PropList(stream);
             if (EmbeddedMessage.Verify(stream))
             {
@@ -4436,8 +4604,8 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class MessageList : SyntacticalBase
     {
-        // A list of MetaTagEcWaringMessage objects.
-        public MetaTagEcWaringMessage[] MetaTagEcWaringMessages;
+        // A list of MetaTagMessage objects.
+        public MetaTagMessage[] MetaTagMessages;
 
         /// <summary>
         /// Initializes a new instance of the MessageList class.
@@ -4455,7 +4623,7 @@ namespace MAPIInspector.Parsers
         /// <returns>If the stream's current position contains a serialized MessageList, return true, else false.</returns>
         public static bool Verify(FastTransferStream stream)
         {
-            return MetaTagEcWaringMessage.Verify(stream);
+            return MetaTagMessage.Verify(stream);
         }
 
         /// <summary>
@@ -4464,22 +4632,25 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
-            List<MetaTagEcWaringMessage> InterMessageList = new List<MetaTagEcWaringMessage>();
+            List<MetaTagMessage> InterMessageList = new List<MetaTagMessage>();
 
             while (Verify(stream))
             {
-                InterMessageList.Add(new MetaTagEcWaringMessage(stream));
+                InterMessageList.Add(new MetaTagMessage(stream));
             }
 
-            this.MetaTagEcWaringMessages = InterMessageList.ToArray();
+            this.MetaTagMessages = InterMessageList.ToArray();
         }
     }
 
     /// <summary>
     /// The MetaTagEcWaringMessage is defined to help Parsering MessageList class.
     /// </summary>
-    public class MetaTagEcWaringMessage : SyntacticalBase
+    public class MetaTagMessage : SyntacticalBase
     {
+        // MetaTagDnPrefix
+        public MetaPropValue MetaTagDnPrefix;
+
         // MetaTagEcWaring indicates a MetaTagEcWaring property.
         public MetaPropValue MetaTagEcWaring;
 
@@ -4490,7 +4661,7 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the MetaTagEcWaringMessage class.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        public MetaTagEcWaringMessage(FastTransferStream stream)
+        public MetaTagMessage(FastTransferStream stream)
             : base(stream)
         {
         }
@@ -4503,8 +4674,9 @@ namespace MAPIInspector.Parsers
         public static bool Verify(FastTransferStream stream)
         {
             return !stream.IsEndOfStream
-                && (stream.VerifyUInt32() == (uint)MetaProperties.MetaTagEcWarning)
-                || Message.Verify(stream);
+                && (stream.VerifyUInt32() == (uint)MetaProperties.MetaTagDnPrefix
+                || stream.VerifyUInt32() == (uint)MetaProperties.MetaTagEcWarning
+                || Message.Verify(stream));
         }
 
         /// <summary>
@@ -4513,6 +4685,11 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
+            if (stream.VerifyMetaProperty(MetaProperties.MetaTagDnPrefix))
+            {
+                this.MetaTagDnPrefix = new MetaPropValue(stream);
+            }
+
             if (stream.VerifyMetaProperty(MetaProperties.MetaTagEcWarning))
             {
                 this.MetaTagEcWaring = new MetaPropValue(stream);

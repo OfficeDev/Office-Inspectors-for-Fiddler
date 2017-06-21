@@ -37,7 +37,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the IntermediateNodeObjectData structure.
         /// </summary>
-        /// <param name="s">An stream containing IntermediateNodeObjectData structure.</param>
+        /// <param name="s">A stream containing IntermediateNodeObjectData structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -65,12 +65,13 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public BinaryItem SignatureData;
         public bit16StreamObjectHeaderStart DataSizeHeader;
         public ulong DataSize;
+        public UnKnowStructure OtherData;
         public bit8StreamObjectHeaderEnd LeafNodeEnd;
 
         /// <summary>
         /// Parse the LeafNodeObjectData structure.
         /// </summary>
-        /// <param name="s">An stream containing LeafNodeObjectData structure.</param>
+        /// <param name="s">A stream containing LeafNodeObjectData structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -83,8 +84,455 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.DataSizeHeader = new bit16StreamObjectHeaderStart();
             this.DataSizeHeader.Parse(s);
             this.DataSize = ReadUlong();
+            if (ContainsStreamObjectStart16BitHeader(0x2F))
+            {
+                this.OtherData = new UnKnowStructure();
+                this.OtherData.Parse(s);
+            }
             this.LeafNodeEnd = new bit8StreamObjectHeaderEnd();
             this.LeafNodeEnd.Parse(s);
+        }
+    }
+
+    /// <summary>
+    /// UnKnowStructure
+    /// </summary>
+    public class UnKnowStructure : BaseStructure
+    {
+        public bit16StreamObjectHeaderStart StructureHeader;
+        public byte[] StructureData;
+
+        /// <summary>
+        /// Parse the LeafNodeObjectData structure.
+        /// </summary>
+        /// <param name="s">A stream containing LeafNodeObjectData structure.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.StructureHeader = new bit16StreamObjectHeaderStart();
+            this.StructureHeader.Parse(s);
+            this.StructureData = ReadBytes(this.StructureHeader.Length);
+        }
+    }
+
+    public class ZIPFileStructure : BaseStructure
+    {
+        public LocalFileHeader[] fileHeader;
+        public ArchiveExtraDataRecord archiveExtraDataRecord;
+        public CentralDirectoryStructure centralDirectory;
+        public Zip64EndOfCentralDirectoryRecord zip64EndOfCentralDirectoryRecord;
+        public Zip64endOfCentralDirectoryLocator zip64EndOfCentralDirectoryLocator;
+        public EndOfCentralDirectoryRecord endOfCentralDirectoryRecord;
+
+        /// <summary>
+        /// Parse the ZIPFileStructure structure.
+        /// </summary>
+        /// <param name="s">A stream containing ZIPFileStructure structure.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            long startStreamPosition = s.Position;
+            List<LocalFileHeader> headers = new List<LocalFileHeader>();
+            while (Utilities.IsZIPFileHeaderMatch(NextFourBytes(), Utilities.LocalFileHeader))
+            {
+                LocalFileHeader localFileHeader = new LocalFileHeader();
+                localFileHeader.Parse(s);
+                headers.Add(localFileHeader);
+            }
+            fileHeader = headers.ToArray();
+
+            if (Utilities.IsZIPFileHeaderMatch(NextFourBytes(), Utilities.ArchiveExtralDataRecord))
+            {
+                archiveExtraDataRecord = new ArchiveExtraDataRecord();
+                archiveExtraDataRecord.Parse(s);
+            }
+
+            if (Utilities.IsZIPFileHeaderMatch(NextFourBytes(), Utilities.CentralDirectoryHeader))
+            {
+                centralDirectory = new CentralDirectoryStructure();
+                centralDirectory.Parse(s);
+            }
+
+            if (Utilities.IsZIPFileHeaderMatch(NextFourBytes(), Utilities.ZIP64EndOfCentralDirectoryRecord))
+            {
+                zip64EndOfCentralDirectoryRecord = new Zip64EndOfCentralDirectoryRecord();
+                zip64EndOfCentralDirectoryRecord.Parse(s);
+            }
+
+            if (Utilities.IsZIPFileHeaderMatch(NextFourBytes(), Utilities.ZIP64EndOfCentralDirectoryLocator))
+            {
+                zip64EndOfCentralDirectoryLocator = new Zip64endOfCentralDirectoryLocator();
+                zip64EndOfCentralDirectoryLocator.Parse(s);
+            }
+
+            if (Utilities.IsZIPFileHeaderMatch(NextFourBytes(), Utilities.EndOfCentralDirectoryLocator))
+            {
+                endOfCentralDirectoryRecord = new EndOfCentralDirectoryRecord();
+                endOfCentralDirectoryRecord.Parse(s);
+            }
+        }
+    }
+
+    public class LocalFileHeader : BaseStructure
+    {
+        public Int32 LocalFileHeaderSignature;
+        public short VersionNeededToExtract;
+        public short GeneralPurposeBitFlag;
+        public short CompressionMethod;
+        public short LastModFileTime;
+        public short LastModFileDate;
+        public Int32 Crc32;
+        public Int32 CompressedSize;
+        public Int32 UncompressedSize;
+        public short FileNameLength;
+        public short ExtraFieldLength;
+        public string FileName;
+        public byte[] ExtraField;
+        public byte[] FileData;
+        public byte[] Signature;
+        public Int32? Crc32_descriptor;
+        public Int32? CompressedSize_descriptor;
+        public Int32? UncompressedSize_descriptor;
+
+        /// <summary>
+        /// Parse the LocalFileHeader structure.
+        /// </summary>
+        /// <param name="s">A stream containing LocalFileHeader structure.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.LocalFileHeaderSignature = ReadINT32();
+            this.VersionNeededToExtract = ReadINT16();
+            byte temp = CurrentByte();
+            this.GeneralPurposeBitFlag = ReadINT16();
+            this.CompressionMethod = ReadINT16();
+            this.LastModFileTime = ReadINT16();
+            this.LastModFileDate = ReadINT16();
+            this.Crc32 = ReadINT32();
+            this.CompressedSize = ReadINT32();
+            this.UncompressedSize = ReadINT32();
+            this.FileNameLength = ReadINT16();
+            this.ExtraFieldLength = ReadINT16();
+            if (this.FileNameLength > 0)
+            {
+                this.FileName = ReadString(System.Text.Encoding.UTF8, "", FileNameLength);
+            }
+
+            if (this.ExtraFieldLength > 0)
+            {
+                this.ExtraField = ReadBytes((int)ExtraFieldLength);
+            }
+
+            if (this.CompressedSize > 0 && (30 + this.CompressedSize) <= 4096)//1048576
+            {
+                this.FileData = ReadBytes((int)CompressedSize);
+            }
+            if (GetBits(temp, 3, 1) == 1)
+            {
+                if (Utilities.IsZIPFileHeaderMatch(NextFourBytes(), Utilities.SignatureDataDescriptor))
+                {
+                    Signature = ReadBytes(4);
+                }
+                Crc32_descriptor = ReadINT32();
+                CompressedSize_descriptor = ReadINT32();
+                UncompressedSize_descriptor = ReadINT32();
+            }
+        }
+    }
+
+    public class ArchiveExtraDataRecord : BaseStructure
+    {
+        public Int32 ArchiveExtraDataSignature;
+        public Int32 ExtraFieldLength;
+        public byte[] ExtraFieldData;
+
+        /// <summary>
+        /// Parse the ArchiveExtraDataRecord structure.
+        /// </summary>
+        /// <param name="s">A stream containing ArchiveExtraDataRecord structure.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.ArchiveExtraDataSignature = ReadINT32();
+            this.ExtraFieldLength = ReadINT32();
+            if (this.ExtraFieldLength > 0)
+            {
+                this.ExtraFieldData = ReadBytes(this.ExtraFieldLength);
+            }
+        }
+    }
+
+    public class CentralDirectoryStructure : BaseStructure
+    {
+        public CentralDirectoryFileHeader[] fileHeader;
+        public CentralDirectoryDigitalSignature digitalSignature;
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            List<CentralDirectoryFileHeader> fileHeaderTemp = new List<CentralDirectoryFileHeader>();
+            while (Utilities.IsZIPFileHeaderMatch(NextFourBytes(), Utilities.CentralDirectoryHeader))
+            {
+
+                CentralDirectoryFileHeader header = new CentralDirectoryFileHeader();
+                header.Parse(s);
+                fileHeaderTemp.Add(header);
+            }
+
+            fileHeader = fileHeaderTemp.ToArray();
+            if (Utilities.IsZIPFileHeaderMatch(NextFourBytes(), Utilities.SignatureCentralDirectory))
+            {
+                digitalSignature.Parse(s);
+            }
+        }
+    }
+
+    public class CentralDirectoryFileHeader : BaseStructure
+    {
+        /* 
+        central file header signature   4 bytes  (0x02014b50)
+        version made by                 2 bytes
+        version needed to extract       2 bytes
+        general purpose bit flag        2 bytes
+        compression method              2 bytes
+        last mod file time              2 bytes
+        last mod file date              2 bytes
+        crc-32                          4 bytes
+        compressed size                 4 bytes
+        uncompressed size               4 bytes
+        file name length                2 bytes
+        extra field length              2 bytes
+        file comment length             2 bytes
+        disk number start               2 bytes
+        internal file attributes        2 bytes
+        external file attributes        4 bytes
+        relative offset of local header 4 bytes
+
+        file name (variable size)
+        extra field (variable size)
+        file comment (variable size)
+         * 
+         * */
+        public Int32 CentralFileHeaderSignature;
+        public short VersionMadeBy;
+        public short VersionNeededToExtract;
+        public short GeneralPurposeBitFlag;
+        public short CompressionMethod;
+        public short LastModFileTime;
+        public short LastModFileDate;
+        public Int32 Crc32;
+        public Int32 CompressedSize;
+        public Int32 UncompressedSize;
+        public short FileNameLength;
+        public short ExtraFieldLength;
+        public short FileCommentLength;
+        public short DiskNumberStart;
+        public short InternalFileAttributes;
+        public Int32 ExternalFileAttributes;
+        public Int32 RelativeOffsetOfLocalHeader;
+        public byte[] FileName;
+        public byte[] ExtraField;
+        public byte[] FileComment;
+
+        /// <summary>
+        /// Parse the CentralDirectoryFileHeader structure.
+        /// </summary>
+        /// <param name="s">A stream containing CentralDirectoryFileHeader structure.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.CentralFileHeaderSignature = ReadINT32();
+            this.VersionMadeBy = ReadINT16();
+            this.VersionNeededToExtract = ReadINT16();
+            this.GeneralPurposeBitFlag = ReadINT16();
+            this.CompressionMethod = ReadINT16();
+            this.LastModFileTime = ReadINT16();
+            this.LastModFileDate = ReadINT16();
+            this.Crc32 = ReadINT32();
+            this.CompressedSize = ReadINT32();
+            this.UncompressedSize = ReadINT32();
+            this.FileNameLength = ReadINT16();
+            this.ExtraFieldLength = ReadINT16();
+            this.FileCommentLength = ReadINT16();
+            this.DiskNumberStart = ReadINT16();
+            this.InternalFileAttributes = ReadINT16();
+            this.ExternalFileAttributes = ReadINT32();
+            this.RelativeOffsetOfLocalHeader = ReadINT32();
+            if (this.FileNameLength > 0)
+            {
+                this.FileName = ReadBytes(this.FileNameLength);
+            }
+
+            if (this.ExtraFieldLength > 0)
+            {
+                this.ExtraField = ReadBytes(this.ExtraFieldLength);
+            }
+
+            if (this.FileCommentLength > 0)
+            {
+                this.FileComment = ReadBytes(this.FileCommentLength);
+            }
+        }
+
+    }
+
+    public class CentralDirectoryDigitalSignature : BaseStructure
+    {
+        /*
+        Digital signature:
+        header signature                4 bytes  (0x05054b50)
+        size of data                    2 bytes
+        signature data (variable size)
+         * 
+         * */
+
+        public Int32 HeaderSignature;
+        public short SizeOfData;
+        public byte[] SignatureData;
+
+        /// <summary>
+        /// Parse the CentralDirectoryFileHeader structure.
+        /// </summary>
+        /// <param name="s">A stream containing CentralDirectoryFileHeader structure.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.HeaderSignature = ReadINT32();
+            this.SizeOfData = ReadINT16();
+            if (this.SizeOfData > 0)
+            {
+                this.SignatureData = ReadBytes(this.SizeOfData);
+            }
+        }
+    }
+
+    public class Zip64EndOfCentralDirectoryRecord : BaseStructure
+    {
+        /*
+         * Zip64 end of central directory record
+         * zip64 end of central dir signature                       4 bytes  (0x06064b50)
+        size of zip64 end of central directory record                8 bytes
+        version made by                 2 bytes
+        version needed to extract       2 bytes
+        number of this disk             4 bytes
+        number of the disk with the start of the central directory  4 bytes
+        total number of entries in the central directory on this disk  8 bytes
+        total number of entries in the central directory               8 bytes
+        size of the central directory   8 bytes
+        offset of start of central directory with respect to the starting disk number        8 bytes
+        zip64 extensible data sector    (variable size)
+
+         * 
+         * */
+
+        public Int32 Zip64EndOfCentralDirSignature;
+        public long SizeOfZip64EndOfCentralDirectoryRecord;
+        public short VersionMadeBy;
+        public short VersionNeededToExtract;
+        public Int32 NumberOfThisDisk;
+        public Int32 NumberOfTheDiskWithTheStartOfTheCentralDirectory;
+        public long TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk;
+        public long TotalNumberOfEntriesInTheCentralDirectory;
+        public long SizeOfTheCentralDirectory;
+        public long OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber;
+        public byte[] Zip64ExtensibleDataSector;
+
+        /// <summary>
+        /// Parse the Zip64EndOfCentralDirectoryRecord structure.
+        /// </summary>
+        /// <param name="s">A stream containing Zip64EndOfCentralDirectoryRecord structure.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.Zip64EndOfCentralDirSignature = ReadINT32();
+            this.SizeOfZip64EndOfCentralDirectoryRecord = ReadINT64();
+            this.VersionMadeBy = ReadINT16();
+            this.VersionNeededToExtract = ReadINT16();
+            this.NumberOfThisDisk = ReadINT32();
+            this.NumberOfTheDiskWithTheStartOfTheCentralDirectory = ReadINT32();
+            this.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk = ReadINT64();
+            this.TotalNumberOfEntriesInTheCentralDirectory = ReadINT64();
+            this.SizeOfTheCentralDirectory = ReadINT64();
+            this.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber = ReadINT64();
+            long length = this.SizeOfZip64EndOfCentralDirectoryRecord - 12 - 40;
+            if (length > 0)
+            {
+                this.Zip64ExtensibleDataSector = ReadBytes((int)length);
+            }
+        }
+    }
+
+    public class Zip64endOfCentralDirectoryLocator : BaseStructure
+    {
+        /*
+         * 
+        zip64 end of central dir locator signature                                         4 bytes  (0x07064b50)
+        number of the disk with the start of the zip64 end of central directory            4 bytes
+        relative offset of the zip64 end of central directory record                       8 bytes
+        total number of disks                                                              4 bytes
+         * */
+        public Int32 Zip64EndOfCentralDirLocatorSignature;
+        public Int32 NumberOfTheDiskWithTheStartOfTheZip64EndOfCentralDirectory;
+        public long RelativeOffsetOfTheZip64EndOfCentralDirectoryRecord;
+        public Int32 TotalNumberOfDisks;
+
+        /// <summary>
+        /// Parse the Zip64endOfCentralDirectoryLocator structure.
+        /// </summary>
+        /// <param name="s">A stream containing Zip64endOfCentralDirectoryLocator structure.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.Zip64EndOfCentralDirLocatorSignature = ReadINT32();
+            this.NumberOfTheDiskWithTheStartOfTheZip64EndOfCentralDirectory = ReadINT32();
+            this.RelativeOffsetOfTheZip64EndOfCentralDirectoryRecord = ReadINT64();
+            this.TotalNumberOfDisks = ReadINT32();
+        }
+    }
+
+    public class EndOfCentralDirectoryRecord : BaseStructure
+    {
+        /*
+         * 
+        end of central dir signature                                           4 bytes  (0x06054b50)
+        number of this disk                                                    2 bytes
+        number of the disk with the start of the central directory             2 bytes
+        total number of entries in the central directory on this disk          2 bytes
+        total number of entries in the central directory                       2 bytes
+        size of the central directory                                          4 bytes
+        offset of start of central directory with respect to the starting disk number        4 bytes
+        .ZIP file comment length                                               2 bytes
+        .ZIP file comment                                                      (variable size)
+
+         * */
+        public Int32 EndOfCentralDirSignature;
+        public short NumberOfThisDisk;
+        public short NumberOfThisDiskWithTheStartOfTheCentralDirectory;
+        public short TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk;
+        public short TotalNumberOfEntriesInTheCentralDirectory;
+        public Int32 SizeOfTheCentralDirectory;
+        public Int32 OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber;
+        public Int16 ZipFileCommentLength;
+        public byte[] ZipFileComment;
+
+        /// <summary>
+        /// Parse the EndOfCentralDirectoryRecord structure.
+        /// </summary>
+        /// <param name="s">A stream containing EndOfCentralDirectoryRecord structure.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.EndOfCentralDirSignature = ReadINT32();
+            this.NumberOfThisDisk = ReadINT16();
+            this.NumberOfThisDiskWithTheStartOfTheCentralDirectory = ReadINT16();
+            this.TotalNumberOfEntriesInTheCentralDirectoryOnThisDisk = ReadINT16();
+            this.TotalNumberOfEntriesInTheCentralDirectory = ReadINT16();
+            this.SizeOfTheCentralDirectory = ReadINT32();
+            this.OffsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber = ReadINT32();
+            this.ZipFileCommentLength = ReadINT16();
+            if (this.ZipFileCommentLength > 0)
+            {
+                this.ZipFileComment = ReadBytes(this.ZipFileCommentLength);
+            }
         }
     }
 }

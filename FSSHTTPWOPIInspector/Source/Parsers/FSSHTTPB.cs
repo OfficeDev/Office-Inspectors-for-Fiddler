@@ -12,6 +12,12 @@ namespace FSSHTTPandWOPIInspector.Parsers
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Windows.Forms;
+    using System.IO.Compression;
+    using System.Xml.Serialization;
+    using System.Xml;
+    using System.Xml.Schema;
+    using System.Reflection;
 
     /// <summary>
     /// 2.2.1.1	Compact Unsigned 64-bit Integer
@@ -21,7 +27,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CompactUnsigned64bitInteger structure.
         /// </summary>
-        /// <param name="s">An stream containing CompactUnsigned64bitInteger structure.</param>
+        /// <param name="s">A stream containing CompactUnsigned64bitInteger structure.</param>
         public CompactUnsigned64bitInteger TryParse(Stream s)
         {
             base.Parse(s);
@@ -135,7 +141,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CompactUintZero structure.
         /// </summary>
-        /// <param name="s">An stream containing CompactUintZero structure.</param>
+        /// <param name="s">A stream containing CompactUintZero structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -156,7 +162,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CompactUint7bitvalues structure.
         /// </summary>
-        /// <param name="s">An stream containing CompactUint7bitvalues structure.</param>
+        /// <param name="s">A stream containing CompactUint7bitvalues structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -181,12 +187,12 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CompactUint14bitvalues structure.
         /// </summary>
-        /// <param name="s">An stream containing CompactUint14bitvalues structure.</param>
+        /// <param name="s">A stream containing CompactUint14bitvalues structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
             int index = 0;
-            int temp = ReadINT16();
+            int temp = ReadUshort();
             this.A = (byte)GetBits(temp, index, 2);
             index = index + 2;
             this.Uint = (ushort)GetBits(temp, index, 14);
@@ -206,7 +212,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CompactUint21bitvalues structure.
         /// </summary>
-        /// <param name="s">An stream containing CompactUint21bitvalues structure.</param>
+        /// <param name="s">A stream containing CompactUint21bitvalues structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -231,12 +237,12 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CompactUint28bitvalues structure.
         /// </summary>
-        /// <param name="s">An stream containing CompactUint28bitvalues structure.</param>
+        /// <param name="s">A stream containing CompactUint28bitvalues structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
             int index = 0;
-            int temp = ReadINT32();
+            uint temp = ReadUint();
             this.A = (byte)GetBits(temp, index, 4);
             index = index + 4;
             this.Uint = (uint)GetBits(temp, index, 28);
@@ -256,7 +262,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CompactUint35bitvalues structure.
         /// </summary>
-        /// <param name="s">An stream containing CompactUint35bitvalues structure.</param>
+        /// <param name="s">A stream containing CompactUint35bitvalues structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -281,7 +287,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CompactUint42bitvalues structure.
         /// </summary>
-        /// <param name="s">An stream containing CompactUint42bitvalues structure.</param>
+        /// <param name="s">A stream containing CompactUint42bitvalues structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -306,7 +312,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CompactUint49bitvalues structure.
         /// </summary>
-        /// <param name="s">An stream containing CompactUint49bitvalues structure.</param>
+        /// <param name="s">A stream containing CompactUint49bitvalues structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -329,7 +335,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CompactUint64bitvalues structure.
         /// </summary>
-        /// <param name="s">An stream containing CompactUint64bitvalues structure.</param>
+        /// <param name="s">A stream containing CompactUint64bitvalues structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -349,7 +355,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the FileChunkReference structure.
         /// </summary>
-        /// <param name="s">An stream containing FileChunkReference structure.</param>
+        /// <param name="s">A stream containing FileChunkReference structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -371,7 +377,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the StringItem structure.
         /// </summary>
-        /// <param name="s">An stream containing StringItem structure.</param>
+        /// <param name="s">A stream containing StringItem structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -392,7 +398,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the StringItem structure.
         /// </summary>
-        /// <param name="s">An stream containing StringItem structure.</param>
+        /// <param name="s">A stream containing StringItem structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -410,7 +416,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the StreamObjectHeader structure.
         /// </summary>
-        /// <param name="s">An stream containing StreamObjectHeader structure.</param>
+        /// <param name="s">A stream containing StreamObjectHeader structure.</param>
         public StreamObjectHeader TryParse(Stream s)
         {
             base.Parse(s);
@@ -427,17 +433,6 @@ namespace FSSHTTPandWOPIInspector.Parsers
                 streamObjectHeader = new bit32StreamObjectHeaderStart();
                 streamObjectHeader.Parse(s);
             }
-            else if ((temp & 0x03) == 0x01)
-            {
-                streamObjectHeader = new bit8StreamObjectHeaderEnd();
-                streamObjectHeader.Parse(s);
-            }
-            else if ((temp & 0x03) == 0x03)
-            {
-                streamObjectHeader = new bit16StreamObjectHeaderEnd();
-                streamObjectHeader.Parse(s);
-            }
-
             return streamObjectHeader;
         }
 
@@ -507,12 +502,12 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the bit16StreamObjectHeaderStart structure.
         /// </summary>
-        /// <param name="s">An stream containing bit16StreamObjectHeaderStart structure.</param>
+        /// <param name="s">A stream containing bit16StreamObjectHeaderStart structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
             int index = 0;
-            short temp = ReadINT16();
+            int temp = ReadUshort();
             this.A = (byte)GetBits(temp, index, 2);
             index = index + 2;
             this.B = (byte)GetBits(temp, index, 1);
@@ -541,19 +536,19 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the bit32StreamObjectHeaderStart structure.
         /// </summary>
-        /// <param name="s">An stream containing bit32StreamObjectHeaderStart structure.</param>
+        /// <param name="s">A stream containing bit32StreamObjectHeaderStart structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
             int index = 0;
-            int temp = ReadINT32();
+            uint temp = ReadUint();
             this.A = (byte)GetBits(temp, index, 2);
             index = index + 2;
             this.B = (byte)GetBits(temp, index, 1);
             index = index + 1;
             this.Type = (StreamObjectTypeHeaderStart)GetBits(temp, index, 14);
             index = index + 14;
-            this.Length = (byte)GetBits(temp, index, 15);
+            this.Length = (short)GetBits(temp, index, 15);
 
             if (this.Length == 32767)
             {
@@ -587,16 +582,15 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the bit8StreamObjectHeaderEnd structure.
         /// </summary>
-        /// <param name="s">An stream containing bit8StreamObjectHeaderEnd structure.</param>
+        /// <param name="s">A stream containing bit8StreamObjectHeaderEnd structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
             int index = 0;
             byte temp = ReadByte();
-            // TODO
-            this.Type = (StreamObjectTypeHeaderEnd)GetBits(temp, index, 6);
-            index = index + 6;
             this.A = (byte)GetBits(temp, index, 2);
+            index = index + 2;
+            this.Type = (StreamObjectTypeHeaderEnd)GetBits(temp, index, 6);
         }
     }
 
@@ -613,13 +607,12 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the bit16StreamObjectHeaderEnd structure.
         /// </summary>
-        /// <param name="s">An stream containing bit16StreamObjectHeaderEnd structure.</param>
+        /// <param name="s">A stream containing bit16StreamObjectHeaderEnd structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
             int index = 0;
-            short temp = ReadINT16();
-            // TODO need revert the temp.
+            int temp = ReadUshort();
             this.A = (byte)GetBits(temp, index, 2);
             index = index + 2;
             this.Type = (StreamObjectTypeHeaderEnd)GetBits(temp, index, 14);
@@ -657,13 +650,14 @@ namespace FSSHTTPandWOPIInspector.Parsers
         ObjectGroupObjectDataBLOBReference = 0x1C,
         ObjectGroupDeclarations = 0x1D,
         ObjectGroupData = 0x1E,
-        IntermediateNodeObject = 0x1F, // Defined in MS-FSSHTTPD
-        RootNodeObject = 0x20, // Defined in MS-FSSHTTPD
+        LeafNodeObject = 0x1F, // Defined in MS-FSSHTTPD
+        IntermediateNodeObject = 0x20, // Defined in MS-FSSHTTPD
         SignatureObject = 0x21, // Defined in MS-FSSHTTPD
         DataSizeObject = 0x22, // Defined in MS-FSSHTTPD
         WaterlineKnowledge = 0x29,
         ContentTagKnowledge = 0x2D,
         ContentTagKnowledgeEntry = 0x2E,
+        QueryChangesVersioning = 0x30,
         Request = 0x040,
         FsshttpbSubResponse = 0x041,
         SubRequest = 0x042,
@@ -708,7 +702,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
         RequestHashOptions = 0x088,
         DiagnosticRequestOptionOutput = 0x089,
         DiagnosticRequestOptionInput = 0x08A,
-        UserAgentClientandPlatform = 0x08B
+        UserAgentClientandPlatform = 0x08B,
+        VersionTokenKnowledge = 0x08C,
+        CellRoundtripOptions = 0x08C,
     }
 
     /// <summary>
@@ -722,8 +718,8 @@ namespace FSSHTTPandWOPIInspector.Parsers
         DataElementPackage = 0x15,
         ObjectGroupDeclarations = 0x1D,
         ObjectGroupData = 0x1E,
-        IntermediateNodeEnd = 0x1F, // Defined in MS-FSSHTTPD
-        RootNodeEnd = 0x20, // Defined in MS-FSSHTTPD
+        LeafNodeEnd = 0x1F, // Defined in MS-FSSHTTPD
+        IntermediateNodeEnd = 0x20, // Defined in MS-FSSHTTPD
         WaterlineKnowledge = 0x29,
         ContentTagKnowledge = 0x2D,
         Request = 0x040,
@@ -743,21 +739,6 @@ namespace FSSHTTPandWOPIInspector.Parsers
     }
 
     /// <summary>
-    /// The enumeration of request type.
-    /// </summary>
-    public enum RequestTypes
-    {
-        QueryAccess = 1,
-        QueryChanges = 2,
-        QueryKnowledge = 3,
-        PutChanges = 5,
-        QueryRawStorage = 6,
-        PutRawStorage = 7,
-        QueryDiagnosticStoreInfo = 8,
-        AllocateExtendedGuidRange = 11
-    }
-
-    /// <summary>
     /// 2.2.1.7	Extended GUID
     /// </summary>
     public class ExtendedGUID : BaseStructure
@@ -765,7 +746,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ExtendedGUID structure.
         /// </summary>
-        /// <param name="s">An stream containing ExtendedGUID structure.</param>
+        /// <param name="s">A stream containing ExtendedGUID structure.</param>
         public ExtendedGUID TryParse(Stream s)
         {
             base.Parse(s);
@@ -811,7 +792,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ExtendedGUIDNullValue structure.
         /// </summary>
-        /// <param name="s">An stream containing ExtendedGUIDNullValue structure.</param>
+        /// <param name="s">A stream containing ExtendedGUIDNullValue structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -833,15 +814,15 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ExtendedGUID5BitUintValue structure.
         /// </summary>
-        /// <param name="s">An stream containing ExtendedGUID5BitUintValue structure.</param>
+        /// <param name="s">A stream containing ExtendedGUID5BitUintValue structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
             byte tempByte = ReadByte();
             int index = 0;
-            this.Value = GetBits(tempByte, index, 5);
-            index += 5;
             this.Type = GetBits(tempByte, index, 3);
+            index += 3;
+            this.Value = GetBits(tempByte, index, 5);
             this.GUID = ReadGuid();
         }
     }
@@ -860,15 +841,15 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ExtendedGUID10BitUintValue structure.
         /// </summary>
-        /// <param name="s">An stream containing ExtendedGUID10BitUintValue structure.</param>
+        /// <param name="s">A stream containing ExtendedGUID10BitUintValue structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            short temp = ReadINT16();
+            int temp = ReadUshort();
             int index = 0;
-            this.Type = GetBits(temp, index, 6);
+            this.Type = (ushort)GetBits(temp, index, 6);
             index += 6;
-            this.Value = GetBits(temp, index, 10);
+            this.Value = (ushort)GetBits(temp, index, 10);
             this.GUID = ReadGuid();
         }
     }
@@ -887,7 +868,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ExtendedGUID17BitUintValue structure.
         /// </summary>
-        /// <param name="s">An stream containing ExtendedGUID17BitUintValue structure.</param>
+        /// <param name="s">A stream containing ExtendedGUID17BitUintValue structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -912,7 +893,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ExtendedGUID32BitUintValue structure.
         /// </summary>
-        /// <param name="s">An stream containing ExtendedGUID32BitUintValue structure.</param>
+        /// <param name="s">A stream containing ExtendedGUID32BitUintValue structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -933,7 +914,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ExtendedGUIDArray structure.
         /// </summary>
-        /// <param name="s">An stream containing ExtendedGUIDArray structure.</param>
+        /// <param name="s">A stream containing ExtendedGUIDArray structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -963,7 +944,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the SerialNumber structure.
         /// </summary>
-        /// <param name="s">An stream containing SerialNumber structure.</param>
+        /// <param name="s">A stream containing SerialNumber structure.</param>
         public SerialNumber TryParse(Stream s)
         {
             base.Parse(s);
@@ -994,7 +975,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the SerialNumberNullValue structure.
         /// </summary>
-        /// <param name="s">An stream containing SerialNumberNullValue structure.</param>
+        /// <param name="s">A stream containing SerialNumberNullValue structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1014,7 +995,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the SerialNumber64BitUintValue structure.
         /// </summary>
-        /// <param name="s">An stream containing SerialNumber64BitUintValue structure.</param>
+        /// <param name="s">A stream containing SerialNumber64BitUintValue structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1035,7 +1016,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CellID structure.
         /// </summary>
-        /// <param name="s">An stream containing CellID structure.</param>
+        /// <param name="s">A stream containing CellID structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1057,7 +1038,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CellIDArray structure.
         /// </summary>
-        /// <param name="s">An stream containing CellIDArray structure.</param>
+        /// <param name="s">A stream containing CellIDArray structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1092,7 +1073,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the DataElementPackage structure.
         /// </summary>
-        /// <param name="s">An stream containing DataElementPackage structure.</param>
+        /// <param name="s">A stream containing DataElementPackage structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1103,7 +1084,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
             long DataElementPackageType = PreReadDataElementPackageType();
             List<object> DataElementsList = new List<object>();
 
-            while (ContainsStreamObjectHeader(0x01) && (DataElementPackageType == 0x01 || DataElementPackageType == 0x02 ||
+            while (ContainsStreamObjectStart16BitHeader(0x01) && (DataElementPackageType == 0x01 || DataElementPackageType == 0x02 ||
                    DataElementPackageType == 0x03 || DataElementPackageType == 0x04 || DataElementPackageType == 0x05 ||
                    DataElementPackageType == 0x06 || DataElementPackageType == 0x0A))
             {
@@ -1199,7 +1180,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the StorageIndexDataElement structure.
         /// </summary>
-        /// <param name="s">An stream containing StorageIndexDataElement structure.</param>
+        /// <param name="s">A stream containing StorageIndexDataElement structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1256,7 +1237,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the StorageIndexManifestMappingValues structure.
         /// </summary>
-        /// <param name="s">An stream containing StorageIndexManifestMappingValues structure.</param>
+        /// <param name="s">A stream containing StorageIndexManifestMappingValues structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1282,7 +1263,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the StorageIndexCellMappingValues structure.
         /// </summary>
-        /// <param name="s">An stream containing StorageIndexCellMappingValues structure.</param>
+        /// <param name="s">A stream containing StorageIndexCellMappingValues structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1310,7 +1291,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the StorageIndexRevisionMappingValues structure.
         /// </summary>
-        /// <param name="s">An stream containing StorageIndexRevisionMappingValues structure.</param>
+        /// <param name="s">A stream containing StorageIndexRevisionMappingValues structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1342,7 +1323,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the StorageManifestDataElement structure.
         /// </summary>
-        /// <param name="s">An stream containing StorageManifestDataElement structure.</param>
+        /// <param name="s">A stream containing StorageManifestDataElement structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1382,7 +1363,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the StorageManifestRootDeclareValues structure.
         /// </summary>
-        /// <param name="s">An stream containing StorageManifestRootDeclareValues structure.</param>
+        /// <param name="s">A stream containing StorageManifestRootDeclareValues structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1411,7 +1392,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CellManifestDataElement structure.
         /// </summary>
-        /// <param name="s">An stream containing CellManifestDataElement structure.</param>
+        /// <param name="s">A stream containing CellManifestDataElement structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1450,7 +1431,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the RevisionManifestDataElement structure.
         /// </summary>
-        /// <param name="s">An stream containing RevisionManifestDataElement structure.</param>
+        /// <param name="s">A stream containing RevisionManifestDataElement structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1513,7 +1494,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the RevisionManifestRootDeclareValues structure.
         /// </summary>
-        /// <param name="s">An stream containing RevisionManifestRootDeclareValues structure.</param>
+        /// <param name="s">A stream containing RevisionManifestRootDeclareValues structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1537,7 +1518,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the RevisionManifestObjectGroupReferencesValues structure.
         /// </summary>
-        /// <param name="s">An stream containing RevisionManifestObjectGroupReferencesValues structure.</param>
+        /// <param name="s">A stream containing RevisionManifestObjectGroupReferencesValues structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1570,7 +1551,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ObjectGroupDataElements structure.
         /// </summary>
-        /// <param name="s">An stream containing ObjectGroupDataElements structure.</param>
+        /// <param name="s">A stream containing ObjectGroupDataElements structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1590,7 +1571,6 @@ namespace FSSHTTPandWOPIInspector.Parsers
             }
             this.ObjectGroupDeclarationsStart = new StreamObjectHeader();
             this.ObjectGroupDeclarationsStart = this.ObjectGroupDeclarationsStart.TryParse(s);
-
             List<object> DeclarationList = new List<object>();
             while (ContainsStreamObjectHeader(0x18) || ContainsStreamObjectHeader(0x05))
             {
@@ -1611,7 +1591,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.ObjectGroupDeclarationsEnd = new bit8StreamObjectHeaderEnd();
             this.ObjectGroupDeclarationsEnd.Parse(s);
 
-            if (ContainsStreamObjectHeader(0x79))
+            if (ContainsStreamObjectStart32BitHeader(0x79))
             {
                 this.ObjectMetadataDeclaration = new ObjectMetadataDeclaration();
                 this.ObjectMetadataDeclaration.Parse(s);
@@ -1619,8 +1599,8 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
             this.ObjectGroupDataStart = new StreamObjectHeader();
             this.ObjectGroupDataStart = this.ObjectGroupDataStart.TryParse(s);
-
             List<object> ObjectDataList = new List<object>();
+            FSSHTTPandWOPIInspector.isNextEditorTable = false;
             while (ContainsStreamObjectHeader(0x16) || ContainsStreamObjectHeader(0x1C))
             {
                 if (ContainsStreamObjectHeader(0x16))
@@ -1637,7 +1617,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
                 }
             }
             this.ObjectDataOrObjectDataBLOBReference = ObjectDataList.ToArray();
-
+            FSSHTTPandWOPIInspector.isNextEditorTable = false;
             this.ObjectGroupDataEnd = new bit8StreamObjectHeaderEnd();
             this.ObjectGroupDataEnd.Parse(s);
             this.DataElementEnd = new bit8StreamObjectHeaderEnd();
@@ -1660,7 +1640,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ObjectDeclaration structure.
         /// </summary>
-        /// <param name="s">An stream containing ObjectDeclaration structure.</param>
+        /// <param name="s">A stream containing ObjectDeclaration structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1694,7 +1674,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ObjectDataBLOBDeclaration structure.
         /// </summary>
-        /// <param name="s">An stream containing ObjectDataBLOBDeclaration structure.</param>
+        /// <param name="s">A stream containing ObjectDataBLOBDeclaration structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1725,15 +1705,14 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ObjectMetadataDeclaration structure.
         /// </summary>
-        /// <param name="s">An stream containing ObjectMetadataDeclaration structure.</param>
+        /// <param name="s">A stream containing ObjectMetadataDeclaration structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
             this.ObjectGroupMetadataDeclarations = new bit32StreamObjectHeaderStart();
             this.ObjectGroupMetadataDeclarations.Parse(s);
-
             List<ObjectMetadata> ObjectMetadataList = new List<ObjectMetadata>();
-            while (ContainsStreamObjectHeader(0x78))
+            while (ContainsStreamObjectStart32BitHeader(0x78))
             {
                 ObjectMetadata tempObjectMetadata = new ObjectMetadata();
                 tempObjectMetadata.Parse(s);
@@ -1756,7 +1735,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ObjectMetadata structure.
         /// </summary>
-        /// <param name="s">An stream containing ObjectMetadata structure.</param>
+        /// <param name="s">A stream containing ObjectMetadata structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1782,7 +1761,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ObjectData structure.
         /// </summary>
-        /// <param name="s">An stream containing ObjectData structure.</param>
+        /// <param name="s">A stream containing ObjectData structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1794,22 +1773,86 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.CellIDArray.Parse(s);
             this.DataSize = new CompactUnsigned64bitInteger();
             this.DataSize = this.DataSize.TryParse(s);
-
-            if (ContainsStreamObjectHeader(0x20))
+            if (ContainsStreamObjectStart16BitHeader(0x20))
             {
                 this.Data = new IntermediateNodeObjectData();
                 ((IntermediateNodeObjectData)this.Data).Parse(s);
 
             }
-            else if (ContainsStreamObjectHeader(0x1F))
+            else if (ContainsStreamObjectStart16BitHeader(0x1F))
             {
                 this.Data = new LeafNodeObjectData();
                 ((LeafNodeObjectData)this.Data).Parse(s);
             }
-            else
+            else if ((int)this.DataSize.GetUint(this.DataSize) > 0)
             {
                 byte[] dataarray = ReadBytes((int)this.DataSize.GetUint(this.DataSize));
-                this.Data = dataarray;
+                if (Utilities.IsEditorsTableHeader(dataarray))
+                {
+                    this.Data = dataarray;
+                    FSSHTTPandWOPIInspector.isNextEditorTable = true;
+                }
+                else if (Utilities.IsZIPFileHeaderMatch(dataarray, Utilities.LocalFileHeader) || Utilities.IsZIPFileHeaderMatch(dataarray, Utilities.CentralDirectoryHeader))
+                {
+                    s.Position -= (int)this.DataSize.GetUint(this.DataSize);
+                    long startPostion = s.Position;
+                    this.Data = new ZIPFileStructure();
+                    ((ZIPFileStructure)this.Data).Parse(s);
+                    if (s.Position - startPostion > (long)this.DataSize.GetUint(this.DataSize))
+                    {
+                        this.Data = dataarray;
+                    }
+                    s.Position = startPostion + (long)this.DataSize.GetUint(this.DataSize);
+                }
+                else if (Utilities.IsPNGHeader(dataarray))
+                {
+                    this.Data = dataarray;
+                }
+                else if (FSSHTTPandWOPIInspector.isNextEditorTable)
+                {
+                    string editorsTableXml = null;
+                    byte[] buffer = new byte[dataarray.Length];
+                    Array.Copy(dataarray, 0, buffer, 0, dataarray.Length);
+                    System.IO.MemoryStream ms = null;
+                    try
+                    {
+                        ms = new System.IO.MemoryStream();
+                        ms.Write(buffer, 0, buffer.Length);
+                        ms.Position = 0;
+                        using (DeflateStream stream = new DeflateStream(ms, CompressionMode.Decompress))
+                        {
+                            stream.Flush();
+                            byte[] MaxBuffer = new byte[buffer.Length * 5];
+
+                            int count = stream.Read(MaxBuffer, 0, buffer.Length * 5);
+                            byte[] decompressBuffer = new byte[count];
+
+                            Array.Copy(MaxBuffer, 0, decompressBuffer, 0, count);
+                            stream.Close();
+                            editorsTableXml = System.Text.Encoding.UTF8.GetString(decompressBuffer);
+                        }
+
+                        ms.Close();
+                        this.Data = Utilities.GetEditorsTable(editorsTableXml);
+
+                        // Record the length of the (Edit table) data in byte for map in hexview
+                        BaseStructure.editTableQueue.Enqueue(dataarray.Length);
+                    }
+                    finally
+                    {
+                        if (ms != null)
+                        {
+                            ms.Dispose();
+                        }
+                    }
+
+                    FSSHTTPandWOPIInspector.isNextEditorTable = false;
+                }
+                else
+                {
+                    this.Data = dataarray;
+                }
+
             }
         }
     }
@@ -1827,7 +1870,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ObjectDataBLOBReference structure.
         /// </summary>
-        /// <param name="s">An stream containing ObjectDataBLOBReference structure.</param>
+        /// <param name="s">A stream containing ObjectDataBLOBReference structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1854,7 +1897,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the DataElementHash structure.
         /// </summary>
-        /// <param name="s">An stream containing DataElementHash structure.</param>
+        /// <param name="s">A stream containing DataElementHash structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1886,7 +1929,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the DataElementFragmentDataElement structure.
         /// </summary>
-        /// <param name="s">An stream containing DataElementFragmentDataElement structure.</param>
+        /// <param name="s">A stream containing DataElementFragmentDataElement structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1929,7 +1972,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ObjectDataBLOBDataElements structure.
         /// </summary>
-        /// <param name="s">An stream containing ObjectDataBLOBDataElements structure.</param>
+        /// <param name="s">A stream containing ObjectDataBLOBDataElements structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1962,7 +2005,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the Knowledge structure.
         /// </summary>
-        /// <param name="s">An stream containing Knowledge structure.</param>
+        /// <param name="s">A stream containing Knowledge structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1970,7 +2013,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.KnowledgeStart.Parse(s);
 
             List<SpecializedKnowledge> tempSpecializedKnowledge = new List<SpecializedKnowledge>();
-            while (ContainsStreamObjectHeader(0x44))
+            while (ContainsStreamObjectStart32BitHeader(0x44))
             {
                 SpecializedKnowledge knowledge = new SpecializedKnowledge();
                 knowledge.Parse(s);
@@ -1995,7 +2038,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the SpecializedKnowledge structure.
         /// </summary>
-        /// <param name="s">An stream containing SpecializedKnowledge structure.</param>
+        /// <param name="s">A stream containing SpecializedKnowledge structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2021,6 +2064,10 @@ namespace FSSHTTPandWOPIInspector.Parsers
                     this.SpecializedKnowledgeData = new ContentTagKnowledge();
                     ((ContentTagKnowledge)this.SpecializedKnowledgeData).Parse(s);
                     break;
+                case "BF12E2C1-E64F-4959-8282-73B9A24A7C44":
+                    this.SpecializedKnowledgeData = new VersionTokenKnowledge();
+                    ((VersionTokenKnowledge)this.SpecializedKnowledgeData).Parse(s);
+                    break;
                 default:
                     throw new Exception("The GUID is not right.");
 
@@ -2029,6 +2076,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.SpecializedKnowledgeEnd.Parse(s);
         }
     }
+
 
     /// <summary>
     /// 2.2.1.13.2	Cell Knowledge
@@ -2042,34 +2090,29 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CellKnowLedge structure.
         /// </summary>
-        /// <param name="s">An stream containing CellKnowLedge structure.</param>
+        /// <param name="s">A stream containing CellKnowLedge structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
             this.CellKnowledgeStart = new bit16StreamObjectHeaderStart();
             this.CellKnowledgeStart.Parse(s);
-            if (ContainsStreamObjectHeader(0x0F))
+            List<object> tempCell = new List<object>();
+            while (ContainsStreamObjectStart16BitHeader(0x0F) || ContainsStreamObjectStart16BitHeader(0x17))
             {
-                List<CellKnowledgeRange> tempCell = new List<CellKnowledgeRange>();
-                do
+                if (ContainsStreamObjectStart16BitHeader(0x0F))
                 {
                     CellKnowledgeRange cellknowledge = new CellKnowledgeRange();
                     cellknowledge.Parse(s);
                     tempCell.Add(cellknowledge);
-                } while (ContainsStreamObjectHeader(0x0F));
-                this.CellKnowledgeData = tempCell.ToArray();
-            }
-            else if (ContainsStreamObjectHeader(0x17))
-            {
-                List<CellKnowledgeEntry> tempCell = new List<CellKnowledgeEntry>();
-                do
+                }
+                else if (ContainsStreamObjectStart16BitHeader(0x17))
                 {
                     CellKnowledgeEntry cellknowledge = new CellKnowledgeEntry();
                     cellknowledge.Parse(s);
                     tempCell.Add(cellknowledge);
-                } while (ContainsStreamObjectHeader(0x0F));
-                this.CellKnowledgeData = tempCell.ToArray();
+                }
             }
+            this.CellKnowledgeData = tempCell.ToArray();
 
             this.CellKnowledgeEnd = new bit8StreamObjectHeaderEnd();
             this.CellKnowledgeEnd.Parse(s);
@@ -2089,7 +2132,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CellKnowledgeRange structure.
         /// </summary>
-        /// <param name="s">An stream containing CellKnowledgeRange structure.</param>
+        /// <param name="s">A stream containing CellKnowledgeRange structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2114,7 +2157,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CellKnowledgeEntry structure.
         /// </summary>
-        /// <param name="s">An stream containing CellKnowledgeEntry structure.</param>
+        /// <param name="s">A stream containing CellKnowledgeEntry structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2137,22 +2180,44 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the FragmentKnowledge structure.
         /// </summary>
-        /// <param name="s">An stream containing FragmentKnowledge structure.</param>
+        /// <param name="s">A stream containing FragmentKnowledge structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
             this.FragmentKnowledgeStart = new bit32StreamObjectHeaderStart();
             this.FragmentKnowledgeStart.Parse(s);
             List<FragmentKnowledgeEntry> tempFragment = new List<FragmentKnowledgeEntry>();
-            do
+            while (ContainsStreamObjectStart32BitHeader(0x06C))
             {
                 FragmentKnowledgeEntry Fragmentknowledge = new FragmentKnowledgeEntry();
                 Fragmentknowledge.Parse(s);
                 tempFragment.Add(Fragmentknowledge);
-            } while (ContainsStreamObjectHeader(0x06C));
+            };
             this.FragmentKnowledgeEntries = tempFragment.ToArray();
             this.FragmentKnowledgeEnd = new bit16StreamObjectHeaderEnd();
             this.FragmentKnowledgeEnd.Parse(s);
+        }
+    }
+
+    /// <summary>
+    /// 2.2.1.13.3	Fragment Knowledge
+    /// </summary>
+    public class VersionTokenKnowledge : BaseStructure
+    {
+        public bit32StreamObjectHeaderStart VersionTokenKnowledgeStart;
+        public byte[] TokenData;
+
+        /// <summary>
+        /// Parse the FragmentKnowledge structure.
+        /// </summary>
+        /// <param name="s">A stream containing FragmentKnowledge structure.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.VersionTokenKnowledgeStart = new bit32StreamObjectHeaderStart();
+            this.VersionTokenKnowledgeStart.Parse(s);
+            this.TokenData = new byte[this.VersionTokenKnowledgeStart.Length];
+            this.TokenData = ReadBytes(this.VersionTokenKnowledgeStart.Length);
         }
     }
 
@@ -2169,7 +2234,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the FragmentKnowledgeEntry structure.
         /// </summary>
-        /// <param name="s">An stream containing FragmentKnowledgeEntry structure.</param>
+        /// <param name="s">A stream containing FragmentKnowledgeEntry structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2197,7 +2262,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the WaterlineKnowledge structure.
         /// </summary>
-        /// <param name="s">An stream containing WaterlineKnowledge structure.</param>
+        /// <param name="s">A stream containing WaterlineKnowledge structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2209,7 +2274,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
                 WaterlineKnowledgeEntry Waterlineknowledge = new WaterlineKnowledgeEntry();
                 Waterlineknowledge.Parse(s);
                 tempWaterline.Add(Waterlineknowledge);
-            } while (ContainsStreamObjectHeader(0x04));
+            } while (ContainsStreamObjectStart16BitHeader(0x04));
             this.WaterlineKnowledgeData = tempWaterline.ToArray();
             this.WaterlineKnowledgeEnd = new bit8StreamObjectHeaderEnd();
             this.WaterlineKnowledgeEnd.Parse(s);
@@ -2229,7 +2294,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the WaterlineKnowledgeEntry structure.
         /// </summary>
-        /// <param name="s">An stream containing WaterlineKnowledgeEntry structure.</param>
+        /// <param name="s">A stream containing WaterlineKnowledgeEntry structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2257,7 +2322,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the WaterlineKnowledge structure.
         /// </summary>
-        /// <param name="s">An stream containing WaterlineKnowledge structure.</param>
+        /// <param name="s">A stream containing WaterlineKnowledge structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2281,19 +2346,19 @@ namespace FSSHTTPandWOPIInspector.Parsers
     /// </summary>
     public class ContentTagKnowledgeEntry : BaseStructure
     {
-        public bit16StreamObjectHeaderStart ContentTagKnowledgeEntryStart;
+        public StreamObjectHeader ContentTagKnowledgeEntryStart;
         public ExtendedGUID BLOBExtendedGUID;
         public BinaryItem ClockData;
 
         /// <summary>
         /// Parse the ContentTagKnowledgeEntry structure.
         /// </summary>
-        /// <param name="s">An stream containing ContentTagKnowledgeEntry structure.</param>
+        /// <param name="s">A stream containing ContentTagKnowledgeEntry structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.ContentTagKnowledgeEntryStart = new bit16StreamObjectHeaderStart();
-            this.ContentTagKnowledgeEntryStart.Parse(s);
+            this.ContentTagKnowledgeEntryStart = new StreamObjectHeader();
+            this.ContentTagKnowledgeEntryStart = this.ContentTagKnowledgeEntryStart.TryParse(s);
             this.BLOBExtendedGUID = new ExtendedGUID();
             this.BLOBExtendedGUID = this.BLOBExtendedGUID.TryParse(s);
             this.ClockData = new BinaryItem();
@@ -2312,7 +2377,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public bit32StreamObjectHeaderStart RequestStart;
         public bit32StreamObjectHeaderStart UserAgentStart;
         public bit32StreamObjectHeaderStart UserAgentGUID;
-        public Guid GUID;
+        public Guid? GUID;
         public bit32StreamObjectHeaderStart UserAgentClientAndPlatform;
         public CompactUnsigned64bitInteger ClientCount;
         public byte[] ClientByteArray;
@@ -2323,7 +2388,6 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public bit16StreamObjectHeaderEnd UserAgentEnd;
         public bit32StreamObjectHeaderStart RequestHashingOptionsDeclaration;
         public CompactUnsigned64bitInteger RequestHasingSchema;
-
         [BitAttribute(1)]
         public byte? A;
         [BitAttribute(1)]
@@ -2334,6 +2398,11 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public byte? D;
         [BitAttribute(4)]
         public byte? E;
+        public bit32StreamObjectHeaderStart CellRoundtrioOptions;
+        [BitAttribute(1)]
+        public byte? F;
+        [BitAttribute(7)]
+        public byte? G;
         public FsshttpbSubRequest[] SubRequest;
         public DataElementPackage DataElementPackage;
         public bit16StreamObjectHeaderEnd RequestEnd;
@@ -2341,7 +2410,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the FsshttpbRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing FsshttpbRequest structure.</param>
+        /// <param name="s">A stream containing FsshttpbRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2352,7 +2421,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.RequestStart.Parse(s);
             this.UserAgentStart = new bit32StreamObjectHeaderStart();
             this.UserAgentStart.Parse(s);
-            if (ContainsStreamObjectHeader(0x055))
+            if (ContainsStreamObjectStart32BitHeader(0x055))
             {
                 this.UserAgentGUID = new bit32StreamObjectHeaderStart();
                 this.UserAgentGUID.Parse(s);
@@ -2361,7 +2430,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
             {
                 this.GUID = ReadGuid();
             }
-            if (ContainsStreamObjectHeader(0x8B))
+            if (ContainsStreamObjectStart32BitHeader(0x8B))
             {
                 this.UserAgentClientAndPlatform = new bit32StreamObjectHeaderStart();
                 this.UserAgentClientAndPlatform.Parse(s);
@@ -2382,20 +2451,29 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.Version = ReadUint();
             this.UserAgentEnd = new bit16StreamObjectHeaderEnd();
             this.UserAgentEnd.Parse(s);
-            if (ContainsStreamObjectHeader(0x8D))//TODO: This should be 0x88 accroding to TD, but in the capture files of sharepoint server 2013, it is 0x8D.
+            if (ContainsStreamObjectStart32BitHeader(0x88))
             {
                 this.RequestHashingOptionsDeclaration = new bit32StreamObjectHeaderStart();
                 this.RequestHashingOptionsDeclaration.Parse(s);
-            }
-
-            if (this.RequestHashingOptionsDeclaration != null)
-            {
-                // TODO: Missing fields (A B C D E) here, because it's seems these is not containd in capture files of sharepoint server 13. 
                 this.RequestHasingSchema = new CompactUnsigned64bitInteger();
                 this.RequestHasingSchema = this.RequestHasingSchema.TryParse(s);
+                byte tempByte = ReadByte();
+                this.A = GetBits(tempByte, 0, 1);
+                this.B = GetBits(tempByte, 1, 1);
+                this.C = GetBits(tempByte, 2, 1);
+                this.D = GetBits(tempByte, 3, 1);
+                this.E = GetBits(tempByte, 4, 4);
+            }
+            if (ContainsStreamObjectStart32BitHeader(0x8D))
+            {
+                this.CellRoundtrioOptions = new bit32StreamObjectHeaderStart();
+                this.CellRoundtrioOptions.Parse(s);
+                byte tempByte = ReadByte();
+                this.F = GetBits(tempByte, 0, 1);
+                this.G = GetBits(tempByte, 1, 7);
             }
 
-            if (ContainsStreamObjectHeader(0x042))
+            if (ContainsStreamObjectStart32BitHeader(0x042))
             {
                 List<FsshttpbSubRequest> tempRequest = new List<FsshttpbSubRequest>();
                 do
@@ -2404,9 +2482,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
                     subRequest.Parse(s);
                     tempRequest.Add(subRequest);
                     this.SubRequest = tempRequest.ToArray();
-                } while (ContainsStreamObjectHeader(0x042));
+                } while (ContainsStreamObjectStart32BitHeader(0x042));
             }
-            if (ContainsStreamObjectHeader(0x15))
+            if (ContainsStreamObjectStart16BitHeader(0x15))
             {
                 this.DataElementPackage = new DataElementPackage();
                 this.DataElementPackage.Parse(s);
@@ -2432,7 +2510,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the FsshttpbSubRequests structure.
         /// </summary>
-        /// <param name="s">An stream containing FsshttpbSubRequests structure.</param>
+        /// <param name="s">A stream containing FsshttpbSubRequests structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2444,7 +2522,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.RequestType = this.RequestType.TryParse(s);
             this.Priority = new CompactUnsigned64bitInteger();
             this.Priority = this.Priority.TryParse(s);
-            if (ContainsStreamObjectHeader(0x83))
+            if (ContainsStreamObjectStart32BitHeader(0x83))
             {
                 this.TargetPartitionId = new TargetPartitionId();
                 this.TargetPartitionId.Parse(s);
@@ -2482,20 +2560,25 @@ namespace FSSHTTPandWOPIInspector.Parsers
     {
         public bit32StreamObjectHeaderStart TargetPartitionIdStart;
         public Guid PartitionIdGUID;
-        public bit16StreamObjectHeaderEnd TargetPartitionIdEnd;// This feild is not contained in TD, but there is a TDI 69798.
+        public bit16StreamObjectHeaderEnd TargetPartitionIdEnd;
 
         /// <summary>
         /// Parse the TargetPartitionId structure.
         /// </summary>
-        /// <param name="s">An stream containing TargetPartitionId structure.</param>
+        /// <param name="s">A stream containing TargetPartitionId structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
             this.TargetPartitionIdStart = new bit32StreamObjectHeaderStart();
             this.TargetPartitionIdStart.Parse(s);
             this.PartitionIdGUID = ReadGuid();
-            this.TargetPartitionIdEnd = new bit16StreamObjectHeaderEnd();
-            this.TargetPartitionIdEnd.Parse(s);
+            short tempShrot = ReadINT16();
+            s.Position -= 2;
+            if (tempShrot == 0x020F)
+            {
+                this.TargetPartitionIdEnd = new bit16StreamObjectHeaderEnd();
+                this.TargetPartitionIdEnd.Parse(s);
+            }
         }
     }
 
@@ -2525,27 +2608,35 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public byte E;
         [BitAttribute(1)]
         public byte F;
-        [BitAttribute(2)]
+        [BitAttribute(1)]
         public byte G;
+        [BitAttribute(1)]
+        public byte H;
+        [BitAttribute(1)]
+        public byte? UserContentEquivalentVersionOk;
+        [BitAttribute(7)]
+        public byte? ReservedMustBeZero;
         public bit32StreamObjectHeaderStart queryChangesRequestArguments;
         [BitAttribute(1)]
-        public byte F2;
+        public byte? F2;
         [BitAttribute(1)]
-        public byte G2;
+        public byte? G2;
         [BitAttribute(6)]
-        public byte H;
+        public byte? H2;
         public CellID CellID;
         public bit32StreamObjectHeaderStart QueryChangesDataConstraints;
-        public CompactUnsigned64bitInteger MaxDataElements;
-        public CompactUnsigned64bitInteger MajorVersionNumber;
-        public CompactUnsigned64bitInteger MinorVersionNumber;
+        public CompactUnsigned64bitInteger MaximumDataElements;
+        public bit16StreamObjectHeaderStart QueryChangesVersioning;
+        public uint? MajorVersionNumber;
+        public uint? MinorVersionNumber;
+        public byte[] VersionToken;
         public Filter[] QueryChangesFilters;
         public Knowledge Knowledge;
 
         /// <summary>
         /// Parse the Filter structure.
         /// </summary>
-        /// <param name="s">An stream containing Filter structure.</param>
+        /// <param name="s">A stream containing Filter structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2558,40 +2649,64 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.D = GetBits(tempByte, 3, 1);
             this.E = GetBits(tempByte, 4, 1);
             this.F = GetBits(tempByte, 5, 1);
-            this.G = GetBits(tempByte, 6, 2);
-            this.queryChangesRequestArguments = new bit32StreamObjectHeaderStart();
-            this.queryChangesRequestArguments.Parse(s);
-            byte tempByte2 = ReadByte();
-            this.F2 = GetBits(tempByte2, 0, 1);
-            this.G2 = GetBits(tempByte2, 1, 1);
-            this.H = GetBits(tempByte2, 2, 6);
+            this.G = GetBits(tempByte, 6, 1);
+            this.H = GetBits(tempByte, 7, 1);
+            if (this.queryChangesRequest.Length == 2)
+            {
+                byte tempb = ReadByte();
+                this.UserContentEquivalentVersionOk = GetBits(tempb, 0, 1);
+                this.ReservedMustBeZero = GetBits(tempb, 1, 7);
+            }
+
+            if (ContainsStreamObjectStart32BitHeader(0x05B))
+            {
+                this.queryChangesRequestArguments = new bit32StreamObjectHeaderStart();
+                this.queryChangesRequestArguments.Parse(s);
+
+                byte temp2 = ReadByte();
+                this.F2 = GetBits(temp2, 0, 1);
+                this.G2 = GetBits(temp2, 1, 1);
+                this.H2 = GetBits(temp2, 2, 6);
+            }
+
             this.CellID = new CellID();
             this.CellID.Parse(s);
-            if (ContainsStreamObjectHeader(0x059))
+            if (ContainsStreamObjectStart32BitHeader(0x059))
             {
                 this.QueryChangesDataConstraints = new bit32StreamObjectHeaderStart();
                 this.QueryChangesDataConstraints.Parse(s);
             }
             if (this.QueryChangesDataConstraints != null)
             {
-                this.MaxDataElements = new CompactUnsigned64bitInteger();
-                this.MaxDataElements = this.MaxDataElements.TryParse(s);
+                this.MaximumDataElements = new CompactUnsigned64bitInteger();
+                this.MaximumDataElements = this.MaximumDataElements.TryParse(s);
             }
 
-            //TODO£ºThe below two fields are newly add in TD, but they have not conatined in the capture data for sharepoint 2013 server
-            //this.MajorVersionNumber = new CompactUnsigned64bitInteger();
-            //this.MajorVersionNumber = this.MajorVersionNumber.TryParse(s);
-            //this.MinorVersionNumber = new CompactUnsigned64bitInteger();
-            //this.MinorVersionNumber = this.MinorVersionNumber.TryParse(s);
+            if (ContainsStreamObjectStart16BitHeader(0x30))
+            {
+                this.QueryChangesVersioning = new bit16StreamObjectHeaderStart();
+                this.QueryChangesVersioning.Parse(s);
+                if (this.QueryChangesVersioning.Length == 8)
+                {
+                    this.MajorVersionNumber = ReadUint();
+                    this.MinorVersionNumber = ReadUint();
+                }
+                else
+                {
+                    this.VersionToken = ReadBytes(this.QueryChangesVersioning.Length);
+                }
+            }
+
             List<Filter> FilterList = new List<Filter>();
-            while (ContainsStreamObjectHeader(0x47))
+            while (ContainsStreamObjectStart32BitHeader(0x47))
             {
                 Filter tempFilter = new Filter();
+                tempFilter.Parse(s);
                 FilterList.Add(tempFilter);
             }
             this.QueryChangesFilters = FilterList.ToArray();
 
-            if (ContainsStreamObjectHeader(0x10))
+            if (ContainsStreamObjectStart16BitHeader(0x10))
             {
                 this.Knowledge = new Knowledge();
                 this.Knowledge.Parse(s);
@@ -2618,7 +2733,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the Filter structure.
         /// </summary>
-        /// <param name="s">An stream containing Filter structure.</param>
+        /// <param name="s">A stream containing Filter structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2676,7 +2791,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
     /// <summary>
     /// The enumeration of filter type
     /// </summary>
-    public enum FilterType
+    public enum FilterType : byte
     {
         AllFilter = 1,
         DataElementTypeFilter = 2,
@@ -2706,7 +2821,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the DataElementTypeFilter structure.
         /// </summary>
-        /// <param name="s">An stream containing DataElementTypeFilter structure.</param>
+        /// <param name="s">A stream containing DataElementTypeFilter structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2736,7 +2851,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CellIDFilter structure.
         /// </summary>
-        /// <param name="s">An stream containing CellIDFilter structure.</param>
+        /// <param name="s">A stream containing CellIDFilter structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2759,14 +2874,14 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CustomFilter structure.
         /// </summary>
-        /// <param name="s">An stream containing CustomFilter structure.</param>
+        /// <param name="s">A stream containing CustomFilter structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
             this.QueryChangesFilterSchemaSpecific = new bit32StreamObjectHeaderStart();
             this.QueryChangesFilterSchemaSpecific.Parse(s);
             this.SchemaGUID = ReadGuid();
-            this.SchemaFilterData = ReadBytes(QueryChangesFilterSchemaSpecific.GetDataLength());
+            this.SchemaFilterData = ReadBytes(QueryChangesFilterSchemaSpecific.GetDataLength() - 16);
         }
     }
 
@@ -2781,7 +2896,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the DataElementIDsFilter structure.
         /// </summary>
-        /// <param name="s">An stream containing DataElementIDsFilter structure.</param>
+        /// <param name="s">A stream containing DataElementIDsFilter structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2805,7 +2920,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the HierarchyFilter structure.
         /// </summary>
-        /// <param name="s">An stream containing HierarchyFilter structure.</param>
+        /// <param name="s">A stream containing HierarchyFilter structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2821,7 +2936,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
     /// <summary>
     /// The enumeration of the hierarchy filter depth
     /// </summary>
-    public enum HierarchyFilterDepth
+    public enum HierarchyFilterDepth : byte
     {
         // Index values corresponding to the specified keys only.
         IndexOnly = 0,
@@ -2860,7 +2975,6 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public byte G;
         [BitAttribute(1)]
         public byte H;
-        [BitAttribute(10)]
         public AdditionalFlags AdditionalFlags;
         public LockId LockId;
         public Knowledge ClientKnowledge;
@@ -2869,7 +2983,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the PutChangesRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing PutChangesRequest structure.</param>
+        /// <param name="s">A stream containing PutChangesRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2888,22 +3002,22 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.F = (byte)GetBits(tempByte, 5, 1);
             this.G = (byte)GetBits(tempByte, 6, 1);
             this.H = (byte)GetBits(tempByte, 7, 1);
-            if (ContainsStreamObjectHeader(0x86))
+            if (ContainsStreamObjectStart32BitHeader(0x86))
             {
                 this.AdditionalFlags = new AdditionalFlags();
                 this.AdditionalFlags.Parse(s);
             }
-            if (ContainsStreamObjectHeader(0x85))
+            if (ContainsStreamObjectStart32BitHeader(0x85))
             {
                 this.LockId = new LockId();
                 this.LockId.Parse(s);
             }
-            if (ContainsStreamObjectHeader(0x10))
+            if (ContainsStreamObjectStart16BitHeader(0x10))
             {
                 this.ClientKnowledge = new Knowledge();
                 this.ClientKnowledge.Parse(s);
             }
-            if (ContainsStreamObjectHeader(0x8A))
+            if (ContainsStreamObjectStart32BitHeader(0x8A))
             {
                 this.DiagnosticRequestOptionInput = new DiagnosticRequestOptionInput();
                 this.DiagnosticRequestOptionInput.Parse(s);
@@ -2935,7 +3049,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the AdditionalFlags structure.
         /// </summary>
-        /// <param name="s">An stream containing AdditionalFlags structure.</param>
+        /// <param name="s">A stream containing AdditionalFlags structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2963,7 +3077,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the LockId structure.
         /// </summary>
-        /// <param name="s">An stream containing LockId structure.</param>
+        /// <param name="s">A stream containing LockId structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -2987,7 +3101,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the DiagnosticRequestOptionInput structure.
         /// </summary>
-        /// <param name="s">An stream containing DiagnosticRequestOptionInput structure.</param>
+        /// <param name="s">A stream containing DiagnosticRequestOptionInput structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3011,7 +3125,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the AllocateExtendedGUIDRangeRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing AllocateExtendedGUIDRangeRequest structure.</param>
+        /// <param name="s">A stream containing AllocateExtendedGUIDRangeRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3044,7 +3158,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the FsshttpbResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing FsshttpbResponse structure.</param>
+        /// <param name="s">A stream containing FsshttpbResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3064,13 +3178,13 @@ namespace FSSHTTPandWOPIInspector.Parsers
             }
             else
             {
-                if (ContainsStreamObjectHeader(0x15))
+                if (ContainsStreamObjectStart16BitHeader(0x15))
                 {
                     this.DataElementPackage = new DataElementPackage();
                     this.DataElementPackage.Parse(s);
                 }
 
-                if (ContainsStreamObjectHeader(0x041))
+                if (ContainsStreamObjectStart32BitHeader(0x041))
                 {
                     List<FsshttpbSubResponse> tempResponses = new List<FsshttpbSubResponse>();
                     do
@@ -3079,7 +3193,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
                         subResponse.Parse(s);
                         tempResponses.Add(subResponse);
                         this.SubResponses = tempResponses.ToArray();
-                    } while (ContainsStreamObjectHeader(0x041));
+                    } while (ContainsStreamObjectStart32BitHeader(0x041));
                 }
             }
 
@@ -3107,7 +3221,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the FsshttpbSubResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing FsshttpbSubResponse structure.</param>
+        /// <param name="s">A stream containing FsshttpbSubResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3169,7 +3283,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the QueryAccessResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing QueryAccessResponse structure.</param>
+        /// <param name="s">A stream containing QueryAccessResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3185,7 +3299,6 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.WriteAccessResponseError.Parse(s);
             this.WriteAccessResponseEnd = new bit16StreamObjectHeaderEnd();
             this.WriteAccessResponseEnd.Parse(s);
-
         }
     }
 
@@ -3205,7 +3318,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the QueryChangesResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing QueryChangesResponse structure.</param>
+        /// <param name="s">A stream containing QueryChangesResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3235,20 +3348,27 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the PutChangesResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing PutChangesResponse structure.</param>
+        /// <param name="s">A stream containing PutChangesResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.putChangesResponse = new bit32StreamObjectHeaderStart();
-            this.putChangesResponse.Parse(s);
-            this.AppliedStorageIndexId = new ExtendedGUID();
-            this.AppliedStorageIndexId = this.AppliedStorageIndexId.TryParse(s);
-            this.DataElementsAdded = new ExtendedGUIDArray();
-            this.DataElementsAdded.Parse(s);
+            if (ContainsStreamObjectStart32BitHeader(0x87))
+            {
+                this.putChangesResponse = new bit32StreamObjectHeaderStart();
+                this.putChangesResponse.Parse(s);
+                this.AppliedStorageIndexId = new ExtendedGUID();
+                this.AppliedStorageIndexId = this.AppliedStorageIndexId.TryParse(s);
+                this.DataElementsAdded = new ExtendedGUIDArray();
+                this.DataElementsAdded.Parse(s);
+            }
+
             this.ResultantKnowledge = new Knowledge();
             this.ResultantKnowledge.Parse(s);
-            this.DiagnosticRequestOptionOutput = new DiagnosticRequesOptionOutput();
-            this.DiagnosticRequestOptionOutput.Parse(s);
+            if (ContainsStreamObjectStart32BitHeader(0x89))
+            {
+                this.DiagnosticRequestOptionOutput = new DiagnosticRequesOptionOutput();
+                this.DiagnosticRequestOptionOutput.Parse(s);
+            }
         }
     }
 
@@ -3266,7 +3386,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the DiagnosticRequesOptionOutput structure.
         /// </summary>
-        /// <param name="s">An stream containing DiagnosticRequesOptionOutput structure.</param>
+        /// <param name="s">A stream containing DiagnosticRequesOptionOutput structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3291,7 +3411,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the AllocateExtendedGUIDRange structure.
         /// </summary>
-        /// <param name="s">An stream containing AllocateExtendedGUIDRange structure.</param>
+        /// <param name="s">A stream containing AllocateExtendedGUIDRange structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3321,7 +3441,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ResponseError structure.
         /// </summary>
-        /// <param name="s">An stream containing ResponseError structure.</param>
+        /// <param name="s">A stream containing ResponseError structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3349,7 +3469,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
                 ((HRESULTError)this.ErrorData).Parse(s);
             }
 
-            if (ContainsStreamObjectHeader(0x04E))
+            if (ContainsStreamObjectStart32BitHeader(0x04E))
             {
                 this.ErrorStringSupplementalInfoStart = new bit32StreamObjectHeaderStart();
                 this.ErrorStringSupplementalInfoStart.Parse(s);
@@ -3378,7 +3498,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the CellError structure.
         /// </summary>
-        /// <param name="s">An stream containing CellError structure.</param>
+        /// <param name="s">A stream containing CellError structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3391,7 +3511,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
     /// <summary>
     /// The enumeration of the cell error code. section 2.2.3.2.1
     /// </summary>
-    public enum CellErrorCode
+    public enum CellErrorCode : uint
     {
         /// <summary>
         /// Unknown error
@@ -3660,7 +3780,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the ProtocolError structure.
         /// </summary>
-        /// <param name="s">An stream containing ProtocolError structure.</param>
+        /// <param name="s">A stream containing ProtocolError structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3727,7 +3847,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the Win32Error structure.
         /// </summary>
-        /// <param name="s">An stream containing Win32Error structure.</param>
+        /// <param name="s">A stream containing Win32Error structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3748,7 +3868,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// <summary>
         /// Parse the HRESULTError structure.
         /// </summary>
-        /// <param name="s">An stream containing HRESULTError structure.</param>
+        /// <param name="s">A stream containing HRESULTError structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -3758,4 +3878,60 @@ namespace FSSHTTPandWOPIInspector.Parsers
         }
     }
 
+    /// <summary>
+    /// The class is used to represent the editors table.
+    /// </summary>
+    public class EditorsTable
+    {
+        /// <summary>
+        /// Gets or sets an array of editors. 
+        /// </summary>
+        public Editor[] Editors { get; set; }
+    }
+
+    /// <summary>
+    /// The class is used to represent the editor.
+    /// </summary>
+    public class Editor
+    {
+        /// <summary>
+        /// Gets or sets an int64 representing the editor’s timeout in its UTC "ticks".
+        /// </summary>
+        public long Timeout { get; set; }
+
+        /// <summary>
+        /// Gets or sets a unique id for the editor.
+        /// </summary>
+        public string CacheID { get; set; }
+
+        /// <summary>
+        /// Gets or sets the friendly name.
+        /// </summary>
+        public string FriendlyName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the login name.
+        /// </summary>
+        public string LoginName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the SIP address.
+        /// </summary>
+        public string SIPAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the email address.
+        /// </summary>
+        public string EmailAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the user is an editor or reader.
+        /// </summary>
+        public bool HasEditorPermission { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value which has up to 3 custom key/value pairs.
+        /// </summary>
+        public Dictionary<string, string> Metadata { get; set; }
+    }
 }

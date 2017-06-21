@@ -2983,13 +2983,17 @@ namespace MAPIInspector.Parsers
         // The Constructor to set the Count wide size.
         private CountWideEnum countWide;
 
+        // A propertyTag structure, used for PropertyRestriction
+        private PropertyTag tagInRestriction;
+
         /// <summary>
         /// The Constructor to set the Count wide size.
         /// </summary>
         /// <param name="ptypMultiCountSize">The Constructor to set the Count wide siz.</param>
-        public TaggedPropertyValue(CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes)
+        public TaggedPropertyValue(CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes, PropertyTag propertyTag = null)
         {
             countWide = ptypMultiCountSize;
+            tagInRestriction = propertyTag;
         }
         /// <summary>
         /// Parse the TaggedPropertyValue structure.
@@ -3001,7 +3005,18 @@ namespace MAPIInspector.Parsers
             this.PropertyTag = new PropertyTag();
             this.PropertyTag.Parse(s);
             PropertyValue propertyValue = new PropertyValue();
-            this.PropertyValue = propertyValue.ReadPropertyValue(this.PropertyTag.PropertyType, s, countWide);
+            if (tagInRestriction != null)
+            {
+                if (((ushort)tagInRestriction.PropertyType & 0x1000) == 0x1000)
+                {
+                    tagInRestriction.PropertyType = (PropertyDataType)((ushort)tagInRestriction.PropertyType & 0xfff);
+                }
+                this.PropertyValue = propertyValue.ReadPropertyValue(tagInRestriction.PropertyType, s, countWide);
+            }
+            else
+            {
+                this.PropertyValue = propertyValue.ReadPropertyValue(this.PropertyTag.PropertyType, s, countWide);
+            }
         }
     }
     #endregion
@@ -3541,7 +3556,10 @@ namespace MAPIInspector.Parsers
             this.RestrictType = (RestrictTypeEnum)ReadByte();
             this.RelOp = (RelOpType)ReadByte();
             this.PropTag = ReadUint();
-            this.TaggedValue = new TaggedPropertyValue();
+            s.Position -= 4;
+            PropertyTag propertyTag = new PropertyTag();
+            propertyTag.Parse(s);
+            this.TaggedValue = new TaggedPropertyValue(CountWideEnum.twoBytes, propertyTag);
             this.TaggedValue.Parse(s);
         }
     }

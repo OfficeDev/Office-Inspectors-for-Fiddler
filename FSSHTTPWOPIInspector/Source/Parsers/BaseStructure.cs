@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using System.Xml;
+using System.Drawing;
 
 
 namespace FSSHTTPandWOPIInspector.Parsers
@@ -19,6 +20,11 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// The stream to parse
         /// </summary>
         private Stream stream;
+
+        /// <summary>
+        /// editTableQueue for map with hexview
+        /// </summary>
+        public static Queue<int> editTableQueue = new Queue<int>();
 
         /// <summary>
         /// Parse stream to specific message
@@ -54,9 +60,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
                 throw new Exception("The range for index or length should be 0~7.");
             }
 
-            for (int i = 0; i < length; i++)
+            for (int i = length - 1; i >= 0; i--)
             {
-                tempBit = ((b & (1 << (7 - index - i))) > 0) ? 1 : 0;
+                tempBit = ((b & (1 << (index + i))) > 0) ? 1 : 0;
                 Bit = (Bit << 1) | tempBit;
             }
             return (byte)Bit;
@@ -465,6 +471,18 @@ namespace FSSHTTPandWOPIInspector.Parsers
         }
 
         /// <summary>
+        /// Get the next four bytes of stream
+        /// </summary>
+        /// <returns>the next four bytes of stream</returns>
+        protected byte[] NextFourBytes()
+        {
+            byte[] fourBytes = this.ReadBytes(4);
+            stream.Position -= 4;
+
+            return fourBytes;
+        }
+
+        /// <summary>
         /// Remove subNode which node text contains "specified"
         /// </summary>
         /// <param name="treenode">The tree node used to remove sub node</param>
@@ -640,8 +658,11 @@ namespace FSSHTTPandWOPIInspector.Parsers
                         }
                         else if (feildType.IsArray)
                         {
-                            TreeNode node = ArrayObjectToNode(feildValue, info[i].Name);
-                            res.Nodes.Add(node);
+                            if (((Array)feildValue).Length > 0)
+                            {
+                                TreeNode node = ArrayObjectToNode(feildValue, info[i].Name);
+                                res.Nodes.Add(node);
+                            }
                         }
                         else // complex type
                         {
@@ -763,44 +784,102 @@ namespace FSSHTTPandWOPIInspector.Parsers
                 // For no simple type, loop each field and convert to treenode
                 FieldInfo[] info = t.GetFields();
 
-                for (int i = 0; i < info.Length; i++)
+                if (t.FullName == "FSSHTTPandWOPIInspector.Parsers.EditorsTable")
                 {
-                    object feildValue = info[i].GetValue(obj);
+                    PropertyInfo[] EditorsTable = t.GetProperties();
+                    object Editors = EditorsTable[0].GetValue(obj, null);
+                    Array EditorsArray = (Array)Editors;
 
-                    if (feildValue != null)
+                    if (EditorsArray.Length > 0)
                     {
-                        Type feildType = info[i].FieldType;
+                        int i = 0;
+                        foreach (var eidtor in EditorsArray)
+                        {
+                            TreeNode node = new TreeNode(String.Format("Editors[{0}]", i));
+                            res.Nodes.Add(node);
+                            node.Tag = new Position(objStartIndex, objos);
 
-                        // If the field type is nullable simple data type (such as byte?), set the field data type as basic data type (such as byte in byte?)
-                        if (feildType.IsGenericType && feildType.GetGenericTypeDefinition() == typeof(Nullable<>))
-                        {
-                            feildType = feildType.GetGenericArguments()[0];
-                        }
+                            PropertyInfo[] Editorpro = eidtor.GetType().GetProperties();
+                            for (int j = 0; j < Editorpro.Length; j++)
+                            {
+                                if (Editorpro[j].GetValue(eidtor, null) != null)
+                                {
+                                    if (Editorpro[j].Name == "Metadata")
+                                    {
+                                        TreeNode subNode = new TreeNode(string.Format("{0}", Editorpro[j].Name));
+                                        node.Nodes.Add(subNode);
+                                        subNode.Tag = new Position(objStartIndex, objos);
+                                        Dictionary<string, string> MetaData = (Dictionary<string, string>)Editorpro[j].GetValue(eidtor, null);
+                                        foreach (var item in MetaData)
+                                        {
+                                            TreeNode leftNode = new TreeNode(string.Format("{0}:{1}", item.Key, item.Value));
+                                            subNode.Nodes.Add(leftNode);
+                                            leftNode.Tag = new Position(objStartIndex, objos);
+                                        }
 
-                        // For simple type and enum: 
-                        if (Enum.IsDefined(typeof(DataType), feildType.Name) || (feildType.IsEnum && Enum.IsDefined(typeof(DataType), feildType.GetEnumUnderlyingType().Name)))
-                        {
-                            int current = startIndex;
-                            TreeNode node = SimpleTypeObjectToNode(feildValue, obj, info[i], ref startIndex, out os);
-                            res.Nodes.Add(node);
-                        }
-                        else if (feildType.IsArray || (feildType is System.Object && feildValue.GetType().Name == "Byte[]"))// the second condition is for object parser as byte[].
-                        {
-                            int current = startIndex;
-                            TreeNode node = ArrayObjectToNode(feildValue, obj, info[i], ref startIndex, out os);
-                            res.Nodes.Add(node);
-                        }
-                        else // complex type
-                        {
-                            int current = startIndex;
-                            TreeNode node = ObjectToTreeNode(feildValue, ref startIndex, out os);
-                            node.Text = info[i].Name;
-                            res.Nodes.Add(node);
+                                    }
+                                    else
+                                    {
+                                        TreeNode subNode = new TreeNode(string.Format("{0}:{1}", Editorpro[j].Name, Editorpro[j].GetValue(eidtor, null)));
+                                        node.Nodes.Add(subNode);
+                                        subNode.Tag = new Position(objStartIndex, objos);
+                                    }
+                                }
+                            }
+                            i++;
                         }
                     }
+
+                    objos = editTableQueue.Dequeue();
+                    startIndex += objos;
                 }
-                objos = startIndex - objStartIndex; // here startIndex is the next field's start index,
+                else
+                {
+                    for (int i = 0; i < info.Length; i++)
+                    {
+                        object feildValue = info[i].GetValue(obj);
+
+                        if (feildValue != null)
+                        {
+                            Type feildType = info[i].FieldType;
+
+                            // If the field type is nullable simple data type (such as byte?), set the field data type as basic data type (such as byte in byte?)
+                            if (feildType.IsGenericType && feildType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                            {
+                                feildType = feildType.GetGenericArguments()[0];
+                            }
+
+                            // For simple type and enum: 
+                            if (Enum.IsDefined(typeof(DataType), feildType.Name) || (feildType.IsEnum && Enum.IsDefined(typeof(DataType), feildType.GetEnumUnderlyingType().Name)))
+                            {
+                                int current = startIndex;
+                                TreeNode node = SimpleTypeObjectToNode(feildValue, obj, info[i], ref startIndex, out os);
+                                res.Nodes.Add(node);
+                            }
+                            else if (feildType.IsArray || (feildType is System.Object && feildValue.GetType().Name == "Byte[]"))// the second condition is for object parser as byte[].
+                            {
+                                if (((Array)feildValue).Length > 0)
+                                {
+                                    int current = startIndex;
+                                    TreeNode node = ArrayObjectToNode(feildValue, obj, info[i], ref startIndex, out os);
+                                    res.Nodes.Add(node);
+                                }
+                            }
+                            else // complex type
+                            {
+                                int current = startIndex;
+                                TreeNode node = ObjectToTreeNode(feildValue, ref startIndex, out os);
+
+                                node.Text = info[i].Name;
+                                res.Nodes.Add(node);
+                            }
+                        }
+                    }
+                    objos = startIndex - objStartIndex; // here startIndex is the next field's start index,
+                }
             }
+
+
             Position objps = new Position(objStartIndex, objos);
             res.Tag = objps;
             offset = objos;
@@ -852,6 +931,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
                     {
                         n = (FieldsBitLength - forntEleSum) / 8;
                         r = (FieldsBitLength - forntEleSum) % 8;
+                        break;
                     }
                 }
                 if (FieldsWithBitAttribute.Count != 1 && (FieldsBitLength - thisFieldBitLength) % 8 != 0)
@@ -879,9 +959,21 @@ namespace FSSHTTPandWOPIInspector.Parsers
             }
             else
             {
-                if (type.Name == "String")
+                if (type.IsEnum)
                 {
-                    os = ((string)obj).Length * 2;
+                    Type t = type.GetEnumUnderlyingType();
+                    os = Marshal.SizeOf(t);
+                }
+                else if (type.Name == "String")
+                {
+                    if (Info.Name == "FileName")//For ZIP structure in FSSHTTPD 
+                    {
+                        os = ((string)obj).Length;
+                    }
+                    else
+                    {
+                        os = ((string)obj).Length * 2;
+                    }
                 }
                 else if (type.Name != "Boolean")
                 {
@@ -919,27 +1011,36 @@ namespace FSSHTTPandWOPIInspector.Parsers
             int os = 0;
             int Arrayos = 0;
             int ArrayStart = startIndex;
-
-            foreach (var ele in arrayObj)
+            if (arrayObj.Length >= 100)
             {
-                if (Enum.IsDefined(typeof(DataType), elementType.Name))
+                node.Text = string.Format("{0}", Info.Name + "...");
+                Arrayos = arrayObj.Length;
+                startIndex += Arrayos;
+            }
+            else
+            {
+                node.Text = string.Format("{0}", Info.Name);
+                foreach (var ele in arrayObj)
                 {
-                    subnode = SimpleTypeObjectToNode(ele, parentobj, Info, ref startIndex, out os);
-                    // Update Node name from feild Type to feild name.
-                    subnode.Text = string.Format("{0}[{1}]:{2}", Info.Name, n++, ele.ToString());
-                }
-                else
-                {
-                    subnode = ObjectToTreeNode(ele, ref startIndex, out os);
-                    // Update Node name from feild Type to feild name.
-                    subnode.Text = string.Format("{0}[{1}]", Info.Name, n++);
-                }
+                    if (Enum.IsDefined(typeof(DataType), elementType.Name))
+                    {
+                        subnode = SimpleTypeObjectToNode(ele, parentobj, Info, ref startIndex, out os);
+                        // Update Node name from feild Type to feild name.
+                        subnode.Text = string.Format("{0}[{1}]:{2}", Info.Name, n++, ele.ToString());
+                    }
+                    else
+                    {
+                        subnode = ObjectToTreeNode(ele, ref startIndex, out os);
+                        // Update Node name from feild Type to feild name.
+                        subnode.Text = string.Format("{0}[{1}]", Info.Name, n++);
+                    }
 
-                node.Nodes.Add(subnode);
-                Arrayos += os;
+                    node.Nodes.Add(subnode);
+                    Arrayos += os;
+                }
             }
 
-            node.Text = string.Format("{0}", Info.Name);
+
             Position ps = new Position(ArrayStart, Arrayos);
             node.Tag = ps;
             offset = Arrayos;
@@ -1011,18 +1112,23 @@ namespace FSSHTTPandWOPIInspector.Parsers
                 long header32BitValue = GetBigEnidan(3);
                 return (header32BitValue >> 3 & 0x3FFF) == headerType;
             }
+            return false;
+        }
 
-            // StreamObjectEnd8BitHeader
-            if ((lsb & 0x03) == 0x1)
-                return (lsb >> 2 & 0x3F) == headerType;
-
-            // StreamObjectEnd16BitHeader
-            if ((lsb & 0x03) == 0x3)
+        /// <summary>
+        /// specify whether stream contains Stream Object Start 16Bit Header
+        /// </summary>
+        /// <param name="headerType">a ushort indicate the type of the 16 bit stream object header</param>
+        /// <returns>bool value indicates whether the stream contains a 16bit Stream object header in current postion</returns>
+        public bool ContainsStreamObjectStart16BitHeader(ushort headerType)
+        {
+            byte lsb = ReadByte();
+            stream.Position -= 1;
+            if ((lsb & 0x03) == 0x0)
             {
                 long header16BitValue = GetBigEnidan(2);
-                return (header16BitValue >> 2 & 0x3FFF) == headerType;
+                return (header16BitValue >> 3 & 0x3F) == headerType;
             }
-
             return false;
         }
 
@@ -1039,7 +1145,6 @@ namespace FSSHTTPandWOPIInspector.Parsers
             if ((lsb & 0x03) == 0x2)
             {
                 long header32BitValue = GetBigEnidan(3);
-                stream.Position -= 3;
                 return (header32BitValue >> 3 & 0x3FFF) == headerType;
             }
 

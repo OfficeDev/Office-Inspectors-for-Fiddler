@@ -12,216 +12,385 @@
     /// </summary>
     public class CheckFileInfo : ResponseBodyBase
     {
-        [DataMember(Order = 1)]
+        /// <remarks/>
+        [DataMember(Order = 1, EmitDefaultValue = false)]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool AllowAdditionalMicrosoftServices { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 2)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool AllowExternalMarketplace { get; set; }
 
-        [DataMember(Order = 2)]
+        /// <remarks/>
+        [DataMember(Order = 3)]
         public string BaseFileName { get; set; }
 
-        [DataMember(Order = 3)]
+        /// <remarks/>
+        [DataMember(Order = 4)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string BreadcrumbBrandName { get; set; }
 
-        [DataMember(Order = 4)]
+        /// <remarks/>
+        [DataMember(Order = 5)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string BreadcrumbBrandUrl { get; set; }
 
-        [DataMember(Order = 5)]
+        /// <remarks/>
+        [DataMember(Order = 6)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string BreadcrumbDocName { get; set; }
 
-        [DataMember(Order = 6)]
+        /// <remarks/>
+        [DataMember(Order = 7)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string BreadcrumbDocUrl { get; set; }
 
-        [DataMember(Order = 7)]
+        /// <remarks/>
+        [DataMember(Order = 8)]
+        [System.ComponentModel.DefaultValueAttribute("")]
+        public string BreadcrumbFolderName { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 9)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string BreadcrumbFolderUrl { get; set; }
 
-        [DataMember(Order = 9)]
+        /// <remarks/>
+        [DataMember(Order = 10)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string ClientUrl { get; set; }
 
-        [DataMember(Order = 10)]
+        /// <remarks/>
+        [DataMember(Order = 11)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool CloseButtonClosesWindow { get; set; }
 
-        [DataMember(Order = 11)]
+        /// <remarks/>
+        [DataMember(Order = 12)]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool ClosePostMessage { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 13)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string CloseUrl { get; set; }
 
-        [DataMember(Order = 12)]
+        /// <remarks/>
+        [DataMember(Order = 14)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool DisableBrowserCachingOfUserContent { get; set; }
 
-        [DataMember(Order = 13)]
+        /// <remarks/>
+        [DataMember(Order = 15)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool DisablePrint { get; set; }
 
-        [DataMember(Order = 14)]
+        /// <remarks/>
+        [DataMember(Order = 16)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool DisableTranslation { get; set; }
 
-        [DataMember(Order = 15)]
+        /// <remarks/>
+        [DataMember(Order = 17)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string DownloadUrl { get; set; }
 
-        [DataMember(Order = 16)]
+        /// <remarks/>
+        [DataMember(Order = 18)]
+        [System.ComponentModel.DefaultValueAttribute("")]
+        public string EditAndReplyUrl { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 19)]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool EditModePostMessage { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 20)]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool EditNotificationPostMessage { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 21)]
+        [System.ComponentModel.DefaultValueAttribute("")]
+        public string FileExtension { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 22)]
+        [System.ComponentModel.DefaultValueAttribute(250)]
+        public int FileNameMaxLength { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 23)]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool FileSharingPostMessage { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 24)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string FileSharingUrl { get; set; }
 
-        [DataMember(Order = 17)]
+        /// <remarks/>
+        [DataMember(Order = 25)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string FileUrl { get; set; }
 
-        [DataMember(Order = 18)]
+        /// <remarks/>
+        [DataMember(Order = 26)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string HostAuthenticationId { get; set; }
 
-        [DataMember(Order = 19)]
+        /// <remarks/>
+        [DataMember(Order = 27)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string HostEditUrl { get; set; }
 
-        [DataMember(Order = 20)]
+        /// <remarks/>
+        [DataMember(Order = 28)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string HostEmbeddedEditUrl { get; set; }
 
-        [DataMember(Order = 21)]
+        /// <remarks/>
+        [DataMember(Order = 29)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string HostEmbeddedViewUrl { get; set; }
 
-        [DataMember(Order = 22)]
+        /// <remarks/>
+        [DataMember(Order = 30)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string HostName { get; set; }
 
-        [DataMember(Order = 23)]
+        /// <remarks/>
+        [DataMember(Order = 31)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string HostNotes { get; set; }
 
-        [DataMember(Order = 24)]
+        /// <remarks/>
+        [DataMember(Order = 32)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string HostRestUrl { get; set; }
 
-        [DataMember(Order = 25)]
+        /// <remarks/>
+        [DataMember(Order = 33)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string HostViewUrl { get; set; }
 
-        [DataMember(Order = 26)]
+        /// <remarks/>
+        [DataMember(Order = 34)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string IrmPolicyDescription { get; set; }
 
-        [DataMember(Order = 27)]
+        /// <remarks/>
+        [DataMember(Order = 35)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string IrmPolicyTitle { get; set; }
 
-        [DataMember(Order = 28)]
+        /// <remarks/>
+        [DataMember(Order = 36)]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool LicenseCheckForEditIsEnabled { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 37)]
         public string OwnerId { get; set; }
 
-        [DataMember(Order = 29)]
+        /// <remarks/>
+        [DataMember(Order = 38)]
+        [System.ComponentModel.DefaultValueAttribute("")]
+        public string PostMessageOrigin { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 39)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string PresenceProvider { get; set; }
 
-        [DataMember(Order = 30)]
+        /// <remarks/>
+        [DataMember(Order = 40)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string PresenceUserId { get; set; }
 
-        [DataMember(Order = 31)]
+        /// <remarks/>
+        [DataMember(Order = 41)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string PrivacyUrl { get; set; }
 
-        [DataMember(Order = 32)]
+        /// <remarks/>
+        [DataMember(Order = 42)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string ProtectInClient { get; set; }
 
-        [DataMember(Order = 33)]
+        /// <remarks/>
+        [DataMember(Order = 43)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public bool ReadOnly { get; set; }
 
-        [DataMember(Order = 34)]
+        /// <remarks/>
+        [DataMember(Order = 44)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool RestrictedWebViewOnly { get; set; }
 
-        [DataMember(Order = 35)]
+        /// <remarks/>
+        [DataMember(Order = 45)]
         public string SHA256 { get; set; }
 
-        [DataMember(Order = 36)]
+        /// <remarks/>
+        [DataMember(Order = 46)]
+        [System.ComponentModel.DefaultValueAttribute("")]
+        public string SignInUrl { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 47)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string SignoutUrl { get; set; }
 
-        [DataMember(Order = 37)]
+        /// <remarks/>
+        [DataMember(Order = 48)]
         public int Size { get; set; }
 
-        [DataMember(Order = 38)]
+        /// <remarks/>
+        [DataMember(Order = 49)]
+        [System.ComponentModel.DefaultValueAttribute(new string[] { })]
+        public string[] SupportedShareUrlTypes { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 50)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool SupportsCoauth { get; set; }
 
-        [DataMember(Order = 39)]
+        /// <remarks/>
+        [DataMember(Order = 51)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool SupportsCobalt { get; set; }
 
-        [DataMember(Order = 40)]
+        /// <remarks/>
+        [DataMember(Order = 52)]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool SupportsExtendedLockLength { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 53)]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool SupportsFileCreation { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 54)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool SupportsFolders { get; set; }
 
-        [DataMember(Order = 41)]
+        /// <remarks/>
+        [DataMember(Order = 55)]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool SupportsGetLock { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 56)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool SupportsLocks { get; set; }
 
-        [DataMember(Order = 42)]
+        /// <remarks/>
+        [DataMember(Order = 57)]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool SupportsRename { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 58)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool SupportsScenarioLinks { get; set; }
 
-        [DataMember(Order = 43)]
+        /// <remarks/>
+        [DataMember(Order = 59)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool SupportsSecureStore { get; set; }
 
-        [DataMember(Order = 43)]
+        /// <remarks/>
+        [DataMember(Order = 60)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool SupportsUpdate { get; set; }
 
-        [DataMember(Order = 44)]
+        /// <remarks/>
+        [DataMember(Order = 61)]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool SupportsUserInfo { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 62)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string TenantId { get; set; }
 
-        [DataMember(Order = 45)]
+        /// <remarks/>
+        [DataMember(Order = 63)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string TermsOfUseUrl { get; set; }
 
-        [DataMember(Order = 46)]
+        /// <remarks/>
+        [DataMember(Order = 64)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string TimeZone { get; set; }
 
-        [DataMember(Order = 47)]
+        /// <remarks/>
+        [DataMember(Order = 65)]
+        [System.ComponentModel.DefaultValueAttribute("")]
+        public string UniqueContentId { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 66)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool UserCanAttend { get; set; }
 
-        [DataMember(Order = 48)]
+        /// <remarks/>
+        [DataMember(Order = 67)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool UserCanNotWriteRelative { get; set; }
 
-        [DataMember(Order = 49)]
+        /// <remarks/>
+        [DataMember(Order = 68)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool UserCanPresent { get; set; }
 
-        [DataMember(Order = 50)]
+        /// <remarks/>
+        [DataMember(Order = 69)]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool UserCanRename { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 70)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool UserCanWrite { get; set; }
 
-        [DataMember(Order = 51)]
+        /// <remarks/>
+        [DataMember(Order = 71)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string UserFriendlyName { get; set; }
 
-        [DataMember(Order = 52)]
+        /// <remarks/>
+        [DataMember(Order = 72)]
         [System.ComponentModel.DefaultValueAttribute("")]
         public string UserId { get; set; }
 
-        [DataMember(Order = 53)]
+        /// <remarks/>
+        [DataMember(Order = 73)]
+        [System.ComponentModel.DefaultValueAttribute("")]
+        public string UserInfo { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 74)]
         public string Version { get; set; }
 
-        [DataMember(Order = 54)]
+        /// <remarks/>
+        [DataMember(Order = 75)]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool WebEditingDisabled { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 76)]
+        [System.ComponentModel.DefaultValueAttribute(new string[] { })]
+        public string[] WorkflowType { get; set; }
+
+        /// <remarks/>
+        [DataMember(Order = 77)]
+        [System.ComponentModel.DefaultValueAttribute("")]
+        public string WorkflowUrl { get; set; }
     }
 
     /// <summary>
@@ -497,7 +666,7 @@
     [System.Xml.Serialization.XmlTypeAttribute(TypeName = "ct_wopi-action", Namespace = "http://microsoft.com/wsdl/types/")]
     public partial class ct_wopiaction
     {
-       public ct_wopiaction()
+        public ct_wopiaction()
         {
             this.@default = false;
             this.useParent = false;
@@ -553,6 +722,9 @@
         embedview,
 
         /// <remarks/>
+        embededit,
+
+        /// <remarks/>
         mobileclient,
 
         /// <remarks/>
@@ -584,6 +756,18 @@
 
         /// <remarks/>
         rest,
+
+        /// <remarks/>
+        preloadview,
+
+        /// <remarks/>
+        preloadedit,
+
+        /// <remarks/>
+        rtc,
+
+        /// <remarks/>
+        getinfo,
     }
 
     /// <remarks/>
@@ -594,6 +778,20 @@
     [System.Xml.Serialization.XmlTypeAttribute(TypeName = "ct_proof-key", Namespace = "http://microsoft.com/wsdl/types/")]
     public partial class ct_proofkey
     {
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string exponent { get; set; }
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+
+        public string modulus { get; set; }
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+
+        public string oldexponent { get; set; }
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+
+        public string oldmodulus { get; set; }
+
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string oldvalue { get; set; }
 
@@ -653,7 +851,7 @@
     }
 
     public class ResponseBodyBase
-    {}
+    { }
 
     public class WOPIResponseMessage
     {
@@ -666,10 +864,11 @@
     /// </summary>
     public static class WOPISerilizer
     {
-        private static string[] jsonRequireItemsForCheckFileInfo = { "BaseFileName", "OwnerId", "SHA256", "Size", "Version" };
+        private static string[] jsonRequireItemsForCheckFileInfo = { "BaseFileName", "OwnerId", "Size", "Version" };
         private static string[] jsonRequireItemsForPutRelativeFile = { "Name", "Url" };
         private static string[] jsonRequireItemsForReadSecureStore = { "UserName", "Password" };
         private static string[] jsonRequireItemsForCheckFolderInfo = { "FolderName", "OwnerId" };
+        private static string[] jsonRequireItemsForRenameFile = { "Name" };
 
         /// <summary>
         /// Convert the JSON string to the specified Object.
@@ -700,6 +899,10 @@
             else if (currentType.Name.Equals("CheckFolderInfo"))
             {
                 CheckRequiredJsonItem(jsonRequireItemsForCheckFolderInfo, jsonValue);
+            }
+            else if (currentType.Name.Equals("RenameFile"))
+            {
+                CheckRequiredJsonItem(jsonRequireItemsForRenameFile, jsonValue);
             }
 
             T expectedInstance = serializer.ReadObject(memoryStreamInstance) as T;

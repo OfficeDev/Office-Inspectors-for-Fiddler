@@ -53,7 +53,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the NotificationFlagsT structure.
         /// </summary>
-        /// <param name="s">An stream containing NotificationFlagsT structure.</param>
+        /// <param name="s">A stream containing NotificationFlagsT structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -72,7 +72,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the NotificationFlags structure.
         /// </summary>
-        /// <param name="s">An stream containing NotificationFlags structure.</param>
+        /// <param name="s">A stream containing NotificationFlags structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -134,7 +134,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopRegisterNotificationRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopRegisterNotificationRequest structure.</param>
+        /// <param name="s">A stream containing RopRegisterNotificationRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -176,7 +176,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopRegisterNotificationResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopRegisterNotificationResponse structure.</param>
+        /// <param name="s">A stream containing RopRegisterNotificationResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -204,7 +204,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopPendingResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopPendingResponse structure.</param>
+        /// <param name="s">A stream containing RopPendingResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -236,7 +236,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopNotifyResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopNotifyResponse structure.</param>
+        /// <param name="s">A stream containing RopNotifyResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -343,7 +343,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the NotificationData structure.
         /// </summary>
-        /// <param name="s">An stream containing NotificationData structure.</param>
+        /// <param name="s">A stream containing NotificationData structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);

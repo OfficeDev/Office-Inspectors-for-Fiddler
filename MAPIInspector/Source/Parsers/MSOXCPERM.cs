@@ -60,7 +60,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopGetPermissionsTableRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopGetPermissionsTableRequest structure.</param>
+        /// <param name="s">A stream containing RopGetPermissionsTableRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -90,7 +90,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopGetPermissionsTableResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopGetPermissionsTableResponse structure.</param>
+        /// <param name="s">A stream containing RopGetPermissionsTableResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -130,7 +130,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopModifyPermissionsRequest structure.
         /// </summary>
-        /// <param name="s">An stream containing RopModifyPermissionsRequest structure.</param>
+        /// <param name="s">A stream containing RopModifyPermissionsRequest structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -168,7 +168,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the PermissionData structure.
         /// </summary>
-        /// <param name="s">An stream containing PermissionData structure.</param>
+        /// <param name="s">A stream containing PermissionData structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -203,7 +203,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopModifyPermissionsResponse structure.
         /// </summary>
-        /// <param name="s">An stream containing RopModifyPermissionsResponse structure.</param>
+        /// <param name="s">A stream containing RopModifyPermissionsResponse structure.</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
