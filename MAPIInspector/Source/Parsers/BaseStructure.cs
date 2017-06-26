@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Linq.Expressions;
-
 
 namespace MAPIInspector.Parsers
 {
@@ -354,10 +350,9 @@ namespace MAPIInspector.Parsers
                 }
 
                 offset = os;
-                Position positionString = new Position(current, os);
-                node.Tag = positionString;
+                node.Tag = new Position(current, os);
                 res.Nodes.Add(node);
-                res.Tag = positionString;
+                res.Tag = new Position(current, os);
                 return res;
             }
 
