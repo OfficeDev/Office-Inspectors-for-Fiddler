@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
 using System.Text;
 using System.Linq;
-using MapiInspector;
 
 namespace MAPIInspector.Parsers
 {
@@ -63,17 +61,9 @@ namespace MAPIInspector.Parsers
 
             if (!MapiInspector.MAPIInspector.isLooperCall || ParseToCROPSRequestLayer || MapiInspector.MAPIInspector.needToParseCROPSLayer)
             {
-                //Dictionary<uint, PropertyTag[]> PropertyTagsForGetPropertiesSpec = new Dictionary<uint, PropertyTag[]>();
                 Queue<PropertyTag[]> ProDics = new Queue<PropertyTag[]>();
                 Dictionary<uint, Queue<PropertyTag[]>> PropertyTagsForGetPropertiesSpec = new Dictionary<uint, Queue<PropertyTag[]>>();
                 Dictionary<uint, LogonFlags> LogonFlagsInLogonRop = new Dictionary<uint, LogonFlags>();
-                DecodingContext.PutBuffer_sourceOperation = new Dictionary<uint, SourceOperation>();
-                DecodingContext.PutBufferExtended_sourceOperation = new Dictionary<uint, SourceOperation>();
-                DecodingContext.ObjectIndex = new Dictionary<int, ObjectHandlesType>();
-                DecodingContext.FasttransterMid_InputIndexAndHandles = new Dictionary<uint, int>();
-                DecodingContext.CopyTo_InputHandles = new List<uint>();
-                DecodingContext.CopyProperties_InputHandles = new List<uint>();
-				DecodingContext.DestinationConfigure_InputHandles = new List<uint>();
                 int setColumnCountInThisList = 0;
                 if (this.RopSize > 2)
                 {
@@ -249,26 +239,40 @@ namespace MAPIInspector.Parsers
                                 uint handle_SetColumns = tempServerObjectHandleTable[RopSetColumnsRequest.InputHandleIndex];
                                 if (handle_SetColumns != 0xFFFFFFFF)
                                 {
-                                    // When the object handle is not equal to 0xFFFFFFFF, add objectHandle and Property Tags to the dictionary.
+                                    // When the object handle is not equal to 0xFFFFFFFF, add objectHandle and Property Tags to the dictionary.                                    
+                                    Dictionary<uint, PropertyTag[]> propTags = new Dictionary<uint, PropertyTag[]>();
+
                                     if (DecodingContext.SetColumnProTagMap_Handle.ContainsKey(handle_SetColumns))
                                     {
-                                        DecodingContext.SetColumnProTagMap_Handle[handle_SetColumns] = RopSetColumnsRequest.PropertyTags;
+                                        if (DecodingContext.SetColumnProTagMap_Handle[handle_SetColumns].First().Key <= MapiInspector.MAPIInspector.parsingSession.id)
+                                        {
+                                            DecodingContext.SetColumnProTagMap_Handle.Remove(handle_SetColumns);
+                                            propTags.Add((uint)MapiInspector.MAPIInspector.parsingSession.id, RopSetColumnsRequest.PropertyTags);
+                                            DecodingContext.SetColumnProTagMap_Handle.Add(handle_SetColumns, propTags);
+                                        }
                                     }
                                     else
                                     {
-                                        DecodingContext.SetColumnProTagMap_Handle.Add(handle_SetColumns, RopSetColumnsRequest.PropertyTags);
+                                        propTags.Add((uint)MapiInspector.MAPIInspector.parsingSession.id, RopSetColumnsRequest.PropertyTags);
+                                        DecodingContext.SetColumnProTagMap_Handle.Add(handle_SetColumns, propTags);
                                     }
+                                    // setColumnCountInThisList recored the index of the setColumns in same session
+                                    setColumnCountInThisList += 1;
                                     if (!DecodingContext.PropertyTagsForNotify.ContainsKey(handle_SetColumns))
                                     {
                                         DecodingContext.PropertyTagsForNotify.Add(handle_SetColumns, RopSetColumnsRequest.PropertyTags);
                                     }
+                                    if ((setColumnCountInThisList > 1) && DecodingContext.PropertyTagsForNotify.ContainsKey(handle_SetColumns))
+                                    {
+                                        DecodingContext.PropertyTagsForNotify[handle_SetColumns] = RopSetColumnsRequest.PropertyTags;
+                                    }
                                 }
                                 else
                                 {
-                                    MapiInspector.MAPIInspector.isOnlyGetServerHandle = true;
                                     uint outputHandle;
                                     try
                                     {
+										MapiInspector.MAPIInspector.isOnlyGetServerHandle = true;
                                         outputHandle = MapiInspector.MAPIInspector.ParseResponseMessageSimplely(MapiInspector.MAPIInspector.parsingSession, RopSetColumnsRequest.InputHandleIndex);
                                     }
                                     finally
@@ -276,14 +280,24 @@ namespace MAPIInspector.Parsers
                                         MapiInspector.MAPIInspector.isOnlyGetServerHandle = false;
                                     }
 
+                                    Dictionary<uint, PropertyTag[]> propTags = new Dictionary<uint, PropertyTag[]>();
                                     if (DecodingContext.SetColumnProTagMap_Handle.ContainsKey(outputHandle))
                                     {
-                                        DecodingContext.SetColumnProTagMap_Handle.Remove(outputHandle);
+                                        if (DecodingContext.SetColumnProTagMap_Handle[outputHandle].First().Key <= MapiInspector.MAPIInspector.parsingSession.id)
+                                        {
+                                            DecodingContext.SetColumnProTagMap_Handle.Remove(outputHandle);
+                                            propTags.Add((uint)MapiInspector.MAPIInspector.parsingSession.id, RopSetColumnsRequest.PropertyTags);
+                                            DecodingContext.SetColumnProTagMap_Handle.Add(outputHandle, propTags);
+                                        }
                                     }
-                                    DecodingContext.SetColumnProTagMap_Handle.Add(outputHandle, RopSetColumnsRequest.PropertyTags);                         
-                                    
-									// if the setColumnCountInThisList count is not zero, it means there is more than one RopSetcolumns in current session. If the handles are equal, the last one PropertyTags should be used.
-									if (setColumnCountInThisList != 0)
+                                    else
+                                    {
+                                        propTags.Add((uint)MapiInspector.MAPIInspector.parsingSession.id, RopSetColumnsRequest.PropertyTags);
+                                        DecodingContext.SetColumnProTagMap_Handle.Add(outputHandle, propTags);
+                                    }
+
+                                    // if the setColumnCountInThisList count is not zero, it means there is more than one RopSetcolumns in current session. If the handles are equal, the last one PropertyTags should be used.
+                                    if (setColumnCountInThisList != 0)
                                     {
                                         if (DecodingContext.SetColumn_InputHandles_InRequest.ContainsKey(outputHandle))
                                         {
@@ -293,16 +307,16 @@ namespace MAPIInspector.Parsers
                                         {
                                             DecodingContext.SetColumn_InputHandles_InRequest.Add(outputHandle, RopSetColumnsRequest.PropertyTags);
                                         }
-                                        setColumnCountInThisList += 1;
                                     }
                                     else
-                                    {    
-									    // if the setColumnCountInThisList count is zero, it means there is only one RopSetcolumns in current session. The PropertyTags will not be covered.                                    
+                                    {
+                                        // if the setColumnCountInThisList count is zero, it means there is only one RopSetcolumns in current session. The PropertyTags will not be covered.                                    
                                         if (!DecodingContext.SetColumn_InputHandles_InRequest.ContainsKey(outputHandle))
                                         {
                                             DecodingContext.SetColumn_InputHandles_InRequest.Add(outputHandle, RopSetColumnsRequest.PropertyTags);
                                         }
                                     }
+                                    setColumnCountInThisList += 1;
 
                                     if (DecodingContext.SetColumn_InputHandles_InRequest.Count > 0)
                                     {
@@ -310,8 +324,13 @@ namespace MAPIInspector.Parsers
                                         {
                                             DecodingContext.PropertyTagsForNotify.Add(outputHandle, DecodingContext.SetColumn_InputHandles_InRequest[outputHandle]);
                                         }
+
+                                        if ((setColumnCountInThisList > 1) && DecodingContext.PropertyTagsForNotify.ContainsKey(outputHandle))
+                                        {
+                                            DecodingContext.PropertyTagsForNotify[outputHandle] = DecodingContext.SetColumn_InputHandles_InRequest[outputHandle];
+                                        }
                                     }
-                                   
+
                                 }
                                 break;
 
@@ -447,31 +466,11 @@ namespace MAPIInspector.Parsers
                                 RopFastTransferSourceCopyPropertiesRequest RopFastTransferSourceCopyPropertiesRequest = new RopFastTransferSourceCopyPropertiesRequest();
                                 RopFastTransferSourceCopyPropertiesRequest.Parse(s);
                                 ropsList.Add(RopFastTransferSourceCopyPropertiesRequest);
-                                uint hanlde_SourceCopyPropery = tempServerObjectHandleTable[RopFastTransferSourceCopyPropertiesRequest.InputHandleIndex];
-                                if (!DecodingContext.CopyProperties_InputHandles.Contains(hanlde_SourceCopyPropery))
-                                {
-                                    DecodingContext.CopyProperties_InputHandles.Add(hanlde_SourceCopyPropery);
-                                }
-                                if (DecodingContext.FasttransterMid_InputIndexAndHandles.ContainsKey(hanlde_SourceCopyPropery))
-                                {
-                                    DecodingContext.FasttransterMid_InputIndexAndHandles.Remove(hanlde_SourceCopyPropery);
-                                }
-                                DecodingContext.FasttransterMid_InputIndexAndHandles.Add(hanlde_SourceCopyPropery, RopFastTransferSourceCopyPropertiesRequest.InputHandleIndex);
                                 break;
                             case RopIdType.RopFastTransferSourceCopyTo:
                                 RopFastTransferSourceCopyToRequest RopFastTransferSourceCopyToRequest = new RopFastTransferSourceCopyToRequest();
                                 RopFastTransferSourceCopyToRequest.Parse(s);
                                 ropsList.Add(RopFastTransferSourceCopyToRequest);
-                                uint hanlde_SourceCopyTo = tempServerObjectHandleTable[RopFastTransferSourceCopyToRequest.InputHandleIndex];
-                                if (!DecodingContext.CopyTo_InputHandles.Contains(hanlde_SourceCopyTo))
-                                {
-                                    DecodingContext.CopyTo_InputHandles.Add(hanlde_SourceCopyTo);
-                                }
-                                if (DecodingContext.FasttransterMid_InputIndexAndHandles.ContainsKey(hanlde_SourceCopyTo))
-                                {
-                                    DecodingContext.FasttransterMid_InputIndexAndHandles.Remove(hanlde_SourceCopyTo);
-                                }
-                                DecodingContext.FasttransterMid_InputIndexAndHandles.Add(hanlde_SourceCopyTo, RopFastTransferSourceCopyToRequest.InputHandleIndex);
                                 break;
                             case RopIdType.RopFastTransferSourceCopyMessages:
                                 RopFastTransferSourceCopyMessagesRequest RopFastTransferSourceCopyMessagesRequest = new RopFastTransferSourceCopyMessagesRequest();
@@ -497,72 +496,94 @@ namespace MAPIInspector.Parsers
                                 RopFastTransferDestinationConfigureRequest RopFastTransferDestinationConfigureRequest = new RopFastTransferDestinationConfigureRequest();
                                 RopFastTransferDestinationConfigureRequest.Parse(s);
                                 ropsList.Add(RopFastTransferDestinationConfigureRequest);
-                                SourceOperation sourceOperation = RopFastTransferDestinationConfigureRequest.SourceOperation;
-                                // Below code is used to record output handle index and sourceOperation, and this record will be updated in response, this logical is used for rops destinationConfigure and getBuffer is in same session
-                                uint handleIndex_DestConfigure = RopFastTransferDestinationConfigureRequest.OutputHandleIndex;
-                               
-                                
-                                if (DecodingContext.PutBuffer_sourceOperation.ContainsKey(handleIndex_DestConfigure))
-                                {
-                                    DecodingContext.PutBuffer_sourceOperation.Remove(handleIndex_DestConfigure);
-                                }
-                                DecodingContext.PutBuffer_sourceOperation.Add(handleIndex_DestConfigure, sourceOperation);
-                                if (DecodingContext.PutBufferExtended_sourceOperation.ContainsKey(handleIndex_DestConfigure))
-                                {
-                                    DecodingContext.PutBufferExtended_sourceOperation.Remove(handleIndex_DestConfigure);
-                                }
-                                DecodingContext.PutBufferExtended_sourceOperation.Add(handleIndex_DestConfigure, sourceOperation);
-
-                                if (sourceOperation == SourceOperation.CopyTo || sourceOperation == SourceOperation.CopyProperties)
-                                {
-                                    uint handle_DestConfigure = tempServerObjectHandleTable[RopFastTransferDestinationConfigureRequest.InputHandleIndex];
-
-                                    if (!DecodingContext.DestinationConfigure_InputHandles.Contains(handle_DestConfigure))
-                                    {
-                                        DecodingContext.DestinationConfigure_InputHandles.Add(handle_DestConfigure);
-                                    }
-                                    if (DecodingContext.FasttransterMid_InputIndexAndHandles.ContainsKey(handle_DestConfigure))
-                                    {
-                                        DecodingContext.FasttransterMid_InputIndexAndHandles.Remove(handle_DestConfigure);
-                                    }
-                                    DecodingContext.FasttransterMid_InputIndexAndHandles.Add(handle_DestConfigure, RopFastTransferDestinationConfigureRequest.InputHandleIndex);
-                                }
                                 break;
                             case RopIdType.RopFastTransferDestinationPutBuffer:
                                 long currentPos_putBuffer = s.Position;
                                 s.Position += 2;
                                 int TempInputHandleIndex_putBuffer = s.ReadByte();
                                 s.Position = currentPos_putBuffer;
-                                if (DecodingContext.SessionFastTransferStreamType.Count > 0 && DecodingContext.SessionFastTransferStreamType.ContainsKey(MapiInspector.MAPIInspector.parsingSession.id))
+                                uint ropPutbufferHandle = tempServerObjectHandleTable[TempInputHandleIndex_putBuffer];
+                                uint uParsingSessionID = (uint)MapiInspector.MAPIInspector.parsingSession.id;
+                                if (tempServerObjectHandleTable[TempInputHandleIndex_putBuffer] != 0xffffffff)
                                 {
-                                    DecodingContext.StreamType_Putbuffer = DecodingContext.SessionFastTransferStreamType[MapiInspector.MAPIInspector.parsingSession.id];
+                                    if (!DecodingContext.PartialInformationReady.ContainsKey((int)uParsingSessionID))
+                                    {
+                                        throw new MissingPartialInformationException((ushort)CurrentByte, ropPutbufferHandle);
+                                    }
                                 }
                                 else
                                 {
-                                    throw new MissingInformationException("Missing TransferStream type information for RopFastTransferDestinationPutBufferRequest", (ushort)CurrentByte, new uint[] { (uint)TempInputHandleIndex_putBuffer, tempServerObjectHandleTable[TempInputHandleIndex_putBuffer] });
+                                    MapiInspector.MAPIInspector.pPutType = 0;
+                                    MapiInspector.MAPIInspector.pPutRemainSize = -1;
+                                    MapiInspector.MAPIInspector.pPutSubRemainSize = -1;
                                 }
                                 RopFastTransferDestinationPutBufferRequest RopFastTransferDestinationPutBufferRequest = new RopFastTransferDestinationPutBufferRequest();
+                                MapiInspector.MAPIInspector.isPut = true;
                                 RopFastTransferDestinationPutBufferRequest.Parse(s);
                                 ropsList.Add(RopFastTransferDestinationPutBufferRequest);
+
+                                MapiInspector.MAPIInspector.PartialContextInformation putBufferPartialInformaiton = new MapiInspector.MAPIInspector.PartialContextInformation(MapiInspector.MAPIInspector.pPutType, MapiInspector.MAPIInspector.pPutId, MapiInspector.MAPIInspector.pPutRemainSize, MapiInspector.MAPIInspector.pPutSubRemainSize, false, MapiInspector.MAPIInspector.inputPayLoadCompresssedXOR);
+                                SortedDictionary<uint, MapiInspector.MAPIInspector.PartialContextInformation> sessionputContextInfor = new SortedDictionary<uint, MapiInspector.MAPIInspector.PartialContextInformation>();
+                                if (MapiInspector.MAPIInspector.handleWithSessionPutContextInformation.ContainsKey(ropPutbufferHandle))
+                                {
+                                    sessionputContextInfor = MapiInspector.MAPIInspector.handleWithSessionPutContextInformation[ropPutbufferHandle];
+                                    MapiInspector.MAPIInspector.handleWithSessionPutContextInformation.Remove(ropPutbufferHandle);
+                                }
+                                if (sessionputContextInfor.ContainsKey(uParsingSessionID))
+                                {
+                                    sessionputContextInfor[uParsingSessionID] = putBufferPartialInformaiton;
+                                }
+                                else
+                                {
+                                    sessionputContextInfor.Add(uParsingSessionID, putBufferPartialInformaiton);
+                                }
+                                MapiInspector.MAPIInspector.handleWithSessionPutContextInformation.Add(ropPutbufferHandle, sessionputContextInfor);
+                                MapiInspector.MAPIInspector.isPut = false;
                                 break;
 
-                                
                             case RopIdType.RopFastTransferDestinationPutBufferExtended:
                                 long currentPos_putBufferExtended = s.Position;
                                 s.Position += 2;
                                 int TempInputHandleIndex_putBufferExtended = s.ReadByte();
                                 s.Position = currentPos_putBufferExtended;
-                                if (DecodingContext.SessionFastTransferStreamType.Count > 0 && DecodingContext.SessionFastTransferStreamType.ContainsKey(MapiInspector.MAPIInspector.parsingSession.id))
-                                {
-                                    DecodingContext.StreamType_PutbufferExtended = DecodingContext.SessionFastTransferStreamType[MapiInspector.MAPIInspector.parsingSession.id];
+                                uint ropPutExtendbufferHandle = tempServerObjectHandleTable[TempInputHandleIndex_putBufferExtended];
+                                uint eParsingSessionID = (uint)MapiInspector.MAPIInspector.parsingSession.id;
+                                if (tempServerObjectHandleTable[TempInputHandleIndex_putBufferExtended] != 0xffffffff)
+                                {                                
+                                    if (!DecodingContext.PartialInformationReady.ContainsKey((int)eParsingSessionID))
+                                    {
+                                        throw new MissingPartialInformationException((ushort)CurrentByte, ropPutExtendbufferHandle);
+                                    }
                                 }
                                 else
                                 {
-                                    throw new MissingInformationException("Missing TransferStream type information for RopFastTransferDestinationPutBufferExtendedRequest", (ushort)CurrentByte, new uint[] { (uint)TempInputHandleIndex_putBufferExtended, tempServerObjectHandleTable[TempInputHandleIndex_putBufferExtended] });
+                                    MapiInspector.MAPIInspector.pPutExtendType = 0;
+                                    MapiInspector.MAPIInspector.pPutExtendRemainSize = -1;
+                                    MapiInspector.MAPIInspector.pPutExtendSubRemainSize = -1;
                                 }
                                 RopFastTransferDestinationPutBufferExtendedRequest RopFastTransferDestinationPutBufferExtendedRequest = new RopFastTransferDestinationPutBufferExtendedRequest();
+                                MapiInspector.MAPIInspector.isPutExtend = true;
                                 RopFastTransferDestinationPutBufferExtendedRequest.Parse(s);
                                 ropsList.Add(RopFastTransferDestinationPutBufferExtendedRequest);
+
+                                MapiInspector.MAPIInspector.PartialContextInformation putExtendBufferPartialInformaiton = new MapiInspector.MAPIInspector.PartialContextInformation(MapiInspector.MAPIInspector.pPutType, MapiInspector.MAPIInspector.pPutId, MapiInspector.MAPIInspector.pPutRemainSize, MapiInspector.MAPIInspector.pPutSubRemainSize, false, MapiInspector.MAPIInspector.inputPayLoadCompresssedXOR);
+                                SortedDictionary<uint, MapiInspector.MAPIInspector.PartialContextInformation> sessionputExtendContextInfor = new SortedDictionary<uint, MapiInspector.MAPIInspector.PartialContextInformation>();
+                                if (MapiInspector.MAPIInspector.handleWithSessionPutExtendContextInformation.ContainsKey(ropPutExtendbufferHandle))
+                                {
+                                    sessionputExtendContextInfor = MapiInspector.MAPIInspector.handleWithSessionPutExtendContextInformation[ropPutExtendbufferHandle];
+                                    MapiInspector.MAPIInspector.handleWithSessionPutExtendContextInformation.Remove(ropPutExtendbufferHandle);
+                                }
+                                if (sessionputExtendContextInfor.ContainsKey(eParsingSessionID))
+                                {
+                                    sessionputExtendContextInfor[eParsingSessionID] = putExtendBufferPartialInformaiton;
+                                }
+                                else
+                                {
+                                    sessionputExtendContextInfor.Add(eParsingSessionID, putExtendBufferPartialInformaiton);
+                                }
+                                MapiInspector.MAPIInspector.handleWithSessionPutExtendContextInformation.Add(ropPutExtendbufferHandle, sessionputExtendContextInfor);
+                                MapiInspector.MAPIInspector.isPutExtend = false;
+
                                 break;
                             case RopIdType.RopSynchronizationConfigure:
                                 RopSynchronizationConfigureRequest RopSynchronizationConfigureRequest = new RopSynchronizationConfigureRequest();
@@ -638,7 +659,7 @@ namespace MAPIInspector.Parsers
 
                                 if (PropertyTagsForGetPropertiesSpec.ContainsKey(RopGetPropertiesSpecificRequest.InputHandleIndex))
                                 {
-                                    if(PropertyTagsForGetPropertiesSpec[RopGetPropertiesSpecificRequest.InputHandleIndex].Count == 1)
+                                    if (PropertyTagsForGetPropertiesSpec[RopGetPropertiesSpecificRequest.InputHandleIndex].Count == 1)
                                     {
                                         ProDics.Enqueue(PropertyTagsForGetPropertiesSpec[RopGetPropertiesSpecificRequest.InputHandleIndex].Dequeue());
                                     }
@@ -650,7 +671,6 @@ namespace MAPIInspector.Parsers
                                     Queue<PropertyTag[]> ProDic0 = new Queue<PropertyTag[]>();
                                     ProDic0.Enqueue(RopGetPropertiesSpecificRequest.PropertyTags);
                                     PropertyTagsForGetPropertiesSpec.Add(RopGetPropertiesSpecificRequest.InputHandleIndex, ProDic0);
-                                    //PropertyTagsForGetPropertiesSpec.Add(RopGetPropertiesSpecificRequest.InputHandleIndex, RopGetPropertiesSpecificRequest.PropertyTags);
                                 }
                                 if (PropertyTagsForGetPropertiesSpec.Count > 0)
                                 {
@@ -792,22 +812,12 @@ namespace MAPIInspector.Parsers
                                 RopOpenFolderRequest RopOpenFolderRequest = new RopOpenFolderRequest();
                                 RopOpenFolderRequest.Parse(s);
                                 ropsList.Add(RopOpenFolderRequest);
-                                if (DecodingContext.ObjectIndex.Count > 0 && DecodingContext.ObjectIndex.ContainsKey(RopOpenFolderRequest.OutputHandleIndex))
-                                {
-                                    DecodingContext.ObjectIndex.Remove(RopOpenFolderRequest.OutputHandleIndex);
-                                }
-                                DecodingContext.ObjectIndex.Add(RopOpenFolderRequest.OutputHandleIndex, ObjectHandlesType.FolderHandles);
                                 break;
 
                             case RopIdType.RopCreateFolder:
                                 RopCreateFolderRequest RopCreateFolderRequest = new RopCreateFolderRequest();
                                 RopCreateFolderRequest.Parse(s);
                                 ropsList.Add(RopCreateFolderRequest);
-                                if (DecodingContext.ObjectIndex.Count > 0 && DecodingContext.ObjectIndex.ContainsKey(RopCreateFolderRequest.OutputHandleIndex))
-                                {
-                                    DecodingContext.ObjectIndex.Remove(RopCreateFolderRequest.OutputHandleIndex);
-                                }
-                                DecodingContext.ObjectIndex.Add(RopCreateFolderRequest.OutputHandleIndex, ObjectHandlesType.FolderHandles);
                                 break;
 
                             case RopIdType.RopDeleteFolder:
@@ -887,21 +897,11 @@ namespace MAPIInspector.Parsers
                                 RopOpenMessageRequest ropOpenMessageRequest = new RopOpenMessageRequest();
                                 ropOpenMessageRequest.Parse(s);
                                 ropsList.Add(ropOpenMessageRequest);
-                                if (DecodingContext.ObjectIndex.Count > 0 && DecodingContext.ObjectIndex.ContainsKey(ropOpenMessageRequest.OutputHandleIndex))
-                                {
-                                    DecodingContext.ObjectIndex.Remove(ropOpenMessageRequest.OutputHandleIndex);
-                                }
-                                DecodingContext.ObjectIndex.Add(ropOpenMessageRequest.OutputHandleIndex, ObjectHandlesType.MessageHandles);
                                 break;
                             case RopIdType.RopCreateMessage:
                                 RopCreateMessageRequest ropCreateMessageRequest = new RopCreateMessageRequest();
                                 ropCreateMessageRequest.Parse(s);
                                 ropsList.Add(ropCreateMessageRequest);
-                                if (DecodingContext.ObjectIndex.Count > 0 && DecodingContext.ObjectIndex.ContainsKey(ropCreateMessageRequest.OutputHandleIndex))
-                                {
-                                    DecodingContext.ObjectIndex.Remove(ropCreateMessageRequest.OutputHandleIndex);
-                                }
-                                DecodingContext.ObjectIndex.Add(ropCreateMessageRequest.OutputHandleIndex, ObjectHandlesType.MessageHandles);
                                 break;
                             case RopIdType.RopSaveChangesMessage:
                                 RopSaveChangesMessageRequest ropSaveChangesMessageRequest = new RopSaveChangesMessageRequest();
@@ -965,11 +965,6 @@ namespace MAPIInspector.Parsers
                                 RopCreateAttachmentRequest ropCreateAttachmentRequest = new RopCreateAttachmentRequest();
                                 ropCreateAttachmentRequest.Parse(s);
                                 ropsList.Add(ropCreateAttachmentRequest);
-                                if (DecodingContext.ObjectIndex.Count > 0 && DecodingContext.ObjectIndex.ContainsKey(ropCreateAttachmentRequest.OutputHandleIndex))
-                                {
-                                    DecodingContext.ObjectIndex.Remove(ropCreateAttachmentRequest.OutputHandleIndex);
-                                }
-                                DecodingContext.ObjectIndex.Add(ropCreateAttachmentRequest.OutputHandleIndex, ObjectHandlesType.AttachmentHandles);
                                 break;
                             case RopIdType.RopDeleteAttachment:
                                 RopDeleteAttachmentRequest ropDeleteAttachmentRequest = new RopDeleteAttachmentRequest();
@@ -1017,7 +1012,7 @@ namespace MAPIInspector.Parsers
                                 break;
 
                             default:
-                                object RopsBytes = ReadBytes(this.RopSize - 2);
+                                object RopsBytes = ReadBytes(this.RopSize - (ushort)s.Position);
                                 ropsList.Add(RopsBytes);
                                 break;
                         }
@@ -1061,6 +1056,43 @@ namespace MAPIInspector.Parsers
     /// <summary>
     ///  A class indicates the ROP output buffer, which is sent by the server, includes an array of ROP response buffers. 
     /// </summary>
+    public class ROPInputBuffer_WithoutCROPS : BaseStructure
+    {
+        // An unsigned integer that specifies the size of both this field and the RopsList field.
+        public ushort RopSize;
+
+        // An array of ROP request buffers.
+        public byte[] RopsList;
+
+        // An array of 32-bit values. Each 32-bit value specifies a Server object handle that is referenced by a ROP buffer.
+        public uint[] ServerObjectHandleTable;
+
+        /// <summary>
+        /// Parse the ROPInputBuffer_WithoutCROPS structure.
+        /// </summary>
+        /// <param name="s">A stream containing the ROPInputBuffer structure</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.RopSize = ReadUshort();
+            List<object> ropsList = new List<object>();
+            List<uint> serverObjectHandleTable = new List<uint>();
+            byte[] ropListBytes = ReadBytes(this.RopSize - 2);
+            this.RopsList = ropListBytes;
+            while (s.Position < s.Length)
+            {
+                uint ServerObjectHandle = ReadUint();
+                serverObjectHandleTable.Add(ServerObjectHandle);
+            }
+            this.ServerObjectHandleTable = serverObjectHandleTable.ToArray();
+        }
+    }
+    #endregion
+
+    #region ROP Output Buffer
+    /// <summary>
+    ///  A class indicates the ROP output buffer, which is sent by the server, includes an array of ROP response buffers. 
+    /// </summary>
     public class ROPOutputBuffer_WithoutCROPS : BaseStructure
     {
         // An unsigned integer that specifies the size of both this field and the RopsList field.
@@ -1075,7 +1107,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ROPOutputBuffer_WithoutCROPS structure.
         /// </summary>
-        /// <param name="s">A stream containing the ROPInputBuffer structure</param>
+        /// <param name="s">A stream containing the ROPOutputBuffer structure</param>
         public override void Parse(Stream s)
         {
             base.Parse(s);
@@ -1152,13 +1184,6 @@ namespace MAPIInspector.Parsers
 
                 // empty intermediate variables for rops need context information 
                 DecodingContext.SetColumn_InputHandles_InResponse = new List<uint>();
-                DecodingContext.CopyTo_OutputHandles = new List<uint>();
-                DecodingContext.CopyProperties_OutputHandles = new List<uint>();
-                DecodingContext.SyncConfigure_OutputHandles = new List<uint>();
-                DecodingContext.CopyFolder_OutputHandles = new List<uint>();
-                DecodingContext.CopyMessage_OutputHandles = new List<uint>();
-                DecodingContext.SyncGetTransferState_OutputHandles = new List<uint>();
-
                 if (this.RopSize > 2)
                 {
                     do
@@ -1355,7 +1380,6 @@ namespace MAPIInspector.Parsers
                                 s.Position = currentPos;
                                 if (returnValue_queryRow == 0)
                                 {
-                                    //if (DecodingContext.PropertyTagsForRowRop.Count > 0 && DecodingContext.PropertyTagsForRowRop.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                                     if (!(DecodingContext.RowRops_propertyTags.Count > 0 && DecodingContext.RowRops_propertyTags.ContainsKey(MapiInspector.MAPIInspector.parsingSession.id) && DecodingContext.RowRops_propertyTags[MapiInspector.MAPIInspector.parsingSession.id].ContainsKey(tempServerObjectHandleTable[TempInputHandleIndex_QueryRow])))
                                     {
                                         throw new MissingInformationException("Missing PropertyTags information for RopQueryRowsResponse", (ushort)RopIdType.RopQueryRows, new uint[] { (uint)TempInputHandleIndex_QueryRow, tempServerObjectHandleTable[TempInputHandleIndex_QueryRow] });
@@ -1428,13 +1452,10 @@ namespace MAPIInspector.Parsers
                                 s.Position = currentPos_findRow;
                                 if (returnValue_findRow == 0)
                                 {
-                                    //if (DecodingContext.PropertyTagsForRowRop.Count > 0 && DecodingContext.PropertyTagsForRowRop.ContainsKey(MapiInspector.MAPIInspector.currentParsingSessionID))
                                     if (!(DecodingContext.RowRops_propertyTags.Count > 0 && DecodingContext.RowRops_propertyTags.ContainsKey(MapiInspector.MAPIInspector.parsingSession.id) && DecodingContext.RowRops_propertyTags[MapiInspector.MAPIInspector.parsingSession.id].ContainsKey(tempServerObjectHandleTable[TempInputHandleIndex_findRow])))
                                     {
                                         throw new MissingInformationException("Missing PropertyTags information for RopFindRowsResponse", (ushort)RopIdType.RopFindRow, new uint[] { (uint)TempInputHandleIndex_findRow, tempServerObjectHandleTable[TempInputHandleIndex_findRow] });
                                     }
-
-                                    //RopFindRowResponse ropFindRowResponse = new RopFindRowResponse(DecodingContext.PropertyTagsForRowRop[MapiInspector.MAPIInspector.currentParsingSessionID]);
                                     RopFindRowResponse ropFindRowResponse = new RopFindRowResponse(DecodingContext.RowRops_propertyTags[MapiInspector.MAPIInspector.parsingSession.id][tempServerObjectHandleTable[TempInputHandleIndex_findRow]]);
                                     ropFindRowResponse.Parse(s);
                                     ropsList.Add(ropFindRowResponse);
@@ -1469,11 +1490,11 @@ namespace MAPIInspector.Parsers
                                 s.Position = currentPos_expandRow;
                                 if (returnValue_expandRow == 0)
                                 {
-                                    if (!(DecodingContext.RowRops_propertyTags.Count > 0 && DecodingContext.RowRops_propertyTags.ContainsKey(MapiInspector.MAPIInspector.parsingSession.id) && DecodingContext.RowRops_propertyTags[MapiInspector.MAPIInspector.parsingSession.id].ContainsKey((uint)TempInputHandleIndex_expandRow)))
+                                    if (!(DecodingContext.RowRops_propertyTags.Count > 0 && DecodingContext.RowRops_propertyTags.ContainsKey(MapiInspector.MAPIInspector.parsingSession.id) && DecodingContext.RowRops_propertyTags[MapiInspector.MAPIInspector.parsingSession.id].ContainsKey(tempServerObjectHandleTable[TempInputHandleIndex_expandRow])))
                                     {
                                         throw new MissingInformationException("Missing PropertyTags information for RopExpandRowsResponse", (ushort)RopIdType.RopExpandRow, new uint[] { (uint)TempInputHandleIndex_expandRow, tempServerObjectHandleTable[TempInputHandleIndex_expandRow] });
                                     }
-                                    RopExpandRowResponse ropFindRowResponse = new RopExpandRowResponse(DecodingContext.RowRops_propertyTags[MapiInspector.MAPIInspector.parsingSession.id][(uint)TempInputHandleIndex_expandRow]);
+                                    RopExpandRowResponse ropFindRowResponse = new RopExpandRowResponse(DecodingContext.RowRops_propertyTags[MapiInspector.MAPIInspector.parsingSession.id][tempServerObjectHandleTable[TempInputHandleIndex_expandRow]]);
                                     ropFindRowResponse.Parse(s);
                                     ropsList.Add(ropFindRowResponse);
                                     break;
@@ -1528,58 +1549,62 @@ namespace MAPIInspector.Parsers
                                 RopFastTransferSourceCopyPropertiesResponse RopFastTransferSourceCopyPropertiesResponse = new RopFastTransferSourceCopyPropertiesResponse();
                                 RopFastTransferSourceCopyPropertiesResponse.Parse(s);
                                 ropsList.Add(RopFastTransferSourceCopyPropertiesResponse);
-                                uint hanlde_CopyProperties = tempServerObjectHandleTable[RopFastTransferSourceCopyPropertiesResponse.OutputHandleIndex];
-                                if (!(DecodingContext.CopyProperties_OutputHandles != null && DecodingContext.CopyProperties_OutputHandles.Contains(hanlde_CopyProperties)))
-                                {
-                                    DecodingContext.CopyProperties_OutputHandles.Add(hanlde_CopyProperties);
-                                }
                                 break;
                             case RopIdType.RopFastTransferSourceCopyTo:
                                 RopFastTransferSourceCopyToResponse RopFastTransferSourceCopyToResponse = new RopFastTransferSourceCopyToResponse();
                                 RopFastTransferSourceCopyToResponse.Parse(s);
                                 ropsList.Add(RopFastTransferSourceCopyToResponse);
-                                uint hanlde_CopyTo = tempServerObjectHandleTable[RopFastTransferSourceCopyToResponse.OutputHandleIndex];
-                                if (!(DecodingContext.CopyTo_OutputHandles.Count > 0 && DecodingContext.CopyTo_OutputHandles.Contains(hanlde_CopyTo)))
-                                {
-                                    DecodingContext.CopyTo_OutputHandles.Add(hanlde_CopyTo);
-                                }
                                 break;
                             case RopIdType.RopFastTransferSourceCopyMessages:
                                 RopFastTransferSourceCopyMessagesResponse RopFastTransferSourceCopyMessagesResponse = new RopFastTransferSourceCopyMessagesResponse();
                                 RopFastTransferSourceCopyMessagesResponse.Parse(s);
                                 ropsList.Add(RopFastTransferSourceCopyMessagesResponse);
-                                uint handle_CopyMessage = tempServerObjectHandleTable[RopFastTransferSourceCopyMessagesResponse.OutputHandleIndex];
-                                if (!(DecodingContext.CopyMessage_OutputHandles != null && DecodingContext.CopyMessage_OutputHandles.Contains(handle_CopyMessage)))
-                                {
-                                    DecodingContext.CopyMessage_OutputHandles.Add(handle_CopyMessage);
-                                }
                                 break;
                             case RopIdType.RopFastTransferSourceCopyFolder:
                                 RopFastTransferSourceCopyFolderResponse RopFastTransferSourceCopyFolderResponse = new RopFastTransferSourceCopyFolderResponse();
                                 RopFastTransferSourceCopyFolderResponse.Parse(s);
                                 ropsList.Add(RopFastTransferSourceCopyFolderResponse);
-                                uint handle_CopyFolder = tempServerObjectHandleTable[RopFastTransferSourceCopyFolderResponse.OutputHandleIndex];
-                                if (!(DecodingContext.CopyFolder_OutputHandles != null && DecodingContext.CopyFolder_OutputHandles.Contains(handle_CopyFolder)))
-                                {
-                                    DecodingContext.CopyFolder_OutputHandles.Add(handle_CopyFolder);
-                                }
                                 break;
                             case RopIdType.RopFastTransferSourceGetBuffer:
                                 long currentPos_getBuffer = s.Position;
                                 s.Position += 1;
                                 int TempInputHandleIndex_getBuffer = s.ReadByte();
+                                uint ReturnValue = ReadUint();
+                                ushort status = ReadUshort();
                                 s.Position = currentPos_getBuffer;
-                                if (DecodingContext.SessionFastTransferStreamType.Count > 0 && DecodingContext.SessionFastTransferStreamType.ContainsKey(MapiInspector.MAPIInspector.parsingSession.id))
+                                uint parsingSessionID = (uint)MapiInspector.MAPIInspector.parsingSession.id;
+                                uint ropGetbufferHandle = tempServerObjectHandleTable[TempInputHandleIndex_getBuffer];
+                                MapiInspector.MAPIInspector.PartialContextInformation[] PartialBeforeAndAfterInformation = new MapiInspector.MAPIInspector.PartialContextInformation[2];
+                                if (ReturnValue == 0)
                                 {
-                                    DecodingContext.StreamType_Getbuffer = DecodingContext.SessionFastTransferStreamType[MapiInspector.MAPIInspector.parsingSession.id];
+                                    if (!DecodingContext.PartialInformationReady.ContainsKey((int)parsingSessionID))
+                                    {
+                                        throw new MissingPartialInformationException((ushort)CurrentByte, ropGetbufferHandle);
+                                    }
+                                }
+
+                                RopFastTransferSourceGetBufferResponse RopFastTransferSourceGetBufferResponse = new RopFastTransferSourceGetBufferResponse();
+                                MapiInspector.MAPIInspector.isGet = true;
+                                RopFastTransferSourceGetBufferResponse.Parse(s);
+                                ropsList.Add(RopFastTransferSourceGetBufferResponse);
+                                MapiInspector.MAPIInspector.PartialContextInformation getBufferPartialInformaiton = new MapiInspector.MAPIInspector.PartialContextInformation(MapiInspector.MAPIInspector.pGetType, MapiInspector.MAPIInspector.pGetId, MapiInspector.MAPIInspector.pGetRemainSize, MapiInspector.MAPIInspector.pGetSubRemainSize, true, MapiInspector.MAPIInspector.outputPayLoadCompresssedXOR);
+                                SortedDictionary<uint, MapiInspector.MAPIInspector.PartialContextInformation> sessionGetContextInfor = new SortedDictionary<uint, MapiInspector.MAPIInspector.PartialContextInformation>();
+
+                                if (MapiInspector.MAPIInspector.handleWithSessionGetContextInformation.ContainsKey(ropGetbufferHandle))
+                                {
+                                    sessionGetContextInfor = MapiInspector.MAPIInspector.handleWithSessionGetContextInformation[ropGetbufferHandle];
+                                    MapiInspector.MAPIInspector.handleWithSessionGetContextInformation.Remove(ropGetbufferHandle);
+                                }
+                                if (sessionGetContextInfor.ContainsKey(parsingSessionID))
+                                {
+                                    sessionGetContextInfor[parsingSessionID] = getBufferPartialInformaiton;
                                 }
                                 else
                                 {
-                                    throw new MissingInformationException("Missing TransferStream type information for RopFastTransferSourceGetBufferResponse", (ushort)CurrentByte, new uint[] { (uint)TempInputHandleIndex_getBuffer, tempServerObjectHandleTable[TempInputHandleIndex_getBuffer] });
+                                    sessionGetContextInfor.Add(parsingSessionID, getBufferPartialInformaiton);
                                 }
-                                RopFastTransferSourceGetBufferResponse RopFastTransferSourceGetBufferResponse = new RopFastTransferSourceGetBufferResponse();
-                                RopFastTransferSourceGetBufferResponse.Parse(s);
-                                ropsList.Add(RopFastTransferSourceGetBufferResponse);
+                                MapiInspector.MAPIInspector.handleWithSessionGetContextInformation.Add(ropGetbufferHandle, sessionGetContextInfor);
+                                MapiInspector.MAPIInspector.isGet = false;
                                 break;
                             case RopIdType.RopTellVersion:
                                 RopTellVersionResponse RopTellVersionResponse = new RopTellVersionResponse();
@@ -1587,44 +1612,14 @@ namespace MAPIInspector.Parsers
                                 ropsList.Add(RopTellVersionResponse);
                                 break;
                             case RopIdType.RopSynchronizationGetTransferState:
-                                {
-                                    RopSynchronizationGetTransferStateResponse RopSynchronizationGetTransferStateResponse = new RopSynchronizationGetTransferStateResponse();
-                                    RopSynchronizationGetTransferStateResponse.Parse(s);
-                                    ropsList.Add(RopSynchronizationGetTransferStateResponse);
-                                    uint handle_TransferState = tempServerObjectHandleTable[RopSynchronizationGetTransferStateResponse.OutputHandleIndex];
-                                    if (!(DecodingContext.SyncGetTransferState_OutputHandles.Count > 0 && DecodingContext.SyncGetTransferState_OutputHandles.Contains(handle_TransferState)))
-                                    {
-                                        DecodingContext.SyncGetTransferState_OutputHandles.Add(handle_TransferState);
-                                    }
-                                    break;
-                                }
+                                RopSynchronizationGetTransferStateResponse RopSynchronizationGetTransferStateResponse = new RopSynchronizationGetTransferStateResponse();
+                                RopSynchronizationGetTransferStateResponse.Parse(s);
+                                ropsList.Add(RopSynchronizationGetTransferStateResponse);
+                                break;
                             case RopIdType.RopFastTransferDestinationConfigure:
                                 RopFastTransferDestinationConfigureResponse RopFastTransferDestinationConfigureResponse = new RopFastTransferDestinationConfigureResponse();
                                 RopFastTransferDestinationConfigureResponse.Parse(s);
                                 ropsList.Add(RopFastTransferDestinationConfigureResponse);
-                                uint outputIndex_DestinationConfigure = RopFastTransferDestinationConfigureResponse.OutputHandleIndex;
-                                // Update the key value in PutBuffer_sourceOperation from the outputhandle index to handle value
-                                if (DecodingContext.PutBuffer_sourceOperation.ContainsKey(outputIndex_DestinationConfigure))
-                                {
-                                    SourceOperation sourceOpera = DecodingContext.PutBuffer_sourceOperation[outputIndex_DestinationConfigure];
-                                    uint handleValue_DestinationConfigure = tempServerObjectHandleTable.ToArray()[outputIndex_DestinationConfigure];
-                                    DecodingContext.PutBuffer_sourceOperation.Remove(outputIndex_DestinationConfigure);
-                                    DecodingContext.PutBuffer_sourceOperation.Add(handleValue_DestinationConfigure, sourceOpera);
-                                }
-                                // Update the key value in PutBufferExtended_sourceOperation from the outputhandle index to handle value
-                                if (DecodingContext.PutBufferExtended_sourceOperation.ContainsKey(outputIndex_DestinationConfigure))
-                                {
-                                    SourceOperation sourceOpera = DecodingContext.PutBufferExtended_sourceOperation[outputIndex_DestinationConfigure];
-                                    uint handleValue_DestinationConfigure = tempServerObjectHandleTable.ToArray()[outputIndex_DestinationConfigure];
-                                    DecodingContext.PutBufferExtended_sourceOperation.Remove(outputIndex_DestinationConfigure);
-                                    DecodingContext.PutBufferExtended_sourceOperation.Add(handleValue_DestinationConfigure, sourceOpera);
-                                }
-                                // Update DestinationConfigure_OutputHandles handle value in destination configure
-                                uint handle_destinationConfigure = tempServerObjectHandleTable[RopFastTransferDestinationConfigureResponse.OutputHandleIndex];
-                                if (!(DecodingContext.DestinationConfigure_OutputHandles != null && DecodingContext.DestinationConfigure_OutputHandles.Contains(handle_destinationConfigure)))
-                                {
-                                    DecodingContext.DestinationConfigure_OutputHandles.Add(handle_destinationConfigure);
-                                }
                                 break;
                             case RopIdType.RopFastTransferDestinationPutBuffer:
                                 RopFastTransferDestinationPutBufferResponse RopFastTransferDestinationPutBufferResponse = new RopFastTransferDestinationPutBufferResponse();
@@ -1637,17 +1632,10 @@ namespace MAPIInspector.Parsers
                                 ropsList.Add(RopFastTransferDestinationPutBufferExtendedResponse);
                                 break;
                             case RopIdType.RopSynchronizationConfigure:
-                                {
-                                    RopSynchronizationConfigureResponse RopSynchronizationConfigureResponse = new RopSynchronizationConfigureResponse();
-                                    RopSynchronizationConfigureResponse.Parse(s);
-                                    ropsList.Add(RopSynchronizationConfigureResponse);
-                                    uint objectHandleKey = tempServerObjectHandleTable[RopSynchronizationConfigureResponse.OutputHandleIndex];
-                                    if (!(DecodingContext.SyncConfigure_OutputHandles.Count > 0 && DecodingContext.SyncConfigure_OutputHandles.Contains(objectHandleKey)))
-                                    {
-                                        DecodingContext.SyncConfigure_OutputHandles.Add(objectHandleKey);
-                                    }
-                                    break;
-                                }
+                                RopSynchronizationConfigureResponse RopSynchronizationConfigureResponse = new RopSynchronizationConfigureResponse();
+                                RopSynchronizationConfigureResponse.Parse(s);
+                                ropsList.Add(RopSynchronizationConfigureResponse);
+                                break;
                             case RopIdType.RopSynchronizationUploadStateStreamBegin:
                                 RopSynchronizationUploadStateStreamBeginResponse RopSynchronizationUploadStateStreamBeginResponse = new RopSynchronizationUploadStateStreamBeginResponse();
                                 RopSynchronizationUploadStateStreamBeginResponse.Parse(s);
@@ -2115,8 +2103,7 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                    byte[] ropListBytes = ReadBytes(this.RopSize - 2);
-                    //ropsList.AddRange(ropListBytes.Cast<object>().ToArray());
+                byte[] ropListBytes = ReadBytes(this.RopSize - 2);
             }
 
             this.RopsList = ropsList.ToArray();
@@ -3168,18 +3155,6 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class DecodingContext
     {
-        // Indicate the type of FastTransferStream for RopFastTransferSourceGetBufferResponse.
-        private static FastTransferStreamType streamType_Getbuffer;
-
-        // Indicate the type of FastTransferStream for RopFastTransferDestinationPutBufferRequest.
-        private static FastTransferStreamType streamType_Putbuffer;
-
-        // Indicate the type of FastTransferStream for RopFastTransferDestinationPutBufferExtendedRequest.
-        private static FastTransferStreamType streamType_PutbufferExtended;
-
-        // Record FastTransferStream type because this session.
-        private static Dictionary<int, FastTransferStreamType> sessionFastTransferStreamType;
-
         // Record the LogonId and logon flags.
         private static Dictionary<byte, LogonFlags> logonFlagMapLogId;
 
@@ -3192,45 +3167,6 @@ namespace MAPIInspector.Parsers
         // Record the map in session information, handle index, and PropertyTags for getPropertiesSpecific rop.
         private static Dictionary<int, Dictionary<uint, Queue<PropertyTag[]>>> getPropertiesSpec_propertyTags;
 
-        // Record the map in object handles value and SourceOperation for putbuffer.
-        private static Dictionary<uint, SourceOperation> putBuffer_sourceOperation;
-
-        // Record the map in object handles value and SourceOperation for putbufferExtended.
-        private static Dictionary<uint, SourceOperation> putBufferExtended_sourceOperation;
-
-        // Record RopSynchronizationConfigure OutputObjectHandle.
-        private static List<uint> syncConfigure_OutputHandles;
-
-        // Record RopFastTransferSourceCopyTo InputObjectHandle.
-        private static List<uint> copyTo_InputHandles;
-
-        // Record RopFastTransferSourceCopyProperties InputObjectHandle.
-        private static List<uint> copyProperties_InputHandles;
-
-        // Record RopFastTransferSourceCopyTo OutputObjectHandle.
-        private static List<uint> copyTo_OutputHandles;
-
-        // Record RopFastTransferSourceCopyProperties OutputObjectHandle.
-        private static List<uint> copyProperties_OutputHandles;
-
-        // Record RopFastTransferSourceCopyMessages OutputObjectHandle.
-        private static List<uint> copyMessage_OutputHandles;
-
-        // Record RopFastTransferSourceCopyFolder OutputObjectHandle.
-        private static List<uint> copyFolder_OutputHandles;
-
-        // Record RopSynchronizationGetTransferState OutputObjectHandle.
-        private static List<uint> syncGetTransferState_OutputHandles;
-
-        // Record the SetColumns's property tags.
-        private static Dictionary<int, PropertyTag[]> setColumnsPropertyTags;
-
-        // Record RopFastTransferDestinationConfigure InputObjectHandle.
-        private static List<uint> destinationConfigure_InputHandles;
-
-        // Record RopFastTransferDestinationConfigure OutputObjectHandle.
-        private static List<uint> destinationConfigure_OutputHandles;
-
         // Record object handles value and type, contains FolderHandles, MessageHandles and AttachmentHandles.
         private static Dictionary<uint, ObjectHandlesType> objectHandles;
 
@@ -3238,10 +3174,7 @@ namespace MAPIInspector.Parsers
         private static Dictionary<int, List<uint>> sessionRequestRemainSize;
 
         // Record the map of SetColumns's output handle and property tags.
-        private static Dictionary<uint, PropertyTag[]> setColumnProTagMap_Handle;
-
-        // Record the map of SetColumns's output handle index and property tags.
-        private static Dictionary<uint, PropertyTag[]> setColumnProTagMap_Index;
+        private static Dictionary<uint, Dictionary<uint, PropertyTag[]>> setColumnProTagMap_Handle;
 
         // Record RopSetColumn InputObjectHandle in setColumn Response.
         private static List<uint> setColumn_InputHandles_InResponse;
@@ -3249,54 +3182,42 @@ namespace MAPIInspector.Parsers
         // Record RopSetColumn InputObjectHandle in setColumn request for notify.
         private static Dictionary<uint, PropertyTag[]> setColumn_InputHandles_InRequest;
 
-        // Record the map of session id and PropertyTags for QueryRow, FindRow and ExpandRow.
-        private static Dictionary<uint, PropertyTag[]> propertyTagsForRowRop;
-
         // Record the map of session id and PropertyTags for RopNotify.
         private static Dictionary<uint, PropertyTag[]> propertyTagsForNotify;
 
         // Record the map in session id, handle index and PropertyTags for row rops.
         private static Dictionary<int, Dictionary<uint, PropertyTag[]>> rowRops_propertyTags;
 
-        // Record the map in handle index and object type for FasttransferStream
-        private static Dictionary<int, ObjectHandlesType> objectIndex;
-
-        // Record the map inhandle value and handle index for middler rops in FasttransferStream
-        private static Dictionary<uint, int> fasttransterMid_InputIndexAndHandles;
+        // Record the map in session id and partial information is ready.
+        private static Dictionary<int, bool> partialInformationReady;
 
         public DecodingContext()
         {
             objectHandles = new Dictionary<uint, ObjectHandlesType>();
-            sessionFastTransferStreamType = new Dictionary<int, FastTransferStreamType>();
-            streamType_Getbuffer = 0;
-            streamType_Putbuffer = 0;
-            streamType_PutbufferExtended = 0;
-            copyTo_InputHandles = new List<uint>();
-            copyProperties_InputHandles = new List<uint>();
-            copyTo_OutputHandles = new List<uint>();
-            copyProperties_OutputHandles = new List<uint>();
-            copyMessage_OutputHandles = new List<uint>();
-            copyFolder_OutputHandles = new List<uint>();
-            syncGetTransferState_OutputHandles = new List<uint>();
-            syncConfigure_OutputHandles = new List<uint>();
-            destinationConfigure_OutputHandles = new List<uint>();
-            destinationConfigure_InputHandles = new List<uint>();
-            getPropertiesSpec_propertyTags = new Dictionary<int, Dictionary<uint, Queue<PropertyTag[]>>>();
-            sessionRequestRemainSize = new Dictionary<int, List<uint>>();
-            setColumnProTagMap_Handle = new Dictionary<uint, PropertyTag[]>();
-            setColumnProTagMap_Index = new Dictionary<uint, PropertyTag[]>();
-            propertyTagsForRowRop = new Dictionary<uint, PropertyTag[]>();
-            propertyTagsForNotify = new Dictionary<uint, PropertyTag[]>();
-            rowRops_propertyTags = new Dictionary<int, Dictionary<uint, PropertyTag[]>>();
-            putBuffer_sourceOperation = new Dictionary<uint, SourceOperation>();
-            putBufferExtended_sourceOperation = new Dictionary<uint, SourceOperation>();
-            setColumn_InputHandles_InResponse = new List<uint>();
-            setColumn_InputHandles_InRequest = new Dictionary<uint, PropertyTag[]>();
-            sessionLogonFlagsInLogonRop = new Dictionary<int, Dictionary<uint, LogonFlags>>();
             logonFlagMapLogId = new Dictionary<byte, LogonFlags>();
             sessionLogonFlagMapLogId = new Dictionary<int, Dictionary<byte, LogonFlags>>();
-            objectIndex = new Dictionary<int, ObjectHandlesType>();
-            fasttransterMid_InputIndexAndHandles = new Dictionary<uint, int>();
+            sessionLogonFlagsInLogonRop = new Dictionary<int, Dictionary<uint, LogonFlags>>();
+            getPropertiesSpec_propertyTags = new Dictionary<int, Dictionary<uint, Queue<PropertyTag[]>>>();
+            sessionRequestRemainSize = new Dictionary<int, List<uint>>();
+            setColumnProTagMap_Handle = new Dictionary<uint, Dictionary<uint, PropertyTag[]>>();
+            propertyTagsForNotify = new Dictionary<uint, PropertyTag[]>();
+            rowRops_propertyTags = new Dictionary<int, Dictionary<uint, PropertyTag[]>>();
+            setColumn_InputHandles_InResponse = new List<uint>();
+            setColumn_InputHandles_InRequest = new Dictionary<uint, PropertyTag[]>();
+            partialInformationReady = new Dictionary<int, bool>();
+        }
+
+        // Gets or sets the objectHandles
+        public static Dictionary<uint, ObjectHandlesType> ObjectHandles
+        {
+            get
+            {
+                return objectHandles;
+            }
+            set
+            {
+                objectHandles = value;
+            }
         }
 
         // Gets or sets the LogonId and logon flags
@@ -3351,212 +3272,6 @@ namespace MAPIInspector.Parsers
             }
         }
 
-        // Gets or sets the syncConfigure_OutputHandles
-        public static List<uint> SyncConfigure_OutputHandles
-        {
-            get
-            {
-                return syncConfigure_OutputHandles;
-            }
-            set
-            {
-                syncConfigure_OutputHandles = value;
-            }
-        }
-        // Get or set setColumnsPropertyTags
-        public static Dictionary<int, PropertyTag[]> SetColumnsPropertyTags
-        {
-            get
-            {
-                return setColumnsPropertyTags;
-            }
-            set
-            {
-                setColumnsPropertyTags = value;
-            }
-        }
-
-        // Gets or sets the CopyTo_InputHandles
-        public static List<uint> CopyTo_InputHandles
-        {
-            get
-            {
-                return copyTo_InputHandles;
-            }
-            set
-            {
-                copyTo_InputHandles = value;
-            }
-        }
-
-        // Gets or sets the copyProperties_InputHandles 
-        public static List<uint> CopyProperties_InputHandles
-        {
-            get
-            {
-                return copyProperties_InputHandles;
-            }
-            set
-            {
-                copyProperties_InputHandles = value;
-            }
-        }
-
-        // Gets or sets the copyTo_OutputHandles
-        public static List<uint> CopyTo_OutputHandles
-        {
-            get
-            {
-                return copyTo_OutputHandles;
-            }
-            set
-            {
-                copyTo_OutputHandles = value;
-            }
-        }
-
-        // Gets or sets the copyProperties_OutputHandles
-        public static List<uint> CopyProperties_OutputHandles
-        {
-            get
-            {
-                return copyProperties_OutputHandles;
-            }
-            set
-            {
-                copyProperties_OutputHandles = value;
-            }
-        }
-
-        // Gets or sets the copyMessage_OutputHandles
-        public static List<uint> CopyMessage_OutputHandles
-        {
-            get
-            {
-                return copyMessage_OutputHandles;
-            }
-            set
-            {
-                copyMessage_OutputHandles = value;
-            }
-        }
-        // Gets or sets the copyFolder_OutputHandles
-        public static List<uint> CopyFolder_OutputHandles
-        {
-            get
-            {
-                return copyFolder_OutputHandles;
-            }
-            set
-            {
-                copyFolder_OutputHandles = value;
-            }
-        }
-
-        // Gets or sets the syncGetTransferState_OutputHandles
-        public static List<uint> SyncGetTransferState_OutputHandles
-        {
-            get
-            {
-                return syncGetTransferState_OutputHandles;
-            }
-            set
-            {
-                syncGetTransferState_OutputHandles = value;
-            }
-        }
-
-        // Gets or sets the destinationConfigure_InputHandles
-        public static List<uint> DestinationConfigure_InputHandles
-        {
-            get
-            {
-                return destinationConfigure_InputHandles;
-            }
-            set
-            {
-                destinationConfigure_InputHandles = value;
-            }
-        }
-
-        // Gets or sets the destinationConfigure_OutputHandles
-        public static List<uint> DestinationConfigure_OutputHandles
-        {
-            get
-            {
-                return destinationConfigure_OutputHandles;
-            }
-            set
-            {
-                destinationConfigure_OutputHandles = value;
-            }
-        }
-
-        // Gets or sets the objectHandles
-        public static Dictionary<uint, ObjectHandlesType> ObjectHandles
-        {
-            get
-            {
-                return objectHandles;
-            }
-            set
-            {
-                objectHandles = value;
-            }
-        }
-
-        // Gets or sets the sessionFastTransferStreamType.
-        public static Dictionary<int, FastTransferStreamType> SessionFastTransferStreamType
-        {
-            get
-            {
-                return sessionFastTransferStreamType;
-            }
-            set
-            {
-                sessionFastTransferStreamType = value;
-            }
-        }
-
-        // Gets or sets the streamType_Getbuffer.
-        public static FastTransferStreamType StreamType_Getbuffer
-        {
-            get
-            {
-                return streamType_Getbuffer;
-            }
-            set
-            {
-                streamType_Getbuffer = value;
-            }
-        }
-
-        // Gets or sets the streamType_Putbuffer.
-        public static FastTransferStreamType StreamType_Putbuffer
-        {
-            get
-            {
-                return streamType_Putbuffer;
-            }
-            set
-            {
-                streamType_Putbuffer = value;
-            }
-        }
-
-        // Gets or sets the streamType_Putbuffer.
-        public static FastTransferStreamType StreamType_PutbufferExtended
-        {
-            get
-            {
-                return streamType_PutbufferExtended;
-            }
-            set
-            {
-                streamType_PutbufferExtended = value;
-            }
-        }
-
         // Gets or sets the sessionRequestRemainSize
         public static Dictionary<int, List<uint>> SessionRequestRemainSize
         {
@@ -3571,7 +3286,7 @@ namespace MAPIInspector.Parsers
         }
 
         // Gets or sets the SetColumnProTagMap_Handle
-        public static Dictionary<uint, PropertyTag[]> SetColumnProTagMap_Handle
+        public static Dictionary<uint, Dictionary<uint, PropertyTag[]>> SetColumnProTagMap_Handle
         {
             get
             {
@@ -3580,58 +3295,6 @@ namespace MAPIInspector.Parsers
             set
             {
                 setColumnProTagMap_Handle = value;
-            }
-        }
-
-        // Gets or sets the setColumnProTagMap
-        public static Dictionary<uint, PropertyTag[]> SetColumnProTagMap_Index
-        {
-            get
-            {
-                return setColumnProTagMap_Index;
-            }
-            set
-            {
-                setColumnProTagMap_Index = value;
-            }
-        }
-
-        // Gets or sets the putBuffer_sourceOperation
-        public static Dictionary<uint, SourceOperation> PutBuffer_sourceOperation
-        {
-            get
-            {
-                return putBuffer_sourceOperation;
-            }
-            set
-            {
-                putBuffer_sourceOperation = value;
-            }
-        }
-
-        // Gets or sets the putBufferExtended_sourceOperation
-        public static Dictionary<uint, SourceOperation> PutBufferExtended_sourceOperation
-        {
-            get
-            {
-                return putBufferExtended_sourceOperation;
-            }
-            set
-            {
-                putBufferExtended_sourceOperation = value;
-            }
-        }
-
-        // Gets or sets the proTagsForRowRop
-        public static Dictionary<uint, PropertyTag[]> PropertyTagsForRowRop
-        {
-            get
-            {
-                return propertyTagsForRowRop;
-            }
-            set
-            {
-                propertyTagsForRowRop = value;
             }
         }
 
@@ -3687,32 +3350,18 @@ namespace MAPIInspector.Parsers
             }
         }
 
-        // Gets or sets the objectIndex
-        public static Dictionary<int, ObjectHandlesType> ObjectIndex
+        // Gets or sets the partialInformationReady
+        public static Dictionary<int, bool> PartialInformationReady
         {
             get
             {
-                return objectIndex;
+                return partialInformationReady;
             }
             set
             {
-                objectIndex = value;
+                partialInformationReady = value;
             }
         }
-
-        // Gets or sets the fasttransterMid_InputIndexAndHandles
-        public static Dictionary<uint, int> FasttransterMid_InputIndexAndHandles
-        {
-            get
-            {
-                return fasttransterMid_InputIndexAndHandles;
-            }
-            set
-            {
-                fasttransterMid_InputIndexAndHandles = value;
-            }
-        }
-
     }
 
     #endregion
@@ -3750,5 +3399,20 @@ namespace MAPIInspector.Parsers
         public uint Handle { get; set; }
         // The result searched for the target context information
         public object RelatedInformation { get; set; }
+    }
+
+    public class MissingPartialInformationException : Exception
+    {
+        // The ROP ID needs context information
+        public ushort RopID;
+
+        // The source ROP parameters to pass
+        public uint Parameter;
+
+        public MissingPartialInformationException(ushort ropID, uint parameter)
+        {
+            this.RopID = ropID;
+            this.Parameter = parameter;
+        }
     }
 }

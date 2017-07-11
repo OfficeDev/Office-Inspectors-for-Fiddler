@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using Be.Windows.Forms;
 
 namespace MAPIInspector.Parsers
 {
@@ -813,7 +812,7 @@ namespace MAPIInspector.Parsers
         public bool HasNames;
 
         // An unsigned integer that specifies the number of null-terminated Unicode strings in the NameValues field. 
-        public uint NameCount;
+        public uint? NameCount;
 
         // An array of null-terminated ASCII strings which are distinguished names (DNs) to be mapped to Minimal Entry IDs. 
         public MAPIString[] NameValues;
@@ -833,13 +832,21 @@ namespace MAPIInspector.Parsers
             base.Parse(s);
             this.Reserved = ReadUint();
             this.HasNames = ReadBoolean();
-            this.NameCount = ReadUint();
+            uint count = ReadUint();
             List<MAPIString> nameValues = new List<MAPIString>();
-            for(int i=0; i< this.NameCount; i++)
+            if (count == 0)
             {
-                MAPIString mapiString = new MAPIString(Encoding.ASCII);
-                mapiString.Parse(s);
-                nameValues.Add(mapiString);
+                s.Position -= 4;
+            }
+            else
+            {
+                this.NameCount = count;
+                for (int i = 0; i < this.NameCount; i++)
+                {
+                    MAPIString mapiString = new MAPIString(Encoding.ASCII);
+                    mapiString.Parse(s);
+                    nameValues.Add(mapiString);
+                }
             }
             this.NameValues = nameValues.ToArray();
             this.AuxiliaryBufferSize = ReadUint();
@@ -1027,7 +1034,7 @@ namespace MAPIInspector.Parsers
             this.HasFilter = ReadBoolean();
             if (this.HasFilter)
             {
-                RestrictionType restriction = new RestrictionType();
+                RestrictionType restriction = new RestrictionType(CountWideEnum.fourBytes);
                 restriction.Parse(s);
                 this.Filter = restriction;
             }
@@ -1699,7 +1706,7 @@ namespace MAPIInspector.Parsers
         public bool HasEntryIds;
 
         // An unsigned integer that specifies the count of structures in the EntryIds field. 
-        public uint EntryIdCount;
+        public uint? EntryIdCount;
 
         // An array of entry IDs, each of which is either an EphemeralEntryID structure or a PermanentEntryID structure. 
         public object[] EntryIds;
@@ -1742,6 +1749,11 @@ namespace MAPIInspector.Parsers
                         PermanentEntryID permanentEntryID = new PermanentEntryID();
                         permanentEntryID.Parse(s);
                         tempObj.Add(permanentEntryID);
+                    }
+                    else
+                    {
+                        uint length = ReadUint();
+                        byte[] byteleft = ReadBytes((int)length);
                     }
                 }
                 this.EntryIds = tempObj.ToArray();
@@ -2904,6 +2916,7 @@ namespace MAPIInspector.Parsers
             {
                 this.ErrorCode = ReadUint();
                 this.ServerUrl = new MAPIString(Encoding.Unicode, "\0");
+                this.ServerUrl.Parse(s);
             }
             this.AuxiliaryBufferSize = ReadUint();
             if (this.AuxiliaryBufferSize > 0)
@@ -3428,7 +3441,7 @@ namespace MAPIInspector.Parsers
                 Stream stream = new MemoryStream(payloadBytes);
 
                 List<AuxiliaryBufferPayload> payload = new List<AuxiliaryBufferPayload>();
-                for (int length = 0; length < RPC_HEADER_EXT.Size; )
+                for (int length = 0; length < RPC_HEADER_EXT.Size;)
                 {
                     AuxiliaryBufferPayload buffer = new AuxiliaryBufferPayload();
                     buffer.Parse(stream);
@@ -4976,16 +4989,19 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
+            int index = 0;
             List<ExtendedBuffer_Input> ExtendedBuffer_Inputs = new List<ExtendedBuffer_Input>();
-            while(this.RopBufferSize > 0)
+            MapiInspector.MAPIInspector.inputPayLoadCompresssedXOR = new List<byte[]>();
+            MapiInspector.MAPIInspector.buffersIsCompressed = new List<bool>();
+            while (this.RopBufferSize > 0)
             {
-                ExtendedBuffer_Input ExtendedBuffer_Input = new ExtendedBuffer_Input();
+                ExtendedBuffer_Input ExtendedBuffer_Input = new ExtendedBuffer_Input(index);
                 ExtendedBuffer_Input.Parse(s);
                 ExtendedBuffer_Inputs.Add(ExtendedBuffer_Input);
-
                 this.RopBufferSize -= (uint)(ExtendedBuffer_Input.RPC_HEADER_EXT.Size + 8);
+                index += 1;
             }
-           
+
             this.buffers = ExtendedBuffer_Inputs.ToArray();
         }
     }
@@ -4995,7 +5011,14 @@ namespace MAPIInspector.Parsers
         // The RPC_HEADER_EXT structure provides information about the payload.
         public RPC_HEADER_EXT RPC_HEADER_EXT;
         // A structure of bytes that constitute the ROP request payload. 
-        public ROPInputBuffer Payload;
+        public object Payload;
+        // Buffer index in one session
+        private int index;
+
+        public ExtendedBuffer_Input(int num)
+        {
+            this.index = num;
+        }
 
         /// <summary>
         /// Parse the rgbInputBuffer. 
@@ -5023,13 +5046,49 @@ namespace MAPIInspector.Parsers
                     isCompressedXOR = true;
                 }
 
-                if (isCompressedXOR)
+                if (this.index > 0)
                 {
-                    MapiInspector.MAPIInspector.payLoadCompresssedXOR = payloadBytes;
+                    if (isCompressedXOR)
+                    {
+                        if (!MapiInspector.MAPIInspector.buffersIsCompressed.Contains(true))
+                        {
+                            MapiInspector.MAPIInspector.inputPayLoadCompresssedXOR = new List<byte[]>();
+                        }
+                        MapiInspector.MAPIInspector.inputPayLoadCompresssedXOR.Add(payloadBytes);
+                        MapiInspector.MAPIInspector.buffersIsCompressed.Add(true);
+                    }
+                    else
+                    {
+                        MapiInspector.MAPIInspector.buffersIsCompressed.Add(false);
+                    }
+                }
+                else
+                {
+                    MapiInspector.MAPIInspector.buffersIsCompressed = new List<bool>();
+                    if (isCompressedXOR)
+                    {
+                        MapiInspector.MAPIInspector.inputPayLoadCompresssedXOR = new List<byte[]>();
+                        MapiInspector.MAPIInspector.inputPayLoadCompresssedXOR.Add(payloadBytes);
+                        MapiInspector.MAPIInspector.buffersIsCompressed.Add(true);
+                    }
+                    else
+                    {
+                        MapiInspector.MAPIInspector.buffersIsCompressed.Add(false);
+                    }
                 }
                 Stream stream = new MemoryStream(payloadBytes);
-                this.Payload = new ROPInputBuffer();
-                this.Payload.Parse(stream);
+                if (MapiInspector.MAPIInspector.isOnlyGetServerHandle)
+                {
+                    ROPInputBuffer_WithoutCROPS inputBufferWithoutCROPS = new ROPInputBuffer_WithoutCROPS();
+                    inputBufferWithoutCROPS.Parse(stream);
+                    this.Payload = inputBufferWithoutCROPS;
+                }
+                else
+                {
+                    ROPInputBuffer InputBuffer = new ROPInputBuffer();
+                    InputBuffer.Parse(stream);
+                    this.Payload = InputBuffer;
+                }
             }
 
         }
@@ -5044,9 +5103,21 @@ namespace MAPIInspector.Parsers
     {
         // The RPC_HEADER_EXT structure provides information about the payload.
         public RPC_HEADER_EXT RPC_HEADER_EXT;
-        
+
         // A structure of bytes that constitute the ROP responses payload. 
         public object Payload;
+
+        // Indicates the index of this rgbOutputBuffer in all buffers
+        private int index;
+
+        /// <summary>
+        /// New rgbOutputBuffer
+        /// </summary>
+        /// <param name="num"></param>
+        public rgbOutputBuffer(int num)
+        {
+            this.index = num;
+        }
 
         /// <summary>
         /// Parse the rgbOutputBuffer. 
@@ -5074,10 +5145,37 @@ namespace MAPIInspector.Parsers
                     isCompressedXOR = true;
                 }
 
-                if (isCompressedXOR)
+                if(this.index > 0)
                 {
-                    MapiInspector.MAPIInspector.payLoadCompresssedXOR = payloadBytes;
+                    if (isCompressedXOR)
+                    {
+                        if(!MapiInspector.MAPIInspector.buffersIsCompressed.Contains(true))
+                        {
+                            MapiInspector.MAPIInspector.outputPayLoadCompresssedXOR = new List<byte[]>();
+                        }
+                        MapiInspector.MAPIInspector.outputPayLoadCompresssedXOR.Add(payloadBytes);
+                        MapiInspector.MAPIInspector.buffersIsCompressed.Add(true);
+                    }
+                    else
+                    {
+                        MapiInspector.MAPIInspector.buffersIsCompressed.Add(false);
+                    }
                 }
+                else
+                {
+                    MapiInspector.MAPIInspector.buffersIsCompressed = new List<bool>();
+                    if (isCompressedXOR)
+                    {
+                        MapiInspector.MAPIInspector.outputPayLoadCompresssedXOR = new List<byte[]>();
+                        MapiInspector.MAPIInspector.outputPayLoadCompresssedXOR.Add(payloadBytes);
+                        MapiInspector.MAPIInspector.buffersIsCompressed.Add(true);
+                    }
+                    else
+                    {
+                        MapiInspector.MAPIInspector.buffersIsCompressed.Add(false);
+                    }
+                }
+                
                 Stream stream = new MemoryStream(payloadBytes);
                 if (MapiInspector.MAPIInspector.isOnlyGetServerHandle)
                 {
@@ -5117,13 +5215,17 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
+            int index = 0;
             List<rgbOutputBuffer> rgbOutputBufferList = new List<rgbOutputBuffer>();
             long StartPosition = s.Position;
+            MapiInspector.MAPIInspector.outputPayLoadCompresssedXOR = new List<byte[]>();
+            MapiInspector.MAPIInspector.buffersIsCompressed = new List<bool>();
             while (s.Position - StartPosition < this.RopBufferSize)
             {
-                rgbOutputBuffer buffer = new rgbOutputBuffer();
+                rgbOutputBuffer buffer = new rgbOutputBuffer(index);
                 buffer.Parse(s);
                 rgbOutputBufferList.Add(buffer);
+                index += 1;
             }
 
             this.rgbOutputBuffers = rgbOutputBufferList.ToArray();

@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
+
 namespace MAPIInspector.Parsers
 {
     public abstract class BaseStructure
@@ -18,6 +19,9 @@ namespace MAPIInspector.Parsers
         /// Boolean value, if payload is compressed or obfascated, value is true. otherwise, value is false.
         /// </summary>
         public static bool isCompressedXOR = false;
+
+        // This feild is for rgbOutputBuffer or ExtendedBuffer_Input in MAPIHTTP layer
+        private static int compressBufferindex = 0;
 
         /// <summary>
         /// Parse stream to specific message
@@ -321,38 +325,50 @@ namespace MAPIInspector.Parsers
                 FieldInfo[] infoString = t.GetFields();
                 string terminator = (string)infoString[3].GetValue(obj);
                 TreeNode node = new TreeNode(string.Format("{0}:{1}", infoString[0].Name, infoString[0].GetValue(obj)));
-                // If the StringLength is not equal 0, the StringLength will be os value.
-                if (infoString[4].GetValue(obj).ToString() != "0")
-                {
-                    os = ((int)infoString[4].GetValue(obj));
-                }
+
                 // If the Encoding is Unicode.
-                else if (infoString[2].GetValue(obj).ToString() == "System.Text.UnicodeEncoding")
+                if (infoString[2].GetValue(obj).ToString() == "System.Text.UnicodeEncoding")
                 {
-                    if (infoString[0].GetValue(obj) != null)
+                    // If the StringLength is not equal 0, the StringLength will be os value.
+                    if (infoString[4].GetValue(obj).ToString() != "0")
                     {
-                        os = ((string)infoString[0].GetValue(obj)).Length * 2;
+                        os = ((int)infoString[4].GetValue(obj)) * 2;
                     }
-                    if (infoString[5].GetValue(obj).ToString() != "False")
+                    else
                     {
-                        os -= 1;
+                        if (infoString[0].GetValue(obj) != null)
+                        {
+                            os = ((string)infoString[0].GetValue(obj)).Length * 2;
+                        }
+                        if (infoString[5].GetValue(obj).ToString() != "False")
+                        {
+                            os -= 1;
+                        }
+                        os += terminator.Length * 2;
                     }
-                    os += terminator.Length * 2;
                 }
                 //If the Encoding is ASCII.
                 else
                 {
-                    if (infoString[0].GetValue(obj) != null)
+                    // If the StringLength is not equal 0, the StringLength will be os value.
+                    if (infoString[4].GetValue(obj).ToString() != "0")
                     {
-                        os = ((string)infoString[0].GetValue(obj)).Length;
+                        os = ((int)infoString[4].GetValue(obj));
                     }
-                    os += terminator.Length;
+                    else
+                    {
+                        if (infoString[0].GetValue(obj) != null)
+                        {
+                            os = ((string)infoString[0].GetValue(obj)).Length;
+                        }
+                        os += terminator.Length;
+                    }
                 }
 
                 offset = os;
-                node.Tag = new Position(current, os);
+                Position positionString = new Position(current, os);
+                node.Tag = positionString;
                 res.Nodes.Add(node);
-                res.Tag = new Position(current, os);
                 return res;
             }
 
@@ -372,7 +388,6 @@ namespace MAPIInspector.Parsers
                 {
                     info = MoveFirstNFieldsBehind(info, info.Length - 2);
                 }
-
                 for (int i = 0; i < info.Length; i++)
                 {
                     int os = 0;
@@ -543,12 +558,6 @@ namespace MAPIInspector.Parsers
                                 tn.Tag = ps;
                                 current += os;
                             }
-                            else if (arr != null && arr.Length == 0)
-                            {
-                                StringBuilder result = new StringBuilder("[]");
-                                TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
-                                res.Nodes.Add(tn);
-                            }
                         }
                         // Else if the element data type is not simple type, here will consider array type and complex type
                         else
@@ -561,6 +570,11 @@ namespace MAPIInspector.Parsers
                                 TreeNode tnArr = new TreeNode(info[i].Name);
                                 TreeNode tn = new TreeNode();
                                 int arros = 0;
+                                if (fieldNameForAut == "rgbOutputBuffers" || fieldNameForAut == "buffers")
+                                {
+                                    compressBufferindex = 0;
+                                }
+
                                 for (int k = 0; k < arr.Length; k++)
                                 {
                                     if (a[k] != null)
@@ -598,6 +612,11 @@ namespace MAPIInspector.Parsers
                                         // If the item in array is complex type, loop call the function to add it to tree.
                                         else
                                         {
+                                            // compressBufferindex is used to recored the rgbOutputBuffer or ExtendedBuffer_Input num here
+                                            if (a.GetType().Name == "rgbOutputBuffer[]" || a.GetType().Name == "ExtendedBuffer_Input[]")
+                                            {
+                                                compressBufferindex += 1;
+                                            }
                                             tn = AddNodesForTree(a[k], current, out os);
                                             tnArr.Nodes.Add(tn);
                                             Position ps = new Position(current, os);
@@ -611,29 +630,7 @@ namespace MAPIInspector.Parsers
 
                                 Position pss = new Position(current - arros, arros);
                                 tnArr.Tag = pss;
-
-                                // Special handling for the array field data type when its name is Payload and it's compressed or XOR: recalculating the offset and position.
-                                if (fieldNameForAut == "Payload" && isCompressedXOR)
-                                {
-                                    tnArr = TreeNodeForCompressed(tnArr, current - arros, true);
-                                    string text = tnArr.Text.Replace("Payload", "Payload(CompressedOrObfuscated)");
-                                    tnArr.Text = text;
-
-                                    // Modified the Payload size that it is compressed.
-                                    RPC_HEADER_EXT header = (RPC_HEADER_EXT)info[0].GetValue(obj);
-                                    Position postion = (Position)tnArr.Tag;
-                                    postion.Offset = header.Size;
-                                    os = postion.Offset;
-                                    tnArr.Tag = postion;
-                                }
                                 res.Nodes.Add(tnArr);
-                            }
-                            // Else if the array is not null and its length is zero, only displaying [].
-                            else if (arr != null && arr.Length == 0)
-                            {
-                                StringBuilder result = new StringBuilder("[]");
-                                TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
-                                res.Nodes.Add(tn);
                             }
                         }
                     }
@@ -668,11 +665,17 @@ namespace MAPIInspector.Parsers
                                 postion.Offset = header.Size;
                                 os = postion.Offset;
                                 node.Tag = postion;
-                                node = TreeNodeForCompressed(node, current);
                                 fieldName = "Payload(CompressedOrObfuscated)";
+                                node.Text = fieldName;
+                                node = TreeNodeForCompressed(node, current, compressBufferindex - 1);
                             }
                             else
                             {
+                                if (fieldName == "Payload")
+                                {
+                                    // minus the Payload is not in compressed
+                                    compressBufferindex -= 1;
+                                }
                                 node = AddNodesForTree(info[i].GetValue(obj), current, out os);
                             }
 
@@ -707,6 +710,7 @@ namespace MAPIInspector.Parsers
             public int Offset;
             public bool IsCompressedXOR;
             public bool IsAuxiliayPayload;
+            public int bufferIndex = 0;
             public Position(int startIndex, int offset)
             {
                 this.StartIndex = startIndex;
@@ -732,7 +736,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Modify the start index for the TreeNode which source data is compressed
         /// </summary>
-        public static TreeNode TreeNodeForCompressed(TreeNode node, int current, bool isAux = false)
+        public static TreeNode TreeNodeForCompressed(TreeNode node, int current, int compressBufferindex, bool isAux = false)
         {
             foreach (TreeNode n in node.Nodes)
             {
@@ -741,10 +745,11 @@ namespace MAPIInspector.Parsers
                 {
                     ((Position)(nd.Tag)).IsCompressedXOR = true;
                     ((Position)(nd.Tag)).StartIndex -= current;
+                    ((Position)(nd.Tag)).bufferIndex = compressBufferindex;
                 }
                 if (nd.Nodes.Count != 0)
                 {
-                    TreeNodeForCompressed(nd, current, isAux);
+                    TreeNodeForCompressed(nd, current, compressBufferindex, isAux);
                 }
             }
             return node;

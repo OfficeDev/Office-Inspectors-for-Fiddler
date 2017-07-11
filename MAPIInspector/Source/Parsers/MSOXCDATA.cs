@@ -28,13 +28,13 @@ namespace MAPIInspector.Parsers
         public bool ReducedUnicode;
 
         /// <summary>
-        /// The Constructor of MAPIString without parameters.
+        /// A The Constructor of MAPIString without parameters.
         /// </summary>
         public MAPIString()
         { }
 
         /// <summary>
-        /// The Constructor of MAPIString with parameters.
+        /// A The Constructor of MAPIString with parameters.
         /// </summary>
         /// <param name="encode"></param>
         /// <param name="terminator"></param>
@@ -1837,6 +1837,13 @@ namespace MAPIInspector.Parsers
         // A string of Unicode characters in UTF-16LE format encoding with terminating null character (0x0000).
         public MAPIString Value;
 
+        private int length;
+
+        public PtypString(int len = 0)
+        {
+            this.length = len;
+        }
+
         /// <summary>
         /// Parse the PtypString structure.
         /// </summary>
@@ -1844,7 +1851,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.Value = new MAPIString(Encoding.Unicode);
+            this.Value = new MAPIString(Encoding.Unicode,"\0",this.length);
             this.Value.Parse(s);
         }
     }
@@ -1857,6 +1864,11 @@ namespace MAPIInspector.Parsers
         // A string of multibyte characters in externally specified encoding with terminating null character (single 0 byte).
         public MAPIString Value;
 
+        private int length;
+        public PtypString8(int len = 0)
+        {
+            this.length = len;
+        }
         /// <summary>
         /// Parse the PtypString8 structure.
         /// </summary>
@@ -1864,7 +1876,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.Value = new MAPIString(Encoding.ASCII);
+            this.Value = new MAPIString(Encoding.ASCII,"\0", this.length);
             this.Value.Parse(s);
         }
     }
@@ -1923,7 +1935,7 @@ namespace MAPIInspector.Parsers
     public class PtypServerId : BaseStructure
     {
         // The COUNT values are typically used to specify the size of an associated field.
-        public ushort Count;
+        public object Count;
 
         //  The value 0x01 indicates the remaining bytes conform to this structure; 
         public byte Ours;
@@ -1940,6 +1952,18 @@ namespace MAPIInspector.Parsers
         // The Ours value 0x00 indicates this is a client-defined value and has whatever size and structure the client has defined.
         public byte?[] ClientData;
 
+        // The Count wide size.
+        private CountWideEnum countWide;
+
+        /// <summary>
+        /// The Constructor to set the Count wide size.
+        /// </summary>
+        /// <param name="wide">The Count wide size of PtypBinary type.</param>
+        public PtypServerId(CountWideEnum wide)
+        {
+            countWide = wide;
+        }
+
         /// <summary>
         /// Parse the PtypServerId structure.
         /// </summary>
@@ -1947,7 +1971,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.Count = ReadUshort();
+            HelpMethod help = new HelpMethod();
+            this.Count = help.ReadCount(this.countWide, s);
             this.Ours = ReadByte();
             if (this.Ours == 0x01)
             {
@@ -1959,7 +1984,7 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                this.ClientData = ConvertArray(ReadBytes(this.Count - 1));
+                this.ClientData = ConvertArray(ReadBytes(this.Count.GetHashCode() - 1));
             }
 
         }
@@ -2582,7 +2607,7 @@ namespace MAPIInspector.Parsers
             List<PtypBinary> tempvalue = new List<PtypBinary>();
             for (int i = 0; i < this.Count.GetHashCode(); i++)
             {
-                PtypBinary binary = new PtypBinary(CountWideEnum.twoBytes);
+                PtypBinary binary = new PtypBinary(this.countWide);
                 binary.Parse(s);
                 tempvalue.Add(binary);
             }
@@ -2788,7 +2813,7 @@ namespace MAPIInspector.Parsers
                     }
                 case PropertyDataType.PtypServerId:
                     {
-                        PtypServerId tempPropertyValue = new PtypServerId();
+                        PtypServerId tempPropertyValue = new PtypServerId(ptypMultiCountSize);
                         tempPropertyValue.Parse(s);
                         propertyValue = tempPropertyValue;
                         break;
@@ -3223,6 +3248,18 @@ namespace MAPIInspector.Parsers
         // An unsigned integer. This value indicates the type of restriction.
         public object Restriction;
 
+        // The Count wide size.
+        private CountWideEnum countWide;
+
+        /// <summary>
+        /// The Constructor to set the Count wide size and restrict type.
+        /// </summary>
+        /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
+        public RestrictionType(CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes)
+        {
+            countWide = ptypMultiCountSize;
+        }
+
         /// <summary>
         /// Parse the RestrictionType structure.
         /// </summary>
@@ -3236,7 +3273,7 @@ namespace MAPIInspector.Parsers
             {
                 case RestrictTypeEnum.AndRestriction:
                     {
-                        AndRestriction restriction = new AndRestriction();
+                        AndRestriction restriction = new AndRestriction(countWide);
                         restriction.Parse(s);
                         this.Restriction = restriction;
                         break;
@@ -3244,7 +3281,7 @@ namespace MAPIInspector.Parsers
 
                 case RestrictTypeEnum.OrRestriction:
                     {
-                        OrRestriction restriction = new OrRestriction();
+                        OrRestriction restriction = new OrRestriction(countWide);
                         restriction.Parse(s);
                         this.Restriction = restriction;
                         break;
@@ -3258,14 +3295,14 @@ namespace MAPIInspector.Parsers
                     }
                 case RestrictTypeEnum.ContentRestriction:
                     {
-                        ContentRestriction restriction = new ContentRestriction();
+                        ContentRestriction restriction = new ContentRestriction(countWide);
                         restriction.Parse(s);
                         this.Restriction = restriction;
                         break;
                     }
                 case RestrictTypeEnum.PropertyRestriction:
                     {
-                        PropertyRestriction restriction = new PropertyRestriction();
+                        PropertyRestriction restriction = new PropertyRestriction(countWide);
                         restriction.Parse(s);
                         this.Restriction = restriction;
                         break;
@@ -3300,21 +3337,21 @@ namespace MAPIInspector.Parsers
                     }
                 case RestrictTypeEnum.SubObjectRestriction:
                     {
-                        SubObjectRestriction restriction = new SubObjectRestriction();
+                        SubObjectRestriction restriction = new SubObjectRestriction(countWide);
                         restriction.Parse(s);
                         this.Restriction = restriction;
                         break;
                     }
                 case RestrictTypeEnum.CommentRestriction:
                     {
-                        CommentRestriction restriction = new CommentRestriction();
+                        CommentRestriction restriction = new CommentRestriction(countWide);
                         restriction.Parse(s);
                         this.Restriction = restriction;
                         break;
                     }
                 case RestrictTypeEnum.CountRestriction:
                     {
-                        CountRestriction restriction = new CountRestriction();
+                        CountRestriction restriction = new CountRestriction(countWide);
                         restriction.Parse(s);
                         this.Restriction = restriction;
                         break;
@@ -3346,7 +3383,7 @@ namespace MAPIInspector.Parsers
         /// The Constructor to set the Count wide size and restrict type.
         /// </summary>
         /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
-        public AndRestriction(CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes)
+        public AndRestriction(CountWideEnum ptypMultiCountSize)
         {
             countWide = ptypMultiCountSize;
         }
@@ -3399,7 +3436,7 @@ namespace MAPIInspector.Parsers
         /// The Constructor to set the Count wide size and restrict type.
         /// </summary>
         /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
-        public OrRestriction(CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes)
+        public OrRestriction(CountWideEnum ptypMultiCountSize)
         {
             countWide = ptypMultiCountSize;
         }
@@ -3498,6 +3535,18 @@ namespace MAPIInspector.Parsers
         // A TaggedPropertyValue structure, as specified in section 2.11.4. 
         public TaggedPropertyValue TaggedValue;
 
+        // The Count wide size.
+        private CountWideEnum countWide;
+
+        /// <summary>
+        /// The Constructor to set the Count wide size and restrict type.
+        /// </summary>
+        /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
+        public ContentRestriction(CountWideEnum ptypMultiCountSize)
+        {
+            countWide = ptypMultiCountSize;
+        }
+
         /// <summary>
         /// Parse the ContentRestriction structure.
         /// </summary>
@@ -3510,7 +3559,7 @@ namespace MAPIInspector.Parsers
             this.FuzzyLevelHigh = (FuzzyLevelHighEnum)ReadUshort();
             this.PropertyTag = new PropertyTag();
             this.PropertyTag.Parse(s);
-            this.TaggedValue = new TaggedPropertyValue();
+            this.TaggedValue = new TaggedPropertyValue(countWide, this.PropertyTag);
             this.TaggedValue.Parse(s);
         }
     }
@@ -3546,6 +3595,18 @@ namespace MAPIInspector.Parsers
         // A TaggedValue structure, as specified in section 2.11.4. 
         public TaggedPropertyValue TaggedValue;
 
+        // The Count wide size.
+        private CountWideEnum countWide;
+
+        /// <summary>
+        /// The Constructor to set the Count wide size and restrict type.
+        /// </summary>
+        /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
+        public PropertyRestriction(CountWideEnum ptypMultiCountSize)
+        {
+            countWide = ptypMultiCountSize;
+        }
+
         /// <summary>
         /// Parse the PropertyRestriction structure.
         /// </summary>
@@ -3559,7 +3620,7 @@ namespace MAPIInspector.Parsers
             s.Position -= 4;
             PropertyTag propertyTag = new PropertyTag();
             propertyTag.Parse(s);
-            this.TaggedValue = new TaggedPropertyValue(CountWideEnum.twoBytes, propertyTag);
+            this.TaggedValue = new TaggedPropertyValue(countWide, propertyTag);
             this.TaggedValue.Parse(s);
         }
     }
@@ -3704,6 +3765,18 @@ namespace MAPIInspector.Parsers
         // A Restriction structure. 
         public RestrictionType Restriction;
 
+        // The Count wide size.
+        private CountWideEnum countWide;
+
+        /// <summary>
+        /// The Constructor to set the Count wide size and restrict type.
+        /// </summary>
+        /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
+        public SubObjectRestriction(CountWideEnum ptypMultiCountSize)
+        {
+            countWide = ptypMultiCountSize;
+        }
+
         /// <summary>
         /// Parse the SubObjectRestriction structure.
         /// </summary>
@@ -3713,7 +3786,7 @@ namespace MAPIInspector.Parsers
             base.Parse(s);
             this.RestrictType = (RestrictTypeEnum)ReadByte();
             this.Subobject = ReadUint();
-            this.Restriction = new RestrictionType();
+            this.Restriction = new RestrictionType(countWide);
             this.Restriction.Parse(s);
         }
     }
@@ -3738,6 +3811,18 @@ namespace MAPIInspector.Parsers
         // A Restriction structure. This field is present only if RestrictionPresent is TRUE.
         public RestrictionType Restriction;
 
+        // The Count wide size.
+        private CountWideEnum countWide;
+
+        /// <summary>
+        /// The Constructor to set the Count wide size and restrict type.
+        /// </summary>
+        /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
+        public CommentRestriction(CountWideEnum ptypMultiCountSize)
+        {
+            countWide = ptypMultiCountSize;
+        }
+
         /// <summary>
         /// Parse the CommentRestriction structure.
         /// </summary>
@@ -3750,7 +3835,7 @@ namespace MAPIInspector.Parsers
             List<TaggedPropertyValue> tempTaggedValue = new List<TaggedPropertyValue>();
             for (int i = 0; i < this.TaggedValuesCount; i++)
             {
-                TaggedPropertyValue tempproperty = new TaggedPropertyValue();
+                TaggedPropertyValue tempproperty = new TaggedPropertyValue(countWide);
                 tempproperty.Parse(s);
                 tempTaggedValue.Add(tempproperty);
             }
@@ -3758,7 +3843,7 @@ namespace MAPIInspector.Parsers
             this.RestrictionPresent = ReadBoolean();
             if (this.RestrictionPresent == true)
             {
-                this.Restriction = new RestrictionType();
+                this.Restriction = new RestrictionType(countWide);
                 this.Restriction.Parse(s);
             }
         }
@@ -3778,6 +3863,18 @@ namespace MAPIInspector.Parsers
         // A restriction structure. This field specifies the restriction (2) to be limited.
         public RestrictionType SubRestriction;
 
+        // The Count wide size.
+        private CountWideEnum countWide;
+
+        /// <summary>
+        /// The Constructor to set the Count wide size and restrict type.
+        /// </summary>
+        /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
+        public CountRestriction(CountWideEnum ptypMultiCountSize)
+        {
+            countWide = ptypMultiCountSize;
+        }
+
         /// <summary>
         /// Parse the CountRestriction structure.
         /// </summary>
@@ -3787,7 +3884,7 @@ namespace MAPIInspector.Parsers
             base.Parse(s);
             this.RestrictType = (RestrictTypeEnum)ReadByte();
             this.Count = ReadUint();
-            this.SubRestriction = new RestrictionType();
+            this.SubRestriction = new RestrictionType(countWide);
             this.SubRestriction.Parse(s);
         }
     }

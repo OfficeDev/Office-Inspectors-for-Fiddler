@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
-using System.Reflection;
 using System.Text;
-using Be.Windows.Forms;
 
 namespace MAPIInspector.Parsers
 {
@@ -97,7 +94,7 @@ namespace MAPIInspector.Parsers
         public void Parse(FastTransferStream stream)
         {
             List<SizedXid> interSizeXid = new List<SizedXid>();
-            for (int i = 0; i < this.length; )
+            for (int i = 0; i < this.length;)
             {
                 int position = (int)stream.Position;
                 SizedXid tmpSizedXid = new SizedXid();
@@ -1055,44 +1052,47 @@ namespace MAPIInspector.Parsers
                 this.Reserved = ReadByte();
                 this.TransferBufferSize = ReadUshort();
                 byte[] Buffer = ReadBytes((int)this.TransferBufferSize);
+                FastTransferStream TransferStream = new FastTransferStream(new byte[0], true);
+                long sposition = 0;
                 if (this.TransferStatus.Value == Parsers.TransferStatus.Partial)
                 {
-                    this.TransferBuffer = Buffer;
+                    TransferStream = new FastTransferStream(Buffer, true);
+                    List<TransferGetBufferElement> TransferBufferList = new List<TransferGetBufferElement>();
+
+                    while (!TransferStream.IsEndOfStream)
+                    {
+                        sposition = TransferStream.Position;
+                        TransferGetBufferElement element = new TransferGetBufferElement(TransferStream);
+                        if (sposition == TransferStream.Position)
+                        {
+                            throw new Exception(string.Format("Error occurred in the {0} TransferElement", TransferBufferList.Count));
+                        }
+                        else
+                        {
+                            TransferBufferList.Add(element);
+                        }
+                    }
+                    this.TransferBuffer = TransferBufferList.ToArray();
                 }
                 else
                 {
-                    FastTransferStream TransferStream = new FastTransferStream(Buffer, true);
-
-                    switch (DecodingContext.StreamType_Getbuffer)
+                    TransferStream = new FastTransferStream(Buffer, true);
+                    List<TransferGetBufferElement> TransferBufferList = new List<TransferGetBufferElement>();
+                    while (TransferStream.Position < TransferStream.Length)
                     {
-                        case FastTransferStreamType.TopFolder:
-                            this.TransferBuffer = new TopFolder(TransferStream);
-                            break;
-                        case FastTransferStreamType.contentsSync:
-                            this.TransferBuffer = new ContentsSync(TransferStream);
-                            break;
-                        case FastTransferStreamType.hierarchySync:
-                            this.TransferBuffer = new HierarchySync(TransferStream);
-                            break;
-                        case FastTransferStreamType.state:
-                            this.TransferBuffer = new State(TransferStream);
-                            break;
-                        case FastTransferStreamType.folderContent:
-                            this.TransferBuffer = new FolderContent(TransferStream);
-                            break;
-                        case FastTransferStreamType.MessageContent:
-                            this.TransferBuffer = new MessageContent(TransferStream);
-                            break;
-                        case FastTransferStreamType.attachmentContent:
-                            this.TransferBuffer = new AttachmentContent(TransferStream);
-                            break;
-                        case FastTransferStreamType.MessageList:
-                            this.TransferBuffer = new MessageList(TransferStream);
-                            break;
-                        default:
-                            throw new Exception("The transferStream type is not right");
+                        sposition = TransferStream.Position;
+
+                        TransferGetBufferElement element = new TransferGetBufferElement(TransferStream);
+                        if (sposition == TransferStream.Position)
+                        {
+                            throw new Exception(string.Format("Error occurred in the {0} TransferElement", TransferBufferList.Count));
+                        }
+                        else
+                        {
+                            TransferBufferList.Add(element);
+                        }
                     }
-                    DecodingContext.StreamType_Getbuffer = 0;
+                    this.TransferBuffer = TransferBufferList.ToArray();
                 }
             }
 
@@ -1257,7 +1257,7 @@ namespace MAPIInspector.Parsers
         public ushort TransferDataSize;
 
         // An array of bytes that contains the data to be uploaded to the destination fast transfer object.
-        public SyntacticalBase TransferData;
+        public object TransferData;
 
         /// <summary>
         /// Parse the RopFastTransferDestinationPutBufferRequest structure.
@@ -1275,27 +1275,22 @@ namespace MAPIInspector.Parsers
             byte[] Buffer = ReadBytes((int)this.TransferDataSize);
             FastTransferStream TransferStream = new FastTransferStream(Buffer, true);
 
-            switch (DecodingContext.StreamType_Putbuffer)
+            List<TransferPutBufferElement> TransferBufferList = new List<TransferPutBufferElement>();
+            long sposition = 0;
+            while (!TransferStream.IsEndOfStream)
             {
-                case FastTransferStreamType.TopFolder:
-                    this.TransferData = new TopFolder(TransferStream);
-                    break;
-                case FastTransferStreamType.folderContent:
-                    this.TransferData = new FolderContent(TransferStream);
-                    break;
-                case FastTransferStreamType.MessageContent:
-                    this.TransferData = new MessageContent(TransferStream);
-                    break;
-                case FastTransferStreamType.attachmentContent:
-                    this.TransferData = new AttachmentContent(TransferStream);
-                    break;
-                case FastTransferStreamType.MessageList:
-                    this.TransferData = new MessageList(TransferStream);
-                    break;
-                default:
-                    throw new Exception("The transferStream type is not right");
+                sposition = TransferStream.Position;
+                TransferPutBufferElement element = new TransferPutBufferElement(TransferStream);
+                if (sposition == TransferStream.Position)
+                {
+                    throw new Exception(string.Format("Error occurred in the {0} TransferElement", TransferBufferList.Count));
+                }
+                else
+                {
+                    TransferBufferList.Add(element);
+                }
             }
-            DecodingContext.StreamType_Putbuffer = 0;
+            this.TransferData = TransferBufferList.ToArray();
         }
     }
 
@@ -1314,19 +1309,19 @@ namespace MAPIInspector.Parsers
         public object ReturnValue;
 
         // the current status of the transfer.
-        public ushort? TransferStatus;
+        public ushort TransferStatus;
 
         // An unsigned integer that specifies the number of steps that have been completed in the current operation.
-        public ushort? InProgressCount;
+        public ushort InProgressCount;
 
         // An unsigned integer that specifies the approximate total number of steps to be completed in the current operation.
-        public ushort? TotalStepCount;
+        public ushort TotalStepCount;
 
         // Reserved.
-        public byte? Reserved;
+        public byte Reserved;
 
         // An unsigned integer that specifies the buffer size that was used.
-        public ushort? BufferUsedSize;
+        public ushort BufferUsedSize;
 
         /// <summary>
         /// Parse the RopFastTransferDestinationPutBufferResponse structure.
@@ -1340,15 +1335,11 @@ namespace MAPIInspector.Parsers
             this.InputHandleIndex = ReadByte();
             HelpMethod help = new HelpMethod();
             this.ReturnValue = help.FormatErrorCode(ReadUint());
-
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
-            {
-                this.TransferStatus = ReadUshort();
-                this.InProgressCount = ReadUshort();
-                this.TotalStepCount = ReadUshort();
-                this.Reserved = ReadByte();
-                this.BufferUsedSize = ReadUshort();
-            }
+            this.TransferStatus = ReadUshort();
+            this.InProgressCount = ReadUshort();
+            this.TotalStepCount = ReadUshort();
+            this.Reserved = ReadByte();
+            this.BufferUsedSize = ReadUshort();
         }
     }
     #endregion
@@ -1372,7 +1363,7 @@ namespace MAPIInspector.Parsers
         public ushort TransferDataSize;
 
         // An array of bytes that contains the data to be uploaded to the destination fast transfer object.
-        public SyntacticalBase TransferData;
+        public object TransferData;
 
         /// <summary>
         /// Parse the RopFastTransferDestinationPutBufferExtendedRequest structure.
@@ -1388,28 +1379,22 @@ namespace MAPIInspector.Parsers
 
             byte[] Buffer = ReadBytes((int)this.TransferDataSize);
             FastTransferStream TransferStream = new FastTransferStream(Buffer, true);
-
-            switch (DecodingContext.StreamType_PutbufferExtended)
+            List<TransferPutBufferExtendElement> TransferBufferList = new List<TransferPutBufferExtendElement>();
+            long sposition = 0;
+            while (!TransferStream.IsEndOfStream)
             {
-                case FastTransferStreamType.TopFolder:
-                    this.TransferData = new TopFolder(TransferStream);
-                    break;
-                case FastTransferStreamType.folderContent:
-                    this.TransferData = new FolderContent(TransferStream);
-                    break;
-                case FastTransferStreamType.MessageContent:
-                    this.TransferData = new MessageContent(TransferStream);
-                    break;
-                case FastTransferStreamType.attachmentContent:
-                    this.TransferData = new AttachmentContent(TransferStream);
-                    break;
-                case FastTransferStreamType.MessageList:
-                    this.TransferData = new MessageList(TransferStream);
-                    break;
-                default:
-                    throw new Exception("The transferStream type is not right");
+                sposition = TransferStream.Position;
+                TransferPutBufferExtendElement element = new TransferPutBufferExtendElement(TransferStream);
+                if (sposition == TransferStream.Position)
+                {
+                    throw new Exception(string.Format("Error occurred in the {0} TransferElement", TransferBufferList.Count));
+                }
+                else
+                {
+                    TransferBufferList.Add(element);
+                }
             }
-            DecodingContext.StreamType_PutbufferExtended = 0;
+            this.TransferData = TransferBufferList.ToArray();
         }
     }
 
@@ -1428,19 +1413,19 @@ namespace MAPIInspector.Parsers
         public object ReturnValue;
 
         // the current status of the transfer.
-        public ushort? TransferStatus;
+        public ushort TransferStatus;
 
         // An unsigned integer that specifies the number of steps that have been completed in the current operation.
-        public uint? InProgressCount;
+        public uint InProgressCount;
 
         // An unsigned integer that specifies the approximate total number of steps to be completed in the current operation.
-        public uint? TotalStepCount;
+        public uint TotalStepCount;
 
         // Reserved.
-        public byte? Reserved;
+        public byte Reserved;
 
         // An unsigned integer that specifies the buffer size that was used.
-        public ushort? BufferUsedSize;
+        public ushort BufferUsedSize;
 
         /// <summary>
         /// Parse the RopFastTransferDestinationPutBufferExtendedResponse structure.
@@ -1453,15 +1438,12 @@ namespace MAPIInspector.Parsers
             this.InputHandleIndex = ReadByte();
             HelpMethod help = new HelpMethod();
             this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.TransferStatus = ReadUshort();
+            this.InProgressCount = ReadUint();
+            this.TotalStepCount = ReadUint();
+            this.Reserved = ReadByte();
+            this.BufferUsedSize = ReadUshort();
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
-            {
-                this.TransferStatus = ReadUshort();
-                this.InProgressCount = ReadUint();
-                this.TotalStepCount = ReadUint();
-                this.Reserved = ReadByte();
-                this.BufferUsedSize = ReadUshort();
-            }
         }
     }
     #endregion
@@ -1938,7 +1920,7 @@ namespace MAPIInspector.Parsers
             TaggedPropertyValue[] InterValue = new TaggedPropertyValue[(int)this.PropertyValueCount];
             for (int i = 0; i < this.PropertyValueCount; i++)
             {
-                InterValue[i] = new TaggedPropertyValue();
+                InterValue[i] = new TaggedPropertyValue(CountWideEnum.twoBytes);
                 InterValue[i].Parse(s);
             }
             this.PropertyValues = InterValue;
@@ -2797,10 +2779,130 @@ namespace MAPIInspector.Parsers
             while (i < totalLength)
             {
                 LengthOfBlock tmp = this.ReadLengthBlock();
-                i++;
+                i += 1;
                 list.Add(tmp);
             }
 
+            return list.ToArray();
+        }
+
+        /// <summary>
+        /// Read a list of blocks and advance the position for partial.
+        /// </summary>
+        /// <param name="totalSize">The total number of bytes to read</param>
+        /// <param name="blockSize">The size of each block</param>
+        /// <returns>A list of blocks</returns>
+        public byte[][] ReadBlocksPartial(int totalSize, int blockSize)
+        {
+            int i;
+            List<byte[]> l = new List<byte[]>();
+            for (i = 0; i < totalSize; i += blockSize)
+            {
+                // fixedSizeValue is a split atom, so the blockSize will be read successfully does not be splited 
+                l.Add(this.ReadBlock(blockSize));
+            }
+
+            return l.ToArray();
+        }
+
+        /// <summary>
+        /// Read LengthOfBlock and advance the position.
+        /// </summary>
+        /// <returns>A LengthOfBlock specifies the length of the bytes array</returns>
+        public LengthOfBlock ReadLengthBlockPartial(int length, ushort type, bool isGetbuffer)
+        {
+            int tmp = 0;
+            if (isGetbuffer)
+            {
+                if (this.IsEndOfStream)
+                {
+                    MapiInspector.MAPIInspector.pGetType = type;
+                    MapiInspector.MAPIInspector.pGetRemainSize = length;
+                }
+                else
+                {
+                    if (MapiInspector.MAPIInspector.pGetSubRemainSize != -1 && !this.IsEndOfStream)
+                    {
+                        tmp = MapiInspector.MAPIInspector.pGetSubRemainSize;
+                        MapiInspector.MAPIInspector.pGetSubRemainSize = -1;
+                    }
+                    else
+                    {
+                        tmp = this.ReadInt32();
+                    }
+
+                    if (this.Length - this.Position < tmp)
+                    {
+                        MapiInspector.MAPIInspector.pGetType = type;
+                        MapiInspector.MAPIInspector.pGetSubRemainSize = tmp - (int)(this.Length - this.Position);
+                        tmp = (int)(this.Length - this.Position);
+                        MapiInspector.MAPIInspector.pGetRemainSize = length - tmp - 4;
+                    }
+                }
+            }
+            else
+            {
+                if (this.IsEndOfStream)
+                {
+                    MapiInspector.MAPIInspector.pPutType = type;
+                    MapiInspector.MAPIInspector.pPutRemainSize = length;
+                }
+                else
+                {
+                    if (MapiInspector.MAPIInspector.pPutSubRemainSize != -1 && !this.IsEndOfStream)
+                    {
+                        tmp = MapiInspector.MAPIInspector.pPutSubRemainSize;
+                        MapiInspector.MAPIInspector.pPutSubRemainSize = -1;
+                    }
+                    else
+                    {
+                        tmp = this.ReadInt32();
+                    }
+
+                    if (this.Length - this.Position < tmp)
+                    {
+                        MapiInspector.MAPIInspector.pPutType = type;
+                        MapiInspector.MAPIInspector.pPutSubRemainSize = tmp - (int)(this.Length - this.Position);
+                        tmp = (int)(this.Length - this.Position);
+                        MapiInspector.MAPIInspector.pPutRemainSize = length - tmp - 4;
+                    }
+                }
+            }
+            byte[] buffer = this.ReadBlock(tmp);
+            return new LengthOfBlock(tmp, buffer);
+        }
+
+        /// <summary>
+        /// Read a list of LengthOfBlock and advance the position.
+        /// </summary>
+        /// <param name="totalLength">The number of bytes to read</param>
+        /// <returns>A list of LengthOfBlock</returns>
+        public LengthOfBlock[] ReadLengthBlocksPartial(int totalLength, ushort type, bool isGetbuffer)
+        {
+            int i = 0;
+            List<LengthOfBlock> list = new List<LengthOfBlock>();
+            while (i < totalLength)
+            {
+                int remainLength = totalLength - i;
+                LengthOfBlock tmp = this.ReadLengthBlockPartial(remainLength, type, isGetbuffer);
+                i += 1;
+                list.Add(tmp);
+                if (isGetbuffer)
+                {
+                    if (MapiInspector.MAPIInspector.pGetSubRemainSize != -1 || MapiInspector.MAPIInspector.pGetRemainSize != -1)
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    if (MapiInspector.MAPIInspector.pPutSubRemainSize != -1 || MapiInspector.MAPIInspector.pPutRemainSize != -1)
+                    {
+                        break;
+                    }
+                }
+
+            }
             return list.ToArray();
         }
 
@@ -2938,10 +3040,16 @@ namespace MAPIInspector.Parsers
     public class PropValue : LexicalBase
     {
         // The propType.
-        public ushort PropType;
+        public ushort? PropType;
 
         // The PropInfo.
         public PropInfo PropInfo;
+
+        // The propType for partial split
+        protected ushort ptype;
+
+        //The PropId for partial split
+        protected PidTagPropertyEnum pid;
 
         /// <summary>
         /// Initializes a new instance of the PropValue class.
@@ -3009,8 +3117,13 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             base.Parse(stream);
-            this.PropType = stream.ReadUInt16();
-            PropInfo = PropInfo.ParseFrom(stream) as PropInfo;
+            if ((MapiInspector.MAPIInspector.isPut == true && MapiInspector.MAPIInspector.pPutType == 0) ||
+                (MapiInspector.MAPIInspector.isGet == true && MapiInspector.MAPIInspector.pGetType == 0) ||
+                (MapiInspector.MAPIInspector.isPutExtend == true && MapiInspector.MAPIInspector.pPutExtendType == 0))
+            {
+                this.PropType = stream.ReadUInt16();
+                this.PropInfo = PropInfo.ParseFrom(stream) as PropInfo;
+            }
         }
     }
 
@@ -3029,7 +3142,7 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the PropInfo class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        protected PropInfo(FastTransferStream stream)
+        public PropInfo(FastTransferStream stream)
             : base(stream)
         {
         }
@@ -3130,10 +3243,10 @@ namespace MAPIInspector.Parsers
                         tmpCN.Parse(stream);
                         this.FixedValue = tmpCN;
                     }
-					else
-					{
-                    	this.FixedValue = stream.ReadInt32();
-					}
+                    else
+                    {
+                        this.FixedValue = stream.ReadInt32();
+                    }
                     break;
                 case PropertyDataType.PtypFloating32:
                     this.FixedValue = stream.ReadFloating32();
@@ -3236,7 +3349,7 @@ namespace MAPIInspector.Parsers
             base.Parse(stream);
             this.Length = stream.ReadInt32();
 
-            if (LexicalTypeHelper.IsCodePageType(this.PropType))
+            if (LexicalTypeHelper.IsCodePageType((ushort)this.PropType))
             {
                 CodePageType type = (CodePageType)this.PropType;
                 switch (type)
@@ -3331,7 +3444,7 @@ namespace MAPIInspector.Parsers
                         this.ValueArray = pstring8;
                         break;
                     case PropertyDataType.PtypServerId:
-                        PtypServerId pserverId = new PtypServerId();
+                        PtypServerId pserverId = new PtypServerId(CountWideEnum.fourBytes);
                         // PtypServerId in MSOXCFXICS does not contain Length element
                         stream.Position -= 4;
                         pserverId.Parse(stream);
@@ -3400,7 +3513,7 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(stream);
             PropertyDataType type = (PropertyDataType)this.PropType;
-            this.Length=stream.ReadInt32();
+            this.Length = stream.ReadInt32();
             switch (type)
             {
                 case PropertyDataType.PtypMultipleInteger16:
@@ -3439,6 +3552,1381 @@ namespace MAPIInspector.Parsers
                 case PropertyDataType.PtypMultipleString8:
                     this.VarSizeValueList = stream.ReadLengthBlocks(this.Length);
                     break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Represent a fixedPropType PropValue.
+    /// </summary>
+    public class FixedPropTypePropValueGetPartial : PropValue
+    {
+        // A fixed value.
+        public object FixedValue;
+
+        /// <summary>
+        /// Initializes a new instance of the FixedPropTypePropValue class.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream</param>
+        public FixedPropTypePropValueGetPartial(FastTransferStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Parse next object from a FastTransferStream.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public override void Parse(FastTransferStream stream)
+        {
+            base.Parse(stream);
+            if (stream.IsEndOfStream)
+            {
+                MapiInspector.MAPIInspector.pGetType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.pGetId = (ushort)this.PropInfo.PropID;
+            }
+            else
+            {
+                if (MapiInspector.MAPIInspector.pGetType != 0)
+                {
+                    this.ptype = MapiInspector.MAPIInspector.pGetType;
+                    this.pid = (PidTagPropertyEnum)MapiInspector.MAPIInspector.pGetId;
+                }
+                ushort typeValue;
+                ushort idValue;
+                if (this.PropType != null)
+                {
+                    typeValue = (ushort)this.PropType;
+                }
+                else
+                {
+                    typeValue = this.ptype;
+                }
+                if (this.PropInfo != null)
+                {
+                    idValue = (ushort)this.PropInfo.PropID;
+                }
+                else
+                {
+                    idValue = (ushort)this.pid;
+                }
+
+                switch ((PropertyDataType)typeValue)
+                {
+                    case PropertyDataType.PtypInteger16:
+                        this.FixedValue = stream.ReadInt16();
+                        break;
+                    case PropertyDataType.PtypInteger32:
+                        if (idValue == 0x67A4)
+                        {
+                            CN tmpCN = new CN();
+                            tmpCN.Parse(stream);
+                            this.FixedValue = tmpCN;
+                        }
+                        else
+                        {
+                            this.FixedValue = stream.ReadInt32();
+                        }
+                        break;
+                    case PropertyDataType.PtypFloating32:
+                        this.FixedValue = stream.ReadFloating32();
+                        break;
+                    case PropertyDataType.PtypFloating64:
+                        this.FixedValue = stream.ReadFloating64();
+                        break;
+                    case PropertyDataType.PtypCurrency:
+                        this.FixedValue = stream.ReadCurrency();
+                        break;
+                    case PropertyDataType.PtypFloatingTime:
+                        this.FixedValue = stream.ReadFloatingTime();
+                        break;
+                    case PropertyDataType.PtypBoolean:
+                        this.FixedValue = stream.ReadBoolean();
+                        break;
+                    case PropertyDataType.PtypInteger64:
+                        if (idValue == 0x6714)
+                        {
+                            CN tmpCN = new CN();
+                            tmpCN.Parse(stream);
+                            this.FixedValue = tmpCN;
+                        }
+                        else if (idValue == 0x674A)
+                        {
+                            MessageID tmpMID = new MessageID();
+                            tmpMID.Parse(stream);
+                            this.FixedValue = tmpMID;
+                        }
+                        else if (idValue == 0x6748)
+                        {
+                            FolderID tmpFID = new FolderID();
+                            tmpFID.Parse(stream);
+                            this.FixedValue = tmpFID;
+                        }
+                        else
+                        {
+                            this.FixedValue = stream.ReadInt64();
+                        }
+                        break;
+                    case PropertyDataType.PtypTime:
+                        this.FixedValue = stream.ReadTime();
+                        break;
+                    case PropertyDataType.PtypGuid:
+                        this.FixedValue = stream.ReadGuid();
+                        break;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// The VarPropTypePropValue class.
+    /// </summary>
+    public class VarPropTypePropValueGetPartial : PropValue
+    {
+        // The length of a variate type value.
+        public int? Length;
+
+        // The valueArray.
+        public object ValueArray;
+
+        // The length value used for partial split
+        protected int plength;
+
+        /// <summary>
+        /// Initializes a new instance of the VarPropTypePropValue class.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public VarPropTypePropValueGetPartial(FastTransferStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Parse next object from a FastTransferStream.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public override void Parse(FastTransferStream stream)
+        {
+            base.Parse(stream);
+            if (stream.IsEndOfStream)
+            {
+                MapiInspector.MAPIInspector.pGetType = (ushort)this.PropType;
+            }
+            else
+            {
+                if (MapiInspector.MAPIInspector.pGetType != 0)
+                {
+                    this.ptype = MapiInspector.MAPIInspector.pGetType;
+
+                    if (MapiInspector.MAPIInspector.pGetRemainSize != -1)
+                    {
+                        this.plength = MapiInspector.MAPIInspector.pGetRemainSize;
+                        if (this.plength % 2 != 0 && this.ptype == 0x1f)
+                        {
+                            MapiInspector.MAPIInspector.isOneMoreByteToRead = true;
+                        }
+
+                        MapiInspector.MAPIInspector.pGetRemainSize = -1;
+                    }
+                    else
+                    {
+                        this.Length = stream.ReadInt32();
+                    }
+                    // clear
+                    MapiInspector.MAPIInspector.pGetType = 0;
+                    MapiInspector.MAPIInspector.pGetId = 0;
+                }
+                else
+                {
+                    this.Length = stream.ReadInt32();
+                }
+                int lengthValue;
+                ushort typeValue;
+                if (this.Length != null)
+                {
+                    lengthValue = (int)this.Length;
+                }
+                else
+                {
+                    lengthValue = this.plength;
+                }
+                if (this.PropType != null)
+                {
+                    typeValue = (ushort)this.PropType;
+                }
+                else
+                {
+                    typeValue = this.ptype;
+                }
+                if ((stream.Length - stream.Position) < lengthValue)
+                {
+                    MapiInspector.MAPIInspector.pGetType = typeValue;
+                }
+
+                if (LexicalTypeHelper.IsCodePageType(typeValue))
+                {
+                    switch ((CodePageType)typeValue)
+                    {
+                        case CodePageType.PtypCodePageUnicode:
+                            PtypString pstring = new PtypString();
+                            if (stream.Length - stream.Position < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+                                if (lengthValue % 2 != 0)
+                                {
+                                    MapiInspector.MAPIInspector.isOneMoreByteToRead = false;
+                                }
+                                pstring = new PtypString(lengthValue / 2);
+                                pstring.Parse(stream);
+                                if (lengthValue % 2 != 0)
+                                {
+                                    stream.Position += 1;
+                                }
+                            }
+                            else
+                            {
+                                if (MapiInspector.MAPIInspector.isOneMoreByteToRead)
+                                {
+                                    stream.Position += 1;
+                                    MapiInspector.MAPIInspector.isOneMoreByteToRead = false;
+                                }
+                                pstring = new PtypString(lengthValue / 2);
+                                pstring.Parse(stream);
+                            }
+                            this.ValueArray = pstring;
+
+                            break;
+                        case CodePageType.PtypCodePageUnicodeBigendian:
+                        case CodePageType.PtypCodePageWesternEuropean:
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+                            }
+                            PtypString8 pstring8 = new PtypString8(lengthValue);
+                            pstring8.Parse(stream);
+                            this.ValueArray = pstring8;
+                            break;
+                        default:
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+                            }
+                            PtypString8 pdstring8 = new PtypString8(lengthValue);
+                            pdstring8.Parse(stream);
+                            this.ValueArray = pdstring8;
+                            break;
+                    }
+                }
+                else
+                {
+                    switch ((PropertyDataType)typeValue)
+                    {
+                        case PropertyDataType.PtypString:
+                            PtypString pstring = new PtypString();
+                            if (stream.Length - stream.Position < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);//+1
+                                lengthValue = this.plength;
+                                if (lengthValue % 2 != 0)
+                                {
+                                    MapiInspector.MAPIInspector.isOneMoreByteToRead = false;
+                                }
+                                pstring = new PtypString(lengthValue / 2);
+                                pstring.Parse(stream);
+                                if (lengthValue % 2 != 0)
+                                {
+                                    stream.Position += 1;
+                                }
+                            }
+                            else
+                            {
+                                if (MapiInspector.MAPIInspector.isOneMoreByteToRead)
+                                {
+                                    stream.Position += 1;
+                                    MapiInspector.MAPIInspector.isOneMoreByteToRead = false;
+                                }
+                                pstring = new PtypString(lengthValue / 2);
+                                pstring.Parse(stream);
+                            }
+                            this.ValueArray = pstring;
+
+                            break;
+                        case PropertyDataType.PtypString8:
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+                            }
+                            PtypString8 pstring8 = new PtypString8(lengthValue);
+                            pstring8.Parse(stream);
+                            this.ValueArray = pstring8;
+                            break;
+                        case PropertyDataType.PtypBinary:
+                        case PropertyDataType.PtypServerId:
+                        case PropertyDataType.PtypObject_Or_PtypEmbeddedTable:
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);//+1
+                                lengthValue = this.plength;
+                            }
+                            this.ValueArray = stream.ReadBlock(lengthValue);
+                            break;
+                        default:
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);//+1
+                                lengthValue = this.plength;
+                            }
+                            this.ValueArray = stream.ReadBlock(lengthValue);
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// multi-valued property type PropValue
+    /// </summary>
+    public class MvPropTypePropValueGetPartial : PropValue
+    {
+        // This represent the length variable.
+        public int? Length;
+
+        // A list of fixed size values.
+        public byte[][] FixedSizeValueList;
+
+        // A list of LengthOfBlock.
+        public LengthOfBlock[] VarSizeValueList;
+
+        public int plength;
+        /// <summary>
+        /// Initializes a new instance of the MvPropTypePropValue class.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream</param>
+        public MvPropTypePropValueGetPartial(FastTransferStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Parse next object from a FastTransferStream.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream</param>
+        public override void Parse(FastTransferStream stream)
+        {
+            base.Parse(stream);
+            if (stream.IsEndOfStream)
+            {
+                MapiInspector.MAPIInspector.pGetType = (ushort)this.PropType;
+            }
+            else
+            {
+                if (MapiInspector.MAPIInspector.pGetType != 0)
+                {
+                    this.ptype = MapiInspector.MAPIInspector.pGetType;
+                    if (MapiInspector.MAPIInspector.pGetRemainSize != -1)
+                    {
+                        this.plength = MapiInspector.MAPIInspector.pGetRemainSize;
+                        MapiInspector.MAPIInspector.pGetRemainSize = -1;
+                    }
+                    else
+                    {
+                        this.Length = stream.ReadInt32();
+                    }
+                    // clear
+                    MapiInspector.MAPIInspector.pGetType = 0;
+                }
+                else
+                {
+                    this.Length = stream.ReadInt32();
+                }
+                int lengthValue;
+                ushort typeValue;
+                if (this.Length != null)
+                {
+                    lengthValue = (int)this.Length;
+                }
+                else
+                {
+                    lengthValue = this.plength;
+                }
+                if (this.PropType != null)
+                {
+                    typeValue = (ushort)this.PropType;
+                }
+                else
+                {
+                    typeValue = this.ptype;
+                }
+                if ((stream.Length - stream.Position) < lengthValue)
+                {
+                    MapiInspector.MAPIInspector.pGetType = typeValue;
+                    MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                    this.plength = (int)(stream.Length - stream.Position);
+                    lengthValue = this.plength;
+                }
+
+                switch ((PropertyDataType)typeValue)
+                {
+                    case PropertyDataType.PtypMultipleInteger16:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 2);
+                        break;
+                    case PropertyDataType.PtypMultipleInteger32:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4);
+                        break;
+                    case PropertyDataType.PtypMultipleFloating32:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4);
+                        break;
+                    case PropertyDataType.PtypMultipleFloating64:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        break;
+                    case PropertyDataType.PtypMultipleCurrency:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        break;
+                    case PropertyDataType.PtypMultipleFloatingTime:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        break;
+                    case PropertyDataType.PtypMultipleInteger64:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        break;
+                    case PropertyDataType.PtypMultipleTime:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        break;
+                    case PropertyDataType.PtypMultipleGuid:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, Guid.Empty.ToByteArray().Length);
+                        break;
+                    case PropertyDataType.PtypMultipleBinary:
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, true);
+                        break;
+                    case PropertyDataType.PtypMultipleString:
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, true);
+                        break;
+                    case PropertyDataType.PtypMultipleString8:
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, true);
+                        break;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Represent a fixedPropType PropValue.
+    /// </summary>
+    public class FixedPropTypePropValuePutPartial : PropValue
+    {
+        // A fixed value.
+        public object FixedValue;
+
+        /// <summary>
+        /// Initializes a new instance of the FixedPropTypePropValue class.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream</param>
+        public FixedPropTypePropValuePutPartial(FastTransferStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Parse next object from a FastTransferStream.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public override void Parse(FastTransferStream stream)
+        {
+            base.Parse(stream);
+            if (stream.IsEndOfStream)
+            {
+                MapiInspector.MAPIInspector.pPutType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.pPutId = (ushort)this.PropInfo.PropID;
+            }
+            else
+            {
+                if (MapiInspector.MAPIInspector.pPutType != 0)
+                {
+                    this.ptype = MapiInspector.MAPIInspector.pPutType;
+                    this.pid = (PidTagPropertyEnum)MapiInspector.MAPIInspector.pPutId;
+                }
+                ushort typeValue;
+                ushort idValue;
+                if (this.PropType != null)
+                {
+                    typeValue = (ushort)this.PropType;
+                }
+                else
+                {
+                    typeValue = this.ptype;
+                }
+                if (this.PropInfo != null)
+                {
+                    idValue = (ushort)this.PropInfo.PropID;
+                }
+                else
+                {
+                    idValue = (ushort)this.pid;
+                }
+                switch ((PropertyDataType)typeValue)
+                {
+                    case PropertyDataType.PtypInteger16:
+                        this.FixedValue = stream.ReadInt16();
+                        break;
+                    case PropertyDataType.PtypInteger32:
+                        if (idValue == 0x67A4)
+                        {
+                            CN tmpCN = new CN();
+                            tmpCN.Parse(stream);
+                            this.FixedValue = tmpCN;
+                        }
+                        else
+                        {
+                            this.FixedValue = stream.ReadInt32();
+                        }
+                        break;
+                    case PropertyDataType.PtypFloating32:
+                        this.FixedValue = stream.ReadFloating32();
+                        break;
+                    case PropertyDataType.PtypFloating64:
+                        this.FixedValue = stream.ReadFloating64();
+                        break;
+                    case PropertyDataType.PtypCurrency:
+                        this.FixedValue = stream.ReadCurrency();
+                        break;
+                    case PropertyDataType.PtypFloatingTime:
+                        this.FixedValue = stream.ReadFloatingTime();
+                        break;
+                    case PropertyDataType.PtypBoolean:
+                        this.FixedValue = stream.ReadBoolean();
+                        break;
+                    case PropertyDataType.PtypInteger64:
+                        if (idValue == 0x6714)
+                        {
+                            CN tmpCN = new CN();
+                            tmpCN.Parse(stream);
+                            this.FixedValue = tmpCN;
+                        }
+                        else if (idValue == 0x674A)
+                        {
+                            MessageID tmpMID = new MessageID();
+                            tmpMID.Parse(stream);
+                            this.FixedValue = tmpMID;
+                        }
+                        else if (idValue == 0x6748)
+                        {
+                            FolderID tmpFID = new FolderID();
+                            tmpFID.Parse(stream);
+                            this.FixedValue = tmpFID;
+                        }
+                        else
+                        {
+                            this.FixedValue = stream.ReadInt64();
+                        }
+                        break;
+                    case PropertyDataType.PtypTime:
+                        this.FixedValue = stream.ReadTime();
+                        break;
+                    case PropertyDataType.PtypGuid:
+                        this.FixedValue = stream.ReadGuid();
+                        break;
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// The VarPropTypePropValue class.
+    /// </summary>
+    public class VarPropTypePropValuePutPartial : PropValue
+    {
+        // The length of a variate type value.
+        public int? Length;
+
+        // The valueArray.
+        public object ValueArray;
+
+        // The length value used for partial split
+        protected int plength;
+
+        // Bool value used fot ptypString type split in the two bytes which parser to one char
+        protected bool splitpreviousOne = false;
+
+        /// <summary>
+        /// Initializes a new instance of the VarPropTypePropValue class.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public VarPropTypePropValuePutPartial(FastTransferStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Parse next object from a FastTransferStream.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public override void Parse(FastTransferStream stream)
+        {
+            base.Parse(stream);
+            if (stream.IsEndOfStream)
+            {
+                MapiInspector.MAPIInspector.pPutType = (ushort)this.PropType;
+            }
+            else
+            {
+                if (MapiInspector.MAPIInspector.pPutType != 0)
+                {
+                    this.ptype = MapiInspector.MAPIInspector.pPutType;
+                    if (MapiInspector.MAPIInspector.pPutRemainSize != -1)
+                    {
+                        this.plength = MapiInspector.MAPIInspector.pPutRemainSize;
+                        MapiInspector.MAPIInspector.pPutRemainSize = -1;
+                        if (this.ptype == (ushort)PropertyDataType.PtypString && this.plength % 2 != 0)
+                        {
+                            splitpreviousOne = true;
+                        }
+                    }
+                    else
+                    {
+                        this.Length = stream.ReadInt32();
+                    }
+                    // clear
+                    MapiInspector.MAPIInspector.pPutType = 0;
+                }
+                else
+                {
+                    this.Length = stream.ReadInt32();
+                }
+                int lengthValue;
+                ushort typeValue;
+                if (this.Length != null)
+                {
+                    lengthValue = (int)this.Length;
+                }
+                else
+                {
+                    lengthValue = this.plength;
+                }
+                if (this.PropType != null)
+                {
+                    typeValue = (ushort)this.PropType;
+                }
+                else
+                {
+                    typeValue = this.ptype;
+                }
+                if ((stream.Length - stream.Position) < lengthValue)
+                {
+                    MapiInspector.MAPIInspector.pPutType = typeValue;
+                }
+
+                if (LexicalTypeHelper.IsCodePageType(typeValue))
+                {
+                    switch ((CodePageType)typeValue)
+                    {
+                        case CodePageType.PtypCodePageUnicode:
+                            PtypString pstring = new PtypString();
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+
+                                pstring = new PtypString(lengthValue / 2);
+                                pstring.Parse(stream);
+                                if (lengthValue % 2 != 0)
+                                {
+                                    stream.Position += 1;
+                                }
+                            }
+                            else
+                            {
+                                if (splitpreviousOne)
+                                {
+                                    stream.Position += 1;
+                                    splitpreviousOne = false;
+                                }
+                                pstring = new PtypString(lengthValue / 2);
+                                pstring.Parse(stream);
+                            }
+                            this.ValueArray = pstring;
+                            break;
+                        case CodePageType.PtypCodePageUnicodeBigendian:
+                        case CodePageType.PtypCodePageWesternEuropean:
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+                            }
+                            PtypString8 pstring8 = new PtypString8(lengthValue);
+                            pstring8.Parse(stream);
+                            this.ValueArray = pstring8;
+                            break;
+                        default:
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+                            }
+                            PtypString8 pdstring8 = new PtypString8(lengthValue);
+                            pdstring8.Parse(stream);
+                            this.ValueArray = pdstring8;
+                            break;
+                    }
+                }
+                else
+                {
+                    switch ((PropertyDataType)typeValue)
+                    {
+                        case PropertyDataType.PtypString:
+                            PtypString pstring = new PtypString();
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+
+                                pstring = new PtypString(lengthValue / 2);
+                                pstring.Parse(stream);
+                                if (lengthValue % 2 != 0)
+                                {
+                                    stream.Position += 1;
+                                }
+                            }
+                            else
+                            {
+                                if (splitpreviousOne)
+                                {
+                                    stream.Position += 1;
+                                    splitpreviousOne = false;
+                                }
+                                pstring = new PtypString(lengthValue / 2);
+                                pstring.Parse(stream);
+                            }
+                            this.ValueArray = pstring;
+                            break;
+                        case PropertyDataType.PtypString8:
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+                            }
+                            PtypString8 pstring8 = new PtypString8(lengthValue);
+                            pstring8.Parse(stream);
+                            this.ValueArray = pstring8;
+                            break;
+                        case PropertyDataType.PtypBinary:
+                        case PropertyDataType.PtypServerId:
+                        case PropertyDataType.PtypObject_Or_PtypEmbeddedTable:
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pPutRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+                            }
+                            this.ValueArray = stream.ReadBlock(lengthValue);
+                            break;
+                        default:
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pPutRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+                            }
+                            this.ValueArray = stream.ReadBlock(lengthValue);
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// multi-valued property type PropValue
+    /// </summary>
+    public class MvPropTypePropValuePutPartial : PropValue
+    {
+        // This represent the length variable.
+        public int? Length;
+
+        // A list of fixed size values.
+        public byte[][] FixedSizeValueList;
+
+        // A list of LengthOfBlock.
+        public LengthOfBlock[] VarSizeValueList;
+
+        public int plength;
+        /// <summary>
+        /// Initializes a new instance of the MvPropTypePropValue class.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream</param>
+        public MvPropTypePropValuePutPartial(FastTransferStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Parse next object from a FastTransferStream.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream</param>
+        public override void Parse(FastTransferStream stream)
+        {
+            base.Parse(stream);
+            if (stream.IsEndOfStream)
+            {
+                MapiInspector.MAPIInspector.pPutType = (ushort)this.PropType;
+            }
+            else
+            {
+                if (MapiInspector.MAPIInspector.pPutType != 0)
+                {
+                    this.ptype = MapiInspector.MAPIInspector.pPutType;
+                    if (MapiInspector.MAPIInspector.pPutRemainSize != -1)
+                    {
+                        this.plength = MapiInspector.MAPIInspector.pPutRemainSize;
+                        MapiInspector.MAPIInspector.pPutRemainSize = -1;
+                    }
+                    else
+                    {
+                        this.Length = stream.ReadInt32();
+                    }
+                    // clear
+                    MapiInspector.MAPIInspector.pPutType = 0;
+                    MapiInspector.MAPIInspector.pPutId = 0;
+                }
+                else
+                {
+                    this.Length = stream.ReadInt32();
+                }
+                int lengthValue;
+                ushort typeValue;
+                if (this.Length != null)
+                {
+                    lengthValue = (int)this.Length;
+                }
+                else
+                {
+                    lengthValue = this.plength;
+                }
+                if (this.PropType != null)
+                {
+                    typeValue = (ushort)this.PropType;
+                }
+                else
+                {
+                    typeValue = this.ptype;
+                }
+                if ((stream.Length - stream.Position) < lengthValue)
+                {
+                    MapiInspector.MAPIInspector.pPutType = typeValue;
+                    //MapiInspector.MAPIInspector.pPutId = (ushort)this.PropInfo.PropID;
+                    MapiInspector.MAPIInspector.pPutRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                    this.plength = (int)(stream.Length - stream.Position);
+                    lengthValue = this.plength;
+                }
+
+                switch ((PropertyDataType)this.PropType)
+                {
+                    case PropertyDataType.PtypMultipleInteger16:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 2);
+                        break;
+                    case PropertyDataType.PtypMultipleInteger32:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4);
+                        break;
+                    case PropertyDataType.PtypMultipleFloating32:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4);
+                        break;
+                    case PropertyDataType.PtypMultipleFloating64:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        break;
+                    case PropertyDataType.PtypMultipleCurrency:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        break;
+                    case PropertyDataType.PtypMultipleFloatingTime:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        break;
+                    case PropertyDataType.PtypMultipleInteger64:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        break;
+                    case PropertyDataType.PtypMultipleTime:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        break;
+                    case PropertyDataType.PtypMultipleGuid:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, Guid.Empty.ToByteArray().Length);
+                        break;
+                    case PropertyDataType.PtypMultipleBinary:
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false);
+                        break;
+                    case PropertyDataType.PtypMultipleString:
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false);
+                        break;
+                    case PropertyDataType.PtypMultipleString8:
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false);
+                        break;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Represent a fixedPropType PropValue.
+    /// </summary>
+    public class FixedPropTypePropValuePutExtendPartial : PropValue
+    {
+        // A fixed value.
+        public object FixedValue;
+
+        /// <summary>
+        /// Initializes a new instance of the FixedPropTypePropValue class.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream</param>
+        public FixedPropTypePropValuePutExtendPartial(FastTransferStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Parse next object from a FastTransferStream.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public override void Parse(FastTransferStream stream)
+        {
+            base.Parse(stream);
+            if (stream.IsEndOfStream)
+            {
+                MapiInspector.MAPIInspector.pPutExtendType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.pPutExtendId = (ushort)this.PropInfo.PropID;
+            }
+            else
+            {
+                if (MapiInspector.MAPIInspector.pPutExtendType != 0)
+                {
+                    this.ptype = MapiInspector.MAPIInspector.pPutExtendType;
+                    this.pid = (PidTagPropertyEnum)MapiInspector.MAPIInspector.pPutExtendId;
+                }
+                ushort typeValue;
+                ushort idValue;
+                if (this.PropType != null)
+                {
+                    typeValue = (ushort)this.PropType;
+                }
+                else
+                {
+                    typeValue = this.ptype;
+                }
+                if (this.PropInfo != null)
+                {
+                    idValue = (ushort)this.PropInfo.PropID;
+                }
+                else
+                {
+                    idValue = (ushort)this.pid;
+                }
+                switch ((PropertyDataType)typeValue)
+                {
+                    case PropertyDataType.PtypInteger16:
+                        this.FixedValue = stream.ReadInt16();
+                        break;
+                    case PropertyDataType.PtypInteger32:
+                        if (idValue == 0x67A4)
+                        {
+                            CN tmpCN = new CN();
+                            tmpCN.Parse(stream);
+                            this.FixedValue = tmpCN;
+                        }
+                        else
+                        {
+                            this.FixedValue = stream.ReadInt32();
+                        }
+                        break;
+                    case PropertyDataType.PtypFloating32:
+                        this.FixedValue = stream.ReadFloating32();
+                        break;
+                    case PropertyDataType.PtypFloating64:
+                        this.FixedValue = stream.ReadFloating64();
+                        break;
+                    case PropertyDataType.PtypCurrency:
+                        this.FixedValue = stream.ReadCurrency();
+                        break;
+                    case PropertyDataType.PtypFloatingTime:
+                        this.FixedValue = stream.ReadFloatingTime();
+                        break;
+                    case PropertyDataType.PtypBoolean:
+                        this.FixedValue = stream.ReadBoolean();
+                        break;
+                    case PropertyDataType.PtypInteger64:
+                        if (idValue == 0x6714)
+                        {
+                            CN tmpCN = new CN();
+                            tmpCN.Parse(stream);
+                            this.FixedValue = tmpCN;
+                        }
+                        else if (idValue == 0x674A)
+                        {
+                            MessageID tmpMID = new MessageID();
+                            tmpMID.Parse(stream);
+                            this.FixedValue = tmpMID;
+                        }
+                        else if (idValue == 0x6748)
+                        {
+                            FolderID tmpFID = new FolderID();
+                            tmpFID.Parse(stream);
+                            this.FixedValue = tmpFID;
+                        }
+                        else
+                        {
+                            this.FixedValue = stream.ReadInt64();
+                        }
+                        break;
+                    case PropertyDataType.PtypTime:
+                        this.FixedValue = stream.ReadTime();
+                        break;
+                    case PropertyDataType.PtypGuid:
+                        this.FixedValue = stream.ReadGuid();
+                        break;
+                }
+            }
+        }
+    }
+    /// <summary>
+    /// The VarPropTypePropValue class.
+    /// </summary>
+    public class VarPropTypePropValuePutExtendPartial : PropValue
+    {
+        // The length of a variate type value.
+        public int? Length;
+
+        // The valueArray.
+        public object ValueArray;
+
+        // The length value used for partial split
+        protected int plength;
+
+        // Bool value used fot ptypString type split in the two bytes which parser to one char
+        protected bool splitpreviousOne = false;
+
+        /// <summary>
+        /// Initializes a new instance of the VarPropTypePropValue class.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public VarPropTypePropValuePutExtendPartial(FastTransferStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Parse next object from a FastTransferStream.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public override void Parse(FastTransferStream stream)
+        {
+            base.Parse(stream);
+            if (stream.IsEndOfStream)
+            {
+                MapiInspector.MAPIInspector.pPutExtendType = (ushort)this.PropType;
+            }
+            else
+            {
+                if (MapiInspector.MAPIInspector.pPutExtendType != 0)
+                {
+                    this.ptype = MapiInspector.MAPIInspector.pPutExtendType;
+                    if (MapiInspector.MAPIInspector.pPutExtendRemainSize != -1)
+                    {
+                        this.plength = MapiInspector.MAPIInspector.pPutExtendRemainSize;
+                        MapiInspector.MAPIInspector.pPutExtendRemainSize = -1;
+                        if (this.ptype == (ushort)PropertyDataType.PtypString && this.plength % 2 != 0)
+                        {
+                            splitpreviousOne = true;
+                        }
+                    }
+                    else
+                    {
+                        this.Length = stream.ReadInt32();
+                    }
+                    // clear
+                    MapiInspector.MAPIInspector.pPutExtendType = 0;
+                }
+                else
+                {
+                    this.Length = stream.ReadInt32();
+                }
+                int lengthValue;
+                ushort typeValue;
+                if (this.Length != null)
+                {
+                    lengthValue = (int)this.Length;
+                }
+                else
+                {
+                    lengthValue = this.plength;
+                }
+                if (this.PropType != null)
+                {
+                    typeValue = (ushort)this.PropType;
+                }
+                else
+                {
+                    typeValue = this.ptype;
+                }
+                if ((stream.Length - stream.Position) < lengthValue)
+                {
+                    MapiInspector.MAPIInspector.pPutExtendType = typeValue;
+                }
+
+                if (LexicalTypeHelper.IsCodePageType(typeValue))
+                {
+                    switch ((CodePageType)typeValue)
+                    {
+                        case CodePageType.PtypCodePageUnicode:
+                            PtypString pstring = new PtypString();
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+
+                                pstring = new PtypString(lengthValue / 2);
+                                pstring.Parse(stream);
+                                if (lengthValue % 2 != 0)
+                                {
+                                    stream.Position += 1;
+                                }
+                            }
+                            else
+                            {
+                                if (splitpreviousOne)
+                                {
+                                    stream.Position += 1;
+                                    splitpreviousOne = false;
+                                }
+                                pstring = new PtypString(lengthValue / 2);
+                                pstring.Parse(stream);
+                            }
+                            this.ValueArray = pstring;
+                            break;
+                        case CodePageType.PtypCodePageUnicodeBigendian:
+                        case CodePageType.PtypCodePageWesternEuropean:
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+                            }
+                            PtypString8 pstring8 = new PtypString8(lengthValue);
+                            pstring8.Parse(stream);
+                            this.ValueArray = pstring8;
+                            break;
+                        default:
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+                            }
+                            PtypString8 pdstring8 = new PtypString8(lengthValue);
+                            pdstring8.Parse(stream);
+                            this.ValueArray = pdstring8;
+                            break;
+                    }
+                }
+                else
+                {
+                    switch ((PropertyDataType)typeValue)
+                    {
+                        case PropertyDataType.PtypString:
+                            PtypString pstring = new PtypString();
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+
+                                pstring = new PtypString(lengthValue / 2);
+                                pstring.Parse(stream);
+                                if (lengthValue % 2 != 0)
+                                {
+                                    stream.Position += 1;
+                                }
+                            }
+                            else
+                            {
+                                if (splitpreviousOne)
+                                {
+                                    stream.Position += 1;
+                                    splitpreviousOne = false;
+                                }
+                                pstring = new PtypString(lengthValue / 2);
+                                pstring.Parse(stream);
+                            }
+                            this.ValueArray = pstring;
+                            break;
+                        case PropertyDataType.PtypString8:
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+                            }
+                            PtypString8 pstring8 = new PtypString8(lengthValue);
+                            pstring8.Parse(stream);
+                            this.ValueArray = pstring8;
+                            break;
+                        case PropertyDataType.PtypBinary:
+                        case PropertyDataType.PtypServerId:
+                        case PropertyDataType.PtypObject_Or_PtypEmbeddedTable:
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pPutExtendRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+                            }
+                            this.ValueArray = stream.ReadBlock(lengthValue);
+                            break;
+                        default:
+                            if ((stream.Length - stream.Position) < lengthValue)
+                            {
+                                MapiInspector.MAPIInspector.pPutExtendRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
+                                lengthValue = this.plength;
+                            }
+                            this.ValueArray = stream.ReadBlock(lengthValue);
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// multi-valued property type PropValue
+    /// </summary>
+    public class MvPropTypePropValuePutExtendPartial : PropValue
+    {
+        // This represent the length variable.
+        public int? Length;
+
+        // A list of fixed size values.
+        public byte[][] FixedSizeValueList;
+
+        // A list of LengthOfBlock.
+        public LengthOfBlock[] VarSizeValueList;
+
+        public int plength;
+        /// <summary>
+        /// Initializes a new instance of the MvPropTypePropValue class.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream</param>
+        public MvPropTypePropValuePutExtendPartial(FastTransferStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Parse next object from a FastTransferStream.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream</param>
+        public override void Parse(FastTransferStream stream)
+        {
+            base.Parse(stream);
+            if (stream.IsEndOfStream)
+            {
+                MapiInspector.MAPIInspector.pPutExtendType = (ushort)this.PropType;
+            }
+            else
+            {
+                if (MapiInspector.MAPIInspector.pPutExtendType != 0)
+                {
+                    this.ptype = MapiInspector.MAPIInspector.pPutExtendType;
+                    if (MapiInspector.MAPIInspector.pPutExtendRemainSize != -1)
+                    {
+                        this.plength = MapiInspector.MAPIInspector.pPutExtendRemainSize;
+                        MapiInspector.MAPIInspector.pPutExtendRemainSize = -1;
+                    }
+                    else
+                    {
+                        this.Length = stream.ReadInt32();
+                    }
+                    // clear
+                    MapiInspector.MAPIInspector.pPutExtendType = 0;
+                    MapiInspector.MAPIInspector.pPutExtendId = 0;
+                }
+                else
+                {
+                    this.Length = stream.ReadInt32();
+                }
+                int lengthValue;
+                ushort typeValue;
+                if (this.Length != null)
+                {
+                    lengthValue = (int)this.Length;
+                }
+                else
+                {
+                    lengthValue = this.plength;
+                }
+                if (this.PropType != null)
+                {
+                    typeValue = (ushort)this.PropType;
+                }
+                else
+                {
+                    typeValue = this.ptype;
+                }
+                if ((stream.Length - stream.Position) < lengthValue)
+                {
+                    MapiInspector.MAPIInspector.pPutExtendType = typeValue;
+                    MapiInspector.MAPIInspector.pPutExtendRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                    this.plength = (int)(stream.Length - stream.Position);
+                    lengthValue = this.plength;
+                }
+
+                switch ((PropertyDataType)this.PropType)
+                {
+                    case PropertyDataType.PtypMultipleInteger16:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 2);
+                        break;
+                    case PropertyDataType.PtypMultipleInteger32:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4);
+                        break;
+                    case PropertyDataType.PtypMultipleFloating32:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4);
+                        break;
+                    case PropertyDataType.PtypMultipleFloating64:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        break;
+                    case PropertyDataType.PtypMultipleCurrency:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        break;
+                    case PropertyDataType.PtypMultipleFloatingTime:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        break;
+                    case PropertyDataType.PtypMultipleInteger64:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        break;
+                    case PropertyDataType.PtypMultipleTime:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        break;
+                    case PropertyDataType.PtypMultipleGuid:
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, Guid.Empty.ToByteArray().Length);
+                        break;
+                    case PropertyDataType.PtypMultipleBinary:
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false);
+                        break;
+                    case PropertyDataType.PtypMultipleString:
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false);
+                        break;
+                    case PropertyDataType.PtypMultipleString8:
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false);
+                        break;
+                }
             }
         }
     }
@@ -3734,6 +5222,719 @@ namespace MAPIInspector.Parsers
                     PtypString8 pstring8 = new PtypString8();
                     pstring8.Parse(stream);
                     this.PropValue = pstring8;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// The MetaPropValue represents identification information and the value of the Metaproperty.
+    /// </summary>
+    public class MetaPropValueGetPartial : SyntacticalBase
+    {
+        // The property type.
+        public ushort? PropType;
+
+        // The property id.
+        public ushort? PropID;
+
+        // The property value.
+        public object PropValue;
+
+        // The property type for partial split.
+        private ushort pType;
+
+        // The property id for partial split.
+        private ushort pID;
+
+        // The length value is for ptypBinary
+        private int length;
+
+        /// <summary>
+        /// Initializes a new instance of the MetaPropValue class.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public MetaPropValueGetPartial(FastTransferStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Parse MetaPropValue from a FastTransferStream.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public override void Parse(FastTransferStream stream)
+        {
+            if (MapiInspector.MAPIInspector.pGetType == 0)
+            {
+                this.PropType = stream.ReadUInt16();
+                this.PropID = stream.ReadUInt16();
+            }
+
+            if (stream.IsEndOfStream)
+            {
+                MapiInspector.MAPIInspector.pGetType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.pGetId = (ushort)this.PropID;
+            }
+            else
+            {
+                if (MapiInspector.MAPIInspector.pGetType != 0)
+                {
+                    this.pType = MapiInspector.MAPIInspector.pGetType;
+                    this.pID = MapiInspector.MAPIInspector.pGetId;
+
+                    // clear
+                    MapiInspector.MAPIInspector.pGetType = 0;
+                    MapiInspector.MAPIInspector.pGetId = 0;
+                }
+
+                ushort typeValue;
+                ushort idValue;
+
+                if (this.PropType != null)
+                {
+                    typeValue = (ushort)this.PropType;
+                }
+                else
+                {
+                    typeValue = this.pType;
+                }
+                if (this.PropID != null)
+                {
+                    idValue = (ushort)this.PropID;
+                }
+                else
+                {
+                    idValue = this.pID;
+                }
+
+                if (idValue != 0x4011 && idValue != 0x4008)
+                {
+                    this.PropValue = stream.ReadUInt32();
+                }
+                else if (idValue == 0x4011)
+                {
+                    PtypBinary pBinary = new PtypBinary(CountWideEnum.fourBytes);
+                    if (!stream.IsEndOfStream)
+                    {
+                        long spositon = stream.Position;
+                        if (MapiInspector.MAPIInspector.pGetRemainSize != -1)
+                        {
+                            this.length = MapiInspector.MAPIInspector.pGetRemainSize;
+
+                            // clear
+                            MapiInspector.MAPIInspector.pGetRemainSize = -1;
+                        }
+                        else
+                        {
+                            this.length = stream.ReadInt32();
+                        }
+
+                        if ((stream.Length - stream.Position) < this.length)
+                        {
+                            MapiInspector.MAPIInspector.pGetType = typeValue;
+                            MapiInspector.MAPIInspector.pGetId = idValue;
+                            MapiInspector.MAPIInspector.pGetRemainSize = this.length - (int)(stream.Length - stream.Position);
+                            if (spositon != stream.Position)// the length value is from the previous ropbuffer
+                            {
+                                pBinary.Count = (int)(stream.Length - stream.Position);
+                            }
+                            pBinary.Value = stream.ReadBlock(this.length);
+                        }
+                        else
+                        {
+                            stream.Position -= 4;
+                            pBinary.Parse(stream);
+                        }
+                        this.PropValue = pBinary;
+                    }
+                }
+                else
+                {
+                    PtypString8 pstring8 = new PtypString8();
+                    pstring8.Parse(stream);
+                    this.PropValue = pstring8;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// The MetaPropValue represents identification information and the value of the Metaproperty.
+    /// </summary>
+    public class MetaPropValuePutPartial : SyntacticalBase
+    {
+        // The property type.
+        public ushort? PropType;
+
+        // The property id.
+        public ushort? PropID;
+
+        // The property value.
+        public object PropValue;
+
+        // The property type for partial split.
+        private ushort pType;
+
+        // The property id for partial split.
+        private ushort pID;
+
+        // The length value is for ptypBinary
+        private int length;
+
+        /// <summary>
+        /// Initializes a new instance of the MetaPropValue class.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public MetaPropValuePutPartial(FastTransferStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Parse MetaPropValue from a FastTransferStream.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public override void Parse(FastTransferStream stream)
+        {
+            if (MapiInspector.MAPIInspector.pPutType == 0)
+            {
+                this.PropType = stream.ReadUInt16();
+                this.PropID = stream.ReadUInt16();
+            }
+
+            if (stream.IsEndOfStream)
+            {
+                MapiInspector.MAPIInspector.pPutType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.pPutId = (ushort)this.PropID;
+            }
+            else
+            {
+                if (MapiInspector.MAPIInspector.pPutType != 0)
+                {
+                    this.pType = MapiInspector.MAPIInspector.pPutType;
+                    this.pID = MapiInspector.MAPIInspector.pPutId;
+
+                    // clear
+                    MapiInspector.MAPIInspector.pPutType = 0;
+                    MapiInspector.MAPIInspector.pPutId = 0;
+                }
+                ushort typeValue;
+                ushort idValue;
+
+                if (this.PropType != null)
+                {
+                    typeValue = (ushort)this.PropType;
+                }
+                else
+                {
+                    typeValue = this.pType;
+                }
+                if (this.PropID != null)
+                {
+                    idValue = (ushort)this.PropID;
+                }
+                else
+                {
+                    idValue = this.pID;
+                }
+
+                if (idValue != 0x4011 && idValue != 0x4008)
+                {
+                    this.PropValue = stream.ReadUInt32();
+                }
+                else if (idValue == 0x4011)
+                {
+                    PtypBinary pBinary = new PtypBinary(CountWideEnum.fourBytes);
+                    if (!stream.IsEndOfStream)
+                    {
+                        long spositon = stream.Position;
+                        if (MapiInspector.MAPIInspector.pPutRemainSize != -1)
+                        {
+                            this.length = MapiInspector.MAPIInspector.pPutRemainSize;
+
+                            // clear
+                            MapiInspector.MAPIInspector.pPutRemainSize = -1;
+                        }
+                        else
+                        {
+                            this.length = stream.ReadInt32();
+                        }
+
+                        if ((stream.Length - stream.Position) < this.length)
+                        {
+                            MapiInspector.MAPIInspector.pGetType = typeValue;
+                            MapiInspector.MAPIInspector.pGetId = idValue;
+                            MapiInspector.MAPIInspector.pPutRemainSize = this.length - (int)(stream.Length - stream.Position);
+                            if (spositon != stream.Position)
+                            {
+                                pBinary.Count = (int)(stream.Length - stream.Position);
+                            }
+                            pBinary.Value = stream.ReadBlock(this.length);
+                        }
+                        else
+                        {
+                            stream.Position -= 4;
+                            pBinary.Parse(stream);
+                        }
+                        this.PropValue = pBinary;
+                    }
+                }
+                else
+                {
+                    PtypString8 pstring8 = new PtypString8();
+                    pstring8.Parse(stream);
+                    this.PropValue = pstring8;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// The MetaPropValue represents identification information and the value of the Metaproperty.
+    /// </summary>
+    public class MetaPropValuePutExtendPartial : SyntacticalBase
+    {
+        // The property type.
+        public ushort? PropType;
+
+        // The property id.
+        public ushort? PropID;
+
+        // The property value.
+        public object PropValue;
+
+        // The property type for partial split.
+        private ushort pType;
+
+        // The property id for partial split.
+        private ushort pID;
+
+        // The length value is for ptypBinary
+        private int length;
+
+        /// <summary>
+        /// Initializes a new instance of the MetaPropValue class.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public MetaPropValuePutExtendPartial(FastTransferStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Parse MetaPropValue from a FastTransferStream.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public override void Parse(FastTransferStream stream)
+        {
+            if (MapiInspector.MAPIInspector.pPutExtendType == 0)
+            {
+                this.PropType = stream.ReadUInt16();
+                this.PropID = stream.ReadUInt16();
+            }
+
+            if (stream.IsEndOfStream)
+            {
+                MapiInspector.MAPIInspector.pPutExtendType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.pPutExtendId = (ushort)this.PropID;
+            }
+            else
+            {
+                if (MapiInspector.MAPIInspector.pPutExtendType != 0)
+                {
+                    this.pType = MapiInspector.MAPIInspector.pPutExtendType;
+                    this.pID = MapiInspector.MAPIInspector.pPutExtendId;
+
+                    // clear
+                    MapiInspector.MAPIInspector.pPutExtendType = 0;
+                    MapiInspector.MAPIInspector.pPutExtendId = 0;
+                }
+                ushort typeValue;
+                ushort idValue;
+
+                if (this.PropType != null)
+                {
+                    typeValue = (ushort)this.PropType;
+                }
+                else
+                {
+                    typeValue = this.pType;
+                }
+                if (this.PropID != null)
+                {
+                    idValue = (ushort)this.PropID;
+                }
+                else
+                {
+                    idValue = this.pID;
+                }
+
+                if (idValue != 0x4011 && idValue != 0x4008)
+                {
+                    this.PropValue = stream.ReadUInt32();
+                }
+                else if (idValue == 0x4011)
+                {
+                    PtypBinary pBinary = new PtypBinary(CountWideEnum.fourBytes);
+                    if (!stream.IsEndOfStream)
+                    {
+                        long spositon = stream.Position;
+                        if (MapiInspector.MAPIInspector.pPutExtendRemainSize != -1)
+                        {
+                            this.length = MapiInspector.MAPIInspector.pPutExtendRemainSize;
+
+                            // clear
+                            MapiInspector.MAPIInspector.pPutExtendRemainSize = -1;
+                        }
+                        else
+                        {
+                            this.length = stream.ReadInt32();
+                        }
+
+                        if ((stream.Length - stream.Position) < this.length)
+                        {
+                            MapiInspector.MAPIInspector.pGetType = typeValue;
+                            MapiInspector.MAPIInspector.pGetId = idValue;
+                            MapiInspector.MAPIInspector.pPutExtendRemainSize = this.length - (int)(stream.Length - stream.Position);
+                            if (spositon != stream.Position)
+                            {
+                                pBinary.Count = (int)(stream.Length - stream.Position);
+                            }
+                            pBinary.Value = stream.ReadBlock(this.length);
+                        }
+                        else
+                        {
+                            stream.Position -= 4;
+                            pBinary.Parse(stream);
+                        }
+                        this.PropValue = pBinary;
+                    }
+                }
+                else
+                {
+                    PtypString8 pstring8 = new PtypString8();
+                    pstring8.Parse(stream);
+                    this.PropValue = pstring8;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Contains a folderContent.
+    /// </summary>
+    public class TransferGetBufferElement : SyntacticalBase
+    {
+        // MetaTagDnPrefix
+        public MetaPropValueGetPartial MetaValue;
+
+        public PropValue propValue;
+
+        // The start marker of TopFolder.
+        public object Marker;
+
+        /// <summary>
+        /// Initializes a new instance of the TransferElement class.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public TransferGetBufferElement(FastTransferStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Verify a stream's current position contains a serialized TopFolder.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        /// <returns>If the stream's current position contains a serialized TopFolder, return true, else false.</returns>
+        public static bool Verify(FastTransferStream stream)
+        {
+            return !stream.IsEndOfStream;
+        }
+
+        /// <summary>
+        /// Parse fields from a FastTransferStream.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="isGetBuffer">A bool value indicates if this parse is for Getbuffer rop.</param>
+        public override void Parse(FastTransferStream stream)//, bool isGetBuffer
+        {
+            if (MapiInspector.MAPIInspector.pGetType != 0)
+            {
+                if (MarkersHelper.IsMarker(stream.VerifyUInt32()))
+                {
+                    this.Marker = stream.ReadMarker();
+                }
+                else if (LexicalTypeHelper.IsMetaPropertyID(MapiInspector.MAPIInspector.pGetId))
+                {
+                    this.MetaValue = new MetaPropValueGetPartial(stream);
+                }
+                else
+                {
+                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)MapiInspector.MAPIInspector.pGetType))
+                    {
+                        if (MapiInspector.MAPIInspector.pGetType == (ushort)PropertyDataType.PtypInteger32 && MapiInspector.MAPIInspector.pGetId == 0x4017)
+                        {
+                            this.propValue = new VarPropTypePropValueGetPartial(stream); ;
+                        }
+                        else
+                        {
+                            this.propValue = new FixedPropTypePropValueGetPartial(stream);
+                        }
+                    }
+                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)MapiInspector.MAPIInspector.pGetType)
+                    || LexicalTypeHelper.IsCodePageType(MapiInspector.MAPIInspector.pGetType))
+                    {
+                        this.propValue = new VarPropTypePropValueGetPartial(stream);
+                    }
+                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)MapiInspector.MAPIInspector.pGetType))
+                    {
+                        this.propValue = new MvPropTypePropValueGetPartial(stream);
+                    }
+                }
+            }
+            else
+            {
+                if (MarkersHelper.IsMarker(stream.VerifyUInt32()))
+                {
+                    this.Marker = stream.ReadMarker();
+                }
+                else if (MarkersHelper.IsMetaTag(stream.VerifyUInt32()))
+                {
+                    this.MetaValue = new MetaPropValueGetPartial(stream);
+                }
+                else
+                {
+                    long sPosition = stream.Position;
+                    PropValue propValue = new PropValue(stream);
+                    stream.Position = sPosition;
+
+                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)propValue.PropType) && !PropValue.IsMetaTagIdsetGiven(stream))
+                    {
+                        this.propValue = new FixedPropTypePropValueGetPartial(stream);
+                    }
+                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)propValue.PropType) || PropValue.IsMetaTagIdsetGiven(stream)
+                    || LexicalTypeHelper.IsCodePageType((ushort)propValue.PropType))
+                    {
+                        this.propValue = new VarPropTypePropValueGetPartial(stream);
+                    }
+                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)propValue.PropType) && !PropValue.IsMetaTagIdsetGiven(stream))
+                    {
+                        this.propValue = new MvPropTypePropValueGetPartial(stream);
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Contains a folderContent.
+    /// </summary>
+    public class TransferPutBufferElement : SyntacticalBase
+    {
+        // MetaTagDnPrefix
+        public MetaPropValuePutPartial MetaValue;
+
+        public PropValue propValue;
+
+        // The start marker of TopFolder.
+        public object Marker;
+
+        /// <summary>
+        /// Initializes a new instance of the TransferElement class.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public TransferPutBufferElement(FastTransferStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Verify a stream's current position contains a serialized TopFolder.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        /// <returns>If the stream's current position contains a serialized TopFolder, return true, else false.</returns>
+        public static bool Verify(FastTransferStream stream)
+        {
+            return !stream.IsEndOfStream;
+        }
+
+        /// <summary>
+        /// Parse fields from a FastTransferStream.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public override void Parse(FastTransferStream stream)
+        {
+            if (MapiInspector.MAPIInspector.pPutType != 0)
+            {
+                if (MarkersHelper.IsMarker(stream.VerifyUInt32()))
+                {
+                    this.Marker = stream.ReadMarker();
+                }
+                else if (LexicalTypeHelper.IsMetaPropertyID(MapiInspector.MAPIInspector.pPutId))
+                {
+                    this.MetaValue = new MetaPropValuePutPartial(stream);
+                }
+                else
+                {
+                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)MapiInspector.MAPIInspector.pPutType))
+                    {
+                        if (MapiInspector.MAPIInspector.pPutType == (ushort)PropertyDataType.PtypInteger32 && MapiInspector.MAPIInspector.pPutId == 0x4017)
+                        {
+                            this.propValue = new VarPropTypePropValuePutPartial(stream);
+                        }
+                        else
+                        {
+                            this.propValue = new FixedPropTypePropValuePutPartial(stream);
+                        }
+                    }
+                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)MapiInspector.MAPIInspector.pPutType)
+                    || LexicalTypeHelper.IsCodePageType(MapiInspector.MAPIInspector.pPutType))
+                    {
+                        this.propValue = new VarPropTypePropValuePutPartial(stream);
+                    }
+                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)MapiInspector.MAPIInspector.pPutType))
+                    {
+                        this.propValue = new MvPropTypePropValuePutPartial(stream);
+                    }
+                }
+            }
+            else
+            {
+                if (MarkersHelper.IsMarker(stream.VerifyUInt32()))
+                {
+                    this.Marker = stream.ReadMarker();
+                }
+                else if (MarkersHelper.IsMetaTag(stream.VerifyUInt32()))
+                {
+                    this.MetaValue = new MetaPropValuePutPartial(stream);
+                }
+                else
+                {
+                    long sPosition = stream.Position;
+                    PropValue propValue = new PropValue(stream);
+                    stream.Position = sPosition;
+
+                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)propValue.PropType) && !PropValue.IsMetaTagIdsetGiven(stream))
+                    {
+                        this.propValue = new FixedPropTypePropValuePutPartial(stream);
+                    }
+                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)propValue.PropType) || PropValue.IsMetaTagIdsetGiven(stream)
+                    || LexicalTypeHelper.IsCodePageType((ushort)propValue.PropType))
+                    {
+                        this.propValue = new VarPropTypePropValuePutPartial(stream);
+                    }
+                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)propValue.PropType) && !PropValue.IsMetaTagIdsetGiven(stream))
+                    {
+                        this.propValue = new MvPropTypePropValuePutPartial(stream);
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Contains a folderContent.
+    /// </summary>
+    public class TransferPutBufferExtendElement : SyntacticalBase
+    {
+        // MetaTagDnPrefix
+        public MetaPropValuePutExtendPartial MetaValue;
+
+        public PropValue propValue;
+
+        // The start marker of TopFolder.
+        public object Marker;
+
+        /// <summary>
+        /// Initializes a new instance of the TransferElement class.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public TransferPutBufferExtendElement(FastTransferStream stream)
+            : base(stream)
+        {
+        }
+
+        /// <summary>
+        /// Verify a stream's current position contains a serialized TopFolder.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        /// <returns>If the stream's current position contains a serialized TopFolder, return true, else false.</returns>
+        public static bool Verify(FastTransferStream stream)
+        {
+            return !stream.IsEndOfStream;
+        }
+
+        /// <summary>
+        /// Parse fields from a FastTransferStream.
+        /// </summary>
+        /// <param name="stream">A FastTransferStream.</param>
+        public override void Parse(FastTransferStream stream)
+        {
+            if (MapiInspector.MAPIInspector.pPutExtendType != 0)
+            {
+                if (MarkersHelper.IsMarker(stream.VerifyUInt32()))
+                {
+                    this.Marker = stream.ReadMarker();
+                }
+                else if (LexicalTypeHelper.IsMetaPropertyID(MapiInspector.MAPIInspector.pPutExtendId))
+                {
+                    this.MetaValue = new MetaPropValuePutExtendPartial(stream);
+                }
+                else
+                {
+                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)MapiInspector.MAPIInspector.pPutExtendType))
+                    {
+                        if (MapiInspector.MAPIInspector.pPutExtendType == (ushort)PropertyDataType.PtypInteger32 && MapiInspector.MAPIInspector.pPutExtendId == 0x4017)
+                        {
+                            this.propValue = new VarPropTypePropValuePutExtendPartial(stream);
+                        }
+                        else
+                        {
+                            this.propValue = new FixedPropTypePropValuePutExtendPartial(stream);
+                        }
+                    }
+                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)MapiInspector.MAPIInspector.pPutExtendType)
+                    || LexicalTypeHelper.IsCodePageType(MapiInspector.MAPIInspector.pPutExtendType))
+                    {
+                        this.propValue = new VarPropTypePropValuePutExtendPartial(stream);
+                    }
+                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)MapiInspector.MAPIInspector.pPutExtendType))
+                    {
+                        this.propValue = new MvPropTypePropValuePutExtendPartial(stream);
+                    }
+                }
+            }
+            else
+            {
+                if (MarkersHelper.IsMarker(stream.VerifyUInt32()))
+                {
+                    this.Marker = stream.ReadMarker();
+                }
+                else if (MarkersHelper.IsMetaTag(stream.VerifyUInt32()))
+                {
+                    this.MetaValue = new MetaPropValuePutExtendPartial(stream);
+                }
+                else
+                {
+                    long sPosition = stream.Position;
+                    PropValue propValue = new PropValue(stream);
+                    stream.Position = sPosition;
+
+                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)propValue.PropType) && !PropValue.IsMetaTagIdsetGiven(stream))
+                    {
+                        this.propValue = new FixedPropTypePropValuePutExtendPartial(stream);
+                    }
+                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)propValue.PropType) || PropValue.IsMetaTagIdsetGiven(stream)
+                    || LexicalTypeHelper.IsCodePageType((ushort)propValue.PropType))
+                    {
+                        this.propValue = new VarPropTypePropValuePutExtendPartial(stream);
+                    }
+                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)propValue.PropType) && !PropValue.IsMetaTagIdsetGiven(stream))
+                    {
+                        this.propValue = new MvPropTypePropValuePutExtendPartial(stream);
+                    }
                 }
             }
         }
@@ -5123,7 +7324,7 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-               throw new Exception("The ContentsSync cannot be parsed successfully. The IncrSyncEnd Marker is missed.");
+                throw new Exception("The ContentsSync cannot be parsed successfully. The IncrSyncEnd Marker is missed.");
             }
         }
     }
@@ -5663,8 +7864,8 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class LengthOfBlock
     {
-        private int totalSize;
-        private byte[] BlockSize;
+        public int totalSize;
+        public byte[] BlockSize;
         public LengthOfBlock(int totalSize, byte[] BlockSize)
         {
             this.totalSize = totalSize;

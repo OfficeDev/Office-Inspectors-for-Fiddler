@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.IO;
 
@@ -22,7 +21,7 @@ namespace MAPIInspector.Parsers
         public uint CurrentRec;
 
         // A long value that specifies an offset from the beginning position in the table for the start of an NSPI method. 
-        public int Delta;
+        public uint Delta;
 
         // A DWORD value that specifies a position in the table. 
         public uint NumPos;
@@ -49,7 +48,7 @@ namespace MAPIInspector.Parsers
             this.SortType = ReadUint();
             this.ContainerID = ReadUint();
             this.CurrentRec = ReadUint();
-            this.Delta = ReadINT32();
+            this.Delta = ReadUint();
             this.NumPos = ReadUint();
             this.TotalRecs = ReadUint();
             this.CodePage = ReadUint();
