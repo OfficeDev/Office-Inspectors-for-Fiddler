@@ -1,29 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
-using Outlook = Microsoft.Office.Interop.Outlook;
-using System.Configuration;
-using System.Threading;
-using System.IO;
-using System.Windows.Automation;
-using System.Runtime.InteropServices;
-
-namespace MAPIAutomationTest
+﻿namespace MAPIAutomationTest
 {
-    class Utilities
+    using System;
+    using System.Collections.Generic;
+    using System.Configuration;
+    using System.IO;
+    using System.Reflection;
+    using System.Runtime.InteropServices;
+    using System.Text;
+    using System.Threading;
+    using System.Windows.Automation;
+    using System.Xml;
+    using Outlook = Microsoft.Office.Interop.Outlook;
+
+    /// <summary>
+    /// The class is used to provide methods for test case execution
+    /// </summary>
+    public class Utilities
     {
-        private static int wait = Int32.Parse(ConfigurationManager.AppSettings["WaitTimeItem"].ToString());
+        /// <summary>
+        /// The time to wait
+        /// </summary>
+        private static int wait = int.Parse(ConfigurationManager.AppSettings["WaitTimeItem"].ToString());
 
         /// <summary>
         /// Get the first recurring appointments from now.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The appoint to search</returns>
         public static Outlook.AppointmentItem GetAppointment()
         {
             Outlook.AppointmentItem appointment = null;
-            Outlook.Application oApp = new Outlook.Application();
-            Outlook.Folder calFolder = oApp.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderCalendar) as Outlook.Folder;
+            Outlook.Application outlookApp = new Outlook.Application();
+            Outlook.Folder calFolder = outlookApp.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderCalendar) as Outlook.Folder;
             DateTime start = DateTime.Now;
             DateTime end = start.AddDays(7);
             Outlook.Items rangeAppts = GetAppointmentsInRange(calFolder, start, end);
@@ -35,16 +42,17 @@ namespace MAPIAutomationTest
                     break;
                 }
             }
+
             return appointment;
         }
 
         /// <summary>
         /// Get recurring appointments in date range.
         /// </summary>
-        /// <param name="folder"></param>
-        /// <param name="startTime"></param>
-        /// <param name="endTime"></param>
-        /// <returns>Outlook.Items</returns>
+        /// <param name="folder">The folder to get</param>
+        /// <param name="startTime">The start time</param>
+        /// <param name="endTime">The end time</param>
+        /// <returns>Outlook Items</returns>
         public static Outlook.Items GetAppointmentsInRange(Outlook.Folder folder, DateTime startTime, DateTime endTime)
         {
             string filter = "[Start] >= '"
@@ -66,31 +74,37 @@ namespace MAPIAutomationTest
                     return null;
                 }
             }
-            catch { return null; }
+            catch
+            {
+                return null;
+            }
         }
 
         /// <summary>
         /// Create a new note
         /// </summary>
+        /// <param name="body">the note body</param>
         /// <returns>Outlook Note item</returns>
         public static Outlook.NoteItem NewNote(string body = "")
         {
-            Outlook.Application oApp = new Outlook.Application();
+            Outlook.Application outlookApp = new Outlook.Application();
+           
             // Create a new note item.
-            Outlook.NoteItem oNote = (Outlook.NoteItem)oApp.CreateItem(Outlook.OlItemType.olNoteItem);
+            Outlook.NoteItem outlookNote = (Outlook.NoteItem)outlookApp.CreateItem(Outlook.OlItemType.olNoteItem);
 
             // Set the note body
-            if (body != "")
+            if (body != string.Empty)
             {
-                oNote.Body = body;
+                outlookNote.Body = body;
             }
             else
             {
-                oNote.Body = ConfigurationManager.AppSettings["Note_body"].ToString();
+                outlookNote.Body = ConfigurationManager.AppSettings["Note_body"].ToString();
             }
-            oNote.Save();
 
-            return oNote;
+            outlookNote.Save();
+
+            return outlookNote;
         }
 
         /// <summary>
@@ -101,31 +115,59 @@ namespace MAPIAutomationTest
         /// <returns>Outlook MailItem with subject and body</returns>
         public static Outlook.MailItem CreateSimpleEmail(string subject = "", string body = "")
         {
-            Outlook.Application oApp = new Outlook.Application();
+            Outlook.Application outlookApp = new Outlook.Application();
+            
             // Create a new mail item.
-            Outlook.MailItem oMsg = (Outlook.MailItem)oApp.CreateItem(Outlook.OlItemType.olMailItem);
+            Outlook.MailItem outlookMsg = (Outlook.MailItem)outlookApp.CreateItem(Outlook.OlItemType.olMailItem);
 
             // Set the email subject
-            if (subject != "")
+            if (subject != string.Empty)
             {
-                oMsg.Subject = subject;
+                outlookMsg.Subject = subject;
             }
             else
             {
-                oMsg.Subject = ConfigurationManager.AppSettings["Email_subject"].ToString();
+                outlookMsg.Subject = ConfigurationManager.AppSettings["Email_subject"].ToString();
             }
 
             // Set the email body
-            if (body != "")
+            if (body != string.Empty)
             {
-                oMsg.HTMLBody = body;
+                outlookMsg.HTMLBody = body;
             }
             else
             {
-                oMsg.HTMLBody = ConfigurationManager.AppSettings["Email_body"].ToString();
+                outlookMsg.HTMLBody = ConfigurationManager.AppSettings["Email_body"].ToString();
             }
 
-            return oMsg;
+            return outlookMsg;
+        }
+
+        /// <summary>
+        /// Add attach for a mail item
+        /// </summary>
+        /// <param name="mailItem">Mail item</param>
+        /// <param name="attachs">Attach files</param>
+        /// <returns>Outlook MailItem with attachment</returns>
+        public static Outlook.MailItem AddAttachsToEmail(Outlook.MailItem mailItem, object[] attachs)
+        {
+            Outlook.MailItem outlookMailItem = mailItem;
+            if (attachs != null && attachs.Length != 0)
+            {
+                if (attachs.Length > 1)
+                {
+                    foreach (var file in attachs)
+                    {
+                        outlookMailItem.Attachments.Add(file, Outlook.OlAttachmentType.olByValue, Type.Missing, Type.Missing);
+                    }
+                }
+                else
+                {
+                    outlookMailItem.Attachments.Add(attachs[0], Outlook.OlAttachmentType.olByValue, Type.Missing, Type.Missing);
+                }
+            }
+
+            return outlookMailItem;
         }
 
         /// <summary>
@@ -134,23 +176,16 @@ namespace MAPIAutomationTest
         /// <param name="mItem">Mail item</param>
         /// <param name="attachs">Attach files</param>
         /// <returns>Outlook MailItem with attachment</returns>
-        public static Outlook.MailItem AddAttachsToEmail(Outlook.MailItem mItem, object[] attachs)
+        public static Outlook.MailItem RemoveAttachsToEmail(Outlook.MailItem mItem)
         {
             Outlook.MailItem oMailItem = mItem;
-            if (attachs != null && attachs.Length != 0)
+            Outlook.Attachments attas = oMailItem.Attachments;
+
+            if (attas.Count > 0)
             {
-                if (attachs.Length > 1)
-                {
-                    foreach (var file in attachs)
-                    {
-                        oMailItem.Attachments.Add(file, Outlook.OlAttachmentType.olByValue, Type.Missing, Type.Missing);
-                    }
-                }
-                else
-                {
-                    oMailItem.Attachments.Add(attachs[0], Outlook.OlAttachmentType.olByValue, Type.Missing, Type.Missing);
-                }
+                attas.Remove(1);
             }
+            
             return oMailItem;
         }
 
@@ -158,18 +193,19 @@ namespace MAPIAutomationTest
         /// Send Email
         /// </summary>
         /// <param name="mail">Mail item</param>
+        /// <param name="recepientCount">The recipient count to send </param>
         /// <param name="recipient">Mail send to </param>
         /// <param name="cc">Mail cc</param>
         /// <param name="bcc">Mail bcc</param>
         public static void SendEmail(Outlook.MailItem mail, int recepientCount = 0, string recipient = "", string cc = "", string bcc = "")
         {
-            Outlook.MailItem oMailItem = mail;
+            Outlook.MailItem outlookMailItem = mail;
             try
             {
                 // Set value to recipient
-                if (recipient != "")
+                if (recipient != string.Empty)
                 {
-                    oMailItem.To = recipient;
+                    outlookMailItem.To = recipient;
                 }
                 else
                 {
@@ -183,40 +219,40 @@ namespace MAPIAutomationTest
                             recepientCount--;
                         }
                         while (recepientCount > 0);
-                        oMailItem.To = receipents.ToString();
+                        outlookMailItem.To = receipents.ToString();
                     }
                     else
                     {
-                        oMailItem.To = receipent.ToString();
+                        outlookMailItem.To = receipent.ToString();
                     }
                 }
 
                 // Set value to cc
-                if (cc != "")
+                if (cc != string.Empty)
                 {
-                    oMailItem.CC = cc;
+                    outlookMailItem.CC = cc;
                 }
                 else
                 {
-                    oMailItem.CC = ConfigurationManager.AppSettings["Email_cc"].ToString();
+                    outlookMailItem.CC = ConfigurationManager.AppSettings["Email_cc"].ToString();
                 }
 
                 // Set value to bcc
-                if (bcc != "")
+                if (bcc != string.Empty)
                 {
-                    oMailItem.BCC = bcc;
+                    outlookMailItem.BCC = bcc;
                 }
                 else
                 {
-                    oMailItem.BCC = ConfigurationManager.AppSettings["Email_bcc"].ToString();
+                    outlookMailItem.BCC = ConfigurationManager.AppSettings["Email_bcc"].ToString();
                 }
 
                 // Send Email
-                (oMailItem as Outlook._MailItem).Send();
+                (outlookMailItem as Outlook._MailItem).Send();
             }
-            // Return Error Message
             catch (Exception e)
             {
+                // Return Error Message
                 throw new Exception(e.Message);
             }
         }
@@ -224,7 +260,8 @@ namespace MAPIAutomationTest
         /// <summary>
         /// Move a mail item to public folder
         /// </summary>
-        /// <param name="mail">Mail item which used to move to public folder</param>
+        /// <param name="publicFolder">The target public folder</param>
+        /// <param name="item">Mail item which used to move to public folder</param>
         public static void MoveItemToMAPIFolder(Outlook.MAPIFolder publicFolder, object item)
         {
             try
@@ -250,7 +287,6 @@ namespace MAPIAutomationTest
                     (item as Outlook.MeetingItem).Move(publicFolder);
                 }
             }
-            // Return Error Message
             catch (Exception e)
             {
                 throw new Exception(e.Message);
@@ -260,15 +296,15 @@ namespace MAPIAutomationTest
         /// <summary>
         /// Update items properties
         /// </summary>
-        /// <param name="items">Items which properties used to change</param>
+        /// <param name="item">The target item</param>
         public static void UpdateItemProperties(object item)
         {
             try
             {
                 object[] args = new object[] { };
                 object retVal = item.GetType().InvokeMember("Class", BindingFlags.Public | BindingFlags.GetField | BindingFlags.GetProperty, null, item, args);
-                Outlook.OlObjectClass oItemClass = (Outlook.OlObjectClass)retVal;
-                switch (oItemClass)
+                Outlook.OlObjectClass outlookItemClass = (Outlook.OlObjectClass)retVal;
+                switch (outlookItemClass)
                 {
                     case Outlook.OlObjectClass.olMail:
                         Outlook.MailItem omail = (Outlook.MailItem)item;
@@ -282,10 +318,8 @@ namespace MAPIAutomationTest
                         break;
                     default:
                         break;
-
                 }
             }
-            // Return Error Message
             catch (Exception e)
             {
                 throw new Exception(e.Message);
@@ -295,45 +329,49 @@ namespace MAPIAutomationTest
         /// <summary>
         /// Get the last mail items in sentItem folder
         /// </summary>
+        /// <param name="mapiFolder">The target folder</param>
+        /// <param name="itemSubject">Item subject</param>
         /// <returns>the newest mail item in sendItem folder</returns>
         public static Outlook.MailItem GetNewestItemInMAPIFolder(Outlook.MAPIFolder mapiFolder, string itemSubject)
         {
-            Outlook.MailItem oItem;
-            int Count = 0;
+            Outlook.MailItem outlookItem;
+            int count = 0;
             try
             {
-                oItem = mapiFolder.Items.GetFirst();
+                outlookItem = mapiFolder.Items.GetFirst();
 
-                if (oItem == null || oItem.Subject != itemSubject)
+                if (outlookItem == null || outlookItem.Subject != itemSubject)
                 {
                     do
                     {
                         Thread.Sleep(wait);
-                        oItem = mapiFolder.Items.GetFirst();
-                        Count++;
-                        if (Count >= 30)
+                        outlookItem = mapiFolder.Items.GetFirst();
+                        count++;
+                        if (count >= 30)
                         {
                             break;
                         }
-                    } while (oItem == null || oItem.Subject != itemSubject);
+                    }
+                    while (outlookItem == null || outlookItem.Subject != itemSubject);
                 }
             }
-            // Return Error Message
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
-            return oItem;
+
+            return outlookItem;
         }
 
         /// <summary>
         /// Get the last mail items in sentItem folder
         /// </summary>
+        /// <param name="mapiFolder">The target folder</param>
         /// <returns>The newest mail item in sendItem folder</returns>
         public static Outlook.MailItem[] GetAllItemInMAPIFolder(Outlook.MAPIFolder mapiFolder)
         {
-            List<Outlook.MailItem> oItems = new List<Outlook.MailItem>();
-            Outlook.MailItem oItem;
+            List<Outlook.MailItem> outlookItems = new List<Outlook.MailItem>();
+            Outlook.MailItem outlookItem;
             int count = mapiFolder.Items.Count;
             if (count == 0)
             {
@@ -345,23 +383,22 @@ namespace MAPIAutomationTest
                 {
                     do
                     {
-                        oItem = mapiFolder.Items.GetNext();
-                        if (oItem != null)
+                        outlookItem = mapiFolder.Items.GetNext();
+                        if (outlookItem != null)
                         {
-                            oItems.Add(oItem);
+                            outlookItems.Add(outlookItem);
                             count--;
                         }
-                    } while (count > 0);
-
+                    }
+                    while (count > 0);
                 }
-                // Return Error Message
                 catch (Exception e)
                 {
                     throw new Exception(e.Message);
                 }
             }
 
-            return oItems.ToArray();
+            return outlookItems.ToArray();
         }
 
         /// <summary>
@@ -385,48 +422,47 @@ namespace MAPIAutomationTest
                         {
                             if (mapiFolder.Items.GetFirst() is Outlook.MailItem)
                             {
-                                Outlook.MailItem oMail = (Outlook.MailItem)mapiFolder.Items.GetFirst();
-                                if (oMail != null)
+                                Outlook.MailItem outlookMail = (Outlook.MailItem)mapiFolder.Items.GetFirst();
+                                if (outlookMail != null)
                                 {
-                                    oMail.Delete();
-                                    Marshal.ReleaseComObject(oMail);
+                                    outlookMail.Delete();
+                                    Marshal.ReleaseComObject(outlookMail);
                                     count--;
                                 }
                             }
                             else if (mapiFolder.Items.GetFirst() is Outlook.PostItem)
                             {
-                                Outlook.PostItem oPost = (Outlook.PostItem)mapiFolder.Items.GetFirst();
-                                if (oPost != null)
+                                Outlook.PostItem outlookPost = (Outlook.PostItem)mapiFolder.Items.GetFirst();
+                                if (outlookPost != null)
                                 {
-                                    oPost.Delete();
-                                    Marshal.ReleaseComObject(oPost);
+                                    outlookPost.Delete();
+                                    Marshal.ReleaseComObject(outlookPost);
                                     count--;
                                 }
                             }
                             else if (mapiFolder.Items.GetFirst() is Outlook.MeetingItem)
                             {
-                                Outlook.MeetingItem oMeeting = (Outlook.MeetingItem)mapiFolder.Items.GetFirst();
-                                if (oMeeting != null)
+                                Outlook.MeetingItem outlookMeeting = (Outlook.MeetingItem)mapiFolder.Items.GetFirst();
+                                if (outlookMeeting != null)
                                 {
-                                    oMeeting.Delete();
-                                    Marshal.ReleaseComObject(oMeeting);
+                                    outlookMeeting.Delete();
+                                    Marshal.ReleaseComObject(outlookMeeting);
                                     count--;
                                 }
                             }
                             else if (mapiFolder.Items.GetFirst() is Outlook.AppointmentItem)
                             {
-                                Outlook.AppointmentItem oAppointment = (Outlook.AppointmentItem)mapiFolder.Items.GetFirst();
-                                if (oAppointment != null)
+                                Outlook.AppointmentItem outlookAppointment = (Outlook.AppointmentItem)mapiFolder.Items.GetFirst();
+                                if (outlookAppointment != null)
                                 {
-                                    oAppointment.Delete();
-                                    Marshal.ReleaseComObject(oAppointment);
+                                    outlookAppointment.Delete();
+                                    Marshal.ReleaseComObject(outlookAppointment);
                                     count--;
                                 }
                             }
-                        } while (count > 0);
-
+                        }
+                        while (count > 0);
                     }
-                    // Return Error Message
                     catch (Exception e)
                     {
                         throw new Exception(e.Message);
@@ -436,18 +472,18 @@ namespace MAPIAutomationTest
         }
 
         /// <summary>
-        /// Open a items in outlook folder
+        /// Open an item in outlook folder
         /// </summary>
-        /// <param name="items">Outlook items used to open</param>
+        /// <param name="item">Outlook item used to open</param>
         public static void DisplayAndCloseItem(object item)
         {
             try
             {
-                Outlook.Application oApp = new Outlook.Application();
+                Outlook.Application outlookApp = new Outlook.Application();
                 object[] args = new object[] { };
                 object retVal = item.GetType().InvokeMember("Class", BindingFlags.Public | BindingFlags.GetField | BindingFlags.GetProperty, null, item, args);
-                Outlook.OlObjectClass oItemClass = (Outlook.OlObjectClass)retVal;
-                switch (oItemClass)
+                Outlook.OlObjectClass outlookItemClass = (Outlook.OlObjectClass)retVal;
+                switch (outlookItemClass)
                 {
                     case Outlook.OlObjectClass.olMail:
                         Outlook.MailItem omail = (Outlook.MailItem)item;
@@ -463,10 +499,8 @@ namespace MAPIAutomationTest
 
                     default:
                         break;
-
                 }
             }
-            // Return Error Message
             catch (Exception e)
             {
                 throw new Exception(e.Message);
@@ -476,8 +510,8 @@ namespace MAPIAutomationTest
         /// <summary>
         /// Get first customer created folder under all public folder except PublicFolder folder
         /// </summary>
-        /// <param name="allPublicFolder"></param>
-        /// <returns></returns>
+        /// <param name="allPublicFolder">All public folders</param>
+        /// <returns>The MAPI folder</returns>
         public static Outlook.MAPIFolder GetUserFolderInAllPublicFolder(Outlook.MAPIFolder allPublicFolder)
         {
             Outlook.MAPIFolder userFolder = null;
@@ -496,17 +530,18 @@ namespace MAPIAutomationTest
             {
                 throw new Exception("Need Create another folder in public folder");
             }
+
             return userFolder;
         }
 
         /// <summary>
-        /// Remove all subfolders in folder
+        /// Remove all sub-folders in folder
         /// </summary>
-        /// <param name="pFolder">MAPIFolder</param>
-        /// <param name="isCachMode">bool value indicates if in cached mode</param>
-        public static void RemoveAllSubFolders(Outlook.MAPIFolder pFolder, bool isCachMode)
+        /// <param name="mapiFolder">MAPI Folder</param>
+        /// <param name="isCachMode">Boolean value indicates if in cached mode</param>
+        public static void RemoveAllSubFolders(Outlook.MAPIFolder mapiFolder, bool isCachMode)
         {
-            Outlook.Folders folders = pFolder.Folders;
+            Outlook.Folders folders = mapiFolder.Folders;
             try
             {
                 while (folders.Count != 0)
@@ -515,6 +550,7 @@ namespace MAPIAutomationTest
                     {
                         Thread.Sleep(wait * 10);
                     }
+
                     folders.Remove(folders.Count);
                     Thread.Sleep(wait);
                 }
@@ -526,7 +562,7 @@ namespace MAPIAutomationTest
         }
 
         /// <summary>
-        /// Add a subfolder in parent folder
+        /// Add a sub-folder in parent folder
         /// </summary>
         /// <param name="parent">parent folder</param>
         /// <param name="subFolder">new folder name</param>
@@ -550,8 +586,8 @@ namespace MAPIAutomationTest
         /// Wait for UI automation elements
         /// </summary>
         /// <param name="parent">the parent element</param>
-        /// <param name="condition">the search confition</param>
-        /// <param name="scop">search scop</param>
+        /// <param name="condition">the search condition</param>
+        /// <param name="scop">search scope</param>
         /// <param name="milisecondTimeout">time out</param>
         /// <returns>Automation element</returns>
         public static AutomationElement WaitForElement(AutomationElement parent, Condition condition, TreeScope scop, int milisecondTimeout)
@@ -565,6 +601,7 @@ namespace MAPIAutomationTest
                 {
                     break;
                 }
+
                 Thread.Sleep(wait);
                 waitTime += wait;
                 element = parent.FindFirst(scop, condition);
@@ -574,14 +611,17 @@ namespace MAPIAutomationTest
         }
 
         /// <summary>
-        /// The method used to close "Microsoft Outlook" window
+        /// The method used to close Microsoft Outlook window
         /// </summary>
-        /// <param name="src">AutomationElement type window which need to close </param>
-        /// <param name="e">AutomationEventArgs</param>
+        /// <param name="src">AutomationElement type window which need to close</param>
+        /// <param name="e">The automation event argument</param>
         public static void OnWindowOpen(object src, AutomationEventArgs e)
         {
             if (e.EventId != WindowPattern.WindowOpenedEvent)
+            {
                 return;
+            }
+
             AutomationElement sourceElement = null;
 
             try
@@ -593,12 +633,13 @@ namespace MAPIAutomationTest
                     if (sourceElement.Current.Name == "Microsoft Outlook")
                     {
                         // Get outlook window
-                        Outlook.Application oApp = Marshal.GetActiveObject("Outlook.Application") as Outlook.Application;
-                        var nameSpace = oApp.GetNamespace("MAPI");
+                        Outlook.Application outlookApp = Marshal.GetActiveObject("Outlook.Application") as Outlook.Application;
+                        var nameSpace = outlookApp.GetNamespace("MAPI");
                         Outlook.MAPIFolder folder = nameSpace.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderInbox);
                         string userName = folder.Parent.Name;
                         var condition_Outlook = new PropertyCondition(AutomationElement.NameProperty, "Inbox - " + userName + " - Outlook");
                         AutomationElement window_outlook = Utilities.WaitForElement(desktop, condition_Outlook, TreeScope.Children, 10);
+                        
                         // Click OK in Microsoft Outlook dialog box
                         var condition_Dailog = new PropertyCondition(AutomationElement.NameProperty, "Microsoft Outlook");
                         var window_Dailog = Utilities.WaitForElement(window_outlook, condition_Dailog, TreeScope.Children, 10);
@@ -611,30 +652,32 @@ namespace MAPIAutomationTest
                     {
                         // Get the first recurring meeting and change the meeting time
                         Outlook.AppointmentItem appointment = Utilities.GetAppointment();
+                        
                         // Get Meeting Window
                         var condition_MeetingWindow = new PropertyCondition(AutomationElement.NameProperty, appointment.Subject + " - Meeting Occurrence  ");
                         var window_Meeting = Utilities.WaitForElement(desktop, condition_MeetingWindow, TreeScope.Children, 10);
 
-                        // update starttime and endtime
+                        // update start time and end time
                         Condition cd_start = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Edit), new PropertyCondition(AutomationElement.NameProperty, "Start time"));
                         AutomationElement item_start = Utilities.WaitForElement(window_Meeting, cd_start, TreeScope.Descendants, 10);
-                        ValuePattern Pattern_start = (ValuePattern)item_start.GetCurrentPattern(ValuePattern.Pattern);
+                        ValuePattern pattern_start = (ValuePattern)item_start.GetCurrentPattern(ValuePattern.Pattern);
                         item_start.SetFocus();
-                        Pattern_start.SetValue(DateTime.Now.AddMinutes(30).Hour.ToString() + ":" + DateTime.Now.AddMinutes(30).Minute.ToString());
+                        pattern_start.SetValue(DateTime.Now.AddMinutes(30).Hour.ToString() + ":" + DateTime.Now.AddMinutes(30).Minute.ToString());
                         Condition cd_end = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Edit), new PropertyCondition(AutomationElement.NameProperty, "End time"));
                         AutomationElement item_end = Utilities.WaitForElement(window_Meeting, cd_end, TreeScope.Descendants, 10);
-                        ValuePattern Pattern_end = (ValuePattern)item_end.GetCurrentPattern(ValuePattern.Pattern);
+                        ValuePattern pattern_end = (ValuePattern)item_end.GetCurrentPattern(ValuePattern.Pattern);
                         item_end.SetFocus();
-                        Pattern_end.SetValue(DateTime.Now.AddMinutes(60).Hour.ToString() + ":" + DateTime.Now.AddMinutes(60).Minute.ToString());
-                        // Check receiver name and sendupdate
+                        pattern_end.SetValue(DateTime.Now.AddMinutes(60).Hour.ToString() + ":" + DateTime.Now.AddMinutes(60).Minute.ToString());
+                        
+                        // Check receiver name and send update
                         Condition cd_CheckName = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Check Names"));
                         AutomationElement item_CheckName = Utilities.WaitForElement(window_Meeting, cd_CheckName, TreeScope.Descendants, 10);
-                        InvokePattern Pattern_CheckName = (InvokePattern)item_CheckName.GetCurrentPattern(InvokePattern.Pattern);
-                        Pattern_CheckName.Invoke();
+                        InvokePattern pattern_CheckName = (InvokePattern)item_CheckName.GetCurrentPattern(InvokePattern.Pattern);
+                        pattern_CheckName.Invoke();
                         Condition cd_send = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Send Update"));
                         AutomationElement item_send = Utilities.WaitForElement(window_Meeting, cd_send, TreeScope.Descendants, 10);
-                        InvokePattern Pattern_send = (InvokePattern)item_send.GetCurrentPattern(InvokePattern.Pattern);
-                        Pattern_send.Invoke();
+                        InvokePattern pattern_send = (InvokePattern)item_send.GetCurrentPattern(InvokePattern.Pattern);
+                        pattern_send.Invoke();
                     }
                 }
             }
@@ -642,6 +685,49 @@ namespace MAPIAutomationTest
             {
                 throw new Exception(ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Update the XML file via parsing the all ROP list covered in trace
+        /// </summary>
+        /// <param name="allRopLists">All ROP list covered</param>
+        public static void UpdateXMLFile(List<string> allRopLists)
+        {
+            // Update XML attribute
+            XmlDocument xmlDoc = new XmlDocument();
+            string fileName = ConfigurationManager.AppSettings["RopSourcexml"].ToString();
+            string resultXml = TestBase.TestingfolderPath + Path.DirectorySeparatorChar + "RopsCopy.xml";
+            if (File.Exists(resultXml))
+            {
+                xmlDoc.Load(resultXml);
+            }
+            else
+            {
+                xmlDoc.Load(fileName);
+            }
+
+            foreach (var rop in allRopLists)
+            {
+                XmlNode node = xmlDoc.SelectSingleNode(string.Format("data-set/structure/RopName[text()='" + rop + "']"));
+                if (node != null)
+                {
+                    node.NextSibling.InnerText = "True";
+                    string allTestCase = node.NextSibling.NextSibling.InnerText;
+                    if (allTestCase != "null")
+                    {
+                        if (!allTestCase.Contains(TestBase.TestName))
+                        {
+                            node.NextSibling.NextSibling.InnerText = allTestCase.Insert(allTestCase.Length, "," + TestBase.TestName);
+                        }
+                    }
+                    else
+                    {
+                        node.NextSibling.NextSibling.InnerText = TestBase.TestName;
+                    }
+                }
+            }
+
+            xmlDoc.Save(resultXml);
         }
     }
 }

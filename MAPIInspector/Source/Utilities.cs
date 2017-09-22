@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace MapiInspector
+﻿namespace MapiInspector
 {
+    using System;
+    using System.Collections.Generic;
+
     /// <summary>
     /// The utilities class for MAPI Inspector.
     /// </summary>
-    class Utilities
+    public class Utilities
     {
         /// <summary>
-        /// Convert the data format from uint to string 
+        /// Convert the data format from uInt to string 
         /// </summary>
-        /// <param name="data">The uint data</param>
+        /// <param name="data">The UInt data</param>
         /// <returns>The converted string result</returns>
         public static string ConvertUintToString(uint data)
         {
@@ -19,9 +19,9 @@ namespace MapiInspector
         }
 
         /// <summary>
-        /// Convert the data format from ushort to string 
+        /// Convert the data format from uShort to string 
         /// </summary>
-        /// <param name="data">The ushort data</param>
+        /// <param name="data">The uShort data</param>
         /// <returns>The converted string result</returns>
         public static string ConvertUshortToString(ushort data)
         {
@@ -63,25 +63,30 @@ namespace MapiInspector
                     {
                         break;
                     }
-                    chunkSize = chunkSize * 16 + b;
+
+                    chunkSize = (chunkSize * 16) + b;
                     i++;                    
                 }
 
                 if (responseBodyFromFiddler[i] != 0x0D || responseBodyFromFiddler[i + 1] != 0x0A)
                 {
                     throw new Exception();
-                }                
+                }   
+                             
                 i += 2;
                 for (int k = 0; k < chunkSize; k++, i++)
                 {
                     payload.Add(responseBodyFromFiddler[i]);
                 }
+
                 if (responseBodyFromFiddler[i] != 0x0D || responseBodyFromFiddler[i + 1] != 0x0A)
                 {
                     throw new Exception();
                 }
+
                 i += 2;                
-            } while (chunkSize > 0);            
+            }
+            while (chunkSize > 0);            
             return payload.ToArray();
         }
     }

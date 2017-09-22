@@ -1,309 +1,138 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Windows.Forms;
-using System.Reflection;
-using System.Runtime.InteropServices;
-
-
-namespace MAPIInspector.Parsers
+﻿namespace MAPIInspector.Parsers
 {
+    using System;
+    using System.IO;
+    using System.Reflection;
+    using System.Runtime.InteropServices;
+    using System.Text;
+    using System.Windows.Forms;
+    using System.Xml;
+
+    /// <summary>
+    /// String encoding enum
+    /// </summary>
+    public enum StringEncoding
+    {
+        /// <summary>
+        /// ASCII encoding
+        /// </summary>
+        ASCII,
+
+        /// <summary>
+        /// Unicode encoding
+        /// </summary>
+        Unicode
+    }
+
+    /// <summary>
+    /// BaseStructure class 
+    /// </summary>
     public abstract class BaseStructure
     {
+        /// <summary>
+        /// Boolean value, if payload is compressed or obfuscated, value is true. otherwise, value is false.
+        /// </summary>
+        public static bool IsCompressedXOR = false;
+
+        /// <summary>
+        /// This field is for rgbOutputBuffer or ExtendedBuffer_Input in MAPIHTTP layer
+        /// </summary>
+        private static int compressBufferindex = 0;
+
         /// <summary>
         /// The stream to parse
         /// </summary>
         private Stream stream;
 
         /// <summary>
-        /// Boolean value, if payload is compressed or obfascated, value is true. otherwise, value is false.
+        /// The data type enum
         /// </summary>
-        public static bool isCompressedXOR = false;
-
-        // This feild is for rgbOutputBuffer or ExtendedBuffer_Input in MAPIHTTP layer
-        private static int compressBufferindex = 0;
-
-        /// <summary>
-        /// Parse stream to specific message
-        /// </summary>
-        /// <param name="s">Stream to parse</param>
-        public virtual void Parse(Stream s)
+        public enum DataType
         {
-            stream = s;
-        }
+            /// <summary>
+            /// Binary type
+            /// </summary>
+            Binary,
 
-        /// <summary>
-        /// Override the ToString method to return empty.
-        /// </summary>
-        /// <returns>Empty string value</returns>
-        public override string ToString()
-        {
-            return "";
-        }
-        /// <summary>
-        /// Read  bits value from byte
-        /// </summary>
-        /// <param name="b">The byte.</param>
-        /// <param name="index">The bit index to read</param>
-        /// <param name="length">The bit length to read</param>
-        /// <returns>bits value</returns>
-        public byte GetBits(byte b, int index, int length)
-        {
-            int Bit = 0;
-            int tempBit = 0;
-            if ((index >= 8) || (length > 8))
-            {
-                throw new Exception("The range for index or length should be 0~7.");
-            }
+            /// <summary>
+            /// Boolean type
+            /// </summary>
+            Boolean,
 
-            for (int i = 0; i < length; i++)
-            {
-                tempBit = ((b & (1 << (7 - index - i))) > 0) ? 1 : 0;
-                Bit = (Bit << 1) | tempBit;
-            }
-            return (byte)Bit;
-        }
+            /// <summary>
+            /// Byte type
+            /// </summary>
+            Byte,
 
-        /// <summary>
-        /// Read an Int16 value from stream
-        /// </summary>
-        /// <returns>An Int16 value</returns>
-        protected Int16 ReadINT16()
-        {
-            int value;
-            int b1, b2;
-            b1 = stream.ReadByte();
-            b2 = stream.ReadByte();
+            /// <summary>
+            /// Char type
+            /// </summary>
+            Char,
 
-            value = (b2 << 8) | b1;
+            /// <summary>
+            /// Double type
+            /// </summary>
+            Double,
 
-            return (Int16)value;
-        }
+            /// <summary>
+            /// Decimal type
+            /// </summary>
+            Decimal,
 
-        /// <summary>
-        /// Read an Int32 value from stream
-        /// </summary>
-        /// <returns>An Int32 value</returns>
-        protected Int32 ReadINT32()
-        {
-            long value;
-            int b1, b2, b3, b4;
-            b1 = stream.ReadByte();
-            b2 = stream.ReadByte();
-            b3 = stream.ReadByte();
-            b4 = stream.ReadByte();
+            /// <summary>
+            /// Single type
+            /// </summary>
+            Single,
 
-            value = (b4 << 24) | (b3 << 16) | (b2 << 8) | b1;
+            /// <summary>
+            /// GUID type
+            /// </summary>
+            Guid,
 
-            return (Int32)value;
-        }
+            /// <summary>
+            /// Int16 type
+            /// </summary>
+            Int16,
 
-        /// <summary>
-        /// Read an long value from stream
-        /// </summary>
-        /// <returns>An long value</returns>
-        public long ReadINT64()
-        {
-            long low = this.ReadINT32();
-            long high = this.ReadINT32();
+            /// <summary>
+            /// Int32 type
+            /// </summary>
+            Int32,
 
-            // 0x100000000 is 2 raised to the 32th power plus 1
-            return (long)((high << 32) | low);
-        }
+            /// <summary>
+            /// Int64 type
+            /// </summary>
+            Int64,
 
-        /// <summary>
-        /// Read an Boolean value from stream
-        /// </summary>
-        /// <returns>An Boolean value</returns>
-        protected Boolean ReadBoolean()
-        {
-            return ReadByte() != 0x00;
-        }
+            /// <summary>
+            /// SByte type
+            /// </summary>
+            SByte,
 
-        /// <summary>
-        /// Read a byte value from stream
-        /// </summary>
-        /// <returns>A byte</returns>
-        protected byte ReadByte()
-        {
-            int value = stream.ReadByte();
-            if (value == -1)
-            {
-                throw new Exception();
-            }
-            return (byte)value;
-        }
+            /// <summary>
+            /// String type
+            /// </summary>
+            String,
 
+            /// <summary>
+            /// UInt16 type
+            /// </summary>
+            UInt16,
 
-        /// <summary>
-        /// Read a GUID value from stream
-        /// </summary>
-        /// <returns>A GUID value</returns>
-        protected Guid ReadGuid()
-        {
-            Guid guid = new Guid(ReadBytes(16));
-            if (guid == null)
-            {
-                throw new Exception();
-            }
-            return guid;
-        }
+            /// <summary>
+            /// UInt32 type
+            /// </summary>
+            UInt32,
 
-        /// <summary>
-        /// Read an ushort value from stream
-        /// </summary>
-        /// <returns>An ushort value</returns>
-        protected ushort ReadUshort()
-        {
-            int value;
-            int b1, b2;
-            b1 = stream.ReadByte();
-            b2 = stream.ReadByte();
+            /// <summary>
+            /// UInt64 type
+            /// </summary>
+            UInt64,
 
-            value = (b2 << 8) | b1;
-
-            return (ushort)value;
-        }
-
-        /// <summary>
-        /// Read an uint value from stream
-        /// </summary>
-        /// <returns>An uint value</returns>
-        protected uint ReadUint()
-        {
-            long value;
-            int b1, b2, b3, b4;
-            b1 = stream.ReadByte();
-            b2 = stream.ReadByte();
-            b3 = stream.ReadByte();
-            b4 = stream.ReadByte();
-
-            value = (b4 << 24) | (b3 << 16) | (b2 << 8) | b1;
-
-            return (uint)value;
-        }
-
-        /// <summary>
-        /// Read an uLong value from stream
-        /// </summary>
-        /// <returns>An uLong value</returns>
-        protected ulong ReadUlong()
-        {
-            long low = (uint)this.ReadUint();
-            long high = (uint)this.ReadUint();
-
-            return (ulong)(high << 32 | low);
-        }
-
-        /// <summary>
-        /// Read string value from stream according to string terminator and Encoding method
-        /// </summary>
-        /// <param name="encoding">The character Encoding</param>
-        /// <param name="terminator">The string terminator</param>
-        /// <param name="length">The string length.</param>
-        /// <param name="reducedUnicode">True means reduced Unicode character string. The terminating null character is one zero byte.</param>
-        /// <returns>A string value</returns>
-        protected string ReadString(Encoding encoding, string terminator = "\0", int stringlength = 0, bool reducedUnicode = false)
-        {
-            string result = null;
-            StringBuilder value = new StringBuilder();
-            if (stringlength == 0)
-            {
-                int length = terminator.Length;
-                bool terminated = false;
-                // Read Null-terminated reduced Unicode character string. The terminating null character is one zero byte.
-                if ((encoding == Encoding.Unicode) && (reducedUnicode))
-                {
-                    while (!terminated)
-                    {
-                        byte[] tempbytes = new byte[2];
-                        tempbytes[0] = ReadByte();
-                        if (Encoding.ASCII.GetChars(tempbytes, 0, 1)[0].ToString() == "\0")
-                        {
-                            terminated = true;
-                            break;
-                        }
-                        tempbytes[1] = ReadByte();
-                        char[] chars = Encoding.Unicode.GetChars(tempbytes, 0, 2);
-                        value.Append(chars);
-                    }
-                    result = value.ToString();
-                }
-                else
-                {
-                    while (!terminated)
-                    {
-                        value.Append(ReadChar(encoding));
-                        if (value.Length < length)
-                        {
-                            continue;
-                        }
-                        int i;
-                        for (i = length - 1; i >= 0; i--)
-                        {
-                            if (terminator[i] != value[value.Length - length + i])
-                            {
-                                break;
-                            }
-                        }
-                        terminated = i < 0;
-                    }
-                    result = value.Remove(value.Length - length, length).ToString();
-                }
-            }
-            else
-            {
-                int size = stringlength;
-                while (size != 0)
-                {
-                    value.Append(ReadChar(encoding));
-                    size--;
-                }
-                result = value.ToString();
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Read bytes from stream
-        /// </summary>
-        /// <param name="length">The byte length to read</param>
-        /// <returns>Bytes value</returns>
-        protected byte[] ReadBytes(int length)
-        {
-            byte[] bytes = new byte[length];
-
-            int count = stream.Read(bytes, 0, length);
-
-            if (count != length)
-            {
-                throw new Exception();
-            }
-            return bytes;
-        }
-
-        /// <summary>
-        /// Read character from stream
-        /// </summary>
-        /// <param name="encoding">The text encoding</param>
-        /// <returns>A char value</returns>
-        protected char ReadChar(Encoding encoding)
-        {
-            int length = encoding.GetMaxByteCount(1);
-            byte[] bytes = new byte[length];
-            int count = stream.Read(bytes, 0, length);
-            if (count == -1)
-            {
-                throw new Exception();
-            }
-            char[] chars = encoding.GetChars(bytes, 0, count);
-
-            length = encoding.GetByteCount(chars, 0, 1);
-            if (length < count)
-            {
-                stream.Seek(length - count, SeekOrigin.Current);
-            }
-            return chars[0];
+            /// <summary>
+            /// DateTime type
+            /// </summary>
+            DateTime
         }
 
         /// <summary>
@@ -317,19 +146,86 @@ namespace MAPIInspector.Parsers
         {
             Type t = obj.GetType();
             int current = startIndex;
-
             TreeNode res = new TreeNode(t.Name);
+
             if (t.Name == "MAPIString")
             {
                 int os = 0;
                 FieldInfo[] infoString = t.GetFields();
+                string terminator = (string)infoString[2].GetValue(obj);
+                TreeNode node = new TreeNode(string.Format("{0}:{1}", infoString[0].Name, infoString[0].GetValue(obj)));
+
+                // If the Encoding is Unicode.
+                if (infoString[1].GetValue(obj).ToString() == "System.Text.UnicodeEncoding")
+                {
+                    // If the StringLength is not equal 0, the StringLength will be os value.
+                    if (infoString[3].GetValue(obj).ToString() != "0")
+                    {
+                        os = ((int)infoString[3].GetValue(obj)) * 2;
+                    }
+                    else
+                    {
+                        if (infoString[0].GetValue(obj) != null)
+                        {
+                            os = ((string)infoString[0].GetValue(obj)).Length * 2;
+                        }
+
+                        if (infoString[4].GetValue(obj).ToString() != "False")
+                        {
+                            os -= 1;
+                        }
+
+                        os += terminator.Length * 2;
+                    }
+                }
+                else
+                {
+                    // If the Encoding is ASCII.
+                    if (infoString[3].GetValue(obj).ToString() != "0")
+                    {
+                        // If the StringLength is not equal 0, the StringLength will be os value
+                        os = (int)infoString[3].GetValue(obj);
+                    }
+                    else
+                    {
+                        if (infoString[0].GetValue(obj) != null)
+                        {
+                            os = ((string)infoString[0].GetValue(obj)).Length;
+                        }
+
+                        os += terminator.Length;
+                    }
+                }
+
+                offset = os;
+                Position positionString = new Position(current, os);
+                node.Tag = positionString;
+                res.Nodes.Add(node);
+                return res;
+            }
+            else if (t.Name == "MAPIStringAddressBook")
+            {
+                FieldInfo[] infoString = t.GetFields();
+
+                // MagicByte node
+                if (infoString[1].GetValue(obj) != null)
+                {
+                    TreeNode nodeMagic = new TreeNode(string.Format("{0}:{1}", infoString[1].Name, infoString[1].GetValue(obj)));
+                    Position positionStringMagic = new Position(current, 1);
+                    nodeMagic.Tag = positionStringMagic;
+                    res.Nodes.Add(nodeMagic);
+                    current += 1;
+                }
+
+                // value node
                 string terminator = (string)infoString[3].GetValue(obj);
+                int os = 0;
                 TreeNode node = new TreeNode(string.Format("{0}:{1}", infoString[0].Name, infoString[0].GetValue(obj)));
 
                 // If the Encoding is Unicode.
                 if (infoString[2].GetValue(obj).ToString() == "System.Text.UnicodeEncoding")
                 {
-                    // If the StringLength is not equal 0, the StringLength will be os value.
+                    // If the StringLength is not equal 0, the StringLength will be OS value.
                     if (infoString[4].GetValue(obj).ToString() != "0")
                     {
                         os = ((int)infoString[4].GetValue(obj)) * 2;
@@ -340,20 +236,22 @@ namespace MAPIInspector.Parsers
                         {
                             os = ((string)infoString[0].GetValue(obj)).Length * 2;
                         }
+
                         if (infoString[5].GetValue(obj).ToString() != "False")
                         {
                             os -= 1;
                         }
+
                         os += terminator.Length * 2;
                     }
                 }
-                //If the Encoding is ASCII.
                 else
                 {
-                    // If the StringLength is not equal 0, the StringLength will be os value.
+                    // If the Encoding is ASCII.
                     if (infoString[4].GetValue(obj).ToString() != "0")
                     {
-                        os = ((int)infoString[4].GetValue(obj));
+                        // If the StringLength is not equal 0, the StringLength will be OS value.
+                        os = (int)infoString[4].GetValue(obj);
                     }
                     else
                     {
@@ -361,14 +259,24 @@ namespace MAPIInspector.Parsers
                         {
                             os = ((string)infoString[0].GetValue(obj)).Length;
                         }
+
                         os += terminator.Length;
                     }
                 }
 
-                offset = os;
                 Position positionString = new Position(current, os);
                 node.Tag = positionString;
                 res.Nodes.Add(node);
+
+                if (infoString[1].GetValue(obj) != null)
+                {
+                    offset = os + 1;
+                }
+                else
+                {
+                    offset = os;
+                }
+
                 return res;
             }
 
@@ -381,13 +289,14 @@ namespace MAPIInspector.Parsers
             {
                 // If the data type is not simple type, we will loop each field, check the data type and then parse the value in different format
                 FieldInfo[] info = t.GetFields();
-                int BitLength = 0;
+                int bitLength = 0;
 
                 // The is only for FastTransfer stream parse, Polymorphic in PropValue and NamedPropInfo 
                 if (obj is PropValue || obj is NamedPropInfo)
                 {
                     info = MoveFirstNFieldsBehind(info, info.Length - 2);
                 }
+
                 for (int i = 0; i < info.Length; i++)
                 {
                     int os = 0;
@@ -399,14 +308,14 @@ namespace MAPIInspector.Parsers
                         type = info[i].GetValue(obj).GetType();
                     }
 
-                    // If the field type is nullable simple data type (such as int?), set the field data type as basic data type (such as int in int?)
+                    // If the field type is null-able simple data type (such as int?), set the field data type as basic data type (such as int in int?)
                     if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                     {
                         type = type.GetGenericArguments()[0];
                     }
 
                     // Check whether the field data type is simple type: 
-                    // Boolean, Byte, Char, Double, Decimal,Single, Guid, Int16, Int32, Int64, SByte, String, UInt16, UInt32, UInt64, DateTime
+                    // Boolean, Byte, Char, Double, Decimal,Single, GUID, Int16, Int32, Int64, SByte, String, UInt16, UInt32, UInt64, DateTime
                     // calculate each field's offset and length.
                     if (Enum.IsDefined(typeof(DataType), type.Name))
                     {
@@ -415,6 +324,7 @@ namespace MAPIInspector.Parsers
                             Type fieldType = type;
                             TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, info[i].GetValue(obj).ToString()));
                             res.Nodes.Add(tn);
+
                             if (type.Name == "UInt64")
                             {
                                 if (info[i].GetCustomAttributesData().Count == 0)
@@ -431,11 +341,12 @@ namespace MAPIInspector.Parsers
                             {
                                 os = 8;
                             }
-                            // Check if it is bit.
                             else if (type.Name == "Byte" && info[i].GetCustomAttributesData().Count != 0 && info[i].GetCustomAttributes(typeof(BitAttribute), false) != null)
                             {
+                                // Check if it is bit.
                                 BitAttribute attribute = (BitAttribute)info[i].GetCustomAttributes(typeof(BitAttribute), false)[0];
-                                if (BitLength % 8 == 0)
+
+                                if (bitLength % 8 == 0)
                                 {
                                     os += 1;
                                 }
@@ -444,7 +355,8 @@ namespace MAPIInspector.Parsers
                                     current -= 1;
                                     os += 1;
                                 }
-                                BitLength += attribute.BitLength;
+
+                                bitLength += attribute.BitLength;
                             }
                             else if (type.Name != "Boolean")
                             {
@@ -452,43 +364,49 @@ namespace MAPIInspector.Parsers
                             }
                             else
                             {
-                                os = sizeof(Boolean);
+                                os = sizeof(bool);
                             }
+
                             Position ps = new Position(current, os);
                             tn.Tag = ps;
                             current += os;
                         }
                     }
-                    // Else if the field data type is enum data type, its underlying type is simple type and its value is not null, calculate each field's offset
-                    // and length. There are two situations: one is string type, we should calculate it's actual length (via getting value); another one is calculating
-                    // the size of underlying type of enum. 
                     else if ((type.IsEnum && Enum.IsDefined(typeof(DataType), type.GetEnumUnderlyingType().Name)) && info[i].GetValue(obj) != null)
                     {
+                        // Else if the field data type is enum data type, its underlying type is simple type and its value is not null, calculate each field's offset
+                        // and length. There are two situations: one is string type, we should calculate it's actual length (via getting value); another one is calculating
+                        // the size of underlying type of enum. 
                         Type fieldType = type;
+
                         // TODO: display decimal value to hex one
                         TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, info[i].GetValue(obj).ToString()));
                         res.Nodes.Add(tn);
+
                         if (type.Name == "String")
                         {
                             os = ((string)info[i].GetValue(obj)).Length;
                         }
-                        // Modify the bit os for the NotificationFlagsT in MSOXCNOTIF
                         else if (info[i].GetCustomAttributesData().Count != 0 && info[i].GetCustomAttributes(typeof(BitAttribute), false) != null)
                         {
+                            // Modify the bit OS for the NotificationFlagsT in MSOXCNOTIF
                             BitAttribute attribute = (BitAttribute)info[i].GetCustomAttributes(typeof(BitAttribute), false)[0];
-                            if ((BitLength) % 8 != 0)
+
+                            if (bitLength % 8 != 0)
                             {
                                 current -= 1;
                             }
+
                             if (attribute.BitLength % 8 == 0)
                             {
                                 os += attribute.BitLength / 8;
                             }
                             else
                             {
-                                os += attribute.BitLength / 8 + 1;
+                                os += (attribute.BitLength / 8) + 1;
                             }
-                            BitLength += attribute.BitLength;
+
+                            bitLength += attribute.BitLength;
                         }
                         else
                         {
@@ -499,10 +417,10 @@ namespace MAPIInspector.Parsers
                         tn.Tag = ps;
                         current += os;
                     }
-                    // If the field type is array, there are two properties need to know: optional or required, array element data type is simple or complex
-                    // Field value considered: empty, null or value type displaying when not null/empty                  
                     else if (type.IsArray)
                     {
+                        // If the field type is array, there are two properties need to know: optional or required, array element data type is simple or complex
+                        // Field value considered: empty, null or value type displaying when not null/empty      
                         // Getting the element type for required and optional array value
                         Type elementType = type.GetElementType();
                         if (!type.IsValueType && type.GetGenericArguments().Length > 0)
@@ -514,14 +432,17 @@ namespace MAPIInspector.Parsers
                         if (Enum.IsDefined(typeof(DataType), elementType.Name))
                         {
                             Array arr = (Array)info[i].GetValue(obj);
+
                             if (arr != null && arr.Length != 0)
                             {
                                 StringBuilder result = new StringBuilder();
+
                                 // it the field is 6 bytes, updated the display text.
                                 if (arr.Length == 6 && arr.GetType().ToString() == "System.Byte[]" && info[i].Name == "GlobalCounter")
                                 {
-                                    byte[] tempbytes = (System.Byte[])info[i].GetValue(obj);
+                                    byte[] tempbytes = (byte[])info[i].GetValue(obj);
                                     result.Append("0x");
+
                                     foreach (byte tempbye in tempbytes)
                                     {
                                         result.Append(tempbye.ToString("X2"));
@@ -529,23 +450,27 @@ namespace MAPIInspector.Parsers
                                 }
                                 else
                                 {
-                                    // Array type just diaplay the first 30 values if the array length is more than 30.
+                                    // Array type just display the first 30 values if the array length is more than 30.
                                     int dispalylength = 30;
                                     result.Append("[");
+
                                     foreach (var ar in arr)
                                     {
                                         result.Append(ar.ToString() + ",");
-                                        
-                                        if(dispalylength <=1)
+
+                                        if (dispalylength <= 1)
                                         {
-                                            result.Insert(result.Length-1,"...");
+                                            result.Insert(result.Length - 1, "...");
                                             break;
                                         }
+
                                         dispalylength--;
                                     }
+
                                     result.Remove(result.Length - 1, 1);
                                     result.Append("]");
                                 }
+
                                 TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
                                 res.Nodes.Add(tn);
 
@@ -559,18 +484,20 @@ namespace MAPIInspector.Parsers
                                 current += os;
                             }
                         }
-                        // Else if the element data type is not simple type, here will consider array type and complex type
                         else
                         {
+                            // Else if the element data type is not simple type, here will consider array type and complex type
                             Array arr = (Array)info[i].GetValue(obj);
                             object[] a = (object[])arr;
+
                             if (arr != null && arr.Length != 0)
                             {
                                 string fieldNameForAut = info[i].Name;
-                                TreeNode tnArr = new TreeNode(info[i].Name);
+                                TreeNode treeNodeArray = new TreeNode(info[i].Name);
                                 TreeNode tn = new TreeNode();
                                 int arros = 0;
-                                if (fieldNameForAut == "rgbOutputBuffers" || fieldNameForAut == "buffers")
+
+                                if (fieldNameForAut == "RgbOutputBuffers" || fieldNameForAut == "buffers")
                                 {
                                     compressBufferindex = 0;
                                 }
@@ -584,12 +511,15 @@ namespace MAPIInspector.Parsers
                                         {
                                             StringBuilder result = new StringBuilder("[");
                                             Position ps;
+
                                             foreach (var ar in (byte[])a[k])
                                             {
                                                 result.Append(ar.ToString() + ",");
                                             }
+
                                             result.Remove(result.Length - 1, 1);
                                             result.Append("]");
+
                                             if (arr.Length == 1)
                                             {
                                                 tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
@@ -600,25 +530,27 @@ namespace MAPIInspector.Parsers
                                             else
                                             {
                                                 tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
-                                                tnArr.Nodes.Add(tn);
+                                                treeNodeArray.Nodes.Add(tn);
                                                 os = ((byte[])a[k]).Length;
                                                 ps = new Position(current, os);
                                                 tn.Tag = ps;
                                             }
+
                                             os = ((byte[])a[k]).Length;
                                             ps = new Position(current, os);
-                                            tnArr.Tag = ps;
+                                            treeNodeArray.Tag = ps;
                                         }
-                                        // If the item in array is complex type, loop call the function to add it to tree.
                                         else
                                         {
-                                            // compressBufferindex is used to recored the rgbOutputBuffer or ExtendedBuffer_Input num here
-                                            if (a.GetType().Name == "rgbOutputBuffer[]" || a.GetType().Name == "ExtendedBuffer_Input[]")
+                                            // If the item in array is complex type, loop call the function to add it to tree.
+                                            // compressBufferindex is used to recored the rgbOutputBuffer or ExtendedBuffer_Input number here
+                                            if (a.GetType().Name == "RgbOutputBuffer[]" || a.GetType().Name == "ExtendedBuffer_Input[]")
                                             {
                                                 compressBufferindex += 1;
                                             }
+
                                             tn = AddNodesForTree(a[k], current, out os);
-                                            tnArr.Nodes.Add(tn);
+                                            treeNodeArray.Nodes.Add(tn);
                                             Position ps = new Position(current, os);
                                             tn.Tag = ps;
                                         }
@@ -629,35 +561,35 @@ namespace MAPIInspector.Parsers
                                 }
 
                                 Position pss = new Position(current - arros, arros);
-                                tnArr.Tag = pss;
-                                res.Nodes.Add(tnArr);
+                                treeNodeArray.Tag = pss;
+                                res.Nodes.Add(treeNodeArray);
                             }
                         }
                     }
-                    // If the field type is complex type, loop call the function until finding its data type.  
                     else
                     {
+                        // If the field type is complex type, loop call the function until finding its data type.  
                         if (info[i].GetValue(obj) != null)
                         {
                             string fieldName = info[i].Name;
                             TreeNode node = new TreeNode();
 
                             // The below logical is used to check whether the payload is compressed or XOR.
-                            if (fieldName == "RPC_HEADER_EXT")
+                            if (fieldName == "RPCHEADEREXT")
                             {
                                 if (((ushort)((RPC_HEADER_EXT)info[i].GetValue(obj)).Flags & 0x0002) == (ushort)RpcHeaderFlags.XorMagic
                                    || ((ushort)((RPC_HEADER_EXT)info[i].GetValue(obj)).Flags & 0x0001) == (ushort)RpcHeaderFlags.Compressed)
                                 {
-                                    isCompressedXOR = true;
+                                    IsCompressedXOR = true;
                                 }
                                 else
                                 {
-                                    isCompressedXOR = false;
+                                    IsCompressedXOR = false;
                                 }
                             }
 
                             // If the field name is Payload and its compressed, recalculating the offset and length, else directly loop call this function
-                            if (fieldName == "Payload" && isCompressedXOR)
+                            if (fieldName == "Payload" && IsCompressedXOR)
                             {
                                 RPC_HEADER_EXT header = (RPC_HEADER_EXT)info[0].GetValue(obj);
                                 node = AddNodesForTree(info[i].GetValue(obj), current, out os);
@@ -676,6 +608,7 @@ namespace MAPIInspector.Parsers
                                     // minus the Payload is not in compressed
                                     compressBufferindex -= 1;
                                 }
+
                                 node = AddNodesForTree(info[i].GetValue(obj), current, out os);
                             }
 
@@ -700,67 +633,45 @@ namespace MAPIInspector.Parsers
             return res;
         }
 
-        #region Helper for AddNodesForTree function
-        /// <summary>
-        /// Record start position and byte counts consumed 
-        /// </summary>
-        public class Position
-        {
-            public int StartIndex;
-            public int Offset;
-            public bool IsCompressedXOR;
-            public bool IsAuxiliayPayload;
-            public int bufferIndex = 0;
-            public Position(int startIndex, int offset)
-            {
-                this.StartIndex = startIndex;
-                this.Offset = offset;
-                this.IsAuxiliayPayload = false;
-            }
-        }
-
-        /// <summary>
-        /// Convert an array T to array T?
-        /// </summary>
-        public T?[] ConvertArray<T>(T[] array) where T : struct
-        {
-            T?[] nullableArray = new T?[array.Length];
-
-            for (int i = 0; i < array.Length; i++)
-            {
-                nullableArray[i] = array[i];
-            }
-            return nullableArray;
-        }
-
         /// <summary>
         /// Modify the start index for the TreeNode which source data is compressed
         /// </summary>
+        /// <param name="node">The node in compressed buffers</param>
+        /// <param name="current">Indicates start position of the node</param>
+        /// <param name="compressBufferindex">Indicates the index of this node in all compressed buffers in same session</param>
+        /// <param name="isAux">Indicates whether the buffer which this node are in is auxiliary</param>
+        /// <returns>The tree node with BufferIndex and IsCompressedXOR properties </returns>
         public static TreeNode TreeNodeForCompressed(TreeNode node, int current, int compressBufferindex, bool isAux = false)
         {
             foreach (TreeNode n in node.Nodes)
             {
                 TreeNode nd = n;
+
                 if (nd.Tag != null)
                 {
-                    ((Position)(nd.Tag)).IsCompressedXOR = true;
-                    ((Position)(nd.Tag)).StartIndex -= current;
-                    ((Position)(nd.Tag)).bufferIndex = compressBufferindex;
+                    ((Position)nd.Tag).IsCompressedXOR = true;
+                    ((Position)nd.Tag).StartIndex -= current;
+                    ((Position)nd.Tag).BufferIndex = compressBufferindex;
                 }
+
                 if (nd.Nodes.Count != 0)
                 {
                     TreeNodeForCompressed(nd, current, compressBufferindex, isAux);
                 }
             }
+
             return node;
         }
 
         /// <summary>
-        /// Moving the number of fields in FieldInfo from begining to the end
+        /// Moving the number of fields in FieldInfo from beginning to the end
         /// </summary>
+        /// <param name="field">The parent field</param>
+        /// <param name="n">The number of fields need moved</param>
+        /// <returns>FieldInfo value field</returns>
         public static FieldInfo[] MoveFirstNFieldsBehind(FieldInfo[] field, int n)
         {
-            FieldInfo[] NewField = new FieldInfo[field.Length];
+            FieldInfo[] newField = new FieldInfo[field.Length];
 
             if (n < 0 || n > field.Length)
             {
@@ -769,52 +680,396 @@ namespace MAPIInspector.Parsers
             else
             {
                 int i = 0;
+
                 for (; i < field.Length - n; i++)
                 {
-                    NewField[i] = field[n + i];
+                    newField[i] = field[n + i];
                 }
 
                 for (; i < field.Length; i++)
                 {
-                    NewField[i] = field[i - (field.Length - n)];
+                    newField[i] = field[i - (field.Length - n)];
                 }
-                return NewField;
+
+                return newField;
             }
         }
 
         /// <summary>
-        /// The data type enum
+        /// Parse stream to specific message
         /// </summary>
-        public enum DataType
+        /// <param name="s">Stream to parse</param>
+        public virtual void Parse(Stream s)
         {
-            Binary,
-            Boolean,
-            Byte,
-            Char,
-            Double,
-            Decimal,
-            Single,
-            Guid,
-            Int16,
-            Int32,
-            Int64,
-            SByte,
-            String,
-            UInt16,
-            UInt32,
-            UInt64,
-            DateTime
+            this.stream = s;
         }
-        #endregion
+
+        /// <summary>
+        /// Override the ToString method to return empty.
+        /// </summary>
+        /// <returns>Empty string value</returns>
+        public override string ToString()
+        {
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Read bits value from byte
+        /// </summary>
+        /// <param name="b">The byte.</param>
+        /// <param name="index">The bit index to read</param>
+        /// <param name="length">The bit length to read</param>
+        /// <returns>bits value</returns>
+        public byte GetBits(byte b, int index, int length)
+        {
+            int bit = 0;
+            int tempBit = 0;
+
+            if ((index >= 8) || (length > 8))
+            {
+                throw new Exception("The range for index or length should be 0~7.");
+            }
+
+            for (int i = 0; i < length; i++)
+            {
+                tempBit = ((b & (1 << (7 - index - i))) > 0) ? 1 : 0;
+                bit = (bit << 1) | tempBit;
+            }
+
+            return (byte)bit;
+        }
+
+        /// <summary>
+        /// Convert an array T to array T?
+        /// </summary>
+        /// <typeparam name="T">The type used to convert</typeparam>
+        /// <param name="array">the special type of array value used to convert</param>
+        /// <returns>A special type null-able list</returns>
+        public T?[] ConvertArray<T>(T[] array) where T : struct
+        {
+            T?[] nullableArray = new T?[array.Length];
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                nullableArray[i] = array[i];
+            }
+
+            return nullableArray;
+        }
 
         /// <summary>
         /// Convert a value to PropertyDataType
         /// </summary>
-        /// <param name="typeValue"></param>
+        /// <param name="typeValue">The type value</param>
         /// <returns>PropertyDataType type</returns>
         public PropertyDataType ConvertToPropType(ushort typeValue)
         {
             return (PropertyDataType)(typeValue & (ushort)~PropertyDataTypeFlag.MultivalueInstance);
+        }
+
+        /// <summary>
+        /// Read an Int16 value from stream
+        /// </summary>
+        /// <returns>An Int16 value</returns>
+        protected short ReadINT16()
+        {
+            int value;
+            int b1, b2;
+            b1 = this.ReadByte();
+            b2 = this.ReadByte();
+            value = (b2 << 8) | b1;
+
+            return (short)value;
+        }
+
+        /// <summary>
+        /// Read an Int32 value from stream
+        /// </summary>
+        /// <returns>An Int32 value</returns>
+        protected int ReadINT32()
+        {
+            long value;
+            int b1, b2, b3, b4;
+            b1 = this.ReadByte();
+            b2 = this.ReadByte();
+            b3 = this.ReadByte();
+            b4 = this.ReadByte();
+
+            value = (b4 << 24) | (b3 << 16) | (b2 << 8) | b1;
+
+            return (int)value;
+        }
+
+        /// <summary>
+        /// Read an long value from stream
+        /// </summary>
+        /// <returns>An long value</returns>
+        protected long ReadINT64()
+        {
+            long low = this.ReadINT32();
+            long high = this.ReadINT32();
+
+            // 0x100000000 is 2 raised to the 32th power plus 1
+            return (long)((high << 32) | low);
+        }
+
+        /// <summary>
+        /// Read an Boolean value from stream
+        /// </summary>
+        /// <returns>An Boolean value</returns>
+        protected bool ReadBoolean()
+        {
+            return this.ReadByte() != 0x00;
+        }
+
+        /// <summary>
+        /// Read a byte value from stream
+        /// </summary>
+        /// <returns>A byte</returns>
+        protected byte ReadByte()
+        {
+            int value = this.stream.ReadByte();
+
+            if (value == -1)
+            {
+                throw new Exception();
+            }
+
+            return (byte)value;
+        }
+
+        /// <summary>
+        /// Read a GUID value from stream
+        /// </summary>
+        /// <returns>A GUID value</returns>
+        protected Guid ReadGuid()
+        {
+            Guid guid = new Guid(this.ReadBytes(16));
+
+            if (guid == null)
+            {
+                throw new Exception();
+            }
+
+            return guid;
+        }
+
+        /// <summary>
+        /// Read an UShort value from stream
+        /// </summary>
+        /// <returns>An UShort value</returns>
+        protected ushort ReadUshort()
+        {
+            int value;
+            int b1, b2;
+            b1 = this.ReadByte();
+            b2 = this.ReadByte();
+
+            value = (b2 << 8) | b1;
+
+            return (ushort)value;
+        }
+
+        /// <summary>
+        /// Read an UInt value from stream
+        /// </summary>
+        /// <returns>An UInt value</returns>
+        protected uint ReadUint()
+        {
+            long value;
+            int b1, b2, b3, b4;
+            b1 = this.ReadByte();
+            b2 = this.ReadByte();
+            b3 = this.ReadByte();
+            b4 = this.ReadByte();
+
+            value = (b4 << 24) | (b3 << 16) | (b2 << 8) | b1;
+
+            return (uint)value;
+        }
+
+        /// <summary>
+        /// Read an uLong value from stream
+        /// </summary>
+        /// <returns>An uLong value</returns>
+        protected ulong ReadUlong()
+        {
+            long low = (uint)this.ReadUint();
+            long high = (uint)this.ReadUint();
+
+            return (ulong)(high << 32 | low);
+        }
+
+        /// <summary>
+        /// Read string value from stream according to string terminator and Encoding method
+        /// </summary>
+        /// <param name="encoding">The character Encoding</param>
+        /// <param name="terminator">The string terminator</param>
+        /// <param name="stringlength">The string length.</param>
+        /// <param name="reducedUnicode">True means reduced Unicode character string. The terminating null character is one zero byte.</param>
+        /// <returns>A string value</returns>
+        protected string ReadString(Encoding encoding, string terminator = "\0", int stringlength = 0, bool reducedUnicode = false)
+        {
+            string result = null;
+            StringBuilder value = new StringBuilder();
+
+            if (stringlength == 0)
+            {
+                int length = terminator.Length;
+                bool terminated = false;
+
+                // Read Null-terminated reduced Unicode character string. The terminating null character is one zero byte.
+                if (encoding == Encoding.Unicode && reducedUnicode)
+                {
+                    while (!terminated)
+                    {
+                        byte[] tempbytes = new byte[2];
+                        tempbytes[0] = this.ReadByte();
+
+                        if (Encoding.ASCII.GetChars(tempbytes, 0, 1)[0].ToString() == "\0")
+                        {
+                            terminated = true;
+                            break;
+                        }
+
+                        tempbytes[1] = this.ReadByte();
+                        char[] chars = Encoding.Unicode.GetChars(tempbytes, 0, 2);
+                        value.Append(chars);
+                    }
+
+                    result = value.ToString();
+                }
+                else
+                {
+                    while (!terminated)
+                    {
+                        value.Append(this.ReadChar(encoding));
+
+                        if (value.Length < length)
+                        {
+                            continue;
+                        }
+
+                        int i;
+
+                        for (i = length - 1; i >= 0; i--)
+                        {
+                            if (terminator[i] != value[value.Length - length + i])
+                            {
+                                break;
+                            }
+                        }
+
+                        terminated = i < 0;
+                    }
+
+                    result = value.Remove(value.Length - length, length).ToString();
+                }
+            }
+            else
+            {
+                int size = stringlength;
+
+                while (size != 0)
+                {
+                    value.Append(this.ReadChar(encoding));
+                    size--;
+                }
+
+                result = value.ToString();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Read bytes from stream
+        /// </summary>
+        /// <param name="length">The byte length to read</param>
+        /// <returns>Bytes value</returns>
+        protected byte[] ReadBytes(int length)
+        {
+            byte[] bytes = new byte[length];
+
+            int count = this.stream.Read(bytes, 0, length);
+
+            if (count != length)
+            {
+                throw new Exception();
+            }
+
+            return bytes;
+        }
+
+        /// <summary>
+        /// Read character from stream
+        /// </summary>
+        /// <param name="encoding">The text encoding</param>
+        /// <returns>A char value</returns>
+        protected char ReadChar(Encoding encoding)
+        {
+            int length = encoding.GetMaxByteCount(1);
+            byte[] bytes = new byte[length];
+            int count = this.stream.Read(bytes, 0, length);
+
+            if (count == -1)
+            {
+                throw new Exception();
+            }
+
+            char[] chars = encoding.GetChars(bytes, 0, count);
+
+            length = encoding.GetByteCount(chars, 0, 1);
+
+            if (length < count)
+            {
+                this.stream.Seek(length - count, SeekOrigin.Current);
+            }
+
+            return chars[0];
+        }
+
+        /// <summary>
+        /// Record start position and byte counts consumed 
+        /// </summary>
+        public class Position
+        {
+            /// <summary>
+            /// Int value specifies field start position
+            /// </summary>
+            public int StartIndex;
+
+            /// <summary>
+            /// Int value specifies field length
+            /// </summary>
+            public int Offset;
+
+            /// <summary>
+            /// Boolean value specifies if field is in the compressed payload
+            /// </summary>
+            public bool IsCompressedXOR;
+
+            /// <summary>
+            /// Boolean value specifies if field is in the auxiliary payload
+            /// </summary>
+            public bool IsAuxiliayPayload;
+
+            /// <summary>
+            /// Int value specifies the buffer index of a field
+            /// </summary>
+            public int BufferIndex = 0;
+
+            /// <summary>
+            /// Initializes a new instance of the Position class
+            /// </summary>
+            /// <param name="startIndex">The start position of field</param>
+            /// <param name="offset">The Length of field </param>
+            public Position(int startIndex, int offset)
+            {
+                this.StartIndex = startIndex;
+                this.Offset = offset;
+                this.IsAuxiliayPayload = false;
+            }
         }
     }
 
@@ -824,12 +1079,19 @@ namespace MAPIInspector.Parsers
     [AttributeUsage(AttributeTargets.All)]
     public class BitAttribute : System.Attribute
     {
+        /// <summary>
+        /// Specify the length in bit 
+        /// </summary>
         public readonly int BitLength;
+
+        /// <summary>
+        /// Initializes a new instance of the BitAttribute class
+        /// </summary>
+        /// <param name="bitLength">Specify the length in bit </param>
         public BitAttribute(int bitLength)
         {
             this.BitLength = bitLength;
         }
-
     }
 
     /// <summary>
@@ -838,19 +1100,18 @@ namespace MAPIInspector.Parsers
     [AttributeUsage(AttributeTargets.All)]
     public class BytesAttribute : System.Attribute
     {
+        /// <summary>
+        /// Specify the length in byte 
+        /// </summary>
         public readonly uint ByteLength;
+
+        /// <summary>
+        /// Initializes a new instance of the BytesAttribute class
+        /// </summary>
+        /// <param name="byteLength">Specify the length in byte </param>
         public BytesAttribute(uint byteLength)
         {
             this.ByteLength = byteLength;
         }
-    }
-
-    /// <summary>
-    /// String encoding enum
-    /// </summary>
-    public enum StringEncoding
-    {
-        ASCII,
-        Unicode
     }
 }

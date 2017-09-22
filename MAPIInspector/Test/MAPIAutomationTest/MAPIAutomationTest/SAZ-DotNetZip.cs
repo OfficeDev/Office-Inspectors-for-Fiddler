@@ -150,7 +150,7 @@ namespace Fiddler
             {
                 case EncryptionAlgorithm.PkzipWeak:
                     _EncryptionMethod = "PKZip";
-                    _EncryptionStrength = "56"; // Is that right?
+                    _EncryptionStrength = "56"; 
                     break;
                 case EncryptionAlgorithm.WinZipAes128:
                     _EncryptionMethod = "WinZipAes";

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Windows.Forms;
-
-namespace MAPIInspector.Parsers
+﻿namespace MAPIInspector.Parsers
 {
-    #region The enum value that used by Rops.
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+
+    #region The enum value that used by ROPs.
 
     /// <summary>
     /// Section 2.2.1.1.1   RopOpenFolder ROP Request Buffer
@@ -14,14 +13,25 @@ namespace MAPIInspector.Parsers
     [Flags]
     public enum OpenModeFlagsMSOXCFOLD : byte
     {
+        /// <summary>
+        /// The operation opens either an existing folder or a soft-deleted folder
+        /// </summary>
         OpenSoftDeleted = 0x04
     }
+
     /// <summary>
     /// Section 2.2.1.2.1   RopCreateFolder ROP Request Buffer
     /// </summary>
     public enum FolderType : byte
     {
+        /// <summary>
+        /// Generic folder
+        /// </summary>
         GenericFolder = 1,
+
+        /// <summary>
+        /// Search folder
+        /// </summary>
         SearchFolder = 2
     }
 
@@ -31,8 +41,19 @@ namespace MAPIInspector.Parsers
     [Flags]
     public enum DeleteFolderFlags : byte
     {
+        /// <summary>
+        /// The folder and all of the Message objects in the folder are deleted.
+        /// </summary>
         DEL_MESSAGES = 0x01,
+
+        /// <summary>
+        /// The folder and all of its subfolders are deleted
+        /// </summary>
         DEL_FOLDERS = 0x04,
+
+        /// <summary>
+        /// The folder is hard deleted
+        /// </summary>
         DELETE_HARD_DELETE = 0x10
     }
 
@@ -42,12 +63,39 @@ namespace MAPIInspector.Parsers
     [Flags]
     public enum SearchRequestFlags : uint
     {
+        /// <summary>
+        /// The search is aborted
+        /// </summary>
         STOP_SEARCH = 0x00000001,
+
+        /// <summary>
+        /// The search is initiated
+        /// </summary>
         RESTART_SEARCH = 0x00000002,
+
+        /// <summary>
+        /// The search includes the search folder containers and all of their child folders.
+        /// </summary>
         RECURSIVE_SEARCH = 0x00000004,
+
+        /// <summary>
+        /// The search includes only the search folder containers that are specified in the FolderIds field
+        /// </summary>
         SHALLOW_SEARCH = 0x00000008,
+
+        /// <summary>
+        /// The search uses a content-indexed search
+        /// </summary>
         CONTENT_INDEXED_SEARCH = 0x00010000,
+
+        /// <summary>
+        /// The search does not use a content-indexed search
+        /// </summary>
         NON_CONTENT_INDEXED_SEARCH = 0x00020000,
+
+        /// <summary>
+        /// The search is static
+        /// </summary>
         STATIC_SEARCH = 0x00040000
     }
 
@@ -57,14 +105,49 @@ namespace MAPIInspector.Parsers
     [Flags]
     public enum SearchResponseFlags : uint
     {
+        /// <summary>
+        /// The search is running
+        /// </summary>
         SEARCH_RUNNING = 0x00000001,
+
+        /// <summary>
+        /// The search is in the CPU-intensive part of the search
+        /// </summary>
         SEARCH_REBUILD = 0x00000002,
+
+        /// <summary>
+        /// the specified search folder containers and all their child search folder containers are searched for matching entries
+        /// </summary>
         SEARCH_RECURSIVE = 0x00000004,
+
+        /// <summary>
+        /// The search results are complete
+        /// </summary>
         SEARCH_COMPLETE = 0x00001000,
+
+        /// <summary>
+        /// Only some parts of messages were included
+        /// </summary>
         SEARCH_PARTIAL = 0x00002000,
+
+        /// <summary>
+        /// The search is static
+        /// </summary>
         SEARCH_STATIC = 0x00010000,
+
+        /// <summary>
+        /// The search is still being evaluated
+        /// </summary>
         SEARCH_MAYBE_STATIC = 0x00020000,
+
+        /// <summary>
+        /// The search is done using content indexing.
+        /// </summary>
         CI_TOTALLY = 0x01000000,
+
+        /// <summary>
+        /// The search is done without using content indexing
+        /// </summary>
         TWIR_TOTALLY = 0x08000000
     }
 
@@ -74,24 +157,71 @@ namespace MAPIInspector.Parsers
     [Flags]
     public enum HierarchyTableFlags : byte
     {
+        /// <summary>
+        /// the hierarchy table lists folders from all levels under the folder
+        /// </summary>
         Depth = 0x04,
+
+        /// <summary>
+        /// Deferred Errors
+        /// </summary>
         DeferredErrors = 0x08,
+
+        /// <summary>
+        /// The hierarchy table notifications to the client are disabled
+        /// </summary>
         NoNotifications = 0x10,
+
+        /// <summary>
+        /// The hierarchy table lists only the folders that are soft deleted
+        /// </summary>
         SoftDeletes = 0x20,
+
+        /// <summary>
+        /// The columns that contain string data are returned in Unicode format
+        /// </summary>
         UseUnicode = 0x40,
+
+        /// <summary>
+        /// The notifications generated by the client's actions on the hierarchy table are suppressed
+        /// </summary>
         SuppressesNotifications = 0x80
     }
+
     /// <summary>
     /// Section 2.2.1.14.1   RopGetContentsTable ROP Request Buffer
     /// </summary>
     [Flags]
     public enum ContentsTableFlags : byte
     {
+        /// <summary>
+        /// The contents table lists only the FAI messages.
+        /// </summary>
         Associated = 0x02,
+
+        /// <summary>
+        /// Deferred Errors
+        /// </summary>
         DeferredErrors = 0x08,
+
+        /// <summary>
+        /// The contents table notifications to the client are disabled
+        /// </summary>
         NoNotifications = 0x10,
+
+        /// <summary>
+        /// The contents table lists only the messages that are soft deleted
+        /// </summary>
         SoftDeletes = 0x20,
+
+        /// <summary>
+        /// The columns that contain string data are returned in Unicode format
+        /// </summary>
         UseUnicode = 0x40,
+
+        /// <summary>
+        /// The contents table lists messages pertaining to a single conversation (one result row represents a single message)
+        /// </summary>
         ConversationMembers = 0x80
     }
 
@@ -103,22 +233,34 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopOpenFolderRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // A 64-bit identifier that specifies the folder to be opened.
+        /// <summary>
+        /// A 64-bit identifier that specifies the folder to be opened.
+        /// </summary>
         public FolderID FolderId;
 
-        // An 8-bit flags structure that contains flags that are used to control how the folder is opened.
+        /// <summary>
+        /// An 8-bit flags structure that contains flags that are used to control how the folder is opened.
+        /// </summary>
         public OpenModeFlagsMSOXCFOLD OpenModeFlags;
 
         /// <summary>
@@ -129,43 +271,59 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
             this.FolderId = new FolderID();
             this.FolderId.Parse(s);
-            this.OpenModeFlags = (OpenModeFlagsMSOXCFOLD)ReadByte();
+            this.OpenModeFlags = (OpenModeFlagsMSOXCFOLD)this.ReadByte();
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopOpenFolder ROP Response Buffer.
     /// </summary>
     public class RopOpenFolderResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request. 
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request. 
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // A Boolean that indicates whether the folder has rules associated with it.
+        /// <summary>
+        /// A Boolean that indicates whether the folder has rules associated with it.
+        /// </summary>
         public bool? HasRules;
 
-        // A Boolean that specifies whether the folder is a ghosted folder.
+        /// <summary>
+        /// A Boolean that specifies whether the folder is a ghosted folder.
+        /// </summary>
         public bool? IsGhosted;
 
-        // This value specifies the number of strings in the Servers field.
+        /// <summary>
+        /// This value specifies the number of strings in the Servers field.
+        /// </summary>
         public ushort? ServerCount;
 
-        // This value specifies the number of values in the Servers field that refer to lowest-cost servers.
+        /// <summary>
+        /// This value specifies the number of values in the Servers field that refer to lowest-cost servers.
+        /// </summary>
         public ushort? CheapServerCount;
 
-        // A list of null-terminated ASCII strings that specify which servers have replicas (2) of this folder. 
+        /// <summary>
+        /// A list of null-terminated ASCII strings that specify which servers have replicas (2) of this folder. 
+        /// </summary>
         public MAPIString[] Servers;
 
         /// <summary>
@@ -176,26 +334,27 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
-                this.HasRules = ReadBoolean();
-                this.IsGhosted = ReadBoolean();
-                if ((bool)IsGhosted)
+                this.HasRules = this.ReadBoolean();
+                this.IsGhosted = this.ReadBoolean();
+                if ((bool)this.IsGhosted)
                 {
-                    this.ServerCount = ReadUshort();
-                    this.CheapServerCount = ReadUshort();
+                    this.ServerCount = this.ReadUshort();
+                    this.CheapServerCount = this.ReadUshort();
                     List<MAPIString> tempServers = new List<MAPIString>();
-                    for (int i = 0; i < ServerCount; i++)
+                    for (int i = 0; i < this.ServerCount; i++)
                     {
                         MAPIString tempString = new MAPIString(Encoding.ASCII);
                         tempString.Parse(s);
                         tempServers.Add(tempString);
                     }
+
                     this.Servers = tempServers.ToArray();
                 }
             }
@@ -210,34 +369,54 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopCreateFolderRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An enumeration that specifies what type of folder to create. 
+        /// <summary>
+        /// An enumeration that specifies what type of folder to create. 
+        /// </summary>
         public FolderType FolderType;
 
-        // A Boolean that specifies whether the DisplayName field and the Comment field contain Unicode characters or multibyte characters.
+        /// <summary>
+        /// A Boolean that specifies whether DisplayName and Comment fields are formated in Unicode.
+        /// </summary>
         public bool UseUnicodeStrings;
 
-        // Boolean that specifies whether this operation opens a Folder object or fails when the Folder object already exists.
+        /// <summary>
+        /// Boolean that specifies whether this operation opens a Folder object or fails when the Folder object already exists.
+        /// </summary>
         public bool OpenExisting;
 
-        // Reserved. This field MUST be set to 0x00.
+        /// <summary>
+        /// Reserved. This field MUST be set to 0x00.
+        /// </summary>
         public byte Reserved;
 
-        // A null-terminated multibyte string that specifies the name of the created folder. 
+        /// <summary>
+        /// A null-terminated string that specifies the name of the created folder. 
+        /// </summary>
         public MAPIString DisplayName;
 
-        // A null-terminated multibyte string that specifies the folder comment that is associated with the created folder. 
+        /// <summary>
+        /// A null-terminated folder string that specifies the folder comment that is associated with the created folder. 
+        /// </summary>
         public MAPIString Comment;
 
         /// <summary>
@@ -248,15 +427,15 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.OutputHandleIndex = ReadByte();
-            this.FolderType = (FolderType)ReadByte();
-            this.UseUnicodeStrings = ReadBoolean();
-            this.OpenExisting = ReadBoolean();
-            this.Reserved = ReadByte();
-            if (UseUnicodeStrings)
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
+            this.FolderType = (FolderType)this.ReadByte();
+            this.UseUnicodeStrings = this.ReadBoolean();
+            this.OpenExisting = this.ReadBoolean();
+            this.Reserved = this.ReadByte();
+            if (this.UseUnicodeStrings)
             {
                 this.DisplayName = new MAPIString(Encoding.Unicode);
                 this.DisplayName.Parse(s);
@@ -270,43 +449,62 @@ namespace MAPIInspector.Parsers
                 this.Comment = new MAPIString(Encoding.ASCII);
                 this.Comment.Parse(s);
             }
-
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopCreateFolder ROP Response Buffer.
     /// </summary>
     public class RopCreateFolderResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request. 
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request. 
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // An identifier that specifies the folder created or opened.
+        /// <summary>
+        /// An identifier that specifies the folder created or opened.
+        /// </summary>
         public FolderID FolderId;
 
-        // A Boolean that indicates whether an existing folder was opened or a new folder was created.
+        /// <summary>
+        /// A Boolean that indicates whether an existing folder was opened or a new folder was created.
+        /// </summary>
         public bool? IsExistingFolder;
 
-        // A Boolean that indicates whether the folder has rules associated with it.
+        /// <summary>
+        /// A Boolean that indicates whether the folder has rules associated with it.
+        /// </summary>
         public bool? HasRules;
 
-        // A Boolean that indicates whether the server is an active replica of this folder. 
+        /// <summary>
+        /// A Boolean that indicates whether the server is an active replica of this folder. 
+        /// </summary>
         public bool? IsGhosted;
 
-        // This value specifies the number of strings in the Servers field.
+        /// <summary>
+        /// This value specifies the number of strings in the Servers field.
+        /// </summary>
         public ushort? ServerCount;
 
-        // This value specifies the number of values in the Servers field that refer to lowest-cost servers.
+        /// <summary>
+        /// This value specifies the number of values in the Servers field that refer to lowest-cost servers.
+        /// </summary>
         public ushort? CheapServerCount;
 
-        // These strings specify which servers have replicas (2) of this folder.
+        /// <summary>
+        /// These strings specify which servers have replicas (2) of this folder.
+        /// </summary>
         public MAPIString[] Servers;
 
         /// <summary>
@@ -317,31 +515,32 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.FolderId = new FolderID();
                 this.FolderId.Parse(s);
-                this.IsExistingFolder = ReadBoolean();
-                if ((bool)IsExistingFolder)
+                this.IsExistingFolder = this.ReadBoolean();
+                if ((bool)this.IsExistingFolder)
                 {
-                    this.HasRules = ReadBoolean();
-                    this.IsGhosted = ReadBoolean();
-                    if ((bool)IsGhosted)
+                    this.HasRules = this.ReadBoolean();
+                    this.IsGhosted = this.ReadBoolean();
+                    if ((bool)this.IsGhosted)
                     {
-                        this.ServerCount = ReadUshort();
-                        this.CheapServerCount = ReadUshort();
+                        this.ServerCount = this.ReadUshort();
+                        this.CheapServerCount = this.ReadUshort();
                         List<MAPIString> tempServers = new List<MAPIString>();
-                        for (int i = 0; i < ServerCount; i++)
+                        for (int i = 0; i < this.ServerCount; i++)
                         {
                             MAPIString tempString = new MAPIString(Encoding.ASCII);
                             tempString.Parse(s);
                             tempServers.Add(tempString);
                         }
+
                         this.Servers = tempServers.ToArray();
                     }
                 }
@@ -357,19 +556,29 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopDeleteFolderRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // A flags structure that contains flags that control how to delete the folder. 
+        /// <summary>
+        /// A flags structure that contains flags that control how to delete the folder. 
+        /// </summary>
         public DeleteFolderFlags DeleteFolderFlags;
 
-        // An identifier that specifies the folder to be deleted.
+        /// <summary>
+        /// An identifier that specifies the folder to be deleted.
+        /// </summary>
         public FolderID FolderId;
 
         /// <summary>
@@ -380,30 +589,38 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.DeleteFolderFlags = (DeleteFolderFlags)ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.DeleteFolderFlags = (DeleteFolderFlags)this.ReadByte();
             this.FolderId = new FolderID();
             this.FolderId.Parse(s);
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopDeleteFolder ROP Response Buffer.
     /// </summary>
     public class RopDeleteFolderResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // A Boolean that specifies whether the operation was partially completed.
+        /// <summary>
+        /// A Boolean that specifies whether the operation was partially completed.
+        /// </summary>
         public bool PartialCompletion;
 
         /// <summary>
@@ -414,11 +631,11 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
-            this.PartialCompletion = ReadBoolean();
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.PartialCompletion = this.ReadBoolean();
         }
     }
 
@@ -430,28 +647,44 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSetSearchCriteriaRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the length of the RestrictionData field.
+        /// <summary>
+        /// An unsigned integer that specifies the length of the RestrictionData field.
+        /// </summary>
         public ushort RestrictionDataSize;
 
-        // A restriction packet, as specified in [MS-OXCDATA] section 2.12, that specifies the filter for this search folder. 
+        /// <summary>
+        /// A restriction packet, as specified in [MS-OXCDATA] section 2.12, that specifies the filter for this search folder. 
+        /// </summary>
         public RestrictionType RestrictionData;
 
-        // An unsigned integer that specifies the number of identifiers in the FolderIds field.
+        /// <summary>
+        /// An unsigned integer that specifies the number of identifiers in the FolderIds field.
+        /// </summary>
         public ushort FolderIdCount;
 
-        // An array of 64-bit identifiers that specifies which folders are searched. 
+        /// <summary>
+        /// An array of 64-bit identifiers that specifies which folders are searched. 
+        /// </summary>
         public FolderID[] FolderIds;
 
-        // A flags structure that contains flags that control the search for a search folder.
+        /// <summary>
+        /// A flags structure that contains flags that control the search for a search folder.
+        /// </summary>
         public SearchRequestFlags SearchFlags;
 
         /// <summary>
@@ -462,40 +695,48 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.RestrictionDataSize = ReadUshort();
-            if (RestrictionDataSize > 0)
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.RestrictionDataSize = this.ReadUshort();
+            if (this.RestrictionDataSize > 0)
             {
                 this.RestrictionData = new RestrictionType();
                 this.RestrictionData.Parse(s);
             }
-            this.FolderIdCount = ReadUshort();
+
+            this.FolderIdCount = this.ReadUshort();
             List<FolderID> tempFolderIDs = new List<FolderID>();
-            for (int i = 0; i < FolderIdCount; i++)
+            for (int i = 0; i < this.FolderIdCount; i++)
             {
                 FolderID folderID = new FolderID();
                 folderID.Parse(s);
                 tempFolderIDs.Add(folderID);
             }
+
             this.FolderIds = tempFolderIDs.ToArray();
             this.SearchFlags = (SearchRequestFlags)ReadUint();
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopSetSearchCriteria ROP Response Buffer.
     /// </summary>
     public class RopSetSearchCriteriaResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -506,10 +747,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
 
@@ -521,22 +762,34 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopGetSearchCriteriaRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // A Boolean that specifies whether the client requests the restriction data (returned in the RestrictionData field of the response) to be specified with Unicode strings or with ASCII strings. 
+        /// <summary>
+        /// A Boolean that specifies whether the client requests the restriction data (returned in the RestrictionData field of the response) to be specified with Unicode strings or with ASCII strings. 
+        /// </summary>
         public bool UseUnicode;
 
-        // A Boolean that specifies whether the server includes the restriction information in the response.
+        /// <summary>
+        /// A Boolean that specifies whether the server includes the restriction information in the response.
+        /// </summary>
         public bool IncludeRestriction;
 
-        // A Boolean that specifies whether the server includes the folders list in the response.
+        /// <summary>
+        /// A Boolean that specifies whether the server includes the folders list in the response.
+        /// </summary>
         public bool IncludeFolders;
 
         /// <summary>
@@ -547,45 +800,63 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.UseUnicode = ReadBoolean();
-            this.IncludeRestriction = ReadBoolean();
-            this.IncludeFolders = ReadBoolean();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.UseUnicode = this.ReadBoolean();
+            this.IncludeRestriction = this.ReadBoolean();
+            this.IncludeFolders = this.ReadBoolean();
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopGetSearchCriteria ROP Response Buffer.
     /// </summary>
     public class RopGetSearchCriteriaResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // An unsigned integer that specifies the length of the RestrictionData field.
+        /// <summary>
+        /// An unsigned integer that specifies the length of the RestrictionData field.
+        /// </summary>
         public ushort? RestrictionDataSize;
 
-        // A restriction packet, as specified in [MS-OXCDATA] section 2.12, that specifies the filter for this search folder. 
+        /// <summary>
+        /// A restriction packet, as specified in [MS-OXCDATA] section 2.12, that specifies the filter for this search folder. 
+        /// </summary>
         public RestrictionType RestrictionData;
 
-        // An unsigned integer that MUST be set to the value of the LogonId field in the request.
+        /// <summary>
+        /// An unsigned integer that MUST be set to the value of the LogonId field in the request.
+        /// </summary>
         public byte? LogonId;
 
-        // An unsigned integer that specifies the number of identifiers in the FolderIds field.
+        /// <summary>
+        ///  An unsigned integer that specifies the number of identifiers in the FolderIds field.
+        /// </summary>
         public ushort? FolderIdCount;
 
-        // An array of 64-bit identifiers that specifies which folders are searched. 
+        /// <summary>
+        /// An array of 64-bit identifiers that specifies which folders are searched. 
+        /// </summary>
         public FolderID[] FolderIds;
 
-        // A flags structure that contains flags that control the search for a search folder. 
+        /// <summary>
+        ///  A flags structure that contains flags that control the search for a search folder. 
+        /// </summary>
         public SearchResponseFlags SearchFlags;
 
         /// <summary>
@@ -596,30 +867,32 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
-                this.RestrictionDataSize = ReadUshort();
-                if (RestrictionDataSize > 0)
+                this.RestrictionDataSize = this.ReadUshort();
+                if (this.RestrictionDataSize > 0)
                 {
                     this.RestrictionData = new RestrictionType();
                     this.RestrictionData.Parse(s);
                 }
-                this.LogonId = ReadByte();
-                this.FolderIdCount = ReadUshort();
+
+                this.LogonId = this.ReadByte();
+                this.FolderIdCount = this.ReadUshort();
                 List<FolderID> tempFolderIDs = new List<FolderID>();
-                for (int i = 0; i < FolderIdCount; i++)
+                for (int i = 0; i < this.FolderIdCount; i++)
                 {
                     FolderID folderID = new FolderID();
                     folderID.Parse(s);
                     tempFolderIDs.Add(folderID);
                 }
+
                 this.FolderIds = tempFolderIDs.ToArray();
-                this.SearchFlags = (SearchResponseFlags)ReadUint();
+                this.SearchFlags = (SearchResponseFlags)this.ReadUint();
             }
         }
     }
@@ -632,28 +905,44 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopMoveCopyMessagesRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the source Server object is stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the source Server object is stored. 
+        /// </summary>
         public byte SourceHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the destination Server object is stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the destination Server object is stored. 
+        /// </summary>
         public byte DestHandleIndex;
 
-        // An unsigned integer that specifies the size of the MessageIds field.
+        /// <summary>
+        /// An unsigned integer that specifies the size of the MessageIds field.
+        /// </summary>
         public ushort MessageIdCount;
 
-        // An array of 64-bit identifiers that specifies which messages to move or copy. 
+        /// <summary>
+        /// An array of 64-bit identifiers that specifies which messages to move or copy. 
+        /// </summary>
         public MessageID[] MessageIds;
 
-        // A Boolean that specifies whether the operation is to be processed asynchronously with status reported via the RopProgress ROP (section 2.2.8.13).
+        /// <summary>
+        /// A Boolean that specifies whether the operation is to be processed asynchronously with status reported via the RopProgress ROP (section 2.2.8.13).
+        /// </summary>
         public bool WantAsynchronous;
 
-        // A Boolean that specifies whether the operation is a copy or a move.
+        /// <summary>
+        /// A Boolean that specifies whether the operation is a copy or a move.
+        /// </summary>
         public bool WantCopy;
 
         /// <summary>
@@ -664,43 +953,55 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.SourceHandleIndex = ReadByte();
-            this.DestHandleIndex = ReadByte();
-            this.MessageIdCount = ReadUshort();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.SourceHandleIndex = this.ReadByte();
+            this.DestHandleIndex = this.ReadByte();
+            this.MessageIdCount = this.ReadUshort();
             List<MessageID> tempMessageIDs = new List<MessageID>();
-            for (int i = 0; i < MessageIdCount; i++)
+            for (int i = 0; i < this.MessageIdCount; i++)
             {
                 MessageID messageID = new MessageID();
                 messageID.Parse(s);
                 tempMessageIDs.Add(messageID);
             }
+
             this.MessageIds = tempMessageIDs.ToArray();
-            this.WantAsynchronous = ReadBoolean();
-            this.WantCopy = ReadBoolean();
+            this.WantAsynchronous = this.ReadBoolean();
+            this.WantCopy = this.ReadBoolean();
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopMoveCopyMessages ROP Response Buffer.
     /// </summary>
     public class RopMoveCopyMessagesResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the SourceHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the SourceHandleIndex field in the request.
+        /// </summary>
         public byte SourceHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // An unsigned integer index that MUST be set to the value specified in the DestHandleIndex field in the request. 
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the DestHandleIndex field in the request. 
+        /// </summary>
         public uint? DestHandleIndex;
 
-        // A Boolean that indicates whether the operation was only partially completed.
+        /// <summary>
+        /// A Boolean that indicates whether the operation was only partially completed.
+        /// </summary>
         public bool PartialCompletion;
+
         /// <summary>
         /// Parse the RopMoveCopyMessagesResponse structure.
         /// </summary>
@@ -709,18 +1010,18 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.SourceHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.SourceHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
-            if ((AdditionalErrorCodes)ReturnValue == AdditionalErrorCodes.NullDestinationObject)
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            if ((AdditionalErrorCodes)this.ReturnValue == AdditionalErrorCodes.NullDestinationObject)
             {
-                this.DestHandleIndex = ReadUint();
-                this.PartialCompletion = ReadBoolean();
+                this.DestHandleIndex = this.ReadUint();
+                this.PartialCompletion = this.ReadBoolean();
             }
             else
             {
-                this.PartialCompletion = ReadBoolean();
+                this.PartialCompletion = this.ReadBoolean();
             }
         }
     }
@@ -733,28 +1034,44 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopMoveFolderRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the source Server object is stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the source Server object is stored. 
+        /// </summary>
         public byte SourceHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the destination Server object is stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the destination Server object is stored. 
+        /// </summary>
         public byte DestHandleIndex;
 
-        // A Boolean that specifies whether the operation is to be processed asynchronously with status reported via the RopProgress ROP (section 2.2.8.13).
+        /// <summary>
+        /// A Boolean that specifies whether the operation is to be processed asynchronously with status reported via the RopProgress ROP (section 2.2.8.13).
+        /// </summary>
         public bool WantAsynchronous;
 
-        // A Boolean that specifies whether the NewFolderName field contains Unicode characters or multibyte characters.
+        /// <summary>
+        /// A Boolean that specifies whether the NewFolderName field contains Unicode characters.
+        /// </summary>
         public bool UseUnicode;
 
-        // An identifier that specifies the folder to be moved.
+        /// <summary>
+        /// An identifier that specifies the folder to be moved.
+        /// </summary>
         public FolderID FolderId;
 
-        // A null-terminated multibyte string that specifies the name for the new moved folder. 
+        /// <summary>
+        /// A null-terminated string that specifies the name for the new moved folder. 
+        /// </summary>
         public MAPIString NewFolderName;
 
         /// <summary>
@@ -765,15 +1082,15 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.SourceHandleIndex = ReadByte();
-            this.DestHandleIndex = ReadByte();
-            this.WantAsynchronous = ReadBoolean();
-            this.UseUnicode = ReadBoolean();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.SourceHandleIndex = this.ReadByte();
+            this.DestHandleIndex = this.ReadByte();
+            this.WantAsynchronous = this.ReadBoolean();
+            this.UseUnicode = this.ReadBoolean();
             this.FolderId = new FolderID();
             this.FolderId.Parse(s);
-            if (UseUnicode)
+            if (this.UseUnicode)
             {
                 this.NewFolderName = new MAPIString(Encoding.Unicode);
                 this.NewFolderName.Parse(s);
@@ -786,24 +1103,34 @@ namespace MAPIInspector.Parsers
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopMoveFolder ROP Response Buffer.
     /// </summary>
     public class RopMoveFolderResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the SourceHandleIndex field in the request. 
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the SourceHandleIndex field in the request. 
+        /// </summary>
         public byte SourceHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        //  An unsigned integer index that MUST be set to the value specified in the DestHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the DestHandleIndex field in the request.
+        /// </summary>
         public uint? DestHandleIndex;
 
-        //A Boolean that indicates whether the operation was only partially completed.
+        /// <summary>
+        /// A Boolean that indicates whether the operation was only partially completed.
+        /// </summary>
         public bool PartialCompletion;
 
         /// <summary>
@@ -814,18 +1141,18 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.SourceHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.SourceHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
-            if ((AdditionalErrorCodes)ReturnValue == AdditionalErrorCodes.NullDestinationObject)
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            if ((AdditionalErrorCodes)this.ReturnValue == AdditionalErrorCodes.NullDestinationObject)
             {
-                this.DestHandleIndex = ReadUint();
-                this.PartialCompletion = ReadBoolean();
+                this.DestHandleIndex = this.ReadUint();
+                this.PartialCompletion = this.ReadBoolean();
             }
             else
             {
-                this.PartialCompletion = ReadBoolean();
+                this.PartialCompletion = this.ReadBoolean();
             }
         }
     }
@@ -838,31 +1165,49 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopCopyFolderRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the source Server object is stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the source Server object is stored. 
+        /// </summary>
         public byte SourceHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the destination Server object is stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the destination Server object is stored. 
+        /// </summary>
         public byte DestHandleIndex;
 
-        // A Boolean that specifies whether the operation is to be processed asynchronously with status reported via the RopProgress ROP (section 2.2.8.13).
+        /// <summary>
+        /// A Boolean that specifies whether the operation is to be processed asynchronously with status reported via the RopProgress ROP (section 2.2.8.13).
+        /// </summary>
         public bool WantAsynchronous;
 
-        // A Boolean that specifies that the copy is recursive.
+        /// <summary>
+        /// A Boolean that specifies that the copy is recursive.
+        /// </summary>
         public bool WantRecursive;
 
-        // A Boolean that specifies whether the NewFolderName field contains Unicode characters or multibyte characters.
+        /// <summary>
+        /// A Boolean that specifies whether the NewFolderName field contains Unicode characters.
+        /// </summary>
         public bool UseUnicode;
 
-        // An identifier that specifies the folder to be moved.
+        /// <summary>
+        /// An identifier that specifies the folder to be moved.
+        /// </summary>
         public FolderID FolderId;
 
-        // A null-terminated multibyte string that specifies the name for the new moved folder. 
+        /// <summary>
+        /// A null-terminated string that specifies the name for the new moved folder. 
+        /// </summary>
         public MAPIString NewFolderName;
 
         /// <summary>
@@ -873,16 +1218,16 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.SourceHandleIndex = ReadByte();
-            this.DestHandleIndex = ReadByte();
-            this.WantAsynchronous = ReadBoolean();
-            this.WantRecursive = ReadBoolean();
-            this.UseUnicode = ReadBoolean();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.SourceHandleIndex = this.ReadByte();
+            this.DestHandleIndex = this.ReadByte();
+            this.WantAsynchronous = this.ReadBoolean();
+            this.WantRecursive = this.ReadBoolean();
+            this.UseUnicode = this.ReadBoolean();
             this.FolderId = new FolderID();
             this.FolderId.Parse(s);
-            if (UseUnicode)
+            if (this.UseUnicode)
             {
                 this.NewFolderName = new MAPIString(Encoding.Unicode);
                 this.NewFolderName.Parse(s);
@@ -895,24 +1240,34 @@ namespace MAPIInspector.Parsers
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopCopyFolder ROP Response Buffer.
     /// </summary>
     public class RopCopyFolderResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the SourceHandleIndex field in the request. 
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the SourceHandleIndex field in the request. 
+        /// </summary>
         public byte SourceHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        //  An unsigned integer index that MUST be set to the value specified in the DestHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the DestHandleIndex field in the request.
+        /// </summary>
         public uint? DestHandleIndex;
 
-        //A Boolean that indicates whether the operation was only partially completed.
+        /// <summary>
+        /// A Boolean that indicates whether the operation was only partially completed.
+        /// </summary>
         public bool PartialCompletion;
 
         /// <summary>
@@ -923,18 +1278,18 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.SourceHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.SourceHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
-            if ((AdditionalErrorCodes)ReturnValue == AdditionalErrorCodes.NullDestinationObject)
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            if ((AdditionalErrorCodes)this.ReturnValue == AdditionalErrorCodes.NullDestinationObject)
             {
-                this.DestHandleIndex = ReadUint();
-                this.PartialCompletion = ReadBoolean();
+                this.DestHandleIndex = this.ReadUint();
+                this.PartialCompletion = this.ReadBoolean();
             }
             else
             {
-                this.PartialCompletion = ReadBoolean();
+                this.PartialCompletion = this.ReadBoolean();
             }
         }
     }
@@ -943,23 +1298,33 @@ namespace MAPIInspector.Parsers
 
     #region 2.2.1.9	RopEmptyFolder ROP
     /// <summary>
-    /// The RopEmptyFolder ROP ([MS-OXCROPS] section 2.2.4.9) is used to soft delete messages and subfolders from a folder without deleting the folder itself. 
+    /// The RopEmptyFolder ROP ([MS-OXCROPS] section 2.2.4.9) is used to soft delete messages and sub-folders from a folder without deleting the folder itself. 
     /// </summary>
     public class RopEmptyFolderRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // A Boolean that specifies whether the operation is to be processed asynchronously with status reported via the RopProgress ROP (section 2.2.8.13).
+        /// <summary>
+        /// A Boolean that specifies whether the operation is to be processed asynchronously with status reported via the RopProgress ROP (section 2.2.8.13).
+        /// </summary>
         public bool WantAsynchronous;
 
-        // A Boolean that specifies whether the operation also deletes folder associated information (FAI) messages.
+        /// <summary>
+        /// A Boolean that specifies whether the operation also deletes folder associated information (FAI) messages.
+        /// </summary>
         public bool WantDeleteAssociated;
 
         /// <summary>
@@ -970,29 +1335,37 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.WantAsynchronous = ReadBoolean();
-            this.WantDeleteAssociated = ReadBoolean();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.WantAsynchronous = this.ReadBoolean();
+            this.WantDeleteAssociated = this.ReadBoolean();
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopEmptyFolder ROP Response Buffer.
     /// </summary>
     public class RopEmptyFolderResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // A Boolean that indicates whether the operation was only partially completed.
+        /// <summary>
+        /// A Boolean that indicates whether the operation was only partially completed.
+        /// </summary>
         public bool PartialCompletion;
 
         /// <summary>
@@ -1003,11 +1376,11 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
-            this.PartialCompletion = ReadBoolean();
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.PartialCompletion = this.ReadBoolean();
         }
     }
 
@@ -1015,23 +1388,33 @@ namespace MAPIInspector.Parsers
 
     #region 2.2.1.10	RopHardDeleteMessagesAndSubfolders ROP
     /// <summary>
-    /// The RopHardDeleteMessagesAndSubfolders ROP ([MS-OXCROPS] section 2.2.4.10) is used to hard delete all messages and subfolders from a folder without deleting the folder itself.
+    /// The RopHardDeleteMessagesAndSubfolders ROP ([MS-OXCROPS] section 2.2.4.10) is used to hard delete all messages and sub-folders from a folder without deleting the folder itself.
     /// </summary>
     public class RopHardDeleteMessagesAndSubfoldersRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        ///  An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // A Boolean that specifies whether the operation is to be processed asynchronously with status reported via the RopProgress ROP (section 2.2.8.13).
+        /// <summary>
+        /// A Boolean that specifies whether the operation is to be processed asynchronously with status reported via the RopProgress ROP (section 2.2.8.13).
+        /// </summary>
         public bool WantAsynchronous;
 
-        // A Boolean that specifies whether the operation also deletes folder associated information (FAI) messages.
+        /// <summary>
+        /// A Boolean that specifies whether the operation also deletes folder associated information (FAI) messages.
+        /// </summary>
         public bool WantDeleteAssociated;
 
         /// <summary>
@@ -1042,29 +1425,37 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.WantAsynchronous = ReadBoolean();
-            this.WantDeleteAssociated = ReadBoolean();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.WantAsynchronous = this.ReadBoolean();
+            this.WantDeleteAssociated = this.ReadBoolean();
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopHardDeleteMessagesAndSubfolders ROP Response Buffer.
     /// </summary>
     public class RopHardDeleteMessagesAndSubfoldersResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // A Boolean that indicates whether the operation was only partially completed.
+        /// <summary>
+        /// A Boolean that indicates whether the operation was only partially completed.
+        /// </summary>
         public bool PartialCompletion;
 
         /// <summary>
@@ -1075,11 +1466,11 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
-            this.PartialCompletion = ReadBoolean();
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.PartialCompletion = this.ReadBoolean();
         }
     }
 
@@ -1091,25 +1482,39 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopDeleteMessagesRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // A Boolean that specifies whether the operation is to be processed asynchronously with status reported via the RopProgress ROP (section 2.2.8.13).
+        /// <summary>
+        /// A Boolean that specifies whether the operation is to be processed asynchronously with status reported via the RopProgress ROP (section 2.2.8.13).
+        /// </summary>
         public bool WantAsynchronous;
 
-        // A Boolean that specifies whether the server sends a non-read receipt to the message sender when a message is deleted.
+        /// <summary>
+        /// A Boolean that specifies whether the server sends a non-read receipt to the message sender when a message is deleted.
+        /// </summary>
         public bool NotifyNonRead;
 
-        // An unsigned integer that specifies the number of identifiers in the MessageIds field.
+        /// <summary>
+        /// An unsigned integer that specifies the number of identifiers in the MessageIds field.
+        /// </summary>
         public ushort MessageIdCount;
 
-        // An array of 64-bit identifiers that specifies the messages to be deleted. T
+        /// <summary>
+        /// An array of 64-bit identifiers that specifies the messages to be deleted. T
+        /// </summary>
         public MessageID[] MessageIds;
 
         /// <summary>
@@ -1120,38 +1525,47 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.WantAsynchronous = ReadBoolean();
-            this.NotifyNonRead = ReadBoolean();
-            this.MessageIdCount = ReadUshort();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.WantAsynchronous = this.ReadBoolean();
+            this.NotifyNonRead = this.ReadBoolean();
+            this.MessageIdCount = this.ReadUshort();
             List<MessageID> tempMessageIDs = new List<MessageID>();
-            for (int i = 0; i < MessageIdCount; i++)
+            for (int i = 0; i < this.MessageIdCount; i++)
             {
                 MessageID messageID = new MessageID();
                 messageID.Parse(s);
                 tempMessageIDs.Add(messageID);
             }
+
             this.MessageIds = tempMessageIDs.ToArray();
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopDeleteMessages ROP Response Buffer.
     /// </summary>
     public class RopDeleteMessagesResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        ///  An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // A Boolean that indicates whether the operation was only partially completed.
+        /// <summary>
+        /// A Boolean that indicates whether the operation was only partially completed.
+        /// </summary>
         public bool PartialCompletion;
 
         /// <summary>
@@ -1162,11 +1576,11 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
-            this.PartialCompletion = ReadBoolean();
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.PartialCompletion = this.ReadBoolean();
         }
     }
 
@@ -1178,25 +1592,39 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopHardDeleteMessagesRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // A Boolean that specifies whether the operation is to be processed asynchronously with status reported via the RopProgress ROP (section 2.2.8.13).
+        /// <summary>
+        /// A Boolean that specifies whether the operation is to be processed asynchronously with status reported via the RopProgress ROP (section 2.2.8.13).
+        /// </summary>
         public bool WantAsynchronous;
 
-        // A Boolean that specifies whether the server sends a non-read receipt to the message sender when a message is deleted.
+        /// <summary>
+        /// A Boolean that specifies whether the server sends a non-read receipt to the message sender when a message is deleted.
+        /// </summary>
         public bool NotifyNonRead;
 
-        // An unsigned integer that specifies the number of identifiers in the MessageIds field.
+        /// <summary>
+        /// An unsigned integer that specifies the number of identifiers in the MessageIds field.
+        /// </summary>
         public ushort MessageIdCount;
 
-        // An array of 64-bit identifiers that specifies the messages to be deleted. T
+        /// <summary>
+        /// An array of 64-bit identifiers that specifies the messages to be deleted.
+        /// </summary>
         public MessageID[] MessageIds;
 
         /// <summary>
@@ -1207,38 +1635,47 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.WantAsynchronous = ReadBoolean();
-            this.NotifyNonRead = ReadBoolean();
-            this.MessageIdCount = ReadUshort();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.WantAsynchronous = this.ReadBoolean();
+            this.NotifyNonRead = this.ReadBoolean();
+            this.MessageIdCount = this.ReadUshort();
             List<MessageID> tempMessageIDs = new List<MessageID>();
-            for (int i = 0; i < MessageIdCount; i++)
+            for (int i = 0; i < this.MessageIdCount; i++)
             {
                 MessageID messageID = new MessageID();
                 messageID.Parse(s);
                 tempMessageIDs.Add(messageID);
             }
+
             this.MessageIds = tempMessageIDs.ToArray();
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopHardDeleteMessages ROP Response Buffer.
     /// </summary>
     public class RopHardDeleteMessagesResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // A Boolean that indicates whether the operation was only partially completed.
+        /// <summary>
+        /// A Boolean that indicates whether the operation was only partially completed.
+        /// </summary>
         public bool PartialCompletion;
 
         /// <summary>
@@ -1249,11 +1686,11 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
-            this.PartialCompletion = ReadBoolean();
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.PartialCompletion = this.ReadBoolean();
         }
     }
 
@@ -1265,19 +1702,29 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopGetHierarchyTableRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // These flags control the type of table.
+        /// <summary>
+        /// These flags control the type of table.
+        /// </summary>
         public HierarchyTableFlags TableFlags;
 
         /// <summary>
@@ -1288,29 +1735,37 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.OutputHandleIndex = ReadByte();
-            this.TableFlags = (HierarchyTableFlags)ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
+            this.TableFlags = (HierarchyTableFlags)this.ReadByte();
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopGetHierarchyTable ROP Response Buffer.
     /// </summary>
     public class RopGetHierarchyTableResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // An unsigned integer that represents the number of rows in the hierarchy table. 
+        /// <summary>
+        /// An unsigned integer that represents the number of rows in the hierarchy table. 
+        /// </summary>
         public uint? RowCount;
 
         /// <summary>
@@ -1321,14 +1776,14 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
-                this.RowCount = ReadUint();
+                this.RowCount = this.ReadUint();
             }
         }
     }
@@ -1341,19 +1796,29 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopGetContentsTableRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // These flags control the type of table.
+        /// <summary>
+        /// These flags control the type of table.
+        /// </summary>
         public HierarchyTableFlags TableFlags;
 
         /// <summary>
@@ -1364,29 +1829,37 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.OutputHandleIndex = ReadByte();
-            this.TableFlags = (HierarchyTableFlags)ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
+            this.TableFlags = (HierarchyTableFlags)this.ReadByte();
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopGetContentsTable ROP Response Buffer.
     /// </summary>
     public class RopGetContentsTableResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // An unsigned integer that represents the number of rows in the hierarchy table. 
+        /// <summary>
+        /// An unsigned integer that represents the number of rows in the hierarchy table. 
+        /// </summary>
         public uint? RowCount;
 
         /// <summary>
@@ -1397,18 +1870,16 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
-                this.RowCount = ReadUint();
+                this.RowCount = this.ReadUint();
             }
         }
     }
-
     #endregion
-
 }

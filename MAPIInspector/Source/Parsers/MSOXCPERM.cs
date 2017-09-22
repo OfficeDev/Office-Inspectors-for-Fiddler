@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Windows.Forms;
-
-namespace MAPIInspector.Parsers
+﻿namespace MAPIInspector.Parsers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+
     /// <summary>
     /// The enum value of RopGetPermissionsTable TableFlags
     /// </summary>
     [Flags]
     public enum TableFlagsRopGetPermissionsTable : byte
     {
+        /// <summary>
+        /// If this flag is set, the server MUST include the values of the FreeBusySimple and FreeBusyDetailed flags of the PidTagMemberRights property in the returned permissions list
+        /// </summary>
         IncludeFreeBusy = 0x02
     }
 
@@ -21,7 +22,14 @@ namespace MAPIInspector.Parsers
     [Flags]
     public enum ModifyFlags : byte
     {
+        /// <summary>
+        /// If this flag is set, the server MUST replace all existing entries except the default user entry in the current permissions list with the ones contained in the PermissionsData field
+        /// </summary>
         ReplaceRows = 0x01,
+
+        /// <summary>
+        /// If this flag is set, the server MUST apply the settings of the FreeBusySimple and FreeBusyDetailed flags of the PidTagMemberRights property when modifying the permissions of the Calendar folder
+        /// </summary>
         IncludeFreeBusy = 0x02
     }
 
@@ -31,8 +39,19 @@ namespace MAPIInspector.Parsers
     [Flags]
     public enum PermissionDataFlags : byte
     {
+        /// <summary>
+        /// The user that is specified by the PidTagEntryId property (section 2.2.4) is added to the permissions list
+        /// </summary>
         AddRow = 0x01,
+
+        /// <summary>
+        /// The existing permissions for the user that is identified by the PidTagMemberId property are modified
+        /// </summary>
         ModifyRow = 0x02,
+
+        /// <summary>
+        /// The user that is identified by the PidTagMemberId property is deleted from the permissions list
+        /// </summary>
         RemoveRow = 0x04
     }
 
@@ -42,19 +61,29 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopGetPermissionsTableRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP. For this operation this field is set to 0x3E.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP. For this operation this field is set to 0x3E.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the logon associated with this operation.
+        /// <summary>
+        /// An unsigned integer that specifies the RopLogon associated with this operation.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// </summary>     
         public byte OutputHandleIndex;
 
-        // A flags structure that contains flags that control the type of table. 
+        /// <summary>
+        /// A flags structure that contains flags that control the type of table. 
+        /// </summary>
         public TableFlagsRopGetPermissionsTable TableFlags;
 
         /// <summary>
@@ -64,12 +93,11 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.OutputHandleIndex = ReadByte();
-            this.TableFlags = (TableFlagsRopGetPermissionsTable)ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
+            this.TableFlags = (TableFlagsRopGetPermissionsTable)this.ReadByte();
         }
     }
 
@@ -78,13 +106,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopGetPermissionsTableResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP. For this operation this field is set to 0x3E.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP. For this operation this field is set to 0x3E.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -94,11 +128,10 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-
-            this.RopId = (RopIdType)ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -109,22 +142,34 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopModifyPermissionsRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP. For this operation this field is set to 0x40.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP. For this operation this field is set to 0x40.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the logon associated with this operation.
+        /// <summary>
+        /// An unsigned integer that specifies the RopLogon associated with this operation.
+        /// </summary>
         public byte LogonId;
 
-        //  An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// </summary>
         public byte InputHandleIndex;
 
-        // A flags structure that contains flags that control the behavior of this operation. 
+        /// <summary>
+        /// A flags structure that contains flags that control the behavior of this operation.
+        /// </summary>
         public ModifyFlags ModifyFlags;
 
-        // An unsigned integer that specifies specifies the number of structures serialized in the PermissionsData field.
+        /// <summary>
+        /// An unsigned integer that specifies the number of structures serialized in the PermissionsData field.
+        /// </summary>
         public ushort ModifyCount;
 
-        // A list of PermissionData structures. 
+        /// <summary>
+        /// A list of PermissionData structures. 
+        /// </summary>
         public PermissionData[] PermissionsData;
 
         /// <summary>
@@ -134,19 +179,20 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.ModifyFlags = (ModifyFlags)ReadByte();
-            this.ModifyCount = ReadUshort();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.ModifyFlags = (ModifyFlags)this.ReadByte();
+            this.ModifyCount = this.ReadUshort();
             List<PermissionData> listPermissionData = new List<PermissionData>();
-            for (int i = 0; i < ModifyCount; i++)
+
+            for (int i = 0; i < this.ModifyCount; i++)
             {
                 PermissionData tempPermissionData = new PermissionData();
                 tempPermissionData.Parse(s);
                 listPermissionData.Add(tempPermissionData);
             }
+
             this.PermissionsData = listPermissionData.ToArray();
         }
     }
@@ -156,13 +202,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class PermissionData : BaseStructure
     {
-        // A set of flags that specify the type of change to be made to the folder permissions.
+        /// <summary>
+        /// A set of flags that specify the type of change to be made to the folder permissions.
+        /// </summary>
         public PermissionDataFlags PermissionDataFlags;
 
-        // An integer that specifies the number of structures contained in the PropertyValues field.
+        /// <summary>
+        /// An integer that specifies the number of structures contained in the PropertyValues field.
+        /// </summary>
         public ushort PropertyValueCount;
 
-        // An array of TaggedPropertyValue structures ([MS-OXCDATA] section 2.11.4). 
+        /// <summary>
+        /// An array of TaggedPropertyValue structures ([MS-OXCDATA] section 2.11.4).
+        /// </summary>
         public TaggedPropertyValue[] PropertyValues;
 
         /// <summary>
@@ -172,18 +224,19 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.PermissionDataFlags = (PermissionDataFlags)ReadByte();
-            this.PropertyValueCount = ReadUshort();
+            this.PermissionDataFlags = (PermissionDataFlags)this.ReadByte();
+            this.PropertyValueCount = this.ReadUshort();
             List<TaggedPropertyValue> listPropertyValues = new List<TaggedPropertyValue>();
-            for (int i = 0; i < PropertyValueCount; i++)
+
+            for (int i = 0; i < this.PropertyValueCount; i++)
             {
                 TaggedPropertyValue tempPropertyValue = new TaggedPropertyValue();
                 tempPropertyValue.Parse(s);
                 listPropertyValues.Add(tempPropertyValue);
             }
+
             this.PropertyValues = listPropertyValues.ToArray();
         }
-
     }
 
     /// <summary>
@@ -191,13 +244,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopModifyPermissionsResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP. For this operation this field is set to 0x40.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP. For this operation this field is set to 0x40.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// </summary>
         public byte InputHandleIndex;
 
-        //  An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -207,13 +266,12 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
-    #endregion
 
+    #endregion
 }

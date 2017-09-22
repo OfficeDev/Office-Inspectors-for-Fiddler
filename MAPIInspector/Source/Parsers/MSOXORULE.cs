@@ -1,32 +1,164 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-
-namespace MAPIInspector.Parsers
+﻿namespace MAPIInspector.Parsers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+
+    /// <summary>
+    /// The enum value of RuleDataFlags
+    /// </summary>
+    [Flags]
+    public enum RuleDataFlags : byte
+    {
+        /// <summary>
+        /// Adds the data in the rule buffer to the rule set as a new rule
+        /// </summary>
+        ROW_ADD = 0x01,
+
+        /// <summary>
+        /// Modifies the existing rule identified by the value of the PidTagRuleId property
+        /// </summary>
+        ROW_MODIFY = 0x02,
+
+        /// <summary>
+        /// Removes from the rule set the rule that has the same value of the PidTagRuleId property
+        /// </summary>
+        ROW_REMOVE = 0x04
+    }
+
+    /// <summary>
+    /// The enum value of TableFlags.
+    /// </summary>
+    public enum TableFlags : byte
+    {
+        /// <summary>
+        /// This bit is set if the client is requesting that string values in the table be returned as Unicode strings
+        /// </summary>
+        U_0x40 = 0x40,
+
+        /// <summary>
+        /// These unused bits MUST be set to zero by the client
+        /// </summary>
+        U_0x00 = 0x00
+    }
+
+    /// <summary>
+    /// The enum value of ActionType.
+    /// </summary>
+    public enum ActionType : byte
+    {
+        /// <summary>
+        /// Moves the message to a folder. MUST NOT be used in a public folder rule
+        /// </summary>
+        OP_MOVE = 0x01,
+
+        /// <summary>
+        /// Copies the message to a folder. MUST NOT be used in a public folder rule
+        /// </summary>
+        OP_COPY = 0x02,
+
+        /// <summary>
+        /// Replies to the message
+        /// </summary>
+        OP_REPLY = 0x03,
+
+        /// <summary>
+        /// Sends an OOF reply to the message
+        /// </summary>
+        OP_OOF_REPLY = 0x04,
+
+        /// <summary>
+        /// Used for actions that cannot be executed by the server
+        /// </summary>
+        OP_DEFER_ACTION = 0x05,
+
+        /// <summary>
+        /// Rejects the message back to the sender.
+        /// </summary>
+        OP_BOUNCE = 0x06,
+
+        /// <summary>
+        /// Forwards the message to a recipient (2) address
+        /// </summary>
+        OP_FORWARD = 0x07,
+
+        /// <summary>
+        /// Resends the message to another recipient (2), who acts as a delegate
+        /// </summary>
+        OP_DELEGATE = 0x08,
+
+        /// <summary>
+        /// Adds or changes a property on the message
+        /// </summary>
+        OP_TAG = 0x09,
+
+        /// <summary>
+        /// Deletes the message.
+        /// </summary>
+        OP_DELETE = 0x0A,
+
+        /// <summary>
+        /// Sets the MSGFLAG_READ flag in the PidTagMessageFlags property ([MS-OXCMSG] section 2.2.1.6) on the message
+        /// </summary>
+        OP_MARK_AS_READ = 0x0B
+    }
+
+    /// <summary>
+    /// The enum value of Bounce Code.
+    /// </summary>
+    public enum BounceCodeEnum : uint
+    {
+        /// <summary>
+        /// The message was rejected because it was too large
+        /// </summary>
+        RejectedMessageTooLarge = 0x0000000D,
+
+        /// <summary>
+        /// The message was rejected because it cannot be displayed to the user
+        /// </summary>
+        RejectedMessageNotDisplayed = 0x0000001F,
+
+        /// <summary>
+        /// The message delivery was denied for other reasons
+        /// </summary>
+        DeliveryMessageDenied = 0x00000026
+    }
+
     #region 2.2.1	RopModifyRules ROP
     /// <summary>
     /// The RopModifyRules ROP ([MS-OXCROPS] section 2.2.11.1) creates, modifies, or deletes rules (2) in a folder.
     /// </summary>
     public class RopModifyRulesRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the logon associated with this operation.
+        /// <summary>
+        /// An unsigned integer that specifies the RopLogon associated with this operation.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// </summary>
         public byte InputHandleIndex;
 
-        // A bitmask that specifies how the rules (2) included in this structure are created on the server.
+        /// <summary>
+        /// A bitmask that specifies how the rules (2) included in this structure are created on the server.
+        /// </summary>
         public ModifyRulesFlags ModifyRulesFlags;
 
-        // An integer that specifies the number of RuleData structures present in the RulesData field.
+        /// <summary>
+        /// An integer that specifies the number of RuleData structures present in the RulesData field.
+        /// </summary>
         public ushort RulesCount;
 
-        // An array of RuleData structures, each of which specifies details about a standard rule. 
+        /// <summary>
+        /// An array of RuleData structures, each of which specifies details about a standard rule. 
+        /// </summary>
         public RuleData[] RulesData;
 
         /// <summary>
@@ -36,12 +168,12 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             this.ModifyRulesFlags = new ModifyRulesFlags();
             this.ModifyRulesFlags.Parse(s);
-            this.RulesCount = ReadUshort();
+            this.RulesCount = this.ReadUshort();
             List<RuleData> tempRulesDatas = new List<RuleData>();
             for (int i = 0; i < this.RulesCount; i++)
             {
@@ -49,20 +181,25 @@ namespace MAPIInspector.Parsers
                 tempRuleData.Parse(s);
                 tempRulesDatas.Add(tempRuleData);
             }
+
             this.RulesData = tempRulesDatas.ToArray();
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the ModifyRulesFlags ROP Response Buffer.
     /// </summary>
     public class ModifyRulesFlags : BaseStructure
     {
-        //Unused. This bit MUST be set to zero (0) when sent.
+        /// <summary>
+        /// Unused. This bit MUST be set to zero (0) when sent.
+        /// </summary>
         [BitAttribute(7)]
         public byte X;
 
-        // If this bit is set, the rules (2) in this request are to replace the existing set of rules (2) in the folde.
+        /// <summary>
+        /// If this bit is set, the rules (2) in this request are to replace the existing set of rules (2) in the folder.
+        /// </summary>
         [BitAttribute(1)]
         public byte R;
 
@@ -72,27 +209,33 @@ namespace MAPIInspector.Parsers
         /// <param name="s">A stream containing ModifyRulesFlags structure.</param>
         public override void Parse(Stream s)
         {
-            base.Parse(s); // TODO: need to modify the AddTreeNode method about the pos and length.  
-            Byte tempByte = ReadByte();
+            base.Parse(s); // TODO: need to modify the AddTreeNode method about the position and length.  
+            byte tempByte = this.ReadByte();
             int index = 0;
-            this.X = GetBits(tempByte, index, 7);
+            this.X = this.GetBits(tempByte, index, 7);
             index = index + 7;
-            this.R = GetBits(tempByte, index, 1);
+            this.R = this.GetBits(tempByte, index, 1);
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopModifyRules ROP Response Buffer.
     /// </summary>
     public class RopModifyRulesResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -102,37 +245,33 @@ namespace MAPIInspector.Parsers
         public override void Parse(System.IO.Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
 
     #region 2.2.1.3	RuleData
-    /// <summary>
-    /// The enum vlaue of RuleDataFlags
-    /// </summary>
-    [Flags]
-    public enum RuleDataFlags : byte
-    {
-        ROW_ADD = 0x01,
-        ROW_MODIFY = 0x02,
-        ROW_REMOVE = 0x04
-    }
 
-    ///  <summary>
+    /// <summary>
     /// The RuleData structure contains properties and flags that provide details about a standard rule. 
     /// </summary>
     public class RuleData : BaseStructure
     {
-        // A value that contains flags specifying whether the rule (2) is to be added, modified, or deleted. 
+        /// <summary>
+        /// A value that contains flags specifying whether the rule (2) is to be added, modified, or deleted. 
+        /// </summary>
         public RuleDataFlags RuleDataFlags;
 
-        // An integer that specifies the number of properties that are specified in the PropertyValues field. 
+        /// <summary>
+        /// An integer that specifies the number of properties that are specified in the PropertyValues field. 
+        /// </summary>
         public ushort PropertyValueCount;
 
-        // An array of TaggedPropertyValue structures, as specified in [MS-OXCDATA] section 2.11.4, each of which contains one property of a standard rule. 
+        /// <summary>
+        /// An array of TaggedPropertyValue structures, as specified in [MS-OXCDATA] section 2.11.4, each of which contains one property of a standard rule. 
+        /// </summary>
         public TaggedPropertyValue[] PropertyValues;
 
         /// <summary>
@@ -142,8 +281,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(System.IO.Stream s)
         {
             base.Parse(s);
-            this.RuleDataFlags = (RuleDataFlags)ReadByte();
-            this.PropertyValueCount = ReadUshort();
+            this.RuleDataFlags = (RuleDataFlags)this.ReadByte();
+            this.PropertyValueCount = this.ReadUshort();
             List<TaggedPropertyValue> tempPropertyValues = new List<TaggedPropertyValue>();
             for (int i = 0; i < this.PropertyValueCount; i++)
             {
@@ -151,6 +290,7 @@ namespace MAPIInspector.Parsers
                 temptaggedPropertyValue.Parse(s);
                 tempPropertyValues.Add(temptaggedPropertyValue);
             }
+
             this.PropertyValues = tempPropertyValues.ToArray();
         }
     }
@@ -159,35 +299,35 @@ namespace MAPIInspector.Parsers
     #endregion
 
     #region 2.2.2	RopGetRulesTable ROP
+
     /// <summary>
-    /// The enum value of TableFlags.
-    /// </summary>
-    public enum TableFlags : byte
-    {
-
-        U_0x40 = 0x40,
-        U_0x00 = 0x00
-
-    }
-
-    ///  <summary>
     /// The RopGetRulesTable ROP ([MS-OXCROPS] section 2.2.11.2) creates a Table object through which the client can access the standard rules in a folder using table operations as specified in [MS-OXCTABL]. 
     /// </summary>
     public class RopGetRulesTableRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the logon associated with this operation.
+        /// <summary>
+        /// An unsigned integer that specifies the RopLogon associated with this operation.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// </summary>
         public byte OutputHandleIndex;
 
-        //  A flags structure that contains flags that control the type of table. 
+        /// <summary>
+        /// A flags structure that contains flags that control the type of table. 
+        /// </summary>
         public TableFlags TableFlags;
 
         /// <summary>
@@ -197,26 +337,32 @@ namespace MAPIInspector.Parsers
         public override void Parse(System.IO.Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.OutputHandleIndex = ReadByte();
-            this.TableFlags = (TableFlags)ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
+            this.TableFlags = (TableFlags)this.ReadByte();
         }
     }
 
-    ///  <summary>
+    /// <summary>
     /// A class indicates the RopGetRulesTable ROP Response Buffer.
     /// </summary>
     public class RopGetRulesTableResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -226,10 +372,10 @@ namespace MAPIInspector.Parsers
         public override void Parse(System.IO.Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -240,25 +386,39 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopUpdateDeferredActionMessagesRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the logon associated with this operation.
+        /// <summary>
+        /// An unsigned integer that specifies the RopLogon associated with this operation.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the size of the ServerEntryId field.
+        /// <summary>
+        /// An unsigned integer that specifies the size of the ServerEntryId field.
+        /// </summary>
         public ushort ServerEntryIdSize;
 
-        // An array of bytes that specifies the ID of the message on the server. 
+        /// <summary>
+        /// An array of bytes that specifies the ID of the message on the server. 
+        /// </summary>
         public byte[] ServerEntryId;
 
-        // An unsigned integer that specifies the size of the ClientEntryId field.
+        /// <summary>
+        /// An unsigned integer that specifies the size of the ClientEntryId field.
+        /// </summary>
         public ushort ClientEntryIdSize;
 
-        // An array of bytes that specifies the ID of the downloaded message on the client. 
+        /// <summary>
+        /// An array of bytes that specifies the ID of the downloaded message on the client. 
+        /// </summary>
         public byte[] ClientEntryId;
 
         /// <summary>
@@ -268,13 +428,13 @@ namespace MAPIInspector.Parsers
         public override void Parse(System.IO.Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.ServerEntryIdSize = ReadUshort();
-            this.ServerEntryId = ReadBytes((int)ServerEntryIdSize);
-            this.ClientEntryIdSize = ReadUshort();
-            this.ClientEntryId = ReadBytes((int)ClientEntryIdSize);
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.ServerEntryIdSize = this.ReadUshort();
+            this.ServerEntryId = this.ReadBytes((int)this.ServerEntryIdSize);
+            this.ClientEntryIdSize = this.ReadUshort();
+            this.ClientEntryId = this.ReadBytes((int)this.ClientEntryIdSize);
         }
     }
 
@@ -283,13 +443,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopUpdateDeferredActionMessagesResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -299,37 +465,44 @@ namespace MAPIInspector.Parsers
         public override void Parse(System.IO.Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
 
     #region 2.2.5	RuleAction Structure
     /// <summary>
-    /// 2.2.5	RuleAction Structure
+    /// 2.2.5 RuleAction Structure
     /// </summary>
     public class RuleAction : BaseStructure
     {
-        //Specifies the number of structures that are contained in the ActionBlocks field. For extended rules, the size of the NoOfActions field is 4 bytes instead of 2 bytes.
+        /// <summary>
+        /// Specifies the number of structures that are contained in the ActionBlocks field. For extended rules, the size of the NoOfActions field is 4 bytes instead of 2 bytes.
+        /// </summary>
         public object NoOfActions;
 
-        // An array of ActionBlock structures, each of which specifies an action (2) of the rule (2), as specified in section 2.2.5.1.
+        /// <summary>
+        /// An array of ActionBlock structures, each of which specifies an action (2) of the rule (2), as specified in section 2.2.5.1.
+        /// </summary>
         public ActionBlock[] ActionBlocks;
 
-        // The wide size of NoOfActions.
+        /// <summary>
+        /// The wide size of NoOfActions.
+        /// </summary>
         private CountWideEnum countWide;
 
         /// <summary>
-        ///  The Constructor to set the NoOfActions wide size.
+        ///  Initializes a new instance of the RuleAction class
         /// </summary>
         /// <param name="wide">The wide size of NoOfActions.</param>
         public RuleAction(CountWideEnum wide = CountWideEnum.twoBytes)
         {
-            countWide = wide;
+            this.countWide = wide;
         }
+
         /// <summary>
         /// Parse the RuleAction structure.
         /// </summary>
@@ -340,47 +513,61 @@ namespace MAPIInspector.Parsers
             HelpMethod help = new HelpMethod();
             this.NoOfActions = help.ReadCount(this.countWide, s);
             List<ActionBlock> tempActionBlocks = new List<ActionBlock>();
-            for (int i = 0; i < NoOfActions.GetHashCode(); i++)
+            for (int i = 0; i < this.NoOfActions.GetHashCode(); i++)
             {
                 ActionBlock tempActionBlock = new ActionBlock(CountWideEnum.twoBytes);
                 tempActionBlock.Parse(s);
                 tempActionBlocks.Add(tempActionBlock);
             }
+
             this.ActionBlocks = tempActionBlocks.ToArray();
         }
     }
 
     /// <summary>
-    /// 2.2.5.1	ActionBlock Structure
+    /// 2.2.5.1 ActionBlock Structure
     /// </summary>
     public class ActionBlock : BaseStructure
     {
-        // An integer that specifies the cumulative length, in bytes, of the subsequent fields in this ActionBlock structure. For extended rules, the size of the ActionLength field is 4 bytes instead of 2 bytes.
+        /// <summary>
+        /// An integer that specifies the cumulative length, in bytes, of the subsequent fields in this ActionBlock structure. For extended rules, the size of the ActionLength field is 4 bytes instead of 2 bytes.
+        /// </summary>
         public object ActionLength;
 
-        // An integer that specifies the type of action (2). 
+        /// <summary>
+        /// An integer that specifies the type of action (2). 
+        /// </summary>
         public ActionType ActionType;
 
-        // The flags that are associated with a particular type of action (2). 
+        /// <summary>
+        /// The flags that are associated with a particular type of action (2). 
+        /// </summary>
         public object ActionFlavor;
 
-        // Client-defined flags. The ActionFlags field is used solely by the client
+        /// <summary>
+        /// Client-defined flags. The ActionFlags field is used solely by the client
+        /// </summary>
         public uint ActionFlags;
 
-        // An ActionData structure, as specified in section 2.2.5.1.2, that specifies data related to the particular action (2).
+        /// <summary>
+        /// An ActionData structure, as specified in section 2.2.5.1.2, that specifies data related to the particular action (2).
+        /// </summary>
         public object ActionData;
 
-        // The wide size of NoOfActions.
+        /// <summary>
+        /// The wide size of NoOfActions.
+        /// </summary>
         private CountWideEnum countWide;
 
         /// <summary>
-        ///  The Constructor to set the ActionLength wide size.
+        ///  Initializes a new instance of the ActionBlock class.
         /// </summary>
         /// <param name="wide">The wide size of ActionLength.</param>
         public ActionBlock(CountWideEnum wide = CountWideEnum.twoBytes)
         {
-            countWide = wide;
+            this.countWide = wide;
         }
+
         /// <summary>
         /// Parse the ActionBlock structure.
         /// </summary>
@@ -391,7 +578,7 @@ namespace MAPIInspector.Parsers
             HelpMethod help = new HelpMethod();
             this.ActionLength = help.ReadCount(this.countWide, s);
             this.ActionType = (ActionType)ReadByte();
-            switch (ActionType)
+            switch (this.ActionType)
             {
                 case ActionType.OP_REPLY:
                     {
@@ -400,6 +587,7 @@ namespace MAPIInspector.Parsers
                         this.ActionFlavor = action;
                         break;
                     }
+
                 case ActionType.OP_OOF_REPLY:
                     {
                         ActionFlavor_Reply action = new ActionFlavor_Reply();
@@ -407,6 +595,7 @@ namespace MAPIInspector.Parsers
                         this.ActionFlavor = action;
                         break;
                     }
+
                 case ActionType.OP_FORWARD:
                     {
                         ActionFlavor_Forward action = new ActionFlavor_Forward();
@@ -414,6 +603,7 @@ namespace MAPIInspector.Parsers
                         this.ActionFlavor = action;
                         break;
                     }
+
                 default:
                     {
                         ActionFlavor_Reserved action = new ActionFlavor_Reserved();
@@ -423,78 +613,59 @@ namespace MAPIInspector.Parsers
                     }
             }
 
-            this.ActionFlags = ReadUint();
-            if ((ActionLength.GetHashCode() > 9))
+            this.ActionFlags = this.ReadUint();
+            if (this.ActionLength.GetHashCode() > 9)
             {
-                if ((ActionType.OP_MOVE == ActionType || ActionType.OP_COPY == ActionType) && countWide.Equals(CountWideEnum.twoBytes))
+                if ((ActionType.OP_MOVE == this.ActionType || ActionType.OP_COPY == this.ActionType) && this.countWide.Equals(CountWideEnum.twoBytes))
                 {
                     OP_MOVE_and_OP_COPY_ActionData_forStandard actionData = new OP_MOVE_and_OP_COPY_ActionData_forStandard();
                     actionData.Parse(s);
                     this.ActionData = actionData;
                 }
-                else if ((ActionType.OP_MOVE == ActionType || ActionType.OP_COPY == ActionType) && countWide.Equals(CountWideEnum.fourBytes))
+                else if ((ActionType.OP_MOVE == this.ActionType || ActionType.OP_COPY == this.ActionType) && this.countWide.Equals(CountWideEnum.fourBytes))
                 {
                     OP_MOVE_and_OP_COPY_ActionData_forExtended actionData = new OP_MOVE_and_OP_COPY_ActionData_forExtended();
                     actionData.Parse(s);
                     this.ActionData = actionData;
                 }
-                else if ((ActionType.OP_REPLY == ActionType || ActionType.OP_OOF_REPLY == ActionType) && countWide.Equals(CountWideEnum.twoBytes))
+                else if ((ActionType.OP_REPLY == this.ActionType || ActionType.OP_OOF_REPLY == this.ActionType) && this.countWide.Equals(CountWideEnum.twoBytes))
                 {
                     OP_REPLY_and_OP_OOF_REPLY_ActionData_forStandard actionData = new OP_REPLY_and_OP_OOF_REPLY_ActionData_forStandard();
                     actionData.Parse(s);
                     this.ActionData = actionData;
                 }
-                else if ((ActionType.OP_REPLY == ActionType || ActionType.OP_OOF_REPLY == ActionType) && countWide.Equals(CountWideEnum.fourBytes))
+                else if ((ActionType.OP_REPLY == this.ActionType || ActionType.OP_OOF_REPLY == this.ActionType) && this.countWide.Equals(CountWideEnum.fourBytes))
                 {
                     OP_REPLY_and_OP_OOF_REPLY_ActionData_forExtended actionData = new OP_REPLY_and_OP_OOF_REPLY_ActionData_forExtended();
                     actionData.Parse(s);
                     this.ActionData = actionData;
                 }
-                else if (ActionType.OP_FORWARD == ActionType || ActionType.OP_DELEGATE == ActionType)
+                else if (ActionType.OP_FORWARD == this.ActionType || ActionType.OP_DELEGATE == this.ActionType)
                 {
                     OP_FORWARD_and_OP_DELEGATE_ActionData actionData = new OP_FORWARD_and_OP_DELEGATE_ActionData();
                     actionData.Parse(s);
                     this.ActionData = actionData;
                 }
-                else if (ActionType.OP_BOUNCE == ActionType)
+                else if (ActionType.OP_BOUNCE == this.ActionType)
                 {
                     OP_BOUNCE_ActionData actionData = new OP_BOUNCE_ActionData();
                     actionData.Parse(s);
                     this.ActionData = actionData;
                 }
-                else if (ActionType.OP_TAG == ActionType)
+                else if (ActionType.OP_TAG == this.ActionType)
                 {
                     OP_TAG_ActionData actionData = new OP_TAG_ActionData();
                     actionData.Parse(s);
                     this.ActionData = actionData;
                 }
-                else if (ActionType.OP_DEFER_ACTION == ActionType)
+                else if (ActionType.OP_DEFER_ACTION == this.ActionType)
                 {
-                    OP_DEFER_ACTION actionData = new OP_DEFER_ACTION(ActionLength.GetHashCode());
+                    OP_DEFER_ACTION actionData = new OP_DEFER_ACTION(this.ActionLength.GetHashCode());
                     actionData.Parse(s);
                     this.ActionData = actionData;
                 }
             }
         }
-
-    }
-
-    /// <summary>
-    /// The enum value of ActionType.
-    /// </summary>
-    public enum ActionType : byte
-    {
-        OP_MOVE = 0x01,
-        OP_COPY = 0x02,
-        OP_REPLY = 0x03,
-        OP_OOF_REPLY = 0x04,
-        OP_DEFER_ACTION = 0x05,
-        OP_BOUNCE = 0x06,
-        OP_FORWARD = 0x07,
-        OP_DELEGATE = 0x08,
-        OP_TAG = 0x09,
-        OP_DELETE = 0x0A,
-        OP_MARK_AS_READ = 0x0B
     }
 
     #region 2.2.5.1.1	Action Flavors
@@ -503,28 +674,40 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class ActionFlavor_Forward : BaseStructure
     {
-        // The reserved bit.
+        /// <summary>
+        /// The reserved bit.
+        /// </summary>
         [BitAttribute(4)]
-        public int Reserved_bits_0;
+        public int Reservedbits0;
 
-        // Indicates that the message SHOULD<5> be forwarded as a Short Message Service (SMS) text message. 
+        /// <summary>
+        /// Indicates that the message SHOULD be forwarded as a Short Message Service (SMS) text message. 
+        /// </summary>
         [BitAttribute(1)]
         public byte TM;
 
-        // Forwards the message as an attachment. This value MUST NOT be combined with other ActionFlavor flags.
+        /// <summary>
+        /// Forwards the message as an attachment. This value MUST NOT be combined with other ActionFlavor flags.
+        /// </summary>
         [BitAttribute(1)]
         public byte AT;
 
-        // Forwards the message without making any changes to the message. 
+        /// <summary>
+        /// Forwards the message without making any changes to the message. 
+        /// </summary>
         [BitAttribute(1)]
         public byte NC;
 
-        // Preserves the sender information and indicates that the message was autoforwarded. 
+        /// <summary>
+        /// Preserves the sender information and indicates that the message was auto forwarded. 
+        /// </summary>
         [BitAttribute(1)]
         public byte PR;
 
-        // The reserved bit.3 bytes.
-        public byte[] Reserved_bits_1;
+        /// <summary>
+        /// The reserved bit.3 bytes.
+        /// </summary>
+        public byte[] Reservedbits1;
 
         /// <summary>
         /// Parse the ActionFlavor_Forward structure.
@@ -533,19 +716,19 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            byte tempbyte = ReadByte();
+            byte tempbyte = this.ReadByte();
             int index = 0;
-            this.Reserved_bits_0 = GetBits(tempbyte, index, 4);
+            this.Reservedbits0 = this.GetBits(tempbyte, index, 4);
             index += 4;
-            this.TM = GetBits(tempbyte, index, 1);
+            this.TM = this.GetBits(tempbyte, index, 1);
             index += 1;
-            this.AT = GetBits(tempbyte, index, 1);
+            this.AT = this.GetBits(tempbyte, index, 1);
             index += 1;
-            this.NC = GetBits(tempbyte, index, 1);
+            this.NC = this.GetBits(tempbyte, index, 1);
             index += 1;
-            this.PR = GetBits(tempbyte, index, 1);
+            this.PR = this.GetBits(tempbyte, index, 1);
 
-            this.Reserved_bits_1 = ReadBytes(3);
+            this.Reservedbits1 = this.ReadBytes(3);
         }
     }
 
@@ -554,20 +737,28 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class ActionFlavor_Reply : BaseStructure
     {
-        // The reserved bit.
+        /// <summary>
+        /// The reserved bit.
+        /// </summary>
         [BitAttribute(6)]
-        public byte Reserved_bits_0;
+        public byte Reservedbits0;
 
-        // Server will use fixed, server-defined text in the reply message and ignore the text in the reply template. 
+        /// <summary>
+        /// Server will use fixed, server-defined text in the reply message and ignore the text in the reply template. 
+        /// </summary>
         [BitAttribute(1)]
         public byte ST;
 
-        // The server SHOULD<6> not send the message to the message sender (the reply template MUST contain recipients (2) in this case).
+        /// <summary>
+        /// The server SHOULD not send the message to the message sender (the reply template MUST contain recipients (2) in this case).
+        /// </summary>
         [BitAttribute(1)]
         public byte NS;
 
-        // The reserved bit.3 bytes
-        public byte[] Reserved_bits_1;
+        /// <summary>
+        /// The reserved bit.3 bytes
+        /// </summary>
+        public byte[] Reservedbits1;
 
         /// <summary>
         /// Parse the ActionFlavor_Reply structure.
@@ -576,14 +767,14 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            byte tempbyte = ReadByte();
+            byte tempbyte = this.ReadByte();
             int index = 0;
-            this.Reserved_bits_0 = GetBits(tempbyte, index, 6);
+            this.Reservedbits0 = this.GetBits(tempbyte, index, 6);
             index += 6;
-            this.ST = GetBits(tempbyte, index, 1);
+            this.ST = this.GetBits(tempbyte, index, 1);
             index += 1;
-            this.NS = GetBits(tempbyte, index, 1);
-            this.Reserved_bits_1 = ReadBytes(3);
+            this.NS = this.GetBits(tempbyte, index, 1);
+            this.Reservedbits1 = this.ReadBytes(3);
         }
     }
 
@@ -592,8 +783,10 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class ActionFlavor_Reserved : BaseStructure
     {
-        // The reserved bits.
-        public int Reserved_bits;
+        /// <summary>
+        /// The reserved bits.
+        /// </summary>
+        public int Reservedbits;
 
         /// <summary>
         /// Parse the ActionFlavor_Reserved structure.
@@ -602,7 +795,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.Reserved_bits = ReadINT32();
+            this.Reservedbits = this.ReadINT32();
         }
     }
     #endregion
@@ -613,19 +806,29 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class OP_MOVE_and_OP_COPY_ActionData_forStandard : BaseStructure
     {
-        // A Boolean value that indicates whether the folder is in the user's mailbox or a different mailbox.
+        /// <summary>
+        /// A Boolean value that indicates whether the folder is in the user's mailbox or a different mailbox.
+        /// </summary>
         public bool FolderInThisStore;
 
-        // An integer that specifies the size, in bytes, of the StoreEID field.
+        /// <summary>
+        /// An integer that specifies the size, in bytes, of the StoreEID field.
+        /// </summary>
         public ushort StoreEIDSize;
 
-        // A Store Object EntryID structure, as specified in [MS-OXCDATA] section 2.2.4.3, that identifies the message store. 
+        /// <summary>
+        /// A Store Object EntryID structure, as specified in [MS-OXCDATA] section 2.2.4.3, that identifies the message store. 
+        /// </summary>
         public object StoreEID;
 
-        // An integer that specifies the size, in bytes, of the FolderEID field.
+        /// <summary>
+        /// An integer that specifies the size, in bytes, of the FolderEID field.
+        /// </summary>
         public ushort FolderEIDSize;
 
-        // A structure that identifies the destination folder.
+        /// <summary>
+        /// A structure that identifies the destination folder.
+        /// </summary>
         public object FolderEID;
 
         /// <summary>
@@ -635,11 +838,11 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.FolderInThisStore = ReadBoolean();
-            this.StoreEIDSize = ReadUshort();
-            if (FolderInThisStore)
+            this.FolderInThisStore = this.ReadBoolean();
+            this.StoreEIDSize = this.ReadUshort();
+            if (this.FolderInThisStore)
             {
-                MAPIString storeEID = new MAPIString(Encoding.ASCII, "", StoreEIDSize);
+                MAPIString storeEID = new MAPIString(Encoding.ASCII, string.Empty, this.StoreEIDSize);
                 storeEID.Parse(s);
                 this.StoreEID = storeEID;
             }
@@ -649,8 +852,9 @@ namespace MAPIInspector.Parsers
                 storeEID.Parse(s);
                 this.StoreEID = storeEID;
             }
-            this.FolderEIDSize = ReadUshort();
-            if (FolderInThisStore)
+
+            this.FolderEIDSize = this.ReadUshort();
+            if (this.FolderInThisStore)
             {
                 ServerEid folderEID = new ServerEid();
                 folderEID.Parse(s);
@@ -658,9 +862,8 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                this.FolderEID = ReadBytes(FolderEIDSize);
+                this.FolderEID = this.ReadBytes(this.FolderEIDSize);
             }
-
         }
     }
 
@@ -669,16 +872,24 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class OP_MOVE_and_OP_COPY_ActionData_forExtended : BaseStructure
     {
-        // An integer that specifies the size, in bytes, of the StoreEID field.
+        /// <summary>
+        /// An integer that specifies the size, in bytes, of the StoreEID field.
+        /// </summary>
         public uint StoreEIDSize;
 
-        // This field is not used and can be set to any non-null value by the client and the server. 
+        /// <summary>
+        /// This field is not used and can be set to any non-null value by the client and the server. 
+        /// </summary>
         public MAPIString StoreEID;
 
-        // An integer that specifies the size, in bytes, of the FolderEID field.
+        /// <summary>
+        /// An integer that specifies the size, in bytes, of the FolderEID field.
+        /// </summary>
         public uint FolderEIDSize;
 
-        // A Folder EntryID structure, as specified in [MS-OXCDATA] section 2.2.4.1, that identifies the destination folder. 
+        /// <summary>
+        /// A Folder EntryID structure, as specified in [MS-OXCDATA] section 2.2.4.1, that identifies the destination folder. 
+        /// </summary>
         public FolderEntryID FolderEID;
 
         /// <summary>
@@ -688,10 +899,10 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.StoreEIDSize = ReadUint();
-            this.StoreEID = new MAPIString(Encoding.ASCII, "", (int)StoreEIDSize);
+            this.StoreEIDSize = this.ReadUint();
+            this.StoreEID = new MAPIString(Encoding.ASCII, string.Empty, (int)this.StoreEIDSize);
             this.StoreEID.Parse(s);
-            this.FolderEIDSize = ReadUint();
+            this.FolderEIDSize = this.ReadUint();
             FolderEntryID folderEID = new FolderEntryID();
             this.FolderEID = folderEID;
             this.FolderEID.Parse(s);
@@ -703,16 +914,24 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class ServerEid : BaseStructure
     {
-        // The value 0x01 indicates that the remaining bytes conform to this structure; 
+        /// <summary>
+        /// The value 0x01 indicates that the remaining bytes conform to this structure; 
+        /// </summary>
         public byte Ours;
 
-        // A Folder ID structure, as specified in [MS-OXCDATA] section 2.2.1.1, that identifies the destination folder.
+        /// <summary>
+        /// A Folder ID structure, as specified in [MS-OXCDATA] section 2.2.1.1, that identifies the destination folder.
+        /// </summary>
         public FolderID FolderId;
 
-        // This field is not used and MUST be set to all zeros.
+        /// <summary>
+        /// This field is not used and MUST be set to all zeros.
+        /// </summary>
         public ulong MessageId;
 
-        // This field is not used and MUST be set to all zeros.
+        /// <summary>
+        /// This field is not used and MUST be set to all zeros.
+        /// </summary>
         public int Instance;
 
         /// <summary>
@@ -722,12 +941,12 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.Ours = ReadByte();
+            this.Ours = this.ReadByte();
             FolderID folderId = new FolderID();
             this.FolderId = folderId;
             this.FolderId.Parse(s);
-            this.MessageId = ReadUlong();
-            this.Instance = ReadINT32();
+            this.MessageId = this.ReadUlong();
+            this.Instance = this.ReadINT32();
         }
     }
 
@@ -736,13 +955,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class OP_REPLY_and_OP_OOF_REPLY_ActionData_forStandard : BaseStructure
     {
-        // A Folder ID structure, as specified in [MS-OXCDATA] section 2.2.1.1, that identifies the folder that contains the reply template.
+        /// <summary>
+        /// A Folder ID structure, as specified in [MS-OXCDATA] section 2.2.1.1, that identifies the folder that contains the reply template.
+        /// </summary>
         public FolderID ReplyTemplateFID;
 
-        // A Message ID structure, as specified in [MS-OXCDATA] section 2.2.1.2, that identifies the FAI message being used as the reply template.
+        /// <summary>
+        /// A Message ID structure, as specified in [MS-OXCDATA] section 2.2.1.2, that identifies the FAI message being used as the reply template.
+        /// </summary>
         public MessageID ReplyTemplateMID;
 
-        // A GUID that is generated by the client in the process of creating a reply template. 
+        /// <summary>
+        /// A GUID that is generated by the client in the process of creating a reply template. 
+        /// </summary>
         public Guid ReplyTemplateGUID;
 
         /// <summary>
@@ -758,7 +983,7 @@ namespace MAPIInspector.Parsers
             MessageID replyTemplateMID = new MessageID();
             this.ReplyTemplateMID = replyTemplateMID;
             this.ReplyTemplateMID.Parse(s);
-            this.ReplyTemplateGUID = ReadGuid();
+            this.ReplyTemplateGUID = this.ReadGuid();
         }
     }
 
@@ -767,13 +992,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class OP_REPLY_and_OP_OOF_REPLY_ActionData_forExtended : BaseStructure
     {
-        // An integer that specifies the size, in bytes, of the ReplyTemplateMessageEID field.
+        /// <summary>
+        /// An integer that specifies the size, in bytes, of the ReplyTemplateMessageEID field.
+        /// </summary>
         public uint MessageEIDSize;
 
-        // A Message EntryID structure, as specified in [MS-OXCDATA] section 2.2.4.2, that contains the entry ID of the reply template.
+        /// <summary>
+        /// A Message EntryID structure, as specified in [MS-OXCDATA] section 2.2.4.2, that contains the entry ID of the reply template.
+        /// </summary>
         public MessageEntryID ReplyTemplateMessageEID;
 
-        // A GUID that is generated by the client in the process of creating a reply template. 
+        /// <summary>
+        /// A GUID that is generated by the client in the process of creating a reply template. 
+        /// </summary>
         public Guid ReplyTemplateGUID;
 
         /// <summary>
@@ -783,11 +1014,11 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.MessageEIDSize = ReadUint();
+            this.MessageEIDSize = this.ReadUint();
             MessageEntryID replyTemplateMessageEID = new MessageEntryID();
             this.ReplyTemplateMessageEID = replyTemplateMessageEID;
             this.ReplyTemplateMessageEID.Parse(s);
-            this.ReplyTemplateGUID = ReadGuid();
+            this.ReplyTemplateGUID = this.ReadGuid();
         }
     }
 
@@ -796,10 +1027,14 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class OP_FORWARD_and_OP_DELEGATE_ActionData : BaseStructure
     {
-        // An integer that specifies the number of RecipientBlockData structures, as specified in section 2.2.5.1.2.4.1, contained in the RecipientBlocks field.
+        /// <summary>
+        /// An integer that specifies the number of RecipientBlockData structures, as specified in section 2.2.5.1.2.4.1, contained in the RecipientBlocks field.
+        /// </summary>
         public ushort RecipientCount;
 
-        // An array of RecipientBlockData structures, each of which specifies information about one recipient (2). 
+        /// <summary>
+        /// An array of RecipientBlockData structures, each of which specifies information about one recipient (2). 
+        /// </summary>
         public RecipientBlockData[] RecipientBlocks;
 
         /// <summary>
@@ -809,14 +1044,15 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RecipientCount = ReadUshort();
+            this.RecipientCount = this.ReadUshort();
             List<RecipientBlockData> recipientBlocks = new List<RecipientBlockData>();
-            for (int i = 0; i < RecipientCount; i++)
+            for (int i = 0; i < this.RecipientCount; i++)
             {
                 RecipientBlockData recipientBlock = new RecipientBlockData();
                 recipientBlock.Parse(s);
                 recipientBlocks.Add(recipientBlock);
             }
+
             this.RecipientBlocks = recipientBlocks.ToArray();
         }
     }
@@ -826,13 +1062,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RecipientBlockData : BaseStructure
     {
-        // This value is implementation-specific and not required for interoperability
+        /// <summary>
+        /// This value is implementation-specific and not required for interoperability
+        /// </summary>
         public byte Reserved;
 
-        // An integer that specifies the number of structures present in the PropertyValues field. This number MUST be greater than zero.
+        /// <summary>
+        /// An integer that specifies the number of structures present in the PropertyValues field. This number MUST be greater than zero.
+        /// </summary>
         public ushort NoOfProperties;
 
-        // An array of TaggedPropertyValue structures, each of which contains a property that provides some information about the recipient (2). 
+        /// <summary>
+        /// An array of TaggedPropertyValue structures, each of which contains a property that provides some information about the recipient (2). 
+        /// </summary>
         public TaggedPropertyValue[] PropertyValues;
 
         /// <summary>
@@ -842,15 +1084,16 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.Reserved = ReadByte();
-            this.NoOfProperties = ReadUshort();
+            this.Reserved = this.ReadByte();
+            this.NoOfProperties = this.ReadUshort();
             List<TaggedPropertyValue> propertyValues = new List<TaggedPropertyValue>();
-            for (int i = 0; i < NoOfProperties; i++)
+            for (int i = 0; i < this.NoOfProperties; i++)
             {
                 TaggedPropertyValue propertyValue = new TaggedPropertyValue();
                 propertyValue.Parse(s);
                 propertyValues.Add(propertyValue);
             }
+
             this.PropertyValues = propertyValues.ToArray();
         }
     }
@@ -860,7 +1103,9 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class OP_BOUNCE_ActionData : BaseStructure
     {
-        // An integer that specifies a bounce code.
+        /// <summary>
+        /// An integer that specifies a bounce code.
+        /// </summary>
         public BounceCodeEnum BounceCode;
 
         /// <summary>
@@ -870,40 +1115,34 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.BounceCode = (BounceCodeEnum)ReadUint();
+            this.BounceCode = (BounceCodeEnum)this.ReadUint();
         }
     }
 
     /// <summary>
-    /// The enum value of Bounce Code.
-    /// </summary>
-    public enum BounceCodeEnum : uint
-    {
-        RejectedMessageTooLarge = 0x0000000D,
-        RejectedMessageNotDisplayed = 0x0000001F,
-        DeliveryMessageDenied = 0x00000026
-
-    }
-
-    ///  <summary>
-    ///  This type is specified in MS-OXORULE section 2.2.5.1.2.3 OP_DEFER_ACTION ActionData Structure
+    /// This type is specified in MS-OXORULE section 2.2.5.1.2.3 OP_DEFER_ACTION ActionData Structure
     /// </summary>
     public class OP_DEFER_ACTION : BaseStructure
     {
-        // The length of DeferActionData
-        private int length;
-
-        // The defer Action data.
+        /// <summary>
+        /// The defer Action data.
+        /// </summary>
         public byte[] DeferActionData;
 
         /// <summary>
-        /// The Constructor to set the DeferActionData length.
+        /// The length of DeferActionData
+        /// </summary>
+        private int length;
+
+        /// <summary>
+        /// Initializes a new instance of the OP_DEFER_ACTION class.
         /// </summary>
         /// <param name="size">The size.</param>
         public OP_DEFER_ACTION(int size)
         {
-            length = size - 9;
+            this.length = size - 9;
         }
+
         /// <summary>
         /// Parse the OP_DEFER_ACTION structure.
         /// </summary>
@@ -911,7 +1150,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.DeferActionData = ReadBytes(length);
+            this.DeferActionData = this.ReadBytes(this.length);
         }
     }
 
@@ -920,7 +1159,7 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class OP_TAG_ActionData : TaggedPropertyValue
     {
-        //None, class OP_TAG_ActionData is same as TaggedPropertyValue.
+        // None, class OP_TAG_ActionData is same as TaggedPropertyValue.
     }
 
     #endregion

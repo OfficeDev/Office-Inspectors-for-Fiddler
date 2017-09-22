@@ -50,7 +50,7 @@
     <Reference Include="EQATEC.Analytics.Monitor">
       <HintPath>..\ExternalReference\EQATEC.Analytics.Monitor.dll</HintPath>
     </Reference>
-    <Reference Include="Fiddler, Version=4.6.3.44034, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Fiddler, Version=4.6.20172.31233, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>E:\Program Files (x86)\Fiddler2\Fiddler.exe</HintPath>
       <Aliases>FiddlerExe</Aliases>
@@ -74,9 +74,6 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>..\..\..\..\Program Files (x86)\Microsoft Visual Studio 14.0\Visual Studio Tools for Office\PIA\Office15\Microsoft.Office.Interop.Outlook.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Win32.TaskScheduler">
-      <HintPath>..\..\..\TaskSchedueler\v4.0\Microsoft.Win32.TaskScheduler.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -89,7 +86,6 @@
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="UIAutomationClient" />
-    <Reference Include="UIAutomationClientsideProviders" />
     <Reference Include="UIAutomationProvider" />
     <Reference Include="UIAutomationTypes" />
     <Reference Include="WindowsBase" />
@@ -109,6 +105,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="GenerateReport.cs" />
     <Compile Include="MessageParser.cs" />
     <Compile Include="NoneCachedModeCase.cs" />
     <Compile Include="CachedModeCase.cs" />

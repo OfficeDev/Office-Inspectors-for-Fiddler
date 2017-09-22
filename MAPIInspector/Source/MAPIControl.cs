@@ -1,15 +1,24 @@
-﻿using System.Windows.Forms;
-using Be.Windows.Forms;
-
-namespace MapiInspector
+﻿namespace MapiInspector
 {
+    using System.Windows.Forms;
+    using Be.Windows.Forms;
+
+    /// <summary>
+    /// MAPIControl class used for display
+    /// </summary>
     public partial class MAPIControl : UserControl
     {
+        /// <summary>
+        /// Initializes a new instance of the MAPIControl class
+        /// </summary>
         public MAPIControl()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
+        /// <summary>
+        /// Gets mapiTreeView
+        /// </summary>
         public TreeView MAPITreeView
         {
            get
@@ -18,6 +27,9 @@ namespace MapiInspector
            }
         }
 
+        /// <summary>
+        /// Gets mapiHexBox
+        /// </summary>
         public HexBox MAPIHexBox
         {
             get
@@ -26,6 +38,9 @@ namespace MapiInspector
             }
         }
 
+        /// <summary>
+        /// Gets mapiRichTextBox
+        /// </summary>
         public RichTextBox MAPIRichTextBox
         {
             get
@@ -34,6 +49,9 @@ namespace MapiInspector
             }
         }
 
+        /// <summary>
+        /// Gets cropsHexBox
+        /// </summary>
         public HexBox CROPSHexBox
         {
             get
@@ -42,6 +60,9 @@ namespace MapiInspector
             }
         }
 
+        /// <summary>
+        /// Gets splitContainer
+        /// </summary>
         public SplitContainer SplitContainer
         {
             get

@@ -1,4 +1,7 @@
-﻿namespace MapiInspector
+﻿using System.Windows.Forms;
+using System;
+
+namespace MapiInspector
 {
     public partial class MAPIControl
     {
@@ -96,6 +99,14 @@
             this.mapiHexBox.Size = new System.Drawing.Size(644, 472);
             this.mapiHexBox.TabIndex = 2;
             this.mapiHexBox.VScrollBarVisible = true;
+            this.mapiHexBox.CanCopy();
+
+            ContextMenu cm = new ContextMenu();
+            this.mapiHexBox.ContextMenu = cm;    
+            MenuItem item = this.mapiHexBox.ContextMenu.MenuItems.Add("Copy");
+            item.Click += new EventHandler(MAPI_Copy);
+
+
             // 
             // cropsHexBox
             // 
@@ -111,6 +122,13 @@
             this.cropsHexBox.Size = new System.Drawing.Size(150, 46);
             this.cropsHexBox.TabIndex = 4;
             this.cropsHexBox.VScrollBarVisible = true;
+
+            ContextMenu cm_crops = new ContextMenu();
+            this.cropsHexBox.ContextMenu = cm_crops;
+            MenuItem item_crops = this.cropsHexBox.ContextMenu.MenuItems.Add("Copy");
+            item_crops.Click += new EventHandler(CROPS_Copy);
+
+
             // 
             // splitter
             // 
@@ -137,6 +155,24 @@
             this.splitContainer.ResumeLayout(false);
             this.ResumeLayout(false);
 
+        }
+
+        void CopyMethod(object sender, EventArgs e, Be.Windows.Forms.HexBox hexBox)
+        {
+            byte[] targetBytes = new byte[hexBox.SelectionLength];
+            Array.Copy(hexBox.GetAllBytes(), hexBox.SelectionStart,targetBytes,0, hexBox.SelectionLength);
+            string hex = BitConverter.ToString(targetBytes).Replace("-", string.Empty);
+            Clipboard.SetText(hex);
+        }
+
+        void MAPI_Copy(object sender, EventArgs e)
+        {
+            CopyMethod(sender, e, this.mapiHexBox);
+        }
+
+        void CROPS_Copy(object sender, EventArgs e)
+        {
+            CopyMethod(sender, e, this.CROPSHexBox);
         }
 
         #endregion

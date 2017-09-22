@@ -1,7 +1,7 @@
-﻿using Fiddler;
-
-namespace MapiInspector
+﻿namespace MapiInspector
 {
+    using Fiddler;
+
     /// <summary>
     /// MAPI Response inspector derived from MAPIInspector and implemented Fiddler.IResponseInspector2
     /// </summary>

@@ -1,22 +1,668 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-
-namespace MAPIInspector.Parsers
+﻿namespace MAPIInspector.Parsers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+
+    #region Enum
+
+    /// <summary>
+    /// Code page property types are used to transmit string properties using the code page format of the string as stored on the server,
+    /// </summary>
+    public enum CodePageType : ushort
+    {
+        /// <summary>
+        /// PtypCodePage Unicode 51
+        /// </summary>
+        PtypCodePageUnicode = 0x84B0,
+
+        /// <summary>
+        /// PtypCodePage Unicode big end
+        /// </summary>
+        PtypCodePageUnicodeBigendian = 0x84B1,
+
+        /// <summary>
+        /// PtypCodePage western European
+        /// </summary>
+        PtypCodePageWesternEuropean = 0x84E4,
+
+        /// <summary>
+        /// ptypCodePag eUnicode 52
+        /// </summary>
+        ptypCodePageUnicode52 = 0x94B0
+    }
+
+    /// <summary>
+    /// Represents the type of FastTransfer stream.
+    /// </summary>
+    public enum FastTransferStreamType
+    {
+        /// <summary>
+        /// contentsSync type
+        /// </summary>
+        contentsSync = 1,
+
+        /// <summary>
+        /// hierarchySync type
+        /// </summary>
+        hierarchySync = 2,
+
+        /// <summary>
+        /// state type
+        /// </summary>
+        state = 3,
+
+        /// <summary>
+        /// folderContent type
+        /// </summary>
+        folderContent = 4,
+
+        /// <summary>
+        /// Message Content
+        /// </summary>
+        MessageContent = 5,
+
+        /// <summary>
+        /// attachment Content
+        /// </summary>
+        attachmentContent = 6,
+
+        /// <summary>
+        /// The MessageList element
+        /// </summary>
+        MessageList = 7,
+
+        /// <summary>
+        /// The TopFolder element
+        /// </summary>
+        TopFolder = 8
+    }
+
+    /// <summary>
+    ///  Object handles type. 
+    /// </summary>
+    public enum ObjectHandlesType : byte
+    {
+        /// <summary>
+        /// Handles for handle
+        /// </summary>
+        FolderHandles = 0x01,
+
+        /// <summary>
+        /// Message for handle
+        /// </summary>
+        MessageHandles = 0x02,
+
+        /// <summary>
+        /// Attachment for handle
+        /// </summary>
+        AttachmentHandles = 0x03,
+    }
+
+    /// <summary>
+    /// Syntactical markers
+    /// </summary>
+    public enum Markers : uint
+    {
+        /// <summary>
+        /// StartTopFld marker 
+        /// </summary>
+        StartTopFld = 0x40090003,
+
+        /// <summary>
+        /// EndFolder marker
+        /// </summary>
+        EndFolder = 0x400B0003,
+
+        /// <summary>
+        /// StartSubFld marker
+        /// </summary>
+        StartSubFld = 0x400A0003,
+
+        /// <summary>
+        /// StartMessage marker
+        /// </summary>
+        StartMessage = 0x400C0003,
+
+        /// <summary>
+        /// EndMessage marker 
+        /// </summary>
+        EndMessage = 0x400D0003,
+
+        /// <summary>
+        /// StartFAIMsg marker
+        /// </summary>
+        StartFAIMsg = 0x40100003,
+
+        /// <summary>
+        /// StartEmbed marker
+        /// </summary>
+        StartEmbed = 0x40010003,
+
+        /// <summary>
+        /// EndEmbed marker
+        /// </summary>
+        EndEmbed = 0x40020003,
+
+        /// <summary>
+        /// StartRecip marker
+        /// </summary>
+        StartRecip = 0x40030003,
+
+        /// <summary>
+        /// EndToRecip marker
+        /// </summary>
+        EndToRecip = 0x40040003,
+
+        /// <summary>
+        /// NewAttach marker
+        /// </summary>
+        NewAttach = 0x40000003,
+
+        /// <summary>
+        /// EndAttach marker
+        /// </summary>
+        EndAttach = 0x400E0003,
+
+        /// <summary>
+        /// IncrSyncChg marker
+        /// </summary>
+        IncrSyncChg = 0x40120003,
+
+        /// <summary>
+        /// IncrSyncChgPartial marker
+        /// </summary>
+        IncrSyncChgPartial = 0x407D0003,
+
+        /// <summary>
+        /// IncrSyncDel marker
+        /// </summary>
+        IncrSyncDel = 0x40130003,
+
+        /// <summary>
+        /// IncrSyncEnd marker
+        /// </summary>
+        IncrSyncEnd = 0x40140003,
+
+        /// <summary>
+        /// IncrSyncRead marker
+        /// </summary>
+        IncrSyncRead = 0x402F0003,
+
+        /// <summary>
+        /// IncrSyncStateBegin marker
+        /// </summary>
+        IncrSyncStateBegin = 0x403A0003,
+
+        /// <summary>
+        /// IncrSyncStateEnd marker
+        /// </summary>
+        IncrSyncStateEnd = 0x403B0003,
+
+        /// <summary>
+        /// IncrSyncProgressMode marker
+        /// </summary>
+        IncrSyncProgressMode = 0x4074000B,
+
+        /// <summary>
+        /// IncrSyncProgressPerMsg marker
+        /// </summary>
+        IncrSyncProgressPerMsg = 0x4075000B,
+
+        /// <summary>
+        /// IncrSyncMessage marker
+        /// </summary>
+        IncrSyncMessage = 0x40150003,
+
+        /// <summary>
+        /// IncrSyncGroupInfo marker
+        /// </summary>
+        IncrSyncGroupInfo = 0x407B0102,
+
+        /// <summary>
+        /// FXErrorInfo marker
+        /// </summary>
+        FXErrorInfo = 0x40180003,
+    }
+
+    /// <summary>
+    /// Meta properties
+    /// </summary>
+    public enum MetaProperties : uint
+    {
+        /// <summary>
+        /// The MetaTagEcWarning meta-property contains a warning that occurred when producing output for an element in context
+        /// </summary>
+        MetaTagEcWarning = 0x400f0003,
+
+        /// <summary>
+        /// The MetaTagNewFXFolder meta-property provides information about alternative replicas (1) for a public folder in context
+        /// </summary>
+        MetaTagNewFXFolder = 0x40110102,
+
+        /// <summary>
+        /// The MetaTagFXDelProp meta-property represents a directive to a client to delete specific subobjects of the object in context
+        /// </summary>
+        MetaTagFXDelProp = 0x40160003,
+
+        /// <summary>
+        /// The MetaTagIncrSyncGroupId meta-property specifies an identifier of a property group mapping
+        /// </summary>
+        MetaTagIncrSyncGroupId = 0x407c0003,
+
+        /// <summary>
+        /// The MetaTagIncrementalSyncMessagePartial meta-property specifies an index of a property group within a property group mapping currently in context
+        /// </summary>
+        MetaTagIncrementalSyncMessagePartial = 0x407a0003,
+
+        /// <summary>
+        /// The MetaTagDnPrefix meta-property MUST be ignored when received
+        /// </summary>
+        MetaTagDnPrefix = 0x4008001E
+    }
+
+    /// <summary>
+    /// An enumeration that specifies the current status of the transfer. 
+    /// </summary>
+    public enum TransferStatus : ushort
+    {
+        /// <summary>
+        /// The download stopped because a nonrecoverable error has occurred when producing a FastTransfer stream.
+        /// </summary>
+        Error = 0x0000,
+
+        /// <summary>
+        /// The FastTransfer stream was split, and more data is available.
+        /// </summary>
+        Partial = 0x0001,
+
+        /// <summary>
+        /// The FastTransfer stream was split, more data is available, and the value of the TransferBuffer field contains incomplete data
+        /// </summary>
+        NoRoom = 0x0002,
+
+        /// <summary>
+        /// This was the last portion of the FastTransfer stream.
+        /// </summary>
+        Done = 0x0003,
+    }
+
+    /// <summary>
+    /// An enumeration that specifies flags control the type of RopFastTransferSourceCopyFolder operation. 
+    /// </summary>
+    public enum CopyFlags_CopyFolder : byte
+    {
+        /// <summary>
+        /// This bit flag indicates whether the FastTransfer operation is being configured as a logical part of a larger object move operation
+        /// </summary>
+        Move = 0x01,
+
+        /// <summary>
+        /// Unused flag
+        /// </summary>
+        Unused1 = 0x02,
+
+        /// <summary>
+        /// Unused flag
+        /// </summary>
+        Unused2 = 0x04,
+
+        /// <summary>
+        /// Unused flag
+        /// </summary>
+        Unused3 = 0x08,
+
+        /// <summary>
+        /// The subfolders of the folder specified in the InputServerObject field are recursively included in the scope
+        /// </summary>
+        CopySubfolders = 0x10,
+    }
+
+    /// <summary>
+    /// An enumeration that specifies flags control the type of RopFastTransferSourceCopyMessages operation. 
+    /// </summary>
+    public enum CopyFlags_CopyMessages : byte
+    {
+        /// <summary>
+        /// This bit flag indicates whether the FastTransfer operation is being configured as a logical part of a larger object move operation
+        /// </summary>
+        Move = 0x01,
+
+        /// <summary>
+        /// Unused flag
+        /// </summary>
+        Unused1 = 0x02,
+
+        /// <summary>
+        /// Unused flag
+        /// </summary>
+        Unused2 = 0x04,
+
+        /// <summary>
+        /// Unused flag
+        /// </summary>
+        Unused3 = 0x08,
+
+        /// <summary>
+        /// Identify whether the output message body is in the original format or compressed RTF format.
+        /// </summary>
+        BestBody = 0x10,
+
+        /// <summary>
+        /// This bit flag indicates whether message change information is included in the FastTransfer stream
+        /// </summary>
+        SendEntryId = 0x20,
+    }
+
+    /// <summary>
+    /// An enumeration that specifies flags control the type of RopFastTransferSourceCopyProperties operation. 
+    /// </summary>
+    public enum CopyFlags_CopyProperties : byte
+    {
+        /// <summary>
+        /// This bit flag indicates whether the FastTransfer operation is being configured as a logical part of a larger object move operation
+        /// </summary>
+        Move = 0x01,
+
+        /// <summary>
+        /// Unused flag
+        /// </summary>
+        Unused1 = 0x02,
+
+        /// <summary>
+        /// Unused flag
+        /// </summary>
+        Unused2 = 0x04,
+
+        /// <summary>
+        /// Unused flag
+        /// </summary>
+        Unused3 = 0x08,
+    }
+
+    /// <summary>
+    /// An enumeration that specifies flags control the type of RopFastTransferSourceCopyTo operation. 
+    /// </summary>
+    public enum CopyFlags_CopyTo : uint
+    {
+        /// <summary>
+        /// This bit flag indicates whether the FastTransfer operation is being configured as a logical part of a larger object move operation
+        /// </summary>
+        Move = 0x00000001,
+
+        /// <summary>
+        /// Unused flag
+        /// </summary>
+        Unused1 = 0x00000002,
+
+        /// <summary>
+        /// Unused flag
+        /// </summary>
+        Unused2 = 0x00000004,
+
+        /// <summary>
+        /// Unused flag
+        /// </summary>
+        Unused3 = 0x00000008,
+
+        /// <summary>
+        /// Unused flag
+        /// </summary>
+        Unused4 = 0x00000200,
+
+        /// <summary>
+        /// Unused flag
+        /// </summary>
+        Unused5 = 0x00000400,
+
+        /// <summary>
+        /// This flag MUST only be passed if the value of the InputServerObject field is a Message object.
+        /// </summary>
+        BestBody = 0x0002000,
+    }
+
+    /// <summary>
+    /// An enumeration that specifies flags control the behavior of RopFastTransferSourceCopy operations. 
+    /// </summary>
+    [Flags]
+    public enum SendOptions : byte
+    {
+        /// <summary>
+        /// This flag indicates whether string properties are output in Unicode or in the code page set on the current connection
+        /// </summary>
+        Unicode = 0x01,
+
+        /// <summary>
+        /// This flag indicates support for code page property types
+        /// </summary>
+        UseCpid = 0x02,
+
+        /// <summary>
+        /// This flag is the combination of the Unicode and UseCpid flags.
+        /// </summary>
+        ForUpload = 0x03,
+
+        /// <summary>
+        /// This flag indicates that the client supports recovery mode
+        /// </summary>
+        RecoverMode = 0x04,
+
+        /// <summary>
+        /// This flag indicates whether string properties are output in Unicode.
+        /// </summary>
+        ForceUnicode = 0x08,
+
+        /// <summary>
+        /// This flag MUST only be set for content synchronization download operations.
+        /// </summary>
+        PartialItem = 0x10,
+
+        /// <summary>
+        /// Reserved flag
+        /// </summary>
+        Reserved1 = 0x20,
+
+        /// <summary>
+        /// Reserved flag
+        /// </summary>
+        Reserved2 = 0x40,
+    }
+
+    /// <summary>
+    /// An enumeration that defines the type of synchronization requested. 
+    /// </summary>
+    public enum SynchronizationType : byte
+    {
+        /// <summary>
+        /// Indicates a content synchronization operation.
+        /// </summary>
+        Contents = 0x01,
+
+        /// <summary>
+        /// Indicates a hierarchy synchronization operation
+        /// </summary>
+        Hierarchy = 0x02,
+    }
+
+    /// <summary>
+    /// A flags structure that contains flags that control the behavior of the synchronization.
+    /// </summary>
+    [Flags]
+    public enum SynchronizationFlags : ushort
+    {
+        /// <summary>
+        /// Indicates whether the client supports Unicode
+        /// </summary>
+        Unicode = 0x0001,
+
+        /// <summary>
+        /// Indicates how the server downloads information about item deletions
+        /// </summary>
+        NoDeletions = 0x0002,
+
+        /// <summary>
+        /// Indicates whether the server downloads information about messages that went out of scope
+        /// </summary>
+        IgnoreNoLongerInScope = 0x0004,
+
+        /// <summary>
+        /// Indicates whether the server downloads information about changes to the read state of messages
+        /// </summary>
+        ReadState = 0x0008,
+
+        /// <summary>
+        /// Indicates whether the server downloads information about changes to FAI messages
+        /// </summary>
+        FAI = 0x0010,
+
+        /// <summary>
+        /// Indicates whether the server downloads information about changes to normal messages
+        /// </summary>
+        Normal = 0x0020,
+
+        /// <summary>
+        /// Indicates whether the server limits or excludes properties and subobjects output to the properties listed in PropertyTags
+        /// </summary>
+        OnlySpecifiedProperties = 0x0080,
+
+        /// <summary>
+        /// Identifies whether the server ignores any persisted values for the PidTagSourceKey property (section 2.2.1.2.5) and PidTagParentSourceKey property (section 2.2.1.2.6) when producing output for folder and message changes.
+        /// </summary>
+        NoForeignIdentifies = 0x0100,
+
+        /// <summary>
+        /// This flag MUST be set to 0 when sending.
+        /// </summary>
+        Reserved = 0x1000,
+
+        /// <summary>
+        /// Identifies whether the server outputs message bodies in their original format or in RTF
+        /// </summary>
+        BesBody = 0x2000,
+
+        /// <summary>
+        /// Indicates whether the server outputs properties and subobjects of FAI messages
+        /// </summary>
+        IgnoreSpecifiedOnFAI = 0x4000,
+
+        /// <summary>
+        /// Indicates whether the server injects progress information into the output FastTransfer stream
+        /// </summary>
+        Progress = 0x8000,
+    }
+
+    /// <summary>
+    /// A flags structure that contains flags control the additional behavior of the synchronization.
+    /// </summary>
+    public enum SynchronizationExtraFlags : uint
+    {
+        /// <summary>
+        /// Indicates whether the server includes the PidTagFolderId or PidTagMid properties in the folder change or message change header
+        /// </summary>
+        Eid = 0x00000001,
+
+        /// <summary>
+        /// Indicates whether the server includes the PidTagMessageSize property in the message change header. 
+        /// </summary>
+        MessageSize = 0x00000002,
+
+        /// <summary>
+        /// Indicates whether the server includes the PidTagChangeNumber property in the message change header
+        /// </summary>
+        CN = 0x00000004,
+
+        /// <summary>
+        /// Indicates whether the server sorts messages by their delivery time
+        /// </summary>
+        OrderByDeliveryTime = 0x00000008,
+    }
+
+    /// <summary>
+    /// This enumeration is used to specify the type of data in a FastTransfer stream that is uploaded by using the RopFastTransferDestinationPutBuffer ROP.
+    /// </summary>
+    public enum SourceOperation : byte
+    {
+        /// <summary>
+        /// The value of the InputServerObject field can be any Message,folder or attachment object.
+        /// </summary>
+        CopyTo = 0x01,
+
+        /// <summary>
+        /// The value of the InputServerObject field can be any Message,folder or attachment object.
+        /// </summary>
+        CopyProperties = 0x02,
+
+        /// <summary>
+        /// The value of the InputServerObject field is a message object.
+        /// </summary>
+        CopyMessages = 0x03,
+
+        /// <summary>
+        /// The value of the InputServerObject field is a folder object.
+        /// </summary>
+        CopyFolder = 0x04,
+    }
+
+    /// <summary>
+    /// This enumeration is used to specify CopyFlags for destination configure.
+    /// </summary>
+    public enum CopyFlags_DestinationConfigure : byte
+    {
+        /// <summary>
+        /// If this flag is set, the FastTransfer operation is being configured as a logical part of a larger object move operation
+        /// </summary>
+        Move = 0x01,
+    }
+
+    /// <summary>
+    /// An flag structure that defines the parameters of the import operation.
+    /// </summary>
+    public enum ImportDeleteFlags : byte
+    {
+        /// <summary>
+        /// If this flag is set, folder deletions are being imported.
+        /// </summary>
+        Hierarchy = 0x01,
+
+        /// <summary>
+        /// If this flag is set, hard deletions are being imported
+        /// </summary>
+        HardDelete = 0x02,
+    }
+
+    /// <summary>
+    /// An flag structure that defines the parameters of the import operation.
+    /// </summary>
+    public enum ImportFlag : byte
+    {
+        /// <summary>
+        /// If this flag is set, the message being imported is an FAI message
+        /// </summary>
+        Associated = 0x10,
+
+        /// <summary>
+        /// If this flag is set, the server accepts conflicting versions of a particular message
+        /// </summary>
+        FailOnConflict = 0x40,
+    }
+    #endregion
     #region 2.2.2.1 CN
     /// <summary>
     /// Represents CN structure contains a change number that identifies a version of a messaging object. 
     /// </summary>
     public class CN : BaseStructure
     {
-        // A 16-bit unsigned integer identifying the server replica in which the messaging object was last changed.
-        public ushort replicaId;
+        /// <summary>
+        /// A 16-bit unsigned integer identifying the server replica in which the messaging object was last changed.
+        /// </summary>
+        public ushort ReplicaId;
 
-        // An unsigned 48-bit integer identifying the change to the messaging object.
+        /// <summary>
+        /// An unsigned 48-bit integer identifying the change to the messaging object.
+        /// </summary>
         [BytesAttribute(6)]
-        public ulong globalCounter;
+        public ulong GlobalCounter;
 
         /// <summary>
         /// Parse from a stream.
@@ -24,8 +670,8 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A stream contains CN.</param>
         public void Parse(FastTransferStream stream)
         {
-            this.replicaId = stream.ReadUInt16();
-            this.globalCounter = BitConverter.ToUInt64(stream.ReadBlock(6), 0);
+            this.ReplicaId = stream.ReadUInt16();
+            this.GlobalCounter = BitConverter.ToUInt64(stream.ReadBlock(6), 0);
         }
     }
     #endregion
@@ -36,17 +682,23 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class XID : BaseStructure
     {
-        // A GUID that identifies the namespace that the identifier specified by LocalId belongs to
-        public Guid namespaceGuid;
+        /// <summary>
+        /// A GUID that identifies the nameSpace that the identifier specified by LocalId belongs to
+        /// </summary>
+        public Guid NamespaceGuid;
 
-        // A variable binary value that contains the ID of the entity in the namespace specified by NamespaceGuid.
-        public byte[] localId;
+        /// <summary>
+        /// A variable binary value that contains the ID of the entity in the nameSpace specified by NamespaceGuid.
+        /// </summary>
+        public byte[] LocalId;
 
-        // A unsigned int value specifies the length of the LocalId.
+        /// <summary>
+        /// A unsigned int value specifies the length of the LocalId.
+        /// </summary>
         private int length;
 
         /// <summary>
-        /// Initializes a new instance of the XID structure.
+        /// Initializes a new instance of the XID class.
         /// </summary>
         /// <param name="length">the length of the LocalId.</param>
         public XID(int length)
@@ -60,8 +712,8 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A stream contains XID.</param>
         public void Parse(FastTransferStream stream)
         {
-            this.namespaceGuid = stream.ReadGuid();
-            this.localId = stream.ReadBlock((int)this.length - 16);
+            this.NamespaceGuid = stream.ReadGuid();
+            this.LocalId = stream.ReadBlock((int)this.length - 16);
         }
     }
     #endregion
@@ -72,14 +724,18 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class PredecessorChangeList : BaseStructure
     {
-        // A SizedXid list.
-        public SizedXid[] sizedXidList;
+        /// <summary>
+        /// A SizedXid list.
+        /// </summary>
+        public SizedXid[] SizedXidList;
 
-        // A unsigned int value specifies the length in bytes of the sizedXidList.
+        /// <summary>
+        /// A unsigned int value specifies the length in bytes of the SizedXidList.
+        /// </summary>
         private int length;
 
         /// <summary>
-        /// Initializes a new instance of the PredecessorChangeList structure.
+        /// Initializes a new instance of the PredecessorChangeList class.
         /// </summary>
         /// <param name="length">The length of the sizedXid structure.</param>
         public PredecessorChangeList(int length)
@@ -101,9 +757,10 @@ namespace MAPIInspector.Parsers
                 tmpSizedXid.Parse(stream);
                 interSizeXid.Add(tmpSizedXid);
 
-                i += ((int)stream.Position - position);
+                i += (int)stream.Position - position;
             }
-            this.sizedXidList = interSizeXid.ToArray();
+
+            this.SizedXidList = interSizeXid.ToArray();
         }
     }
 
@@ -112,11 +769,15 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class SizedXid : BaseStructure
     {
-        // An unsigned 8-bit integer.
-        public byte xidSize;
+        /// <summary>
+        /// An unsigned 8-bit integer.
+        /// </summary>
+        public byte XidSize;
 
-        // A structure of type XID that contains the value of the internal identifier of an object, or internal or external identifier of a change number. 
-        public XID xid;
+        /// <summary>
+        /// A structure of type XID that contains the value of the internal identifier of an object, or internal or external identifier of a change number. 
+        /// </summary>
+        public XID Xid;
 
         /// <summary>
         /// Parse from a stream.
@@ -124,9 +785,9 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A stream contains SizedXid.</param>
         public void Parse(FastTransferStream stream)
         {
-            this.xidSize = stream.ReadByte();
-            this.xid = new XID((int)this.xidSize);
-            this.xid.Parse(stream);
+            this.XidSize = stream.ReadByte();
+            this.Xid = new XID((int)this.XidSize);
+            this.Xid.Parse(stream);
         }
     }
     #endregion
@@ -137,10 +798,14 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class IDSET_REPLID : BaseStructure
     {
-        // A unsigned short which combined with all GLOBCNT structures contained in the GLOBSET field, produces a set of IDs.
+        /// <summary>
+        /// A unsigned short which combined with all GLOBCNT structures contained in the GLOBSET field, produces a set of IDs.
+        /// </summary>
         public ushort REPLID;
 
-        // A serialized GLOBSET structure.
+        /// <summary>
+        /// A serialized GLOBSET structure.
+        /// </summary>
         public GLOBSET GLOBSET;
 
         /// <summary>
@@ -160,10 +825,14 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class IDSET_REPLGUID : BaseStructure
     {
-        // A GUID that identifies a REPLGUID structure. 
+        /// <summary>
+        /// A GUID that identifies a REPLGUID structure. 
+        /// </summary>
         public Guid REPLGUID;
 
-        // A serialized GLOBSET structure.
+        /// <summary>
+        /// A serialized GLOBSET structure.
+        /// </summary>
         public GLOBSET GLOBSET;
 
         /// <summary>
@@ -185,7 +854,9 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class GLOBSET : BaseStructure
     {
-        // Commands composed a GLOBCNT range, which indicates a GLOBSET structure.
+        /// <summary>
+        /// Commands composed a GLOBCNT range, which indicates a GLOBSET structure.
+        /// </summary>
         public Command[] Commands;
 
         /// <summary>
@@ -194,11 +865,11 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A stream contains GLOBSET.</param>
         public void Parse(FastTransferStream stream)
         {
-            // A unsigned interger value indicates the bytes length in common stacks.
-            uint CommonStackLength = 0;
+            // A UInt value indicates the bytes length in common stacks.
+            uint commonStackLength = 0;
 
-            // A uint list indicats the pushed or poped count of bytes in common stack.
-            List<uint> CommonStackCollection = new List<uint>();
+            // A UInt list indicates the pushed or popped count of bytes in common stack.
+            List<uint> commonStackCollection = new List<uint>();
 
             byte tmp = stream.ReadByte();
             stream.Position -= 1;
@@ -214,41 +885,44 @@ namespace MAPIInspector.Parsers
                     case 0x04:
                     case 0x05:
                     case 0x06:
-                        Command PushCommand = new PushCommand();
-                        PushCommand.Parse(stream);
-                        commands.Add(PushCommand);
-                        if ((CommonStackLength + (uint)(PushCommand as PushCommand).Command) < 6)
+                        Command pushCommand = new PushCommand();
+                        pushCommand.Parse(stream);
+                        commands.Add(pushCommand);
+                        if ((commonStackLength + (uint)(pushCommand as PushCommand).Command) < 6)
                         {
-                            CommonStackCollection.Add((PushCommand as PushCommand).Command);
-                            CommonStackLength += (uint)(PushCommand as PushCommand).Command;
+                            commonStackCollection.Add((pushCommand as PushCommand).Command);
+                            commonStackLength += (uint)(pushCommand as PushCommand).Command;
                         }
+
                         break;
                     case 0x50:
-                        Command PopCommand = new PopCommand();
-                        PopCommand.Parse(stream);
-                        commands.Add(PopCommand);
-                        CommonStackLength -= CommonStackCollection[CommonStackCollection.Count - 1];
-                        CommonStackCollection.RemoveAt(CommonStackCollection.Count - 1);
+                        Command popCommand = new PopCommand();
+                        popCommand.Parse(stream);
+                        commands.Add(popCommand);
+                        commonStackLength -= commonStackCollection[commonStackCollection.Count - 1];
+                        commonStackCollection.RemoveAt(commonStackCollection.Count - 1);
                         break;
                     case 0x42:
-                        Command BitmaskCommand = new BitmaskCommand();
-                        BitmaskCommand.Parse(stream);
-                        commands.Add(BitmaskCommand);
+                        Command bitmaskCommand = new BitmaskCommand();
+                        bitmaskCommand.Parse(stream);
+                        commands.Add(bitmaskCommand);
                         break;
                     case 0x52:
-                        Command RangeCommand = new RangeCommand(6 - CommonStackLength);
-                        RangeCommand.Parse(stream);
-                        commands.Add(RangeCommand);
+                        Command rangeCommand = new RangeCommand(6 - commonStackLength);
+                        rangeCommand.Parse(stream);
+                        commands.Add(rangeCommand);
                         break;
                     default:
                         break;
                 }
+
                 tmp = stream.ReadByte();
                 stream.Position -= 1;
             }
-            Command EndCommand = new EndCommand();
-            EndCommand.Parse(stream);
-            commands.Add(EndCommand);
+
+            Command endCommand = new EndCommand();
+            endCommand.Parse(stream);
+            commands.Add(endCommand);
             this.Commands = commands.ToArray();
         }
     }
@@ -272,10 +946,14 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class PushCommand : Command
     {
-        // An integer that specifies the number of high-order bytes that the GLOBCNT structures
+        /// <summary>
+        /// An integer that specifies the number of high-order bytes that the GLOBCNT structures
+        /// </summary>
         public byte Command;
 
-        // A byte array that contains the bytes shared by the GLOBCNT structures
+        /// <summary>
+        /// A byte array that contains the bytes shared by the GLOBCNT structures
+        /// </summary>
         public byte[] CommonBytes;
 
         /// <summary>
@@ -294,7 +972,9 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class PopCommand : Command
     {
-        // Command.
+        /// <summary>
+        /// The Command for pop
+        /// </summary>
         public byte Command;
 
         /// <summary>
@@ -312,14 +992,20 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class BitmaskCommand : Command
     {
-        // Bitmask Command.
+        /// <summary>
+        /// Bitmask Command.
+        /// </summary>
         public byte Command;
 
-        // The low-order byte of the low value of the first GLOBCNT range.
-        public byte startValue;
+        /// <summary>
+        /// The low-order byte of the low value of the first GLOBCNT range.
+        /// </summary>
+        public byte StartValue;
 
-        // One bit set for each value within a range, excluding the low value of the first GLOBCNT range.
-        public byte bitmask;
+        /// <summary>
+        /// One bit set for each value within a range, excluding the low value of the first GLOBCNT range.
+        /// </summary>
+        public byte Bitmask;
 
         /// <summary>
         /// Parse from a stream.
@@ -328,8 +1014,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             this.Command = stream.ReadByte();
-            this.startValue = stream.ReadByte();
-            this.bitmask = stream.ReadByte();
+            this.StartValue = stream.ReadByte();
+            this.Bitmask = stream.ReadByte();
         }
     }
 
@@ -338,25 +1024,33 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RangeCommand : Command
     {
-        // Bitmask Command.
+        /// <summary>
+        /// Bitmask Command.
+        /// </summary>
         public byte Command;
 
-        // The low value of the range.
-        public byte[] lowValue;
-
-        // The high value of the range.
-        public byte[] highValue;
-
-        // the length of the LowValue and hignValue.
-        private uint Length;
+        /// <summary>
+        /// The low value of the range.
+        /// </summary>
+        public byte[] LowValue;
 
         /// <summary>
-        /// Initializes a new instance of the RangeCommand structure.
+        /// The high value of the range.
         /// </summary>
-        /// <param name="Length">The length of the LowValue and hignValue.</param>
-        public RangeCommand(uint Length)
+        public byte[] HighValue;
+
+        /// <summary>
+        /// The length of the LowValue and hignValue.
+        /// </summary>
+        private uint length;
+
+        /// <summary>
+        /// Initializes a new instance of the RangeCommand class.
+        /// </summary>
+        /// <param name="length">The length of the LowValue and hignValue.</param>
+        public RangeCommand(uint length)
         {
-            this.Length = Length;
+            this.length = length;
         }
 
         /// <summary>
@@ -366,8 +1060,8 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             this.Command = stream.ReadByte();
-            this.lowValue = stream.ReadBlock((int)this.Length);
-            this.highValue = stream.ReadBlock((int)this.Length);
+            this.LowValue = stream.ReadBlock((int)this.length);
+            this.HighValue = stream.ReadBlock((int)this.length);
         }
     }
 
@@ -376,7 +1070,9 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class EndCommand : Command
     {
-        // Command.
+        /// <summary>
+        /// The Command for end
+        /// </summary>
         public byte Command;
 
         /// <summary>
@@ -396,25 +1092,39 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class ProgressInformation : BaseStructure
     {
-        // An unsigned 16-bit value that contains a number that identifies the binary structure of the data that follows.
+        /// <summary>
+        /// An unsigned 16-bit value that contains a number that identifies the binary structure of the data that follows.
+        /// </summary>
         public ushort Version;
 
-        // The padding.
+        /// <summary>
+        ///  The padding.
+        /// </summary>
         public ushort Padding1;
 
-        // An unsigned 32-bit integer value that contains the total number of changes to FAI messages that are scheduled for download during the current synchronization operation.
+        /// <summary>
+        /// An unsigned 32-bit integer value that contains the total number of changes to FAI messages that are scheduled for download during the current synchronization operation.
+        /// </summary>
         public uint FAIMessageCount;
 
-        // An unsigned 64-bit integer value that contains the size in bytes of all changes to FAI messages that are scheduled for download during the current synchronization operation.
+        /// <summary>
+        /// An unsigned 64-bit integer value that contains the size in bytes of all changes to FAI messages that are scheduled for download during the current synchronization operation.
+        /// </summary>
         public ulong FAIMessageTotalSize;
 
-        // An unsigned 32-bit integer value that contains the total number of changes to normal messages that are scheduled for download during the current synchronization operation.
+        /// <summary>
+        /// An unsigned 32-bit integer value that contains the total number of changes to normal messages that are scheduled for download during the current synchronization operation.
+        /// </summary>
         public uint NormalMessageCount;
 
-        // The padding.
+        /// <summary>
+        /// The padding.
+        /// </summary>
         public uint Padding2;
 
+        /// <summary>
         /// An unsigned 64-bit integer value that contains the size in bytes of all changes to normal messages  that are scheduled for download during the current synchronization operation.
+        /// </summary>
         public ulong NormalMessageTotalSize;
 
         /// <summary>
@@ -435,18 +1145,29 @@ namespace MAPIInspector.Parsers
     #endregion
 
     #region 2.2.2.8 PropertyGroupInfo
+    /// <summary>
+    /// The PropertyGroupInfo class
+    /// </summary>
     public class PropertyGroupInfo : BaseStructure
     {
-        // An unsigned 32-bit integer value that identifies a property mapping within the current synchronization download context.
+        /// <summary>
+        /// An unsigned 32-bit integer value that identifies a property mapping within the current synchronization download context.
+        /// </summary>
         public uint GroupId;
 
-        // Reserved.
+        /// <summary>
+        /// A reserved field
+        /// </summary>
         public uint Reserved;
 
-        // An unsigned 32-bit integer value that specifies how many PropertyGroup structures are present in the Groups field. 
+        /// <summary>
+        ///  An unsigned 32-bit integer value that specifies how many PropertyGroup structures are present in the Groups field. 
+        /// </summary>
         public uint GroupCount;
 
-        // An array of PropertyGroup structures,
+        /// <summary>
+        /// An array of PropertyGroup structures,
+        /// </summary>
         public PropertyGroup[] Groups;
 
         /// <summary>
@@ -463,7 +1184,7 @@ namespace MAPIInspector.Parsers
             {
                 PropertyGroup tmpPropertyGroup = new PropertyGroup();
                 tmpPropertyGroup.Parse(stream);
-                Groups[i] = tmpPropertyGroup;
+                this.Groups[i] = tmpPropertyGroup;
             }
         }
     }
@@ -474,10 +1195,14 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class PropertyGroup : BaseStructure
     {
-        // An unsigned 32-bit integer value that specifies how many PropertyTag structures are present in the PropertyTags field. 
+        /// <summary>
+        /// An unsigned 32-bit integer value that specifies how many PropertyTag structures are present in the PropertyTags field. 
+        /// </summary>
         public uint PropertyTagCount;
 
-        // An array of PropertyTagWithGroupPropertyName structures.
+        /// <summary>
+        /// An array of PropertyTagWithGroupPropertyName structures.
+        /// </summary>
         public PropertyTagWithGroupPropertyName[] PropertyTags;
 
         /// <summary>
@@ -492,7 +1217,7 @@ namespace MAPIInspector.Parsers
             {
                 PropertyTagWithGroupPropertyName tmpName = new PropertyTagWithGroupPropertyName();
                 tmpName.Parse(stream);
-                PropertyTags[i] = tmpName;
+                this.PropertyTags[i] = tmpName;
             }
         }
     }
@@ -502,27 +1227,33 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class PropertyTagWithGroupPropertyName : BaseStructure
     {
-        // An unsigned integer that identifies the data type of the property value, as specified by the table in section 2.11.1.
+        /// <summary>
+        /// An unsigned integer that identifies the data type of the property value, as specified by the table in section 2.11.1.
+        /// </summary>
         public PropertyDataType PropertyType;
 
-        // An unsigned integer that identifies the property.
+        /// <summary>
+        /// An unsigned integer that identifies the property.
+        /// </summary>
         public ushort PropertyId;
 
-        // A GroupPropertyName structure.
-        public GroupPropertyName groupPropertyName;
+        /// <summary>
+        /// A GroupPropertyName structure.
+        /// </summary>
+        public GroupPropertyName GroupPropertyName;
 
         /// <summary>
         /// Parse the PropertyTagWithGroupPropertyName structure.
         /// </summary>
-        /// <param name="s">A stream containing the PropertyTagWithGroupPropertyName structure</param>
+        /// <param name="stream">A stream containing the PropertyTagWithGroupPropertyName structure</param>
         public void Parse(FastTransferStream stream)
         {
             this.PropertyType = (PropertyDataType)stream.ReadUInt16();
             this.PropertyId = stream.ReadUInt16();
             if (this.PropertyId >= 0x8000)
             {
-                this.groupPropertyName = new GroupPropertyName();
-                this.groupPropertyName.Parse(stream);
+                this.GroupPropertyName = new GroupPropertyName();
+                this.GroupPropertyName.Parse(stream);
             }
         }
     }
@@ -534,19 +1265,29 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class GroupPropertyName : BaseStructure
     {
-        // The GUID that identifies the property set for the named property.
+        /// <summary>
+        /// The GUID that identifies the property set for the named property.
+        /// </summary>
         public Guid Guid;
 
-        // A value that identifies the type of property. 
+        /// <summary>
+        /// A value that identifies the type of property. 
+        /// </summary>
         public uint Kind;
 
-        // A value that identifies the named property within its property set. 
+        /// <summary>
+        ///  A value that identifies the named property within its property set. 
+        /// </summary>
         public uint? Lid;
 
-        // A value that specifies the length of the Name field, in bytes. 
+        /// <summary>
+        /// A value that specifies the length of the Name field, in bytes. 
+        /// </summary>
         public uint? NameSize;
 
-        // A Unicode (UTF-16) string that identifies the property within the property set. 
+        /// <summary>
+        /// A Unicode (UTF-16) string that identifies the property within the property set. 
+        /// </summary>
         public MAPIString Name;
 
         /// <summary>
@@ -565,7 +1306,7 @@ namespace MAPIInspector.Parsers
             else if (this.Kind == 0x00000001)
             {
                 this.NameSize = stream.ReadUInt32();
-                this.Name = new MAPIString(Encoding.Unicode, "", (int)this.NameSize / 2);
+                this.Name = new MAPIString(Encoding.Unicode, string.Empty, (int)this.NameSize / 2);
                 this.Name.Parse(stream);
             }
         }
@@ -579,22 +1320,34 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class FolderReplicaInfo : BaseStructure
     {
-        // A uint value.
+        /// <summary>
+        /// A UInt value.
+        /// </summary>
         public uint Flags;
 
-        // A uint value.
+        /// <summary>
+        /// A UInt value.
+        /// </summary>
         public uint Depth;
 
-        // A LongTermID structure. Contains the LongTermID of a folder, for which server replica information is being described.
+        /// <summary>
+        /// A LongTermID structure. Contains the LongTermID of a folder, for which server replica information is being described.
+        /// </summary>
         public LongTermId FolderLongTermId;
 
-        // An unsigned 32-bit integer value that determines how many elements exist in ServerDNArray. 
+        /// <summary>
+        /// An unsigned 32-bit integer value that determines how many elements exist in ServerDNArray. 
+        /// </summary>
         public uint ServerDNCount;
 
-        // An unsigned 32-bit integer value that determines how many of the leading elements in ServerDNArray have the same,lowest, network access cost.
+        /// <summary>
+        /// An unsigned 32-bit integer value that determines how many of the leading elements in ServerDNArray have the same,lowest, network access cost.
+        /// </summary>
         public uint CheapServerDNCount;
 
-        // An array of ASCII-encoded NULL-terminated strings. 
+        /// <summary>
+        /// An array of ASCII-encoded NULL-terminated strings. 
+        /// </summary>
         public MAPIString[] ServerDNArray;
 
         /// <summary>
@@ -625,31 +1378,49 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferSourceCopyPropertiesRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies whether descendant subobjects are copied
+        /// <summary>
+        /// An unsigned integer that specifies whether descendant subobjects are copied
+        /// </summary>
         public byte Level;
 
-        // A flags structure that contains flags that control the type of operation. 
+        /// <summary>
+        /// A flags structure that contains flags that control the type of operation. 
+        /// </summary>
         public CopyFlags_CopyProperties CopyFlags;
 
-        // A flags structure that contains flags that control the behavior of the operation. 
+        /// <summary>
+        /// A flags structure that contains flags that control the behavior of the operation. 
+        /// </summary>
         public SendOptions SendOptions;
 
-        // An unsigned integer that specifies the number of structures in the PropertyTags field.
+        /// <summary>
+        /// An unsigned integer that specifies the number of structures in the PropertyTags field.
+        /// </summary>
         public ushort PropertyTagCount;
 
-        // An array of PropertyTag structures that specifies the properties to exclude during the copy.
+        /// <summary>
+        /// An array of PropertyTag structures that specifies the properties to exclude during the copy.
+        /// </summary>
         public PropertyTag[] PropertyTags;
 
         /// <summary>
@@ -660,21 +1431,22 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.OutputHandleIndex = ReadByte();
-            this.Level = ReadByte();
-            this.CopyFlags = (CopyFlags_CopyProperties)ReadByte();
-            this.SendOptions = (SendOptions)ReadByte();
-            this.PropertyTagCount = ReadUshort();
-            PropertyTag[] InterTag = new PropertyTag[(int)this.PropertyTagCount];
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
+            this.Level = this.ReadByte();
+            this.CopyFlags = (CopyFlags_CopyProperties)this.ReadByte();
+            this.SendOptions = (SendOptions)this.ReadByte();
+            this.PropertyTagCount = this.ReadUshort();
+            PropertyTag[] interTag = new PropertyTag[(int)this.PropertyTagCount];
             for (int i = 0; i < this.PropertyTagCount; i++)
             {
-                InterTag[i] = new PropertyTag();
-                InterTag[i].Parse(s);
+                interTag[i] = new PropertyTag();
+                interTag[i].Parse(s);
             }
-            this.PropertyTags = InterTag;
+
+            this.PropertyTags = interTag;
         }
     }
 
@@ -683,13 +1455,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferSourceCopyPropertiesResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -700,10 +1478,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -714,31 +1492,49 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferSourceCopyToRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies whether descendant subobjects are copied
+        /// <summary>
+        /// An unsigned integer that specifies whether descendant subobjects are copied
+        /// </summary>
         public byte Level;
 
-        // A flags structure that contains flags that control the type of operation. 
+        /// <summary>
+        /// A flags structure that contains flags that control the type of operation. 
+        /// </summary>
         public CopyFlags_CopyTo CopyFlags;
 
-        // A flags structure that contains flags that control the behavior of the operation. 
+        /// <summary>
+        ///  A flags structure that contains flags that control the behavior of the operation. 
+        /// </summary>
         public SendOptions SendOptions;
 
-        // An unsigned integer that specifies the number of structures in the PropertyTags field.
+        /// <summary>
+        /// An unsigned integer that specifies the number of structures in the PropertyTags field.
+        /// </summary>
         public ushort PropertyTagCount;
 
-        // An array of PropertyTag structures that specifies the properties to exclude during the copy.
+        /// <summary>
+        /// An array of PropertyTag structures that specifies the properties to exclude during the copy.
+        /// </summary>
         public PropertyTag[] PropertyTags;
 
         /// <summary>
@@ -749,21 +1545,22 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.OutputHandleIndex = ReadByte();
-            this.Level = ReadByte();
-            this.CopyFlags = (CopyFlags_CopyTo)ReadUint();
-            this.SendOptions = (SendOptions)ReadByte();
-            this.PropertyTagCount = ReadUshort();
-            PropertyTag[] InterTag = new PropertyTag[(int)this.PropertyTagCount];
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
+            this.Level = this.ReadByte();
+            this.CopyFlags = (CopyFlags_CopyTo)this.ReadUint();
+            this.SendOptions = (SendOptions)this.ReadByte();
+            this.PropertyTagCount = this.ReadUshort();
+            PropertyTag[] interTag = new PropertyTag[(int)this.PropertyTagCount];
             for (int i = 0; i < this.PropertyTagCount; i++)
             {
-                InterTag[i] = new PropertyTag();
-                InterTag[i].Parse(s);
+                interTag[i] = new PropertyTag();
+                interTag[i].Parse(s);
             }
-            this.PropertyTags = InterTag;
+
+            this.PropertyTags = interTag;
         }
     }
 
@@ -772,13 +1569,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferSourceCopyToResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -789,10 +1592,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -803,28 +1606,44 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferSourceCopyMessagesRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies the number of identifiers in the MessageIds field.
+        /// <summary>
+        /// An unsigned integer that specifies the number of identifiers in the MessageIds field.
+        /// </summary>
         public ushort MessageIdCount;
 
-        // An array of 64-bit identifiers that specifies the messages to copy. 
+        /// <summary>
+        /// An array of 64-bit identifiers that specifies the messages to copy. 
+        /// </summary>
         public MessageID[] MessageIds;
 
-        // A flags structure that contains flags that control the type of operation. 
+        /// <summary>
+        /// A flags structure that contains flags that control the type of operation. 
+        /// </summary>
         public CopyFlags_CopyMessages CopyFlags;
 
-        // A flags structure that contains flags that control the behavior of the operation. 
+        /// <summary>
+        /// A flags structure that contains flags that control the behavior of the operation. 
+        /// </summary>
         public SendOptions SendOptions;
 
         /// <summary>
@@ -835,21 +1654,21 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.OutputHandleIndex = ReadByte();
-            this.MessageIdCount = ReadUshort();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
+            this.MessageIdCount = this.ReadUshort();
 
-            List<MessageID> MessageIdList = new List<MessageID>();
+            List<MessageID> messageIdList = new List<MessageID>();
             for (int i = 0; i < this.MessageIdCount; i++)
             {
-                MessageID MessageId = new MessageID();
-                MessageId.Parse(s);
-                MessageIdList.Add(MessageId);
+                MessageID messageId = new MessageID();
+                messageId.Parse(s);
+                messageIdList.Add(messageId);
             }
 
-            this.MessageIds = MessageIdList.ToArray();
+            this.MessageIds = messageIdList.ToArray();
             this.CopyFlags = (CopyFlags_CopyMessages)ReadByte();
             this.SendOptions = (SendOptions)ReadByte();
         }
@@ -860,13 +1679,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferSourceCopyMessagesResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -877,10 +1702,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -891,22 +1716,34 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferSourceCopyFolderRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // A flags structure that contains flags that control the type of operation. 
+        /// <summary>
+        /// A flags structure that contains flags that control the type of operation.
+        /// </summary>
         public CopyFlags_CopyFolder CopyFlags;
 
-        // A flags structure that contains flags that control the behavior of the operation. 
+        /// <summary>
+        /// A flags structure that contains flags that control the behavior of the operation. 
+        /// </summary>
         public SendOptions SendOptions;
 
         /// <summary>
@@ -917,12 +1754,12 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.OutputHandleIndex = ReadByte();
-            this.CopyFlags = (CopyFlags_CopyFolder)ReadByte();
-            this.SendOptions = (SendOptions)ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
+            this.CopyFlags = (CopyFlags_CopyFolder)this.ReadByte();
+            this.SendOptions = (SendOptions)this.ReadByte();
         }
     }
 
@@ -931,13 +1768,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferSourceCopyFolderResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -948,10 +1791,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -962,19 +1805,29 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferSourceGetBufferRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// A byte that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// A byte that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// A byte that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the buffer size requested.
+        /// <summary>
+        /// An UShort that specifies the buffer size requested.
+        /// </summary>
         public ushort BufferSize;
 
-        // An unsigned integer that is present when the BufferSize field is set to 0xBABE.
+        /// <summary>
+        /// An UShort that is present when the BufferSize field is set to 0xBABE.
+        /// </summary>
         public ushort? MaximumBufferSize;
 
         /// <summary>
@@ -985,13 +1838,13 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.BufferSize = ReadUshort();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.BufferSize = this.ReadUshort();
             if (this.BufferSize == 0xBABE)
             {
-                this.MaximumBufferSize = ReadUshort();
+                this.MaximumBufferSize = this.ReadUshort();
             }
         }
     }
@@ -1001,34 +1854,54 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferSourceGetBufferResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // An enumeration that specifies the current status of the transfer. 
+        /// <summary>
+        /// An enumeration that specifies the current status of the transfer. 
+        /// </summary>
         public TransferStatus? TransferStatus;
 
-        // An unsigned integer that specifies the number of steps that have been completed in the current operation.
+        /// <summary>
+        /// An unsigned integer that specifies the number of steps that have been completed in the current operation.
+        /// </summary>
         public ushort? InProgressCount;
 
-        // An unsigned integer that specifies the approximate number of steps to be completed in the current operation.
+        /// <summary>
+        /// An unsigned integer that specifies the approximate number of steps to be completed in the current operation.
+        /// </summary>
         public ushort? TotalStepCount;
 
-        // Reserved.
+        /// <summary>
+        /// A reserved field
+        /// </summary>
         public byte? Reserved;
 
-        // An unsigned integer that specifies the size of the TransferBuffer field.
+        /// <summary>
+        /// An unsigned integer that specifies the size of the TransferBuffer field.
+        /// </summary>
         public ushort? TransferBufferSize;
 
-        // An array of bytes that specifies FastTransferStream.
+        /// <summary>
+        ///  An array of bytes that specifies FastTransferStream.
+        /// </summary>
         public object TransferBuffer;
 
-        // An unsigned integer that specifies the number of milliseconds for the client to wait before trying this operation again
+        /// <summary>
+        /// An unsigned integer that specifies the number of milliseconds for the client to wait before trying this operation again
+        /// </summary>
         public uint? BackoffTime;
 
         /// <summary>
@@ -1039,66 +1912,71 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
-                this.TransferStatus = (TransferStatus)ReadUshort();
-                this.InProgressCount = ReadUshort();
-                this.TotalStepCount = ReadUshort();
-                this.Reserved = ReadByte();
-                this.TransferBufferSize = ReadUshort();
-                byte[] Buffer = ReadBytes((int)this.TransferBufferSize);
-                FastTransferStream TransferStream = new FastTransferStream(new byte[0], true);
+                this.TransferStatus = (TransferStatus)this.ReadUshort();
+                this.InProgressCount = this.ReadUshort();
+                this.TotalStepCount = this.ReadUshort();
+                this.Reserved = this.ReadByte();
+                this.TransferBufferSize = this.ReadUshort();
+                byte[] buffer = ReadBytes((int)this.TransferBufferSize);
+                FastTransferStream transferStream = new FastTransferStream(new byte[0], true);
                 long sposition = 0;
+
                 if (this.TransferStatus.Value == Parsers.TransferStatus.Partial)
                 {
-                    TransferStream = new FastTransferStream(Buffer, true);
-                    List<TransferGetBufferElement> TransferBufferList = new List<TransferGetBufferElement>();
+                    transferStream = new FastTransferStream(buffer, true);
+                    List<TransferGetBufferElement> transferBufferList = new List<TransferGetBufferElement>();
 
-                    while (!TransferStream.IsEndOfStream)
+                    while (!transferStream.IsEndOfStream)
                     {
-                        sposition = TransferStream.Position;
-                        TransferGetBufferElement element = new TransferGetBufferElement(TransferStream);
-                        if (sposition == TransferStream.Position)
+                        sposition = transferStream.Position;
+                        TransferGetBufferElement element = new TransferGetBufferElement(transferStream);
+
+                        if (sposition == transferStream.Position)
                         {
-                            throw new Exception(string.Format("Error occurred in the {0} TransferElement", TransferBufferList.Count));
+                            throw new Exception(string.Format("Error occurred in the {0} TransferElement", transferBufferList.Count));
                         }
                         else
                         {
-                            TransferBufferList.Add(element);
+                            transferBufferList.Add(element);
                         }
                     }
-                    this.TransferBuffer = TransferBufferList.ToArray();
+
+                    this.TransferBuffer = transferBufferList.ToArray();
                 }
                 else
                 {
-                    TransferStream = new FastTransferStream(Buffer, true);
-                    List<TransferGetBufferElement> TransferBufferList = new List<TransferGetBufferElement>();
-                    while (TransferStream.Position < TransferStream.Length)
-                    {
-                        sposition = TransferStream.Position;
+                    transferStream = new FastTransferStream(buffer, true);
+                    List<TransferGetBufferElement> transferBufferList = new List<TransferGetBufferElement>();
 
-                        TransferGetBufferElement element = new TransferGetBufferElement(TransferStream);
-                        if (sposition == TransferStream.Position)
+                    while (transferStream.Position < transferStream.Length)
+                    {
+                        sposition = transferStream.Position;
+
+                        TransferGetBufferElement element = new TransferGetBufferElement(transferStream);
+                        if (sposition == transferStream.Position)
                         {
-                            throw new Exception(string.Format("Error occurred in the {0} TransferElement", TransferBufferList.Count));
+                            throw new Exception(string.Format("Error occurred in the {0} TransferElement", transferBufferList.Count));
                         }
                         else
                         {
-                            TransferBufferList.Add(element);
+                            transferBufferList.Add(element);
                         }
                     }
-                    this.TransferBuffer = TransferBufferList.ToArray();
+
+                    this.TransferBuffer = transferBufferList.ToArray();
                 }
             }
 
-            if ((AdditionalErrorCodes)ReturnValue == AdditionalErrorCodes.ServerBusy)
+            if ((AdditionalErrorCodes)this.ReturnValue == AdditionalErrorCodes.ServerBusy)
             {
-                this.BackoffTime = ReadUint();
+                this.BackoffTime = this.ReadUint();
             }
         }
     }
@@ -1110,16 +1988,24 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopTellVersionRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An array of three unsigned 16-bit integers that contains the version information for the other server. 
+        /// <summary>
+        /// An array of three unsigned 16-bit integers that contains the version information for the other server. 
+        /// </summary>
         public byte[] Version;
 
         /// <summary>
@@ -1130,10 +2016,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.Version = ReadBytes(6);
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.Version = this.ReadBytes(6);
         }
     }
 
@@ -1142,13 +2028,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopTellVersionResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -1159,10 +2051,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -1173,22 +2065,34 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferDestinationConfigureRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An enumeration that indicates how the data stream was created on the source.
+        /// <summary>
+        /// An enumeration that indicates how the data stream was created on the source.
+        /// </summary>
         public SourceOperation SourceOperation;
 
-        // A flags structure that contains flags that control the behavior of the transfer operation.
+        /// <summary>
+        /// A flags structure that contains flags that control the behavior of the transfer operation.
+        /// </summary>
         public CopyFlags_DestinationConfigure CopyFlags;
 
         /// <summary>
@@ -1199,12 +2103,12 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.OutputHandleIndex = ReadByte();
-            this.SourceOperation = (SourceOperation)ReadByte();
-            this.CopyFlags = (CopyFlags_DestinationConfigure)ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
+            this.SourceOperation = (SourceOperation)this.ReadByte();
+            this.CopyFlags = (CopyFlags_DestinationConfigure)this.ReadByte();
         }
     }
 
@@ -1213,13 +2117,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferDestinationConfigureResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -1230,10 +2140,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -1244,19 +2154,29 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferDestinationPutBufferRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the size of the TransferData field. 
+        /// <summary>
+        /// An unsigned integer that specifies the size of the TransferData field. 
+        /// </summary>
         public ushort TransferDataSize;
 
-        // An array of bytes that contains the data to be uploaded to the destination fast transfer object.
+        /// <summary>
+        /// An array of bytes that contains the data to be uploaded to the destination fast transfer object.
+        /// </summary>
         public object TransferData;
 
         /// <summary>
@@ -1267,30 +2187,32 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.TransferDataSize = ReadUshort();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.TransferDataSize = this.ReadUshort();
+            byte[] buffer = ReadBytes((int)this.TransferDataSize);
+            FastTransferStream transferStream = new FastTransferStream(buffer, true);
 
-            byte[] Buffer = ReadBytes((int)this.TransferDataSize);
-            FastTransferStream TransferStream = new FastTransferStream(Buffer, true);
-
-            List<TransferPutBufferElement> TransferBufferList = new List<TransferPutBufferElement>();
+            List<TransferPutBufferElement> transferBufferList = new List<TransferPutBufferElement>();
             long sposition = 0;
-            while (!TransferStream.IsEndOfStream)
+
+            while (!transferStream.IsEndOfStream)
             {
-                sposition = TransferStream.Position;
-                TransferPutBufferElement element = new TransferPutBufferElement(TransferStream);
-                if (sposition == TransferStream.Position)
+                sposition = transferStream.Position;
+                TransferPutBufferElement element = new TransferPutBufferElement(transferStream);
+
+                if (sposition == transferStream.Position)
                 {
-                    throw new Exception(string.Format("Error occurred in the {0} TransferElement", TransferBufferList.Count));
+                    throw new Exception(string.Format("Error occurred in the {0} TransferElement", transferBufferList.Count));
                 }
                 else
                 {
-                    TransferBufferList.Add(element);
+                    transferBufferList.Add(element);
                 }
             }
-            this.TransferData = TransferBufferList.ToArray();
+
+            this.TransferData = transferBufferList.ToArray();
         }
     }
 
@@ -1299,28 +2221,44 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferDestinationPutBufferResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // the current status of the transfer.
+        /// <summary>
+        /// The current status of the transfer.
+        /// </summary>
         public ushort TransferStatus;
 
-        // An unsigned integer that specifies the number of steps that have been completed in the current operation.
+        /// <summary>
+        /// An unsigned integer that specifies the number of steps that have been completed in the current operation.
+        /// </summary>
         public ushort InProgressCount;
 
-        // An unsigned integer that specifies the approximate total number of steps to be completed in the current operation.
+        /// <summary>
+        /// An unsigned integer that specifies the approximate total number of steps to be completed in the current operation.
+        /// </summary>
         public ushort TotalStepCount;
 
-        // Reserved.
+        /// <summary>
+        /// A reserved field
+        /// </summary>
         public byte Reserved;
 
-        // An unsigned integer that specifies the buffer size that was used.
+        /// <summary>
+        /// An unsigned integer that specifies the buffer size that was used.
+        /// </summary>
         public ushort BufferUsedSize;
 
         /// <summary>
@@ -1331,15 +2269,15 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
-            this.TransferStatus = ReadUshort();
-            this.InProgressCount = ReadUshort();
-            this.TotalStepCount = ReadUshort();
-            this.Reserved = ReadByte();
-            this.BufferUsedSize = ReadUshort();
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.TransferStatus = this.ReadUshort();
+            this.InProgressCount = this.ReadUshort();
+            this.TotalStepCount = this.ReadUshort();
+            this.Reserved = this.ReadByte();
+            this.BufferUsedSize = this.ReadUshort();
         }
     }
     #endregion
@@ -1350,19 +2288,29 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferDestinationPutBufferExtendedRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the size of the TransferData field. 
+        /// <summary>
+        /// An unsigned integer that specifies the size of the TransferData field. 
+        /// </summary>
         public ushort TransferDataSize;
 
-        // An array of bytes that contains the data to be uploaded to the destination fast transfer object.
+        /// <summary>
+        /// An array of bytes that contains the data to be uploaded to the destination fast transfer object.
+        /// </summary>
         public object TransferData;
 
         /// <summary>
@@ -1372,29 +2320,31 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.TransferDataSize = ReadUshort();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.TransferDataSize = this.ReadUshort();
 
-            byte[] Buffer = ReadBytes((int)this.TransferDataSize);
-            FastTransferStream TransferStream = new FastTransferStream(Buffer, true);
-            List<TransferPutBufferExtendElement> TransferBufferList = new List<TransferPutBufferExtendElement>();
+            byte[] buffer = ReadBytes((int)this.TransferDataSize);
+            FastTransferStream transferStream = new FastTransferStream(buffer, true);
+            List<TransferPutBufferExtendElement> transferBufferList = new List<TransferPutBufferExtendElement>();
             long sposition = 0;
-            while (!TransferStream.IsEndOfStream)
+
+            while (!transferStream.IsEndOfStream)
             {
-                sposition = TransferStream.Position;
-                TransferPutBufferExtendElement element = new TransferPutBufferExtendElement(TransferStream);
-                if (sposition == TransferStream.Position)
+                sposition = transferStream.Position;
+                TransferPutBufferExtendElement element = new TransferPutBufferExtendElement(transferStream);
+                if (sposition == transferStream.Position)
                 {
-                    throw new Exception(string.Format("Error occurred in the {0} TransferElement", TransferBufferList.Count));
+                    throw new Exception(string.Format("Error occurred in the {0} TransferElement", transferBufferList.Count));
                 }
                 else
                 {
-                    TransferBufferList.Add(element);
+                    transferBufferList.Add(element);
                 }
             }
-            this.TransferData = TransferBufferList.ToArray();
+
+            this.TransferData = transferBufferList.ToArray();
         }
     }
 
@@ -1403,28 +2353,44 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopFastTransferDestinationPutBufferExtendedResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // the current status of the transfer.
+        /// <summary>
+        /// The current status of the transfer.
+        /// </summary>
         public ushort TransferStatus;
 
-        // An unsigned integer that specifies the number of steps that have been completed in the current operation.
+        /// <summary>
+        /// An unsigned integer that specifies the number of steps that have been completed in the current operation.
+        /// </summary>
         public uint InProgressCount;
 
-        // An unsigned integer that specifies the approximate total number of steps to be completed in the current operation.
+        /// <summary>
+        /// An unsigned integer that specifies the approximate total number of steps to be completed in the current operation.
+        /// </summary>
         public uint TotalStepCount;
 
-        // Reserved.
+        /// <summary>
+        /// A reserved field
+        /// </summary>
         public byte Reserved;
 
-        // An unsigned integer that specifies the buffer size that was used.
+        /// <summary>
+        /// An unsigned integer that specifies the buffer size that was used.
+        /// </summary>
         public ushort BufferUsedSize;
 
         /// <summary>
@@ -1434,16 +2400,15 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
-            this.TransferStatus = ReadUshort();
-            this.InProgressCount = ReadUint();
-            this.TotalStepCount = ReadUint();
-            this.Reserved = ReadByte();
-            this.BufferUsedSize = ReadUshort();
-
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.TransferStatus = this.ReadUshort();
+            this.InProgressCount = this.ReadUint();
+            this.TotalStepCount = this.ReadUint();
+            this.Reserved = this.ReadByte();
+            this.BufferUsedSize = this.ReadUshort();
         }
     }
     #endregion
@@ -1454,40 +2419,64 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationConfigureRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An enumeration that controls the type of synchronization.
+        /// <summary>
+        /// An enumeration that controls the type of synchronization.
+        /// </summary>
         public SynchronizationType SynchronizationType;
 
-        // A flags structure that contains flags that control the behavior of the operation. 
+        /// <summary>
+        /// A flags structure that contains flags that control the behavior of the operation.
+        /// </summary>
         public SendOptions SendOptions;
 
-        // A flags structure that contains flags that control the behavior of the synchronization.
+        /// <summary>
+        /// A flags structure that contains flags that control the behavior of the synchronization.
+        /// </summary>
         public SynchronizationFlags SynchronizationFlags;
 
-        // An unsigned integer that specifies the length, in bytes, of the RestrictionData field.
+        /// <summary>
+        /// An unsigned integer that specifies the length, in bytes, of the RestrictionData field.
+        /// </summary>
         public ushort RestrictionDataSize;
 
-        // A restriction packet,that specifies the filter for this synchronization object.
+        /// <summary>
+        /// A restriction packet,that specifies the filter for this synchronization object.
+        /// </summary>
         public RestrictionType RestrictionData;
 
-        // A flags structure that contains flags control the additional behavior of the synchronization. 
+        /// <summary>
+        /// A flags structure that contains flags control the additional behavior of the synchronization. 
+        /// </summary>
         public SynchronizationExtraFlags SynchronizationExtraFlags;
 
-        // An unsigned integer that specifies the number of structures in the PropertyTags field.
+        /// <summary>
+        /// An unsigned integer that specifies the number of structures in the PropertyTags field.
+        /// </summary>
         public ushort PropertyTagCount;
 
-        // An array of PropertyTag structures that specifies the properties to exclude during the copy.
+        /// <summary>
+        ///  An array of PropertyTag structures that specifies the properties to exclude during the copy.
+        /// </summary>
         public PropertyTag[] PropertyTags;
 
         /// <summary>
@@ -1498,29 +2487,32 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.OutputHandleIndex = ReadByte();
-            this.SynchronizationType = (SynchronizationType)ReadByte();
-            this.SendOptions = (SendOptions)ReadByte();
-            this.SynchronizationFlags = (SynchronizationFlags)ReadUshort();
-            this.RestrictionDataSize = ReadUshort();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
+            this.SynchronizationType = (SynchronizationType)this.ReadByte();
+            this.SendOptions = (SendOptions)this.ReadByte();
+            this.SynchronizationFlags = (SynchronizationFlags)this.ReadUshort();
+            this.RestrictionDataSize = this.ReadUshort();
 
-            if (RestrictionDataSize > 0)
+            if (this.RestrictionDataSize > 0)
             {
                 this.RestrictionData = new RestrictionType();
                 this.RestrictionData.Parse(s);
             }
-            this.SynchronizationExtraFlags = (SynchronizationExtraFlags)ReadUint();
-            this.PropertyTagCount = ReadUshort();
-            PropertyTag[] InterTag = new PropertyTag[(int)this.PropertyTagCount];
+
+            this.SynchronizationExtraFlags = (SynchronizationExtraFlags)this.ReadUint();
+            this.PropertyTagCount = this.ReadUshort();
+            PropertyTag[] interTag = new PropertyTag[(int)this.PropertyTagCount];
+
             for (int i = 0; i < this.PropertyTagCount; i++)
             {
-                InterTag[i] = new PropertyTag();
-                InterTag[i].Parse(s);
+                interTag[i] = new PropertyTag();
+                interTag[i].Parse(s);
             }
-            this.PropertyTags = InterTag;
+
+            this.PropertyTags = interTag;
         }
     }
 
@@ -1529,13 +2521,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationConfigureResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -1546,10 +2544,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -1560,19 +2558,29 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationUploadStateStreamBeginRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // A PropertyTag structure.
+        /// <summary>
+        /// A PropertyTag structure.
+        /// </summary>
         public uint StateProperty;
 
-        // An unsigned integer that specifies the size of the stream to be uploaded.
+        /// <summary>
+        /// An unsigned integer that specifies the size of the stream to be uploaded.
+        /// </summary>
         public uint TransferBufferSize;
 
         /// <summary>
@@ -1583,11 +2591,11 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.StateProperty = ReadUint();
-            this.TransferBufferSize = ReadUint();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.StateProperty = this.ReadUint();
+            this.TransferBufferSize = this.ReadUint();
         }
     }
 
@@ -1596,13 +2604,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationUploadStateStreamBeginResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -1613,10 +2627,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -1627,19 +2641,29 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationUploadStateStreamContinueRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the size, in bytes, of the StreamData field.
+        /// <summary>
+        /// An unsigned integer that specifies the size, in bytes, of the StreamData field.
+        /// </summary>
         public uint StreamDataSize;
 
-        // An array of bytes that contains the state stream data to be uploaded.
+        /// <summary>
+        /// An array of bytes that contains the state stream data to be uploaded.
+        /// </summary>
         public byte[] StreamData;
 
         /// <summary>
@@ -1650,11 +2674,11 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.StreamDataSize = ReadUint();
-            this.StreamData = ReadBytes((int)this.StreamDataSize);
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.StreamDataSize = this.ReadUint();
+            this.StreamData = this.ReadBytes((int)this.StreamDataSize);
         }
     }
 
@@ -1663,13 +2687,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationUploadStateStreamContinueResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -1680,10 +2710,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -1694,13 +2724,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationUploadStateStreamEndRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
         /// <summary>
@@ -1711,9 +2747,9 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
         }
     }
 
@@ -1722,13 +2758,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationUploadStateStreamEndResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -1739,10 +2781,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -1753,16 +2795,24 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationGetTransferStateRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// </summary>
         public byte OutputHandleIndex;
 
         /// <summary>
@@ -1773,10 +2823,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
         }
     }
 
@@ -1785,13 +2835,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationGetTransferStateResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -1802,10 +2858,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -1816,20 +2872,31 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationOpenCollectorRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // A Boolean that specifies whether this synchronization upload context is for contents or for hierarchy.
+        /// <summary>
+        /// A Boolean that specifies whether this synchronization upload context is for contents or for hierarchy.
+        /// </summary>
         public bool IsContentsCollector;
+        
         /// <summary>
         /// Parse the RopSynchronizationOpenCollectorRequest structure.
         /// </summary>
@@ -1838,11 +2905,11 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.OutputHandleIndex = ReadByte();
-            this.IsContentsCollector = ReadBoolean();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
+            this.IsContentsCollector = this.ReadBoolean();
         }
     }
 
@@ -1851,13 +2918,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationOpenCollectorResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -1868,10 +2941,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -1882,25 +2955,39 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationImportMessageChangeRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // A flags structure that contains flags that control the behavior of the synchronization.
+        /// <summary>
+        /// A flags structure that contains flags that control the behavior of the synchronization.
+        /// </summary>
         public ImportFlag ImportFlag;
 
-        // An unsigned integer that specifies the number of structures present in the PropertyValues field.
+        /// <summary>
+        /// An unsigned integer that specifies the number of structures present in the PropertyValues field.
+        /// </summary>
         public ushort PropertyValueCount;
 
-        // An array of TaggedPropertyValue structures that specify extra properties on the message.
+        /// <summary>
+        /// An array of TaggedPropertyValue structures that specify extra properties on the message.
+        /// </summary>
         public TaggedPropertyValue[] PropertyValues;
 
         /// <summary>
@@ -1911,19 +2998,21 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.OutputHandleIndex = ReadByte();
-            this.ImportFlag = (ImportFlag)ReadByte();
-            this.PropertyValueCount = ReadUshort();
-            TaggedPropertyValue[] InterValue = new TaggedPropertyValue[(int)this.PropertyValueCount];
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
+            this.ImportFlag = (ImportFlag)this.ReadByte();
+            this.PropertyValueCount = this.ReadUshort();
+            TaggedPropertyValue[] interValue = new TaggedPropertyValue[(int)this.PropertyValueCount];
+
             for (int i = 0; i < this.PropertyValueCount; i++)
             {
-                InterValue[i] = new TaggedPropertyValue(CountWideEnum.twoBytes);
-                InterValue[i].Parse(s);
+                interValue[i] = new TaggedPropertyValue(CountWideEnum.twoBytes);
+                interValue[i].Parse(s);
             }
-            this.PropertyValues = InterValue;
+
+            this.PropertyValues = interValue;
         }
     }
 
@@ -1932,16 +3021,24 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationImportMessageChangeResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // An identifier.
+        /// <summary>
+        /// An identifier.
+        /// </summary>
         public MessageID MessageId;
 
         /// <summary>
@@ -1952,12 +3049,12 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.MessageId = new MessageID();
                 this.MessageId.Parse(s);
@@ -1972,25 +3069,39 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationImportHierarchyChangeRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the number of structures present in the HierarchyValues field.
+        /// <summary>
+        /// An unsigned integer that specifies the number of structures present in the HierarchyValues field.
+        /// </summary>
         public ushort HierarchyValueCount;
 
-        // An array of TaggedPropertyValue structures that specify hierarchy-related properties of the folder.
+        /// <summary>
+        /// An array of TaggedPropertyValue structures that specify hierarchy-related properties of the folder.
+        /// </summary>
         public TaggedPropertyValue[] HierarchyValues;
 
-        // An unsigned integer that specifies the number of structures present in the PropertyValues field.
+        /// <summary>
+        /// An unsigned integer that specifies the number of structures present in the PropertyValues field.
+        /// </summary>
         public ushort PropertyValueCount;
 
-        // An array of TaggedPropertyValue structures that specify the folders or messages to delete.
+        /// <summary>
+        /// An array of TaggedPropertyValue structures that specify the folders or messages to delete.
+        /// </summary>
         public TaggedPropertyValue[] PropertyValues;
 
         /// <summary>
@@ -2001,26 +3112,29 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.HierarchyValueCount = ReadUshort();
-            TaggedPropertyValue[] InterHierarchyValues = new TaggedPropertyValue[(int)this.HierarchyValueCount];
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.HierarchyValueCount = this.ReadUshort();
+            TaggedPropertyValue[] interHierarchyValues = new TaggedPropertyValue[(int)this.HierarchyValueCount];
+
             for (int i = 0; i < this.HierarchyValueCount; i++)
             {
-                InterHierarchyValues[i] = new TaggedPropertyValue();
-                InterHierarchyValues[i].Parse(s);
+                interHierarchyValues[i] = new TaggedPropertyValue();
+                interHierarchyValues[i].Parse(s);
             }
-            this.HierarchyValues = InterHierarchyValues;
 
-            this.PropertyValueCount = ReadUshort();
-            TaggedPropertyValue[] InterValue = new TaggedPropertyValue[(int)this.PropertyValueCount];
+            this.HierarchyValues = interHierarchyValues;
+            this.PropertyValueCount = this.ReadUshort();
+            TaggedPropertyValue[] interValue = new TaggedPropertyValue[(int)this.PropertyValueCount];
+
             for (int i = 0; i < this.PropertyValueCount; i++)
             {
-                InterValue[i] = new TaggedPropertyValue();
-                InterValue[i].Parse(s);
+                interValue[i] = new TaggedPropertyValue();
+                interValue[i].Parse(s);
             }
-            this.PropertyValues = InterValue;
+
+            this.PropertyValues = interValue;
         }
     }
 
@@ -2029,16 +3143,24 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationImportHierarchyChangeResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // An identifier.
+        /// <summary>
+        /// An identifier.
+        /// </summary>
         public FolderID FolderId;
 
         /// <summary>
@@ -2049,12 +3171,12 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.FolderId = new FolderID();
                 this.FolderId.Parse(s);
@@ -2069,43 +3191,69 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationImportMessageMoveRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the size of the SourceFolderId field.
+        /// <summary>
+        /// An unsigned integer that specifies the size of the SourceFolderId field.
+        /// </summary>
         public uint SourceFolderIdSize;
 
-        // An array of bytes that identifies the parent folder of the source message.
+        /// <summary>
+        ///  An array of bytes that identifies the parent folder of the source message.
+        /// </summary>
         public byte[] SourceFolderId;
 
-        // An unsigned integer that specifies the size of the SourceMessageId field.
+        /// <summary>
+        /// An unsigned integer that specifies the size of the SourceMessageId field.
+        /// </summary>
         public uint SourceMessageIdSize;
 
-        // An array of bytes that identifies the source message.
+        /// <summary>
+        /// An array of bytes that identifies the source message.
+        /// </summary>
         public byte[] SourceMessageId;
 
-        // An unsigned integer that specifies the size of the PredecessorChangeList field.
+        /// <summary>
+        /// An unsigned integer that specifies the size of the PredecessorChangeList field.
+        /// </summary>
         public uint PredecessorChangeListSize;
 
-        // An array of bytes. The size of this field, in bytes, is specified by the PredecessorChangeListSize field.
+        /// <summary>
+        /// An array of bytes. The size of this field, in bytes, is specified by the PredecessorChangeListSize field.
+        /// </summary>
         public byte[] PredecessorChangeList;
 
-        // An unsigned integer that specifies the size of the DestinationMessageId field.
+        /// <summary>
+        /// An unsigned integer that specifies the size of the DestinationMessageId field.
+        /// </summary>
         public uint DestinationMessageIdSize;
 
-        // An array of bytes that identifies the destination message. 
+        /// <summary>
+        /// An array of bytes that identifies the destination message. 
+        /// </summary>
         public byte[] DestinationMessageId;
 
-        // An unsigned integer that specifies the size of the ChangeNumber field.
+        /// <summary>
+        /// An unsigned integer that specifies the size of the ChangeNumber field.
+        /// </summary>
         public uint ChangeNumberSize;
 
-        // An array of bytes that specifies the change number of the message. 
+        /// <summary>
+        /// An array of bytes that specifies the change number of the message. 
+        /// </summary>
         public byte[] ChangeNumber;
 
         /// <summary>
@@ -2116,19 +3264,19 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.SourceFolderIdSize = ReadUint();
-            this.SourceFolderId = ReadBytes((int)this.SourceFolderIdSize);
-            this.SourceMessageIdSize = ReadUint();
-            this.SourceMessageId = ReadBytes((int)this.SourceMessageIdSize);
-            this.PredecessorChangeListSize = ReadUint();
-            this.PredecessorChangeList = ReadBytes((int)this.PredecessorChangeListSize);
-            this.DestinationMessageIdSize = ReadUint();
-            this.DestinationMessageId = ReadBytes((int)this.DestinationMessageIdSize);
-            this.ChangeNumberSize = ReadUint();
-            this.ChangeNumber = ReadBytes((int)this.ChangeNumberSize);
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.SourceFolderIdSize = this.ReadUint();
+            this.SourceFolderId = this.ReadBytes((int)this.SourceFolderIdSize);
+            this.SourceMessageIdSize = this.ReadUint();
+            this.SourceMessageId = this.ReadBytes((int)this.SourceMessageIdSize);
+            this.PredecessorChangeListSize = this.ReadUint();
+            this.PredecessorChangeList = this.ReadBytes((int)this.PredecessorChangeListSize);
+            this.DestinationMessageIdSize = this.ReadUint();
+            this.DestinationMessageId = this.ReadBytes((int)this.DestinationMessageIdSize);
+            this.ChangeNumberSize = this.ReadUint();
+            this.ChangeNumber = this.ReadBytes((int)this.ChangeNumberSize);
         }
     }
 
@@ -2137,16 +3285,24 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationImportMessageMoveResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // An identifier.
+        /// <summary>
+        /// An identifier.
+        /// </summary>
         public MessageID MessageId;
 
         /// <summary>
@@ -2157,12 +3313,12 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.MessageId = new MessageID();
                 this.MessageId.Parse(s);
@@ -2177,22 +3333,34 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationImportDeletesRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // A flags structure that contains flags that specify options for the imported deletions.
+        /// <summary>
+        /// A flags structure that contains flags that specify options for the imported deletions.
+        /// </summary>
         public ImportDeleteFlags ImportDeleteFlags;
 
-        // An unsigned integer that specifies the number of structures present in the PropertyValues field.
+        /// <summary>
+        /// An unsigned integer that specifies the number of structures present in the PropertyValues field.
+        /// </summary>
         public ushort PropertyValueCount;
 
-        // An array of TaggedPropertyValue structures that specify the folders or messages to delete.
+        /// <summary>
+        /// An array of TaggedPropertyValue structures that specify the folders or messages to delete.
+        /// </summary>
         public TaggedPropertyValue[] PropertyValues;
 
         /// <summary>
@@ -2203,18 +3371,20 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.ImportDeleteFlags = (ImportDeleteFlags)ReadByte();
-            this.PropertyValueCount = ReadUshort();
-            TaggedPropertyValue[] InterValue = new TaggedPropertyValue[(int)this.PropertyValueCount];
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.ImportDeleteFlags = (ImportDeleteFlags)this.ReadByte();
+            this.PropertyValueCount = this.ReadUshort();
+            TaggedPropertyValue[] interValue = new TaggedPropertyValue[(int)this.PropertyValueCount];
+
             for (int i = 0; i < this.PropertyValueCount; i++)
             {
-                InterValue[i] = new TaggedPropertyValue();
-                InterValue[i].Parse(s);
+                interValue[i] = new TaggedPropertyValue();
+                interValue[i].Parse(s);
             }
-            this.PropertyValues = InterValue;
+
+            this.PropertyValues = interValue;
         }
     }
 
@@ -2223,13 +3393,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationImportDeletesResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -2240,10 +3416,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -2254,19 +3430,29 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationImportReadStateChangesRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the size, in bytes, of the MessageReadStates field.
+        /// <summary>
+        /// An unsigned integer that specifies the size, in bytes, of the MessageReadStates field.
+        /// </summary>
         public ushort MessageReadStatesSize;
 
-        // A list of MessageReadState structures that specify the messages and associated read states to be changed.
+        /// <summary>
+        /// A list of MessageReadState structures that specify the messages and associated read states to be changed.
+        /// </summary>
         public MessageReadState[] MessageReadStates;
 
         /// <summary>
@@ -2277,20 +3463,22 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.MessageReadStatesSize = ReadUshort();
-            List<MessageReadState> InterValue = new List<MessageReadState>();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.MessageReadStatesSize = this.ReadUshort();
+            List<MessageReadState> interValue = new List<MessageReadState>();
             int size = this.MessageReadStatesSize;
+
             while (size > 0)
             {
-                MessageReadState InterValueI = new MessageReadState();
-                InterValueI.Parse(s);
-                InterValue.Add(InterValueI);
-                size -= (InterValueI.MessageId.Length + 1 + 2);
+                MessageReadState interValueI = new MessageReadState();
+                interValueI.Parse(s);
+                interValue.Add(interValueI);
+                size -= interValueI.MessageId.Length + 1 + 2;
             }
-            this.MessageReadStates = InterValue.ToArray();
+
+            this.MessageReadStates = interValue.ToArray();
         }
     }
 
@@ -2299,13 +3487,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSynchronizationImportReadStateChangesResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -2316,10 +3510,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.InputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
 
@@ -2328,13 +3522,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class MessageReadState : BaseStructure
     {
-        // An unsigned integer that specifies the size of the MessageId field.
+        /// <summary>
+        /// An unsigned integer that specifies the size of the MessageId field.
+        /// </summary>
         public ushort MessageIdSize;
 
-        // An array of bytes that identifies the message to be marked as read or unread.
+        /// <summary>
+        /// An array of bytes that identifies the message to be marked as read or unread.
+        /// </summary>
         public byte[] MessageId;
 
-        // A Boolean that specifies whether to mark the message as read or not.
+        /// <summary>
+        /// A Boolean that specifies whether to mark the message as read or not.
+        /// </summary>
         public bool MarkAsRead;
 
         /// <summary>
@@ -2345,9 +3545,9 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.MessageIdSize = ReadUshort();
-            this.MessageId = ReadBytes(this.MessageIdSize);
-            this.MarkAsRead = ReadBoolean();
+            this.MessageIdSize = this.ReadUshort();
+            this.MessageId = this.ReadBytes(this.MessageIdSize);
+            this.MarkAsRead = this.ReadBoolean();
         }
     }
     #endregion
@@ -2358,16 +3558,24 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopGetLocalReplicaIdsRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the number of IDs to reserve.
+        /// <summary>
+        /// An unsigned integer that specifies the number of IDs to reserve.
+        /// </summary>
         public uint IdCount;
 
         /// <summary>
@@ -2378,10 +3586,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.IdCount = ReadUint();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.IdCount = this.ReadUint();
         }
     }
 
@@ -2390,19 +3598,29 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopGetLocalReplicaIdsResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
-        // This field contains the replica GUID that is shared by the IDs.
+        /// <summary>
+        /// This field contains the replica GUID that is shared by the IDs.
+        /// </summary>
         public Guid? ReplGuid;
 
-        // An array of bytes that specifies the first value in the reserved range.
+        /// <summary>
+        /// An array of bytes that specifies the first value in the reserved range.
+        /// </summary>
         public byte?[] GlobalCount;
 
         /// <summary>
@@ -2413,15 +3631,15 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
-                this.ReplGuid = ReadGuid();
-                this.GlobalCount = ConvertArray(ReadBytes(6));
+                this.ReplGuid = this.ReadGuid();
+                this.GlobalCount = this.ConvertArray(this.ReadBytes(6));
             }
         }
     }
@@ -2433,22 +3651,34 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSetLocalReplicaMidsetDeletedRequest : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer that specifies the ID that the client requests to have associated with the created logon.
+        /// <summary>
+        /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
+        /// </summary>
         public byte LogonId;
 
-        // An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// <summary>
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// </summary>
         public byte InputHandleIndex;
 
-        // An unsigned integer that specifies the size of both the LongTermIdRangeCount and LongTermIdRanges fields.
+        /// <summary>
+        /// An unsigned integer that specifies the size of both the LongTermIdRangeCount and LongTermIdRanges fields.
+        /// </summary>
         public ushort DataSize;
 
-        // An unsigned integer that specifies the number of structures in the LongTermIdRanges field.
+        /// <summary>
+        /// An unsigned integer that specifies the number of structures in the LongTermIdRanges field.
+        /// </summary>
         public uint LongTermIdRangeCount;
 
-        // An array of LongTermIdRange structures that specify the ranges of message identifiers that have been deleted.
+        /// <summary>
+        /// An array of LongTermIdRange structures that specify the ranges of message identifiers that have been deleted.
+        /// </summary>
         public LongTermIdRange[] LongTermIdRanges;
 
         /// <summary>
@@ -2459,18 +3689,19 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.LogonId = ReadByte();
-            this.InputHandleIndex = ReadByte();
-            this.DataSize = ReadUshort();
-            this.LongTermIdRangeCount = ReadUint();
-
+            this.RopId = (RopIdType)this.ReadByte();
+            this.LogonId = this.ReadByte();
+            this.InputHandleIndex = this.ReadByte();
+            this.DataSize = this.ReadUshort();
+            this.LongTermIdRangeCount = this.ReadUint();
             LongTermIdRange[] interRangs = new LongTermIdRange[this.LongTermIdRangeCount];
+
             for (int i = 0; i < interRangs.Length; i++)
             {
                 interRangs[i] = new LongTermIdRange();
                 interRangs[i].Parse(s);
             }
+
             this.LongTermIdRanges = interRangs;
         }
     }
@@ -2480,13 +3711,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class RopSetLocalReplicaMidsetDeletedResponse : BaseStructure
     {
-        // An unsigned integer that specifies the type of ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP.
+        /// </summary>
         public RopIdType RopId;
 
-        // An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// <summary>
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
+        /// </summary>
         public byte OutputHandleIndex;
 
-        // An unsigned integer that specifies the status of the ROP.
+        /// <summary>
+        /// An unsigned integer that specifies the status of the ROP.
+        /// </summary>
         public object ReturnValue;
 
         /// <summary>
@@ -2497,10 +3734,10 @@ namespace MAPIInspector.Parsers
         {
             base.Parse(s);
 
-            this.RopId = (RopIdType)ReadByte();
-            this.OutputHandleIndex = ReadByte();
+            this.RopId = (RopIdType)this.ReadByte();
+            this.OutputHandleIndex = this.ReadByte();
             HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(ReadUint());
+            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
         }
     }
 
@@ -2509,10 +3746,14 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class LongTermIdRange : BaseStructure
     {
-        // A LongTermId structure that specifies the beginning of a range. 
+        /// <summary>
+        /// A LongTermId structure that specifies the beginning of a range. 
+        /// </summary>
         public LongTermID MinLongTermId;
 
-        // A LongTermId structure that specifies the end of a range.
+        /// <summary>
+        /// A LongTermId structure that specifies the end of a range.
+        /// </summary>
         public LongTermID MaxLongTermId;
 
         /// <summary>
@@ -2537,10 +3778,14 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class FastTransferStream : MemoryStream
     {
-        // The length of a GUID structure.
+        /// <summary>
+        /// The length of a GUID structure.
+        /// </summary>
         public static int GuidLength = Guid.Empty.ToByteArray().Length;
 
-        // The length of a MetaTag property.
+        /// <summary>
+        /// The length of a MetaTag property.
+        /// </summary>
         private const int MetaLength = 4;
 
         /// <summary>
@@ -2588,13 +3833,14 @@ namespace MAPIInspector.Parsers
             {
                 throw new Exception();
             }
+
             return (byte)value;
         }
 
         /// <summary>
-        /// Read a uint value from stream,and advance the position within the stream by 4
+        /// Read a UInt value from stream,and advance the position within the stream by 4
         /// </summary>
-        /// <returns>The uint value.</returns>
+        /// <returns>The UInt value.</returns>
         public uint ReadUInt32()
         {
             byte[] buffer = new byte[4];
@@ -2748,7 +3994,7 @@ namespace MAPIInspector.Parsers
         {
             int i;
             List<byte[]> l = new List<byte[]>();
-            for (i = 0; i < totalSize; i += blockSize)
+            for (i = 0; i < totalSize; i++)
             {
                 l.Add(this.ReadBlock(blockSize));
             }
@@ -2776,6 +4022,7 @@ namespace MAPIInspector.Parsers
         {
             int i = 0;
             List<LengthOfBlock> list = new List<LengthOfBlock>();
+
             while (i < totalLength)
             {
                 LengthOfBlock tmp = this.ReadLengthBlock();
@@ -2791,14 +4038,57 @@ namespace MAPIInspector.Parsers
         /// </summary>
         /// <param name="totalSize">The total number of bytes to read</param>
         /// <param name="blockSize">The size of each block</param>
+        /// <param name="type">The data type to read</param>
+        /// <param name="isGetbuffer">Check whether it's RopGetBuffer</param>
+        /// <param name="isPutBuffer">Check whether it's RopPutBuffer</param>
         /// <returns>A list of blocks</returns>
-        public byte[][] ReadBlocksPartial(int totalSize, int blockSize)
+        public byte[][] ReadBlocksPartial(int totalSize, int blockSize, ushort type, bool isGetbuffer, bool isPutBuffer)
         {
             int i;
             List<byte[]> l = new List<byte[]>();
-            for (i = 0; i < totalSize; i += blockSize)
+
+            for (i = 0; i < totalSize; i++)
             {
-                // fixedSizeValue is a split atom, so the blockSize will be read successfully does not be splited 
+                int remainLength = totalSize - i;
+
+                if (isGetbuffer)
+                {
+                    if (this.IsEndOfStream)
+                    {
+                        MapiInspector.MAPIInspector.PartialGetType = type;
+                        MapiInspector.MAPIInspector.PartialGetRemainSize = remainLength;
+                        MapiInspector.MAPIInspector.PartialGetServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                        MapiInspector.MAPIInspector.PartialGetProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+						MapiInspector.MAPIInspector.PartialGetClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
+                        break;
+                    }
+                }
+                else if (isPutBuffer)
+                {
+                    if (this.IsEndOfStream)
+                    {
+                        MapiInspector.MAPIInspector.PartialPutType = type;
+                        MapiInspector.MAPIInspector.PartialPutRemainSize = remainLength;
+                        MapiInspector.MAPIInspector.PartialPutServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                        MapiInspector.MAPIInspector.PartialPutProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+						MapiInspector.MAPIInspector.PartialPutClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
+                        break;
+                    }
+                }
+                else
+                {
+                    if (this.IsEndOfStream)
+                    {
+                        MapiInspector.MAPIInspector.PartialPutExtendType = type;
+                        MapiInspector.MAPIInspector.PartialPutExtendRemainSize = remainLength;
+                        MapiInspector.MAPIInspector.PartialPutExtendServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                        MapiInspector.MAPIInspector.PartialPutExtendProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+						MapiInspector.MAPIInspector.PartialPutExtendClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
+                        break;
+                    }
+                }
+
+                // fixedSizeValue is a split atom, so the blockSize will be read without split 
                 l.Add(this.ReadBlock(blockSize));
             }
 
@@ -2808,23 +4098,37 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Read LengthOfBlock and advance the position.
         /// </summary>
+        /// <param name="length">The length to read</param>
+        /// <param name="type">The data type parsing</param>
+        /// <param name="isGetbuffer">Check whether it's RopGetBuffer</param>
+        /// <param name="isPutBuffer">Check whether it's RopPutBuffer</param>
         /// <returns>A LengthOfBlock specifies the length of the bytes array</returns>
-        public LengthOfBlock ReadLengthBlockPartial(int length, ushort type, bool isGetbuffer)
+        public LengthOfBlock ReadLengthBlockPartial(int length, ushort type, bool isGetbuffer, bool isPutBuffer)
         {
             int tmp = 0;
+
             if (isGetbuffer)
             {
                 if (this.IsEndOfStream)
                 {
-                    MapiInspector.MAPIInspector.pGetType = type;
-                    MapiInspector.MAPIInspector.pGetRemainSize = length;
+                    MapiInspector.MAPIInspector.PartialGetType = type;
+                    MapiInspector.MAPIInspector.PartialGetRemainSize = length;
+                    MapiInspector.MAPIInspector.PartialGetServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                    MapiInspector.MAPIInspector.PartialGetProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                    MapiInspector.MAPIInspector.PartialGetClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
                 }
                 else
                 {
-                    if (MapiInspector.MAPIInspector.pGetSubRemainSize != -1 && !this.IsEndOfStream)
+                    if (MapiInspector.MAPIInspector.PartialGetSubRemainSize != -1 && !this.IsEndOfStream
+                        && MapiInspector.MAPIInspector.PartialGetProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                        && MapiInspector.MAPIInspector.PartialGetServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath
+                        && MapiInspector.MAPIInspector.PartialGetClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                     {
-                        tmp = MapiInspector.MAPIInspector.pGetSubRemainSize;
-                        MapiInspector.MAPIInspector.pGetSubRemainSize = -1;
+                        tmp = MapiInspector.MAPIInspector.PartialGetSubRemainSize;
+                        MapiInspector.MAPIInspector.PartialGetSubRemainSize = -1;
+                        MapiInspector.MAPIInspector.PartialGetServerUrl = string.Empty;
+                        MapiInspector.MAPIInspector.PartialGetProcessName = string.Empty;
+                        MapiInspector.MAPIInspector.PartialGetClientInfo = string.Empty;
                     }
                     else
                     {
@@ -2833,10 +4137,52 @@ namespace MAPIInspector.Parsers
 
                     if (this.Length - this.Position < tmp)
                     {
-                        MapiInspector.MAPIInspector.pGetType = type;
-                        MapiInspector.MAPIInspector.pGetSubRemainSize = tmp - (int)(this.Length - this.Position);
+                        MapiInspector.MAPIInspector.PartialGetType = type;
+                        MapiInspector.MAPIInspector.PartialGetServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                        MapiInspector.MAPIInspector.PartialGetProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                        MapiInspector.MAPIInspector.PartialGetClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
+                        MapiInspector.MAPIInspector.PartialGetSubRemainSize = tmp - (int)(this.Length - this.Position);
+                        MapiInspector.MAPIInspector.PartialGetRemainSize = length;
                         tmp = (int)(this.Length - this.Position);
-                        MapiInspector.MAPIInspector.pGetRemainSize = length - tmp - 4;
+                    }
+                }
+            }
+            else if (isPutBuffer)
+            {
+                if (this.IsEndOfStream)
+                {
+                    MapiInspector.MAPIInspector.PartialPutType = type;
+                    MapiInspector.MAPIInspector.PartialPutRemainSize = length;
+                    MapiInspector.MAPIInspector.PartialPutServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                    MapiInspector.MAPIInspector.PartialPutProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                    MapiInspector.MAPIInspector.PartialPutClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
+                }
+                else
+                {
+                    if (MapiInspector.MAPIInspector.PartialPutSubRemainSize != -1 && !this.IsEndOfStream && MapiInspector.MAPIInspector.PartialPutProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                        && MapiInspector.MAPIInspector.PartialPutServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath
+                        && MapiInspector.MAPIInspector.PartialPutClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
+                    {
+                        tmp = MapiInspector.MAPIInspector.PartialPutSubRemainSize;
+                        MapiInspector.MAPIInspector.PartialPutSubRemainSize = -1;
+                        MapiInspector.MAPIInspector.PartialPutServerUrl = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutProcessName = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutClientInfo = string.Empty;
+                    }
+                    else
+                    {
+                        tmp = this.ReadInt32();
+                    }
+
+                    if (this.Length - this.Position < tmp)
+                    {
+                        MapiInspector.MAPIInspector.PartialPutType = type;
+                        MapiInspector.MAPIInspector.PartialPutSubRemainSize = tmp - (int)(this.Length - this.Position);
+                        tmp = (int)(this.Length - this.Position);
+                        MapiInspector.MAPIInspector.PartialPutRemainSize = length;
+                        MapiInspector.MAPIInspector.PartialPutServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                        MapiInspector.MAPIInspector.PartialPutProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                        MapiInspector.MAPIInspector.PartialPutClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
                     }
                 }
             }
@@ -2844,15 +4190,23 @@ namespace MAPIInspector.Parsers
             {
                 if (this.IsEndOfStream)
                 {
-                    MapiInspector.MAPIInspector.pPutType = type;
-                    MapiInspector.MAPIInspector.pPutRemainSize = length;
+                    MapiInspector.MAPIInspector.PartialPutExtendType = type;
+                    MapiInspector.MAPIInspector.PartialPutExtendRemainSize = length;
+                    MapiInspector.MAPIInspector.PartialPutExtendServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                    MapiInspector.MAPIInspector.PartialPutExtendProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                    MapiInspector.MAPIInspector.PartialPutExtendClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
                 }
                 else
                 {
-                    if (MapiInspector.MAPIInspector.pPutSubRemainSize != -1 && !this.IsEndOfStream)
+                    if (MapiInspector.MAPIInspector.PartialPutExtendSubRemainSize != -1 && !this.IsEndOfStream && MapiInspector.MAPIInspector.PartialPutExtendProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                        && MapiInspector.MAPIInspector.PartialPutExtendServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath
+                        && MapiInspector.MAPIInspector.PartialPutExtendClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                     {
-                        tmp = MapiInspector.MAPIInspector.pPutSubRemainSize;
-                        MapiInspector.MAPIInspector.pPutSubRemainSize = -1;
+                        tmp = MapiInspector.MAPIInspector.PartialPutExtendSubRemainSize;
+                        MapiInspector.MAPIInspector.PartialPutExtendSubRemainSize = -1;
+                        MapiInspector.MAPIInspector.PartialPutExtendServerUrl = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutExtendProcessName = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutExtendClientInfo = string.Empty;
                     }
                     else
                     {
@@ -2861,13 +4215,17 @@ namespace MAPIInspector.Parsers
 
                     if (this.Length - this.Position < tmp)
                     {
-                        MapiInspector.MAPIInspector.pPutType = type;
-                        MapiInspector.MAPIInspector.pPutSubRemainSize = tmp - (int)(this.Length - this.Position);
+                        MapiInspector.MAPIInspector.PartialPutExtendType = type;
+                        MapiInspector.MAPIInspector.PartialPutExtendSubRemainSize = tmp - (int)(this.Length - this.Position);
                         tmp = (int)(this.Length - this.Position);
-                        MapiInspector.MAPIInspector.pPutRemainSize = length - tmp - 4;
+                        MapiInspector.MAPIInspector.PartialPutExtendRemainSize = length;
+                        MapiInspector.MAPIInspector.PartialPutExtendServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                        MapiInspector.MAPIInspector.PartialPutExtendProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                        MapiInspector.MAPIInspector.PartialPutExtendClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
                     }
                 }
             }
+
             byte[] buffer = this.ReadBlock(tmp);
             return new LengthOfBlock(tmp, buffer);
         }
@@ -2876,45 +4234,73 @@ namespace MAPIInspector.Parsers
         /// Read a list of LengthOfBlock and advance the position.
         /// </summary>
         /// <param name="totalLength">The number of bytes to read</param>
+        /// <param name="type">The data type parsing</param>
+        /// <param name="isGetbuffer">Check whether it's RopGetBuffer</param>
+        /// <param name="isPutBuffer">Check whether it's RopPutBuffer</param>
         /// <returns>A list of LengthOfBlock</returns>
-        public LengthOfBlock[] ReadLengthBlocksPartial(int totalLength, ushort type, bool isGetbuffer)
+        public LengthOfBlock[] ReadLengthBlocksPartial(int totalLength, ushort type, bool isGetbuffer, bool isPutBuffer)
         {
             int i = 0;
             List<LengthOfBlock> list = new List<LengthOfBlock>();
+
             while (i < totalLength)
             {
                 int remainLength = totalLength - i;
-                LengthOfBlock tmp = this.ReadLengthBlockPartial(remainLength, type, isGetbuffer);
+                LengthOfBlock tmp = this.ReadLengthBlockPartial(remainLength, type, isGetbuffer, isPutBuffer);
                 i += 1;
                 list.Add(tmp);
+
                 if (isGetbuffer)
                 {
-                    if (MapiInspector.MAPIInspector.pGetSubRemainSize != -1 || MapiInspector.MAPIInspector.pGetRemainSize != -1)
+                    if ((MapiInspector.MAPIInspector.PartialGetSubRemainSize != -1 || MapiInspector.MAPIInspector.PartialGetRemainSize != -1)
+                        && (MapiInspector.MAPIInspector.PartialGetServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath
+                        && MapiInspector.MAPIInspector.PartialGetProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                        && MapiInspector.MAPIInspector.PartialGetClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"]))
+                    {
+                        break;
+                    }
+                }
+                else if (isPutBuffer)
+                {
+                    if ((MapiInspector.MAPIInspector.PartialPutSubRemainSize != -1 || MapiInspector.MAPIInspector.PartialPutRemainSize != -1)
+                        && (MapiInspector.MAPIInspector.PartialPutServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath
+                        && MapiInspector.MAPIInspector.PartialPutProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                        && MapiInspector.MAPIInspector.PartialPutClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"]))
                     {
                         break;
                     }
                 }
                 else
                 {
-                    if (MapiInspector.MAPIInspector.pPutSubRemainSize != -1 || MapiInspector.MAPIInspector.pPutRemainSize != -1)
+                    if ((MapiInspector.MAPIInspector.PartialPutExtendSubRemainSize != -1 || MapiInspector.MAPIInspector.PartialPutExtendRemainSize != -1)
+                        && (MapiInspector.MAPIInspector.PartialPutExtendServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath
+                        && MapiInspector.MAPIInspector.PartialPutExtendProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                        && MapiInspector.MAPIInspector.PartialPutExtendClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"]))
                     {
                         break;
                     }
                 }
-
             }
+
             return list.ToArray();
         }
 
         /// <summary>
-        /// Get a uint value and do not advance the position.
+        /// Get a UInt value and do not advance the position.
         /// </summary>
-        /// <returns>A uint value </returns>
+        /// <returns>A UInt value </returns>
         public uint VerifyUInt32()
         {
-            return BitConverter.ToUInt32(
-                this.GetBuffer(),
-                (int)this.Position);
+            try
+            {
+                return BitConverter.ToUInt32(
+                    this.GetBuffer(),
+                    (int)this.Position);
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         /// <summary>
@@ -2951,7 +4337,7 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Indicate the Markers at the current position plus an offsetequals a specified Markers
+        /// Indicate the Markers at the current position plus an offset equals a specified Markers
         /// </summary>
         /// <param name="marker">A Markers to be verified</param>
         /// <param name="offset">An int value</param>
@@ -2972,10 +4358,10 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Indicate the uint value at the position equals a specified uint value.
+        /// Indicate the UInt value at the position equals a specified UInt value.
         /// </summary>
-        /// <param name="val">A uint value.</param>
-        /// <returns>True if the uint at the position equals the specified uint.else false.</returns>
+        /// <param name="val">A UInt value.</param>
+        /// <returns>True if the UInt at the position equals the specified uint.else false.</returns>
         public bool Verify(uint val)
         {
             return !this.IsEndOfStream && BitConverter.ToUInt32(
@@ -2984,11 +4370,11 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Indicate the uint value at the position plus an offset equals a specified uint value.
+        /// Indicate the UInt value at the position plus an offset equals a specified UInt value.
         /// </summary>
-        /// <param name="val">A uint value</param>
+        /// <param name="val">A UInt value</param>
         /// <param name="offset">An int value</param>
-        /// <returns>True if the uint at the position plus an offset equals the specified uint,else false.</returns>
+        /// <returns>True if the UInt at the position plus an offset equals the specified UInt,else false.</returns>
         public bool Verify(uint val, int offset)
         {
             return !this.IsEndOfStream && BitConverter.ToUInt32(
@@ -2999,7 +4385,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Indicate the byte value at the position plus an offset equals a specified byte
         /// </summary>
-        /// <param name="val">A uint value</param>
+        /// <param name="val">A UInt value</param>
         /// <param name="offset">An int value</param>
         /// <returns>True if the byte at the position plus an offset equals the specified byte, else false.</returns>
         public bool Verify(byte val, int offset)
@@ -3010,7 +4396,7 @@ namespace MAPIInspector.Parsers
     }
     #endregion
 
-    # region 2.2.4.1 FastTransfer stream lexical structure
+    #region 2.2.4.1 FastTransfer stream lexical structure
     /// <summary>
     /// Base class for lexical objects
     /// </summary>
@@ -3039,16 +4425,24 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class PropValue : LexicalBase
     {
-        // The propType.
+        /// <summary>
+        /// The propType.
+        /// </summary>
         public ushort? PropType;
 
-        // The PropInfo.
+        /// <summary>
+        /// The PropInfo.
+        /// </summary>
         public PropInfo PropInfo;
 
-        // The propType for partial split
+        /// <summary>
+        /// The propType for partial split
+        /// </summary>
         protected ushort ptype;
 
-        //The PropId for partial split
+        /// <summary>
+        /// The PropId for partial split
+        /// </summary>
         protected PidTagPropertyEnum pid;
 
         /// <summary>
@@ -3117,9 +4511,9 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             base.Parse(stream);
-            if ((MapiInspector.MAPIInspector.isPut == true && MapiInspector.MAPIInspector.pPutType == 0) ||
-                (MapiInspector.MAPIInspector.isGet == true && MapiInspector.MAPIInspector.pGetType == 0) ||
-                (MapiInspector.MAPIInspector.isPutExtend == true && MapiInspector.MAPIInspector.pPutExtendType == 0))
+            if ((MapiInspector.MAPIInspector.IsPut == true && (MapiInspector.MAPIInspector.PartialPutType == 0 || (MapiInspector.MAPIInspector.PartialPutType != 0 && !(MapiInspector.MAPIInspector.PartialPutServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess && MapiInspector.MAPIInspector.PartialPutClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])))) ||
+                (MapiInspector.MAPIInspector.IsGet == true && (MapiInspector.MAPIInspector.PartialGetType == 0 || (MapiInspector.MAPIInspector.PartialGetType != 0 && !(MapiInspector.MAPIInspector.PartialGetServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialGetProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess && MapiInspector.MAPIInspector.PartialGetClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])))) ||
+                (MapiInspector.MAPIInspector.IsPutExtend == true && (MapiInspector.MAPIInspector.PartialPutExtendType == 0 || (MapiInspector.MAPIInspector.PartialPutType != 0 && !(MapiInspector.MAPIInspector.PartialPutExtendServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutExtendProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess && MapiInspector.MAPIInspector.PartialPutExtendClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])))))
             {
                 this.PropType = stream.ReadUInt16();
                 this.PropInfo = PropInfo.ParseFrom(stream) as PropInfo;
@@ -3132,10 +4526,14 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class PropInfo : LexicalBase
     {
-        // The property id.
+        /// <summary>
+        /// The property id.
+        /// </summary>
         public PidTagPropertyEnum PropID;
 
-        // The namedPropInfo in lexical definition.
+        /// <summary>
+        /// The namedPropInfo in lexical definition.
+        /// </summary>
         public NamedPropInfo NamedPropInfo;
 
         /// <summary>
@@ -3188,7 +4586,9 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class FixedPropTypePropValue : PropValue
     {
-        // A fixed value.
+        /// <summary>
+        /// A fixed value.
+        /// </summary>
         public object FixedValue;
 
         /// <summary>
@@ -3247,6 +4647,7 @@ namespace MAPIInspector.Parsers
                     {
                         this.FixedValue = stream.ReadInt32();
                     }
+
                     break;
                 case PropertyDataType.PtypFloating32:
                     this.FixedValue = stream.ReadFloating32();
@@ -3264,7 +4665,7 @@ namespace MAPIInspector.Parsers
                     this.FixedValue = stream.ReadBoolean();
                     break;
                 case PropertyDataType.PtypInteger64:
-                    if ((ushort)base.PropInfo.PropID == 0x6714)
+                    if ((ushort)this.PropInfo.PropID == 0x6714)
                     {
                         CN tmpCN = new CN();
                         tmpCN.Parse(stream);
@@ -3286,6 +4687,7 @@ namespace MAPIInspector.Parsers
                     {
                         this.FixedValue = stream.ReadInt64();
                     }
+
                     break;
                 case PropertyDataType.PtypTime:
                     this.FixedValue = stream.ReadTime();
@@ -3302,10 +4704,14 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class VarPropTypePropValue : PropValue
     {
-        // The length of a variate type value.
+        /// <summary>
+        /// The length of a variate type value.
+        /// </summary>
         public int Length;
 
-        // The valueArray.
+        /// <summary>
+        /// The valueArray.
+        /// </summary>
         public object ValueArray;
 
         /// <summary>
@@ -3352,6 +4758,7 @@ namespace MAPIInspector.Parsers
             if (LexicalTypeHelper.IsCodePageType((ushort)this.PropType))
             {
                 CodePageType type = (CodePageType)this.PropType;
+
                 switch (type)
                 {
                     case CodePageType.PtypCodePageUnicode:
@@ -3374,6 +4781,7 @@ namespace MAPIInspector.Parsers
             else
             {
                 PropertyDataType type = (PropertyDataType)this.PropType;
+
                 switch (type)
                 {
                     case PropertyDataType.PtypInteger32:
@@ -3408,6 +4816,7 @@ namespace MAPIInspector.Parsers
                                     InterIDSET_REPLID.Add(tmpIDSET_REPLID);
                                     EveLength -= ((int)stream.Position - begionPosition);
                                 }
+
                                 this.ValueArray = InterIDSET_REPLID.ToArray();
                             }
                         }
@@ -3425,6 +4834,7 @@ namespace MAPIInspector.Parsers
                                     InterIDSET_REPLGUID.Add(tmpIDSET_REPLGUID);
                                     EveLength -= ((int)stream.Position - begionPosition);
                                 }
+
                                 this.ValueArray = InterIDSET_REPLGUID.ToArray();
                             }
                         }
@@ -3432,6 +4842,7 @@ namespace MAPIInspector.Parsers
                         {
                             this.ValueArray = stream.ReadBlock(this.Length);
                         }
+
                         break;
                     case PropertyDataType.PtypString:
                         PtypString pstring = new PtypString();
@@ -3445,6 +4856,7 @@ namespace MAPIInspector.Parsers
                         break;
                     case PropertyDataType.PtypServerId:
                         PtypServerId pserverId = new PtypServerId(CountWideEnum.fourBytes);
+
                         // PtypServerId in MSOXCFXICS does not contain Length element
                         stream.Position -= 4;
                         pserverId.Parse(stream);
@@ -3466,13 +4878,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class MvPropTypePropValue : PropValue
     {
-        // This represent the length variable.
+        /// <summary>
+        /// This represent the length variable.
+        /// </summary>
         public int Length;
 
-        // A list of fixed size values.
+        /// <summary>
+        /// A list of fixed size values.
+        /// </summary>
         public byte[][] FixedSizeValueList;
 
-        // A list of LengthOfBlock.
+        /// <summary>
+        /// A list of LengthOfBlock.
+        /// </summary>
         public LengthOfBlock[] VarSizeValueList;
 
         /// <summary>
@@ -3514,6 +4932,7 @@ namespace MAPIInspector.Parsers
             base.Parse(stream);
             PropertyDataType type = (PropertyDataType)this.PropType;
             this.Length = stream.ReadInt32();
+
             switch (type)
             {
                 case PropertyDataType.PtypMultipleInteger16:
@@ -3561,11 +4980,13 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class FixedPropTypePropValueGetPartial : PropValue
     {
-        // A fixed value.
+        /// <summary>
+        /// A fixed value.
+        /// </summary>
         public object FixedValue;
 
         /// <summary>
-        /// Initializes a new instance of the FixedPropTypePropValue class.
+        /// Initializes a new instance of the FixedPropTypePropValueGetPartial class.
         /// </summary>
         /// <param name="stream">A FastTransferStream</param>
         public FixedPropTypePropValueGetPartial(FastTransferStream stream)
@@ -3582,18 +5003,30 @@ namespace MAPIInspector.Parsers
             base.Parse(stream);
             if (stream.IsEndOfStream)
             {
-                MapiInspector.MAPIInspector.pGetType = (ushort)this.PropType;
-                MapiInspector.MAPIInspector.pGetId = (ushort)this.PropInfo.PropID;
+                MapiInspector.MAPIInspector.PartialGetType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialGetId = (ushort)this.PropInfo.PropID;
+                MapiInspector.MAPIInspector.PartialGetServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                MapiInspector.MAPIInspector.PartialGetProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                MapiInspector.MAPIInspector.PartialGetClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIInspector.pGetType != 0)
+                if (MapiInspector.MAPIInspector.PartialGetType != 0 && MapiInspector.MAPIInspector.PartialGetServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialGetProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                    && MapiInspector.MAPIInspector.PartialGetClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    this.ptype = MapiInspector.MAPIInspector.pGetType;
-                    this.pid = (PidTagPropertyEnum)MapiInspector.MAPIInspector.pGetId;
+                    this.ptype = MapiInspector.MAPIInspector.PartialGetType;
+                    this.pid = (PidTagPropertyEnum)MapiInspector.MAPIInspector.PartialGetId;
+
+                    // clear
+                    MapiInspector.MAPIInspector.PartialGetType = 0;
+                    MapiInspector.MAPIInspector.PartialGetId = 0;
+                    MapiInspector.MAPIInspector.PartialGetServerUrl = string.Empty;
+                    MapiInspector.MAPIInspector.PartialGetProcessName = string.Empty;
+                    MapiInspector.MAPIInspector.PartialGetClientInfo = string.Empty;
                 }
+
                 ushort typeValue;
-                ushort idValue;
+                ushort identifyValue;
                 if (this.PropType != null)
                 {
                     typeValue = (ushort)this.PropType;
@@ -3602,13 +5035,14 @@ namespace MAPIInspector.Parsers
                 {
                     typeValue = this.ptype;
                 }
+
                 if (this.PropInfo != null)
                 {
-                    idValue = (ushort)this.PropInfo.PropID;
+                    identifyValue = (ushort)this.PropInfo.PropID;
                 }
                 else
                 {
-                    idValue = (ushort)this.pid;
+                    identifyValue = (ushort)this.pid;
                 }
 
                 switch ((PropertyDataType)typeValue)
@@ -3617,7 +5051,7 @@ namespace MAPIInspector.Parsers
                         this.FixedValue = stream.ReadInt16();
                         break;
                     case PropertyDataType.PtypInteger32:
-                        if (idValue == 0x67A4)
+                        if (identifyValue == 0x67A4)
                         {
                             CN tmpCN = new CN();
                             tmpCN.Parse(stream);
@@ -3627,6 +5061,7 @@ namespace MAPIInspector.Parsers
                         {
                             this.FixedValue = stream.ReadInt32();
                         }
+
                         break;
                     case PropertyDataType.PtypFloating32:
                         this.FixedValue = stream.ReadFloating32();
@@ -3644,19 +5079,19 @@ namespace MAPIInspector.Parsers
                         this.FixedValue = stream.ReadBoolean();
                         break;
                     case PropertyDataType.PtypInteger64:
-                        if (idValue == 0x6714)
+                        if (identifyValue == 0x6714)
                         {
                             CN tmpCN = new CN();
                             tmpCN.Parse(stream);
                             this.FixedValue = tmpCN;
                         }
-                        else if (idValue == 0x674A)
+                        else if (identifyValue == 0x674A)
                         {
                             MessageID tmpMID = new MessageID();
                             tmpMID.Parse(stream);
                             this.FixedValue = tmpMID;
                         }
-                        else if (idValue == 0x6748)
+                        else if (identifyValue == 0x6748)
                         {
                             FolderID tmpFID = new FolderID();
                             tmpFID.Parse(stream);
@@ -3666,6 +5101,7 @@ namespace MAPIInspector.Parsers
                         {
                             this.FixedValue = stream.ReadInt64();
                         }
+
                         break;
                     case PropertyDataType.PtypTime:
                         this.FixedValue = stream.ReadTime();
@@ -3683,17 +5119,23 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class VarPropTypePropValueGetPartial : PropValue
     {
-        // The length of a variate type value.
+        /// <summary>
+        /// The length of a variate type value.
+        /// </summary>
         public int? Length;
 
-        // The valueArray.
+        /// <summary>
+        /// The valueArray.
+        /// </summary>
         public object ValueArray;
 
-        // The length value used for partial split
+        /// <summary>
+        /// The length value used for partial split
+        /// </summary>
         protected int plength;
 
         /// <summary>
-        /// Initializes a new instance of the VarPropTypePropValue class.
+        /// Initializes a new instance of the VarPropTypePropValueGetPartial class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
         public VarPropTypePropValueGetPartial(FastTransferStream stream)
@@ -3708,40 +5150,55 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             base.Parse(stream);
+
             if (stream.IsEndOfStream)
             {
-                MapiInspector.MAPIInspector.pGetType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialGetType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialGetServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                MapiInspector.MAPIInspector.PartialGetProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                MapiInspector.MAPIInspector.PartialGetClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIInspector.pGetType != 0)
+                if (MapiInspector.MAPIInspector.PartialGetType != 0 && MapiInspector.MAPIInspector.PartialGetServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialGetProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                    && MapiInspector.MAPIInspector.PartialGetClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    this.ptype = MapiInspector.MAPIInspector.pGetType;
+                    this.ptype = MapiInspector.MAPIInspector.PartialGetType;
 
-                    if (MapiInspector.MAPIInspector.pGetRemainSize != -1)
+                    if (MapiInspector.MAPIInspector.PartialGetRemainSize != -1)
                     {
-                        this.plength = MapiInspector.MAPIInspector.pGetRemainSize;
-                        if (this.plength % 2 != 0 && this.ptype == 0x1f)
+                        this.plength = MapiInspector.MAPIInspector.PartialGetRemainSize;
+                        if (this.plength % 2 != 0 && (this.ptype == (ushort)PropertyDataType.PtypString || this.ptype == (ushort)CodePageType.PtypCodePageUnicode || this.ptype == (ushort)CodePageType.ptypCodePageUnicode52))
                         {
-                            MapiInspector.MAPIInspector.isOneMoreByteToRead = true;
+                            MapiInspector.MAPIInspector.IsOneMoreByteToRead = true;
                         }
 
-                        MapiInspector.MAPIInspector.pGetRemainSize = -1;
+                        MapiInspector.MAPIInspector.PartialGetRemainSize = -1;
                     }
                     else
                     {
                         this.Length = stream.ReadInt32();
                     }
+
                     // clear
-                    MapiInspector.MAPIInspector.pGetType = 0;
-                    MapiInspector.MAPIInspector.pGetId = 0;
+                    MapiInspector.MAPIInspector.PartialGetType = 0;
+                    MapiInspector.MAPIInspector.PartialGetId = 0;
+
+                    if (MapiInspector.MAPIInspector.PartialGetRemainSize == -1)
+                    {
+                        MapiInspector.MAPIInspector.PartialGetServerUrl = string.Empty;
+                        MapiInspector.MAPIInspector.PartialGetProcessName = string.Empty;
+                        MapiInspector.MAPIInspector.PartialGetClientInfo = string.Empty;
+                    }
                 }
                 else
                 {
                     this.Length = stream.ReadInt32();
                 }
+
                 int lengthValue;
                 ushort typeValue;
+
                 if (this.Length != null)
                 {
                     lengthValue = (int)this.Length;
@@ -3750,6 +5207,7 @@ namespace MAPIInspector.Parsers
                 {
                     lengthValue = this.plength;
                 }
+
                 if (this.PropType != null)
                 {
                     typeValue = (ushort)this.PropType;
@@ -3758,9 +5216,13 @@ namespace MAPIInspector.Parsers
                 {
                     typeValue = this.ptype;
                 }
+
                 if ((stream.Length - stream.Position) < lengthValue)
                 {
-                    MapiInspector.MAPIInspector.pGetType = typeValue;
+                    MapiInspector.MAPIInspector.PartialGetType = typeValue;
+                    MapiInspector.MAPIInspector.PartialGetServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                    MapiInspector.MAPIInspector.PartialGetProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                    MapiInspector.MAPIInspector.PartialGetClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
                 }
 
                 if (LexicalTypeHelper.IsCodePageType(typeValue))
@@ -3769,43 +5231,138 @@ namespace MAPIInspector.Parsers
                     {
                         case CodePageType.PtypCodePageUnicode:
                             PtypString pstring = new PtypString();
+
                             if (stream.Length - stream.Position < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
-                                if (lengthValue % 2 != 0)
+
+                                if (lengthValue != 0)
                                 {
-                                    MapiInspector.MAPIInspector.isOneMoreByteToRead = false;
+                                    if (MapiInspector.MAPIInspector.IsOneMoreByteToRead)
+                                    {
+                                        stream.Position += 1;
+                                        MapiInspector.MAPIInspector.IsOneMoreByteToRead = false;
+                                    }
+
+                                    if ((lengthValue / 2) != 0)
+                                    {
+                                        pstring = new PtypString(lengthValue / 2);
+                                        pstring.Parse(stream);
+                                    }
+                                    else
+                                    {
+                                        pstring = null;
+                                    }
+
+                                    if (lengthValue % 2 != 0)
+                                    {
+                                        stream.Position += 1;
+                                    }
                                 }
-                                pstring = new PtypString(lengthValue / 2);
-                                pstring.Parse(stream);
-                                if (lengthValue % 2 != 0)
+                                else
                                 {
-                                    stream.Position += 1;
+                                    pstring = null;
                                 }
                             }
                             else
                             {
-                                if (MapiInspector.MAPIInspector.isOneMoreByteToRead)
+                                if (MapiInspector.MAPIInspector.IsOneMoreByteToRead)
                                 {
                                     stream.Position += 1;
-                                    MapiInspector.MAPIInspector.isOneMoreByteToRead = false;
+                                    MapiInspector.MAPIInspector.IsOneMoreByteToRead = false;
                                 }
-                                pstring = new PtypString(lengthValue / 2);
-                                pstring.Parse(stream);
-                            }
-                            this.ValueArray = pstring;
 
+                                if ((lengthValue / 2) != 0)
+                                {
+                                    pstring = new PtypString(lengthValue / 2);
+                                    pstring.Parse(stream);
+                                }
+                                else
+                                {
+                                    pstring = null;
+                                }
+                            }
+
+                            this.ValueArray = pstring;
                             break;
+                        case CodePageType.ptypCodePageUnicode52:
+                            {
+                                PtypString pstringII = new PtypString();
+
+                                if (this.Length != null)
+                                {
+                                    this.Length = stream.ReadInt32();
+                                    lengthValue = (int)this.Length;
+                                }
+
+                                if (stream.Length - stream.Position < lengthValue)
+                                {
+                                    MapiInspector.MAPIInspector.PartialGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                    this.plength = (int)(stream.Length - stream.Position);
+                                    lengthValue = this.plength;
+
+                                    if (lengthValue != 0)
+                                    {
+                                        if (MapiInspector.MAPIInspector.IsOneMoreByteToRead)
+                                        {
+                                            stream.Position += 1;
+                                            MapiInspector.MAPIInspector.IsOneMoreByteToRead = false;
+                                        }
+
+                                        if ((lengthValue / 2) != 0)
+                                        {
+                                            pstringII = new PtypString(lengthValue / 2);
+                                            pstringII.Parse(stream);
+                                        }
+                                        else
+                                        {
+                                            pstringII = null;
+                                        }
+
+                                        if (lengthValue % 2 != 0)
+                                        {
+                                            stream.Position += 1;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        pstringII = null;
+                                    }
+                                }
+                                else
+                                {
+                                    if (MapiInspector.MAPIInspector.IsOneMoreByteToRead)
+                                    {
+                                        stream.Position += 1;
+                                        MapiInspector.MAPIInspector.IsOneMoreByteToRead = false;
+                                    }
+
+                                    if ((lengthValue / 2) != 0)
+                                    {
+                                        pstringII = new PtypString(lengthValue / 2);
+                                        pstringII.Parse(stream);
+                                    }
+                                    else
+                                    {
+                                        pstringII = null;
+                                    }
+                                }
+
+                                this.ValueArray = pstringII;
+                                break;
+                            }
+
                         case CodePageType.PtypCodePageUnicodeBigendian:
                         case CodePageType.PtypCodePageWesternEuropean:
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
                             }
+
                             PtypString8 pstring8 = new PtypString8(lengthValue);
                             pstring8.Parse(stream);
                             this.ValueArray = pstring8;
@@ -3813,10 +5370,11 @@ namespace MAPIInspector.Parsers
                         default:
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
                             }
+
                             PtypString8 pdstring8 = new PtypString8(lengthValue);
                             pdstring8.Parse(stream);
                             this.ValueArray = pdstring8;
@@ -3829,42 +5387,70 @@ namespace MAPIInspector.Parsers
                     {
                         case PropertyDataType.PtypString:
                             PtypString pstring = new PtypString();
+
                             if (stream.Length - stream.Position < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
-                                this.plength = (int)(stream.Length - stream.Position);//+1
+                                MapiInspector.MAPIInspector.PartialGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
-                                if (lengthValue % 2 != 0)
+
+                                if (lengthValue != 0)
                                 {
-                                    MapiInspector.MAPIInspector.isOneMoreByteToRead = false;
+                                    if (MapiInspector.MAPIInspector.IsOneMoreByteToRead)
+                                    {
+                                        stream.Position += 1;
+                                        MapiInspector.MAPIInspector.IsOneMoreByteToRead = false;
+                                    }
+
+                                    if ((lengthValue / 2) != 0)
+                                    {
+                                        pstring = new PtypString(lengthValue / 2);
+                                        pstring.Parse(stream);
+                                    }
+                                    else
+                                    {
+                                        pstring = null;
+                                    }
+
+                                    if (lengthValue % 2 != 0)
+                                    {
+                                        stream.Position += 1;
+                                    }
                                 }
-                                pstring = new PtypString(lengthValue / 2);
-                                pstring.Parse(stream);
-                                if (lengthValue % 2 != 0)
+                                else
                                 {
-                                    stream.Position += 1;
+                                    pstring = null;
                                 }
                             }
                             else
                             {
-                                if (MapiInspector.MAPIInspector.isOneMoreByteToRead)
+                                if (MapiInspector.MAPIInspector.IsOneMoreByteToRead)
                                 {
                                     stream.Position += 1;
-                                    MapiInspector.MAPIInspector.isOneMoreByteToRead = false;
+                                    MapiInspector.MAPIInspector.IsOneMoreByteToRead = false;
                                 }
-                                pstring = new PtypString(lengthValue / 2);
-                                pstring.Parse(stream);
-                            }
-                            this.ValueArray = pstring;
 
+                                if ((lengthValue / 2) != 0)
+                                {
+                                    pstring = new PtypString(lengthValue / 2);
+                                    pstring.Parse(stream);
+                                }
+                                else
+                                {
+                                    pstring = null;
+                                }
+                            }
+
+                            this.ValueArray = pstring;
                             break;
                         case PropertyDataType.PtypString8:
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
                             }
+
                             PtypString8 pstring8 = new PtypString8(lengthValue);
                             pstring8.Parse(stream);
                             this.ValueArray = pstring8;
@@ -3874,19 +5460,21 @@ namespace MAPIInspector.Parsers
                         case PropertyDataType.PtypObject_Or_PtypEmbeddedTable:
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
-                                this.plength = (int)(stream.Length - stream.Position);//+1
+                                MapiInspector.MAPIInspector.PartialGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
                             }
+
                             this.ValueArray = stream.ReadBlock(lengthValue);
                             break;
                         default:
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
-                                this.plength = (int)(stream.Length - stream.Position);//+1
+                                MapiInspector.MAPIInspector.PartialGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
                             }
+
                             this.ValueArray = stream.ReadBlock(lengthValue);
                             break;
                     }
@@ -3900,18 +5488,28 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class MvPropTypePropValueGetPartial : PropValue
     {
-        // This represent the length variable.
+        /// <summary>
+        /// This represent the length variable.
+        /// </summary>
         public int? Length;
 
-        // A list of fixed size values.
+        /// <summary>
+        /// A list of fixed size values.
+        /// </summary>
         public byte[][] FixedSizeValueList;
 
-        // A list of LengthOfBlock.
+        /// <summary>
+        /// A list of LengthOfBlock.
+        /// </summary>
         public LengthOfBlock[] VarSizeValueList;
 
-        public int plength;
         /// <summary>
-        /// Initializes a new instance of the MvPropTypePropValue class.
+        /// Length value for partial split
+        /// </summary>
+        public int Plength;
+
+        /// <summary>
+        /// Initializes a new instance of the MvPropTypePropValueGetPartial class.
         /// </summary>
         /// <param name="stream">A FastTransferStream</param>
         public MvPropTypePropValueGetPartial(FastTransferStream stream)
@@ -3926,41 +5524,57 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             base.Parse(stream);
+
             if (stream.IsEndOfStream)
             {
-                MapiInspector.MAPIInspector.pGetType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialGetType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialGetServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                MapiInspector.MAPIInspector.PartialGetProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                MapiInspector.MAPIInspector.PartialGetClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIInspector.pGetType != 0)
+                if (MapiInspector.MAPIInspector.PartialGetType != 0 && MapiInspector.MAPIInspector.PartialGetServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialGetProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                    && MapiInspector.MAPIInspector.PartialGetClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    this.ptype = MapiInspector.MAPIInspector.pGetType;
-                    if (MapiInspector.MAPIInspector.pGetRemainSize != -1)
+                    this.ptype = MapiInspector.MAPIInspector.PartialGetType;
+
+                    if (MapiInspector.MAPIInspector.PartialGetRemainSize != -1)
                     {
-                        this.plength = MapiInspector.MAPIInspector.pGetRemainSize;
-                        MapiInspector.MAPIInspector.pGetRemainSize = -1;
+                        this.Plength = MapiInspector.MAPIInspector.PartialGetRemainSize;
+                        MapiInspector.MAPIInspector.PartialGetRemainSize = -1;
                     }
                     else
                     {
                         this.Length = stream.ReadInt32();
                     }
+
                     // clear
-                    MapiInspector.MAPIInspector.pGetType = 0;
+                    MapiInspector.MAPIInspector.PartialGetType = 0;
+                    if (MapiInspector.MAPIInspector.PartialGetRemainSize == -1 && MapiInspector.MAPIInspector.PartialGetSubRemainSize == -1)
+                    {
+                        MapiInspector.MAPIInspector.PartialGetServerUrl = string.Empty;
+                        MapiInspector.MAPIInspector.PartialGetProcessName = string.Empty;
+                        MapiInspector.MAPIInspector.PartialGetClientInfo = string.Empty;
+                    }
                 }
                 else
                 {
                     this.Length = stream.ReadInt32();
                 }
+
                 int lengthValue;
                 ushort typeValue;
+
                 if (this.Length != null)
                 {
                     lengthValue = (int)this.Length;
                 }
                 else
                 {
-                    lengthValue = this.plength;
+                    lengthValue = this.Plength;
                 }
+
                 if (this.PropType != null)
                 {
                     typeValue = (ushort)this.PropType;
@@ -3969,51 +5583,44 @@ namespace MAPIInspector.Parsers
                 {
                     typeValue = this.ptype;
                 }
-                if ((stream.Length - stream.Position) < lengthValue)
-                {
-                    MapiInspector.MAPIInspector.pGetType = typeValue;
-                    MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
-                    this.plength = (int)(stream.Length - stream.Position);
-                    lengthValue = this.plength;
-                }
 
                 switch ((PropertyDataType)typeValue)
                 {
                     case PropertyDataType.PtypMultipleInteger16:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 2);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 2, typeValue, true, false);
                         break;
                     case PropertyDataType.PtypMultipleInteger32:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4, typeValue, true, false);
                         break;
                     case PropertyDataType.PtypMultipleFloating32:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4, typeValue, true, false);
                         break;
                     case PropertyDataType.PtypMultipleFloating64:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, true, false);
                         break;
                     case PropertyDataType.PtypMultipleCurrency:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, true, false);
                         break;
                     case PropertyDataType.PtypMultipleFloatingTime:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, true, false);
                         break;
                     case PropertyDataType.PtypMultipleInteger64:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, true, false);
                         break;
                     case PropertyDataType.PtypMultipleTime:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, true, false);
                         break;
                     case PropertyDataType.PtypMultipleGuid:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, Guid.Empty.ToByteArray().Length);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, Guid.Empty.ToByteArray().Length, typeValue, true, false);
                         break;
                     case PropertyDataType.PtypMultipleBinary:
-                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, true);
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, true, false);
                         break;
                     case PropertyDataType.PtypMultipleString:
-                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, true);
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, true, false);
                         break;
                     case PropertyDataType.PtypMultipleString8:
-                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, true);
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, true, false);
                         break;
                 }
             }
@@ -4025,11 +5632,13 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class FixedPropTypePropValuePutPartial : PropValue
     {
-        // A fixed value.
+        /// <summary>
+        /// A fixed value.
+        /// </summary>
         public object FixedValue;
 
         /// <summary>
-        /// Initializes a new instance of the FixedPropTypePropValue class.
+        /// Initializes a new instance of the FixedPropTypePropValuePutPartial class.
         /// </summary>
         /// <param name="stream">A FastTransferStream</param>
         public FixedPropTypePropValuePutPartial(FastTransferStream stream)
@@ -4044,20 +5653,34 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             base.Parse(stream);
+
             if (stream.IsEndOfStream)
             {
-                MapiInspector.MAPIInspector.pPutType = (ushort)this.PropType;
-                MapiInspector.MAPIInspector.pPutId = (ushort)this.PropInfo.PropID;
+                MapiInspector.MAPIInspector.PartialPutType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialPutId = (ushort)this.PropInfo.PropID;
+                MapiInspector.MAPIInspector.PartialPutServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                MapiInspector.MAPIInspector.PartialPutProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                MapiInspector.MAPIInspector.PartialPutClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIInspector.pPutType != 0)
+                if (MapiInspector.MAPIInspector.PartialPutType != 0 && MapiInspector.MAPIInspector.PartialPutServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                    && MapiInspector.MAPIInspector.PartialPutClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    this.ptype = MapiInspector.MAPIInspector.pPutType;
-                    this.pid = (PidTagPropertyEnum)MapiInspector.MAPIInspector.pPutId;
+                    this.ptype = MapiInspector.MAPIInspector.PartialPutType;
+                    this.pid = (PidTagPropertyEnum)MapiInspector.MAPIInspector.PartialPutId;
+
+                    // clear
+                    MapiInspector.MAPIInspector.PartialPutType = 0;
+                    MapiInspector.MAPIInspector.PartialPutId = 0;
+                    MapiInspector.MAPIInspector.PartialPutServerUrl = string.Empty;
+                    MapiInspector.MAPIInspector.PartialPutProcessName = string.Empty;
+                    MapiInspector.MAPIInspector.PartialPutClientInfo = string.Empty;
                 }
+
                 ushort typeValue;
-                ushort idValue;
+                ushort identifyValue;
+
                 if (this.PropType != null)
                 {
                     typeValue = (ushort)this.PropType;
@@ -4066,21 +5689,23 @@ namespace MAPIInspector.Parsers
                 {
                     typeValue = this.ptype;
                 }
+
                 if (this.PropInfo != null)
                 {
-                    idValue = (ushort)this.PropInfo.PropID;
+                    identifyValue = (ushort)this.PropInfo.PropID;
                 }
                 else
                 {
-                    idValue = (ushort)this.pid;
+                    identifyValue = (ushort)this.pid;
                 }
+
                 switch ((PropertyDataType)typeValue)
                 {
                     case PropertyDataType.PtypInteger16:
                         this.FixedValue = stream.ReadInt16();
                         break;
                     case PropertyDataType.PtypInteger32:
-                        if (idValue == 0x67A4)
+                        if (identifyValue == 0x67A4)
                         {
                             CN tmpCN = new CN();
                             tmpCN.Parse(stream);
@@ -4090,6 +5715,7 @@ namespace MAPIInspector.Parsers
                         {
                             this.FixedValue = stream.ReadInt32();
                         }
+
                         break;
                     case PropertyDataType.PtypFloating32:
                         this.FixedValue = stream.ReadFloating32();
@@ -4107,19 +5733,19 @@ namespace MAPIInspector.Parsers
                         this.FixedValue = stream.ReadBoolean();
                         break;
                     case PropertyDataType.PtypInteger64:
-                        if (idValue == 0x6714)
+                        if (identifyValue == 0x6714)
                         {
                             CN tmpCN = new CN();
                             tmpCN.Parse(stream);
                             this.FixedValue = tmpCN;
                         }
-                        else if (idValue == 0x674A)
+                        else if (identifyValue == 0x674A)
                         {
                             MessageID tmpMID = new MessageID();
                             tmpMID.Parse(stream);
                             this.FixedValue = tmpMID;
                         }
-                        else if (idValue == 0x6748)
+                        else if (identifyValue == 0x6748)
                         {
                             FolderID tmpFID = new FolderID();
                             tmpFID.Parse(stream);
@@ -4129,6 +5755,7 @@ namespace MAPIInspector.Parsers
                         {
                             this.FixedValue = stream.ReadInt64();
                         }
+
                         break;
                     case PropertyDataType.PtypTime:
                         this.FixedValue = stream.ReadTime();
@@ -4140,25 +5767,34 @@ namespace MAPIInspector.Parsers
             }
         }
     }
+
     /// <summary>
     /// The VarPropTypePropValue class.
     /// </summary>
     public class VarPropTypePropValuePutPartial : PropValue
     {
-        // The length of a variate type value.
+        /// <summary>
+        /// The length of a variate type value.
+        /// </summary>
         public int? Length;
 
-        // The valueArray.
+        /// <summary>
+        /// The valueArray.
+        /// </summary>
         public object ValueArray;
 
-        // The length value used for partial split
+        /// <summary>
+        /// The length value used for partial split
+        /// </summary>
         protected int plength;
 
-        // Bool value used fot ptypString type split in the two bytes which parser to one char
+        /// <summary>
+        /// Boolean value used to record whether ptypString value is split to two bytes which parse in different buffer
+        /// </summary>
         protected bool splitpreviousOne = false;
 
         /// <summary>
-        /// Initializes a new instance of the VarPropTypePropValue class.
+        /// Initializes a new instance of the VarPropTypePropValuePutPartial class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
         public VarPropTypePropValuePutPartial(FastTransferStream stream)
@@ -4173,37 +5809,54 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             base.Parse(stream);
+
             if (stream.IsEndOfStream)
             {
-                MapiInspector.MAPIInspector.pPutType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialPutType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialPutServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                MapiInspector.MAPIInspector.PartialPutProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                MapiInspector.MAPIInspector.PartialPutClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIInspector.pPutType != 0)
+                if (MapiInspector.MAPIInspector.PartialPutType != 0 && MapiInspector.MAPIInspector.PartialPutServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                    && MapiInspector.MAPIInspector.PartialPutClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    this.ptype = MapiInspector.MAPIInspector.pPutType;
-                    if (MapiInspector.MAPIInspector.pPutRemainSize != -1)
+                    this.ptype = MapiInspector.MAPIInspector.PartialPutType;
+
+                    if (MapiInspector.MAPIInspector.PartialPutRemainSize != -1)
                     {
-                        this.plength = MapiInspector.MAPIInspector.pPutRemainSize;
-                        MapiInspector.MAPIInspector.pPutRemainSize = -1;
-                        if (this.ptype == (ushort)PropertyDataType.PtypString && this.plength % 2 != 0)
+                        this.plength = MapiInspector.MAPIInspector.PartialPutRemainSize;
+                        MapiInspector.MAPIInspector.PartialPutRemainSize = -1;
+
+                        if (this.plength % 2 != 0 && (this.ptype == (ushort)PropertyDataType.PtypString || this.ptype == (ushort)CodePageType.PtypCodePageUnicode || this.ptype == (ushort)CodePageType.ptypCodePageUnicode52))
                         {
-                            splitpreviousOne = true;
+                            this.splitpreviousOne = true;
                         }
                     }
                     else
                     {
                         this.Length = stream.ReadInt32();
                     }
+                    
                     // clear
-                    MapiInspector.MAPIInspector.pPutType = 0;
+                    MapiInspector.MAPIInspector.PartialPutType = 0;
+
+                    if (MapiInspector.MAPIInspector.PartialPutRemainSize == -1)
+                    {
+                        MapiInspector.MAPIInspector.PartialPutServerUrl = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutProcessName = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutClientInfo = string.Empty;
+                    }
                 }
                 else
                 {
                     this.Length = stream.ReadInt32();
                 }
+
                 int lengthValue;
                 ushort typeValue;
+
                 if (this.Length != null)
                 {
                     lengthValue = (int)this.Length;
@@ -4212,6 +5865,7 @@ namespace MAPIInspector.Parsers
                 {
                     lengthValue = this.plength;
                 }
+
                 if (this.PropType != null)
                 {
                     typeValue = (ushort)this.PropType;
@@ -4220,9 +5874,13 @@ namespace MAPIInspector.Parsers
                 {
                     typeValue = this.ptype;
                 }
+
                 if ((stream.Length - stream.Position) < lengthValue)
                 {
-                    MapiInspector.MAPIInspector.pPutType = typeValue;
+                    MapiInspector.MAPIInspector.PartialPutType = typeValue;
+                    MapiInspector.MAPIInspector.PartialPutServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                    MapiInspector.MAPIInspector.PartialPutProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                    MapiInspector.MAPIInspector.PartialPutClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
                 }
 
                 if (LexicalTypeHelper.IsCodePageType(typeValue))
@@ -4231,17 +5889,39 @@ namespace MAPIInspector.Parsers
                     {
                         case CodePageType.PtypCodePageUnicode:
                             PtypString pstring = new PtypString();
+
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialPutRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
 
-                                pstring = new PtypString(lengthValue / 2);
-                                pstring.Parse(stream);
-                                if (lengthValue % 2 != 0)
+                                if (lengthValue != 0)
                                 {
-                                    stream.Position += 1;
+                                    if (this.splitpreviousOne)
+                                    {
+                                        stream.Position += 1;
+                                        this.splitpreviousOne = false;
+                                    }
+
+                                    if ((lengthValue / 2) != 0)
+                                    {
+                                        pstring = new PtypString(lengthValue / 2);
+                                        pstring.Parse(stream);
+                                    }
+                                    else
+                                    {
+                                        pstring = null;
+                                    }
+
+                                    if (lengthValue % 2 != 0)
+                                    {
+                                        stream.Position += 1;
+                                    }
+                                }
+                                else
+                                {
+                                    pstring = null;
                                 }
                             }
                             else
@@ -4251,19 +5931,97 @@ namespace MAPIInspector.Parsers
                                     stream.Position += 1;
                                     splitpreviousOne = false;
                                 }
-                                pstring = new PtypString(lengthValue / 2);
-                                pstring.Parse(stream);
+
+                                if ((lengthValue / 2) != 0)
+                                {
+                                    pstring = new PtypString(lengthValue / 2);
+                                    pstring.Parse(stream);
+                                }
+                                else
+                                {
+                                    pstring = null;
+                                }
                             }
+
                             this.ValueArray = pstring;
                             break;
+                        case CodePageType.ptypCodePageUnicode52:
+                            {
+                                PtypString pstringII = new PtypString();
+
+                                if (this.Length != null)
+                                {
+                                    this.Length = stream.ReadInt32();
+                                    lengthValue = (int)this.Length;
+                                }
+
+                                if (stream.Length - stream.Position < lengthValue)
+                                {
+                                    MapiInspector.MAPIInspector.PartialPutRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                    this.plength = (int)(stream.Length - stream.Position);
+                                    lengthValue = this.plength;
+
+                                    if (lengthValue != 0)
+                                    {
+                                        if (this.splitpreviousOne)
+                                        {
+                                            stream.Position += 1;
+                                            this.splitpreviousOne = false;
+                                        }
+
+                                        if ((lengthValue / 2) != 0)
+                                        {
+                                            pstringII = new PtypString(lengthValue / 2);
+                                            pstringII.Parse(stream);
+                                        }
+                                        else
+                                        {
+                                            pstringII = null;
+                                        }
+
+                                        if (lengthValue % 2 != 0)
+                                        {
+                                            stream.Position += 1;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        pstringII = null;
+                                    }
+                                }
+                                else
+                                {
+                                    if (this.splitpreviousOne)
+                                    {
+                                        stream.Position += 1;
+                                        this.splitpreviousOne = false;
+                                    }
+
+                                    if ((lengthValue / 2) != 0)
+                                    {
+                                        pstringII = new PtypString(lengthValue / 2);
+                                        pstringII.Parse(stream);
+                                    }
+                                    else
+                                    {
+                                        pstringII = null;
+                                    }
+                                }
+
+                                this.ValueArray = pstringII;
+
+                                break;
+                            }
+
                         case CodePageType.PtypCodePageUnicodeBigendian:
                         case CodePageType.PtypCodePageWesternEuropean:
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialPutRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
                             }
+
                             PtypString8 pstring8 = new PtypString8(lengthValue);
                             pstring8.Parse(stream);
                             this.ValueArray = pstring8;
@@ -4271,10 +6029,11 @@ namespace MAPIInspector.Parsers
                         default:
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialPutRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
                             }
+
                             PtypString8 pdstring8 = new PtypString8(lengthValue);
                             pdstring8.Parse(stream);
                             this.ValueArray = pdstring8;
@@ -4289,15 +6048,35 @@ namespace MAPIInspector.Parsers
                             PtypString pstring = new PtypString();
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialPutRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
-
-                                pstring = new PtypString(lengthValue / 2);
-                                pstring.Parse(stream);
-                                if (lengthValue % 2 != 0)
+                                if (lengthValue != 0)
                                 {
-                                    stream.Position += 1;
+                                    if (this.splitpreviousOne)
+                                    {
+                                        stream.Position += 1;
+                                        this.splitpreviousOne = false;
+                                    }
+
+                                    if ((lengthValue / 2) != 0)
+                                    {
+                                        pstring = new PtypString(lengthValue / 2);
+                                        pstring.Parse(stream);
+                                    }
+                                    else
+                                    {
+                                        pstring = null;
+                                    }
+
+                                    if (lengthValue % 2 != 0)
+                                    {
+                                        stream.Position += 1;
+                                    }
+                                }
+                                else
+                                {
+                                    pstring = null;
                                 }
                             }
                             else
@@ -4307,18 +6086,28 @@ namespace MAPIInspector.Parsers
                                     stream.Position += 1;
                                     splitpreviousOne = false;
                                 }
-                                pstring = new PtypString(lengthValue / 2);
-                                pstring.Parse(stream);
+
+                                if ((lengthValue / 2) != 0)
+                                {
+                                    pstring = new PtypString(lengthValue / 2);
+                                    pstring.Parse(stream);
+                                }
+                                else
+                                {
+                                    pstring = null;
+                                }
                             }
+
                             this.ValueArray = pstring;
                             break;
                         case PropertyDataType.PtypString8:
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialPutRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
                             }
+
                             PtypString8 pstring8 = new PtypString8(lengthValue);
                             pstring8.Parse(stream);
                             this.ValueArray = pstring8;
@@ -4328,19 +6117,21 @@ namespace MAPIInspector.Parsers
                         case PropertyDataType.PtypObject_Or_PtypEmbeddedTable:
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pPutRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialPutRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
                             }
+
                             this.ValueArray = stream.ReadBlock(lengthValue);
                             break;
                         default:
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pPutRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialPutRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
                             }
+
                             this.ValueArray = stream.ReadBlock(lengthValue);
                             break;
                     }
@@ -4354,18 +6145,28 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class MvPropTypePropValuePutPartial : PropValue
     {
-        // This represent the length variable.
+        /// <summary>
+        /// This represent the length variable.
+        /// </summary>
         public int? Length;
 
-        // A list of fixed size values.
+        /// <summary>
+        /// A list of fixed size values.
+        /// </summary>
         public byte[][] FixedSizeValueList;
 
-        // A list of LengthOfBlock.
+        /// <summary>
+        /// A list of LengthOfBlock.
+        /// </summary>
         public LengthOfBlock[] VarSizeValueList;
 
-        public int plength;
         /// <summary>
-        /// Initializes a new instance of the MvPropTypePropValue class.
+        /// Length for partial
+        /// </summary>
+        public int Plength;
+
+        /// <summary>
+        /// Initializes a new instance of the MvPropTypePropValuePutPartial class.
         /// </summary>
         /// <param name="stream">A FastTransferStream</param>
         public MvPropTypePropValuePutPartial(FastTransferStream stream)
@@ -4380,42 +6181,59 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             base.Parse(stream);
+
             if (stream.IsEndOfStream)
             {
-                MapiInspector.MAPIInspector.pPutType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialPutType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialPutServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                MapiInspector.MAPIInspector.PartialPutProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                MapiInspector.MAPIInspector.PartialPutClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIInspector.pPutType != 0)
+                if (MapiInspector.MAPIInspector.PartialPutType != 0 && MapiInspector.MAPIInspector.PartialPutServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                    && MapiInspector.MAPIInspector.PartialPutClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    this.ptype = MapiInspector.MAPIInspector.pPutType;
-                    if (MapiInspector.MAPIInspector.pPutRemainSize != -1)
+                    this.ptype = MapiInspector.MAPIInspector.PartialPutType;
+
+                    if (MapiInspector.MAPIInspector.PartialPutRemainSize != -1)
                     {
-                        this.plength = MapiInspector.MAPIInspector.pPutRemainSize;
-                        MapiInspector.MAPIInspector.pPutRemainSize = -1;
+                        this.Plength = MapiInspector.MAPIInspector.PartialPutRemainSize;
+                        MapiInspector.MAPIInspector.PartialPutRemainSize = -1;
                     }
                     else
                     {
                         this.Length = stream.ReadInt32();
                     }
+
                     // clear
-                    MapiInspector.MAPIInspector.pPutType = 0;
-                    MapiInspector.MAPIInspector.pPutId = 0;
+                    MapiInspector.MAPIInspector.PartialPutType = 0;
+                    MapiInspector.MAPIInspector.PartialPutId = 0;
+
+                    if (MapiInspector.MAPIInspector.PartialPutRemainSize == -1 && MapiInspector.MAPIInspector.PartialPutSubRemainSize == -1)
+                    {
+                        MapiInspector.MAPIInspector.PartialPutServerUrl = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutProcessName = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutClientInfo = string.Empty;
+                    }
                 }
                 else
                 {
                     this.Length = stream.ReadInt32();
                 }
+
                 int lengthValue;
                 ushort typeValue;
+
                 if (this.Length != null)
                 {
                     lengthValue = (int)this.Length;
                 }
                 else
                 {
-                    lengthValue = this.plength;
+                    lengthValue = this.Plength;
                 }
+
                 if (this.PropType != null)
                 {
                     typeValue = (ushort)this.PropType;
@@ -4424,52 +6242,44 @@ namespace MAPIInspector.Parsers
                 {
                     typeValue = this.ptype;
                 }
-                if ((stream.Length - stream.Position) < lengthValue)
-                {
-                    MapiInspector.MAPIInspector.pPutType = typeValue;
-                    //MapiInspector.MAPIInspector.pPutId = (ushort)this.PropInfo.PropID;
-                    MapiInspector.MAPIInspector.pPutRemainSize = lengthValue - (int)(stream.Length - stream.Position);
-                    this.plength = (int)(stream.Length - stream.Position);
-                    lengthValue = this.plength;
-                }
-
+                
                 switch ((PropertyDataType)this.PropType)
                 {
                     case PropertyDataType.PtypMultipleInteger16:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 2);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 2, typeValue, false, true);
                         break;
                     case PropertyDataType.PtypMultipleInteger32:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4, typeValue, false, true);
                         break;
                     case PropertyDataType.PtypMultipleFloating32:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4, typeValue, false, true);
                         break;
                     case PropertyDataType.PtypMultipleFloating64:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, false, true);
                         break;
                     case PropertyDataType.PtypMultipleCurrency:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, false, true);
                         break;
                     case PropertyDataType.PtypMultipleFloatingTime:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, false, true);
                         break;
                     case PropertyDataType.PtypMultipleInteger64:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, false, true);
                         break;
                     case PropertyDataType.PtypMultipleTime:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, false, true);
                         break;
                     case PropertyDataType.PtypMultipleGuid:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, Guid.Empty.ToByteArray().Length);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, Guid.Empty.ToByteArray().Length, typeValue, false, true);
                         break;
                     case PropertyDataType.PtypMultipleBinary:
-                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false);
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false, true);
                         break;
                     case PropertyDataType.PtypMultipleString:
-                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false);
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false, true);
                         break;
                     case PropertyDataType.PtypMultipleString8:
-                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false);
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false, true);
                         break;
                 }
             }
@@ -4481,11 +6291,13 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class FixedPropTypePropValuePutExtendPartial : PropValue
     {
-        // A fixed value.
+        /// <summary>
+        /// A fixed value.
+        /// </summary>
         public object FixedValue;
 
         /// <summary>
-        /// Initializes a new instance of the FixedPropTypePropValue class.
+        /// Initializes a new instance of the FixedPropTypePropValuePutExtendPartial class.
         /// </summary>
         /// <param name="stream">A FastTransferStream</param>
         public FixedPropTypePropValuePutExtendPartial(FastTransferStream stream)
@@ -4500,20 +6312,34 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             base.Parse(stream);
+
             if (stream.IsEndOfStream)
             {
-                MapiInspector.MAPIInspector.pPutExtendType = (ushort)this.PropType;
-                MapiInspector.MAPIInspector.pPutExtendId = (ushort)this.PropInfo.PropID;
+                MapiInspector.MAPIInspector.PartialPutExtendType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialPutExtendId = (ushort)this.PropInfo.PropID;
+                MapiInspector.MAPIInspector.PartialPutExtendServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                MapiInspector.MAPIInspector.PartialPutExtendProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                MapiInspector.MAPIInspector.PartialPutExtendClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIInspector.pPutExtendType != 0)
+                if (MapiInspector.MAPIInspector.PartialPutExtendType != 0 && MapiInspector.MAPIInspector.PartialPutExtendServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutExtendProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                    && MapiInspector.MAPIInspector.PartialPutExtendClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    this.ptype = MapiInspector.MAPIInspector.pPutExtendType;
-                    this.pid = (PidTagPropertyEnum)MapiInspector.MAPIInspector.pPutExtendId;
+                    this.ptype = MapiInspector.MAPIInspector.PartialPutExtendType;
+                    this.pid = (PidTagPropertyEnum)MapiInspector.MAPIInspector.PartialPutExtendId;
+                    
+                    // clear
+                    MapiInspector.MAPIInspector.PartialPutExtendType = 0;
+                    MapiInspector.MAPIInspector.PartialPutExtendId = 0;
+                    MapiInspector.MAPIInspector.PartialPutExtendServerUrl = string.Empty;
+                    MapiInspector.MAPIInspector.PartialPutExtendProcessName = string.Empty;
+                    MapiInspector.MAPIInspector.PartialPutExtendClientInfo = string.Empty;
                 }
+
                 ushort typeValue;
-                ushort idValue;
+                ushort identifyValue;
+
                 if (this.PropType != null)
                 {
                     typeValue = (ushort)this.PropType;
@@ -4522,21 +6348,23 @@ namespace MAPIInspector.Parsers
                 {
                     typeValue = this.ptype;
                 }
+
                 if (this.PropInfo != null)
                 {
-                    idValue = (ushort)this.PropInfo.PropID;
+                    identifyValue = (ushort)this.PropInfo.PropID;
                 }
                 else
                 {
-                    idValue = (ushort)this.pid;
+                    identifyValue = (ushort)this.pid;
                 }
+
                 switch ((PropertyDataType)typeValue)
                 {
                     case PropertyDataType.PtypInteger16:
                         this.FixedValue = stream.ReadInt16();
                         break;
                     case PropertyDataType.PtypInteger32:
-                        if (idValue == 0x67A4)
+                        if (identifyValue == 0x67A4)
                         {
                             CN tmpCN = new CN();
                             tmpCN.Parse(stream);
@@ -4546,6 +6374,7 @@ namespace MAPIInspector.Parsers
                         {
                             this.FixedValue = stream.ReadInt32();
                         }
+
                         break;
                     case PropertyDataType.PtypFloating32:
                         this.FixedValue = stream.ReadFloating32();
@@ -4563,19 +6392,19 @@ namespace MAPIInspector.Parsers
                         this.FixedValue = stream.ReadBoolean();
                         break;
                     case PropertyDataType.PtypInteger64:
-                        if (idValue == 0x6714)
+                        if (identifyValue == 0x6714)
                         {
                             CN tmpCN = new CN();
                             tmpCN.Parse(stream);
                             this.FixedValue = tmpCN;
                         }
-                        else if (idValue == 0x674A)
+                        else if (identifyValue == 0x674A)
                         {
                             MessageID tmpMID = new MessageID();
                             tmpMID.Parse(stream);
                             this.FixedValue = tmpMID;
                         }
-                        else if (idValue == 0x6748)
+                        else if (identifyValue == 0x6748)
                         {
                             FolderID tmpFID = new FolderID();
                             tmpFID.Parse(stream);
@@ -4585,6 +6414,7 @@ namespace MAPIInspector.Parsers
                         {
                             this.FixedValue = stream.ReadInt64();
                         }
+
                         break;
                     case PropertyDataType.PtypTime:
                         this.FixedValue = stream.ReadTime();
@@ -4596,25 +6426,34 @@ namespace MAPIInspector.Parsers
             }
         }
     }
+
     /// <summary>
     /// The VarPropTypePropValue class.
     /// </summary>
     public class VarPropTypePropValuePutExtendPartial : PropValue
     {
-        // The length of a variate type value.
+        /// <summary>
+        /// The length of a variate type value.
+        /// </summary>
         public int? Length;
 
-        // The valueArray.
+        /// <summary>
+        /// The valueArray.
+        /// </summary>
         public object ValueArray;
 
-        // The length value used for partial split
+        /// <summary>
+        /// The length value used for partial split
+        /// </summary>
         protected int plength;
 
-        // Bool value used fot ptypString type split in the two bytes which parser to one char
+        /// <summary>
+        /// Boolean value used to record whether ptypString value is split to two bytes which parse in different buffer
+        /// </summary>
         protected bool splitpreviousOne = false;
 
         /// <summary>
-        /// Initializes a new instance of the VarPropTypePropValue class.
+        /// Initializes a new instance of the VarPropTypePropValuePutExtendPartial class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
         public VarPropTypePropValuePutExtendPartial(FastTransferStream stream)
@@ -4629,37 +6468,54 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             base.Parse(stream);
+
             if (stream.IsEndOfStream)
             {
-                MapiInspector.MAPIInspector.pPutExtendType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialPutExtendType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialPutExtendServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                MapiInspector.MAPIInspector.PartialPutExtendProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                MapiInspector.MAPIInspector.PartialPutExtendClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIInspector.pPutExtendType != 0)
+                if (MapiInspector.MAPIInspector.PartialPutExtendType != 0 && MapiInspector.MAPIInspector.PartialPutExtendServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutExtendProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                    && MapiInspector.MAPIInspector.PartialPutExtendClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    this.ptype = MapiInspector.MAPIInspector.pPutExtendType;
-                    if (MapiInspector.MAPIInspector.pPutExtendRemainSize != -1)
+                    this.ptype = MapiInspector.MAPIInspector.PartialPutExtendType;
+
+                    if (MapiInspector.MAPIInspector.PartialPutExtendRemainSize != -1)
                     {
-                        this.plength = MapiInspector.MAPIInspector.pPutExtendRemainSize;
-                        MapiInspector.MAPIInspector.pPutExtendRemainSize = -1;
-                        if (this.ptype == (ushort)PropertyDataType.PtypString && this.plength % 2 != 0)
+                        this.plength = MapiInspector.MAPIInspector.PartialPutExtendRemainSize;
+                        MapiInspector.MAPIInspector.PartialPutExtendRemainSize = -1;
+
+                        if (this.plength % 2 != 0 && (this.ptype == (ushort)PropertyDataType.PtypString || this.ptype == (ushort)CodePageType.PtypCodePageUnicode || this.ptype == (ushort)CodePageType.ptypCodePageUnicode52))
                         {
-                            splitpreviousOne = true;
+                            this.splitpreviousOne = true;
                         }
                     }
                     else
                     {
                         this.Length = stream.ReadInt32();
                     }
+
                     // clear
-                    MapiInspector.MAPIInspector.pPutExtendType = 0;
+                    MapiInspector.MAPIInspector.PartialPutExtendType = 0;
+
+                    if (MapiInspector.MAPIInspector.PartialPutExtendRemainSize == -1)
+                    {
+                        MapiInspector.MAPIInspector.PartialPutExtendServerUrl = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutExtendProcessName = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutExtendClientInfo = string.Empty;
+                    }
                 }
                 else
                 {
                     this.Length = stream.ReadInt32();
                 }
+
                 int lengthValue;
                 ushort typeValue;
+
                 if (this.Length != null)
                 {
                     lengthValue = (int)this.Length;
@@ -4668,6 +6524,7 @@ namespace MAPIInspector.Parsers
                 {
                     lengthValue = this.plength;
                 }
+
                 if (this.PropType != null)
                 {
                     typeValue = (ushort)this.PropType;
@@ -4676,9 +6533,13 @@ namespace MAPIInspector.Parsers
                 {
                     typeValue = this.ptype;
                 }
+
                 if ((stream.Length - stream.Position) < lengthValue)
                 {
-                    MapiInspector.MAPIInspector.pPutExtendType = typeValue;
+                    MapiInspector.MAPIInspector.PartialPutExtendType = typeValue;
+                    MapiInspector.MAPIInspector.PartialPutExtendServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                    MapiInspector.MAPIInspector.PartialPutExtendProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                    MapiInspector.MAPIInspector.PartialPutExtendClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
                 }
 
                 if (LexicalTypeHelper.IsCodePageType(typeValue))
@@ -4687,17 +6548,39 @@ namespace MAPIInspector.Parsers
                     {
                         case CodePageType.PtypCodePageUnicode:
                             PtypString pstring = new PtypString();
+
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialPutExtendRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
 
-                                pstring = new PtypString(lengthValue / 2);
-                                pstring.Parse(stream);
-                                if (lengthValue % 2 != 0)
+                                if (lengthValue != 0)
                                 {
-                                    stream.Position += 1;
+                                    if (this.splitpreviousOne)
+                                    {
+                                        stream.Position += 1;
+                                        this.splitpreviousOne = false;
+                                    }
+
+                                    if ((lengthValue / 2) != 0)
+                                    {
+                                        pstring = new PtypString(lengthValue / 2);
+                                        pstring.Parse(stream);
+                                    }
+                                    else
+                                    {
+                                        pstring = null;
+                                    }
+
+                                    if (lengthValue % 2 != 0)
+                                    {
+                                        stream.Position += 1;
+                                    }
+                                }
+                                else
+                                {
+                                    pstring = null;
                                 }
                             }
                             else
@@ -4707,19 +6590,96 @@ namespace MAPIInspector.Parsers
                                     stream.Position += 1;
                                     splitpreviousOne = false;
                                 }
-                                pstring = new PtypString(lengthValue / 2);
-                                pstring.Parse(stream);
+
+                                if ((lengthValue / 2) != 0)
+                                {
+                                    pstring = new PtypString(lengthValue / 2);
+                                    pstring.Parse(stream);
+                                }
+                                else
+                                {
+                                    pstring = null;
+                                }
                             }
+
                             this.ValueArray = pstring;
                             break;
+                        case CodePageType.ptypCodePageUnicode52:
+                            {
+                                PtypString pstringII = new PtypString();
+
+                                if (this.Length != null)
+                                {
+                                    this.Length = stream.ReadInt32();
+                                    lengthValue = (int)this.Length;
+                                }
+
+                                if (stream.Length - stream.Position < lengthValue)
+                                {
+                                    MapiInspector.MAPIInspector.PartialPutExtendRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                    this.plength = (int)(stream.Length - stream.Position);
+                                    lengthValue = this.plength;
+
+                                    if (lengthValue != 0)
+                                    {
+                                        if (this.splitpreviousOne)
+                                        {
+                                            stream.Position += 1;
+                                            this.splitpreviousOne = false;
+                                        }
+
+                                        if ((lengthValue / 2) != 0)
+                                        {
+                                            pstringII = new PtypString(lengthValue / 2);
+                                            pstringII.Parse(stream);
+                                        }
+                                        else
+                                        {
+                                            pstringII = null;
+                                        }
+
+                                        if (lengthValue % 2 != 0)
+                                        {
+                                            stream.Position += 1;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        pstringII = null;
+                                    }
+                                }
+                                else
+                                {
+                                    if (this.splitpreviousOne)
+                                    {
+                                        stream.Position += 1;
+                                        this.splitpreviousOne = false;
+                                    }
+
+                                    if ((lengthValue / 2) != 0)
+                                    {
+                                        pstringII = new PtypString(lengthValue / 2);
+                                        pstringII.Parse(stream);
+                                    }
+                                    else
+                                    {
+                                        pstringII = null;
+                                    }
+                                }
+
+                                this.ValueArray = pstringII;
+                                break;
+                            }
+
                         case CodePageType.PtypCodePageUnicodeBigendian:
                         case CodePageType.PtypCodePageWesternEuropean:
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialPutExtendRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
                             }
+
                             PtypString8 pstring8 = new PtypString8(lengthValue);
                             pstring8.Parse(stream);
                             this.ValueArray = pstring8;
@@ -4727,10 +6687,11 @@ namespace MAPIInspector.Parsers
                         default:
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialPutExtendRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
                             }
+
                             PtypString8 pdstring8 = new PtypString8(lengthValue);
                             pdstring8.Parse(stream);
                             this.ValueArray = pdstring8;
@@ -4743,17 +6704,39 @@ namespace MAPIInspector.Parsers
                     {
                         case PropertyDataType.PtypString:
                             PtypString pstring = new PtypString();
+
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialPutExtendRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
 
-                                pstring = new PtypString(lengthValue / 2);
-                                pstring.Parse(stream);
-                                if (lengthValue % 2 != 0)
+                                if (lengthValue != 0)
                                 {
-                                    stream.Position += 1;
+                                    if (this.splitpreviousOne)
+                                    {
+                                        stream.Position += 1;
+                                        this.splitpreviousOne = false;
+                                    }
+
+                                    if ((lengthValue / 2) != 0)
+                                    {
+                                        pstring = new PtypString(lengthValue / 2);
+                                        pstring.Parse(stream);
+                                    }
+                                    else
+                                    {
+                                        pstring = null;
+                                    }
+
+                                    if (lengthValue % 2 != 0)
+                                    {
+                                        stream.Position += 1;
+                                    }
+                                }
+                                else
+                                {
+                                    pstring = null;
                                 }
                             }
                             else
@@ -4763,18 +6746,28 @@ namespace MAPIInspector.Parsers
                                     stream.Position += 1;
                                     splitpreviousOne = false;
                                 }
-                                pstring = new PtypString(lengthValue / 2);
-                                pstring.Parse(stream);
+
+                                if ((lengthValue / 2) != 0)
+                                {
+                                    pstring = new PtypString(lengthValue / 2);
+                                    pstring.Parse(stream);
+                                }
+                                else
+                                {
+                                    pstring = null;
+                                }
                             }
+
                             this.ValueArray = pstring;
                             break;
                         case PropertyDataType.PtypString8:
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pGetRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialPutExtendRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
                             }
+
                             PtypString8 pstring8 = new PtypString8(lengthValue);
                             pstring8.Parse(stream);
                             this.ValueArray = pstring8;
@@ -4784,19 +6777,21 @@ namespace MAPIInspector.Parsers
                         case PropertyDataType.PtypObject_Or_PtypEmbeddedTable:
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pPutExtendRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialPutExtendRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
                             }
+
                             this.ValueArray = stream.ReadBlock(lengthValue);
                             break;
                         default:
                             if ((stream.Length - stream.Position) < lengthValue)
                             {
-                                MapiInspector.MAPIInspector.pPutExtendRemainSize = lengthValue - (int)(stream.Length - stream.Position);
+                                MapiInspector.MAPIInspector.PartialPutExtendRemainSize = lengthValue - (int)(stream.Length - stream.Position);
                                 this.plength = (int)(stream.Length - stream.Position);
                                 lengthValue = this.plength;
                             }
+
                             this.ValueArray = stream.ReadBlock(lengthValue);
                             break;
                     }
@@ -4810,18 +6805,28 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class MvPropTypePropValuePutExtendPartial : PropValue
     {
-        // This represent the length variable.
+        /// <summary>
+        /// This represent the length variable.
+        /// </summary>
         public int? Length;
 
-        // A list of fixed size values.
+        /// <summary>
+        /// A list of fixed size values.
+        /// </summary>
         public byte[][] FixedSizeValueList;
 
-        // A list of LengthOfBlock.
+        /// <summary>
+        /// A list of LengthOfBlock.
+        /// </summary>
         public LengthOfBlock[] VarSizeValueList;
 
-        public int plength;
         /// <summary>
-        /// Initializes a new instance of the MvPropTypePropValue class.
+        /// Length for partial
+        /// </summary>
+        public int Plength;
+
+        /// <summary>
+        /// Initializes a new instance of the MvPropTypePropValuePutExtendPartial class.
         /// </summary>
         /// <param name="stream">A FastTransferStream</param>
         public MvPropTypePropValuePutExtendPartial(FastTransferStream stream)
@@ -4836,42 +6841,59 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             base.Parse(stream);
+
             if (stream.IsEndOfStream)
             {
-                MapiInspector.MAPIInspector.pPutExtendType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialPutExtendType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialPutExtendServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                MapiInspector.MAPIInspector.PartialPutExtendProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                MapiInspector.MAPIInspector.PartialPutExtendClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIInspector.pPutExtendType != 0)
+                if (MapiInspector.MAPIInspector.PartialPutExtendType != 0 && MapiInspector.MAPIInspector.PartialPutExtendServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutExtendProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                    && MapiInspector.MAPIInspector.PartialPutExtendClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    this.ptype = MapiInspector.MAPIInspector.pPutExtendType;
-                    if (MapiInspector.MAPIInspector.pPutExtendRemainSize != -1)
+                    this.ptype = MapiInspector.MAPIInspector.PartialPutExtendType;
+
+                    if (MapiInspector.MAPIInspector.PartialPutExtendRemainSize != -1)
                     {
-                        this.plength = MapiInspector.MAPIInspector.pPutExtendRemainSize;
-                        MapiInspector.MAPIInspector.pPutExtendRemainSize = -1;
+                        this.Plength = MapiInspector.MAPIInspector.PartialPutExtendRemainSize;
+                        MapiInspector.MAPIInspector.PartialPutExtendRemainSize = -1;
                     }
                     else
                     {
                         this.Length = stream.ReadInt32();
                     }
+
                     // clear
-                    MapiInspector.MAPIInspector.pPutExtendType = 0;
-                    MapiInspector.MAPIInspector.pPutExtendId = 0;
+                    MapiInspector.MAPIInspector.PartialPutExtendType = 0;
+                    MapiInspector.MAPIInspector.PartialPutExtendId = 0;
+
+                    if (MapiInspector.MAPIInspector.PartialPutExtendRemainSize == -1 && MapiInspector.MAPIInspector.PartialPutExtendSubRemainSize == -1)
+                    {
+                        MapiInspector.MAPIInspector.PartialPutExtendServerUrl = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutExtendProcessName = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutExtendClientInfo = string.Empty;
+                    }
                 }
                 else
                 {
                     this.Length = stream.ReadInt32();
                 }
+
                 int lengthValue;
                 ushort typeValue;
+
                 if (this.Length != null)
                 {
                     lengthValue = (int)this.Length;
                 }
                 else
                 {
-                    lengthValue = this.plength;
+                    lengthValue = this.Plength;
                 }
+
                 if (this.PropType != null)
                 {
                     typeValue = (ushort)this.PropType;
@@ -4880,51 +6902,44 @@ namespace MAPIInspector.Parsers
                 {
                     typeValue = this.ptype;
                 }
-                if ((stream.Length - stream.Position) < lengthValue)
-                {
-                    MapiInspector.MAPIInspector.pPutExtendType = typeValue;
-                    MapiInspector.MAPIInspector.pPutExtendRemainSize = lengthValue - (int)(stream.Length - stream.Position);
-                    this.plength = (int)(stream.Length - stream.Position);
-                    lengthValue = this.plength;
-                }
 
                 switch ((PropertyDataType)this.PropType)
                 {
                     case PropertyDataType.PtypMultipleInteger16:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 2);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 2, typeValue, false, false);
                         break;
                     case PropertyDataType.PtypMultipleInteger32:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4, typeValue, false, false);
                         break;
                     case PropertyDataType.PtypMultipleFloating32:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4, typeValue, false, false);
                         break;
                     case PropertyDataType.PtypMultipleFloating64:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, false, false);
                         break;
                     case PropertyDataType.PtypMultipleCurrency:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, false, false);
                         break;
                     case PropertyDataType.PtypMultipleFloatingTime:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, false, false);
                         break;
                     case PropertyDataType.PtypMultipleInteger64:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, false, false);
                         break;
                     case PropertyDataType.PtypMultipleTime:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, false, false);
                         break;
                     case PropertyDataType.PtypMultipleGuid:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, Guid.Empty.ToByteArray().Length);
+                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, Guid.Empty.ToByteArray().Length, typeValue, false, false);
                         break;
                     case PropertyDataType.PtypMultipleBinary:
-                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false);
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false, false);
                         break;
                     case PropertyDataType.PtypMultipleString:
-                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false);
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false, false);
                         break;
                     case PropertyDataType.PtypMultipleString8:
-                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false);
+                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false, false);
                         break;
                 }
             }
@@ -4936,11 +6951,15 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class NamedPropInfo : LexicalBase
     {
-        // The propertySet item in lexical definition.
-        public Guid propertySet;
+        /// <summary>
+        /// The PropertySet item in lexical definition.
+        /// </summary>
+        public Guid PropertySet;
 
-        // The flag variable.
-        public byte flag;
+        /// <summary>
+        /// The flag variable.
+        /// </summary>
+        public byte Flag;
 
         /// <summary>
         /// Initializes a new instance of the NamedPropInfo class.
@@ -4981,21 +7000,23 @@ namespace MAPIInspector.Parsers
             base.Parse(stream);
             byte[] buffer = new byte[Guid.Empty.ToByteArray().Length];
             stream.Read(buffer, 0, buffer.Length);
-            this.propertySet = new Guid(buffer);
+            this.PropertySet = new Guid(buffer);
             int tmp = stream.ReadByte();
             if (tmp > 0)
             {
-                this.flag = (byte)tmp;
+                this.Flag = (byte)tmp;
             }
         }
     }
 
     /// <summary>
-    /// Represents a NamedPropInfo has a dispid.
+    /// Represents a NamedPropInfo has a Dispid.
     /// </summary>
     public class DispidNamedPropInfo : NamedPropInfo
     {
-        // The dispid in lexical definition.
+        /// <summary>
+        /// The Dispid in lexical definition.
+        /// </summary>
         public int Dispid;
 
         /// <summary>
@@ -5043,7 +7064,9 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class NameNamedPropInfo : NamedPropInfo
     {
-        // The name of the NamedPropInfo.
+        /// <summary>
+        /// The name of the NamedPropInfo.
+        /// </summary>
         public MAPIString Name;
 
         /// <summary>
@@ -5088,17 +7111,21 @@ namespace MAPIInspector.Parsers
     }
     #endregion
 
-    # region 2.2.4.2 FastTransfer stream syntactical structure
+    #region 2.2.4.2 FastTransfer stream syntactical structure
     /// <summary>
     /// Base class for all syntactical object.
     /// </summary>
     public abstract class SyntacticalBase
     {
-        // The size of an MetaTag value.
+        /// <summary>
+        /// The size of an MetaTag value.
+        /// </summary>
         protected const int MetaLength = 4;
 
-        // Previous position.
-        private long PreviousPosition;
+        /// <summary>
+        /// Previous position.
+        /// </summary>
+        private long previousPosition;
 
         /// <summary>
         /// Initializes a new instance of the SyntacticalBase class.
@@ -5106,7 +7133,8 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         protected SyntacticalBase(FastTransferStream stream)
         {
-            this.PreviousPosition = stream.Position;
+            this.previousPosition = stream.Position;
+
             if (stream != null && stream.Length > 0)
             {
                 this.Parse(stream);
@@ -5125,7 +7153,9 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class PropList : SyntacticalBase
     {
-        // A list of PropValue objects.
+        /// <summary>
+        /// A list of PropValue objects.
+        /// </summary>
         public PropValue[] PropValues;
 
         /// <summary>
@@ -5138,10 +7168,10 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Verify that a stream's current position contains a serialized propList.
+        /// Verify that a stream's current position contains a serialized PropList.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        /// <returns>If the stream's current position contains a serialized propList, return true, else false.</returns>
+        /// <param name="stream">A FastTransferStream</param>
+        /// <returns>If the stream's current position contains a serialized PropList, return true, else false.</returns>
         public static bool Verify(FastTransferStream stream)
         {
             return PropValue.Verify(stream);
@@ -5153,27 +7183,35 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
-            List<PropValue> PropValuesList = new List<PropValue>();
+            List<PropValue> propValuesList = new List<PropValue>();
+
             while (PropValue.Verify(stream))
             {
-                PropValuesList.Add(PropValue.ParseFrom(stream) as PropValue);
+                propValuesList.Add(PropValue.ParseFrom(stream) as PropValue);
             }
-            this.PropValues = PropValuesList.ToArray();
+
+            this.PropValues = propValuesList.ToArray();
         }
     }
 
     /// <summary>
-    /// The MetaPropValue represents identification information and the value of the Metaproperty.
+    /// The MetaPropValue represents identification information and the value of the Meta property.
     /// </summary>
     public class MetaPropValue : SyntacticalBase
     {
-        // The property type.
+        /// <summary>
+        /// The property type.
+        /// </summary>
         public ushort PropType;
 
-        // The property id.
+        /// <summary>
+        /// The property id.
+        /// </summary>
         public ushort PropID;
 
-        // The property value.
+        /// <summary>
+        /// The property value.
+        /// </summary>
         public object PropValue;
 
         /// <summary>
@@ -5205,17 +7243,18 @@ namespace MAPIInspector.Parsers
         {
             this.PropType = stream.ReadUInt16();
             this.PropID = stream.ReadUInt16();
-            if (PropID != 0x4011 && PropID != 0x4008)
+
+            if (this.PropID != 0x4011 && this.PropID != 0x4008)
             {
                 this.PropValue = stream.ReadUInt32();
             }
             else
             {
-                if (PropID != 0x4011)
+                if (this.PropID != 0x4011)
                 {
-                    FolderReplicaInfo FolderReplicaInfo = new FolderReplicaInfo();
-                    FolderReplicaInfo.Parse(stream);
-                    this.PropValue = FolderReplicaInfo;
+                    FolderReplicaInfo folderReplicaInfo = new FolderReplicaInfo();
+                    folderReplicaInfo.Parse(stream);
+                    this.PropValue = folderReplicaInfo;
                 }
                 else
                 {
@@ -5228,30 +7267,42 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// The MetaPropValue represents identification information and the value of the Metaproperty.
+    /// The MetaPropValue represents identification information and the value of the Meta property.
     /// </summary>
     public class MetaPropValueGetPartial : SyntacticalBase
     {
-        // The property type.
+        /// <summary>
+        /// The property type.
+        /// </summary>
         public ushort? PropType;
 
-        // The property id.
+        /// <summary>
+        /// The property id.
+        /// </summary>
         public ushort? PropID;
 
-        // The property value.
+        /// <summary>
+        /// The property value.
+        /// </summary>
         public object PropValue;
 
-        // The property type for partial split.
-        private ushort pType;
+        /// <summary>
+        /// The property type for partial split.
+        /// </summary>
+        private ushort propertyType;
 
-        // The property id for partial split.
-        private ushort pID;
+        /// <summary>
+        /// The property id for partial split.
+        /// </summary>
+        private ushort propertyID;
 
-        // The length value is for ptypBinary
+        /// <summary>
+        /// The length value is for ptypBinary
+        /// </summary>
         private int length;
 
         /// <summary>
-        /// Initializes a new instance of the MetaPropValue class.
+        /// Initializes a new instance of the MetaPropValueGetPartial class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
         public MetaPropValueGetPartial(FastTransferStream stream)
@@ -5265,7 +7316,8 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
-            if (MapiInspector.MAPIInspector.pGetType == 0)
+            if (MapiInspector.MAPIInspector.PartialGetType == 0 || (MapiInspector.MAPIInspector.PartialGetType != 0 && !(MapiInspector.MAPIInspector.PartialGetServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialGetProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                && MapiInspector.MAPIInspector.PartialGetClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])))
             {
                 this.PropType = stream.ReadUInt16();
                 this.PropID = stream.ReadUInt16();
@@ -5273,23 +7325,34 @@ namespace MAPIInspector.Parsers
 
             if (stream.IsEndOfStream)
             {
-                MapiInspector.MAPIInspector.pGetType = (ushort)this.PropType;
-                MapiInspector.MAPIInspector.pGetId = (ushort)this.PropID;
+                MapiInspector.MAPIInspector.PartialGetType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialGetId = (ushort)this.PropID;
+                MapiInspector.MAPIInspector.PartialGetServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                MapiInspector.MAPIInspector.PartialGetProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                MapiInspector.MAPIInspector.PartialGetClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIInspector.pGetType != 0)
+                if (MapiInspector.MAPIInspector.PartialGetType != 0 && MapiInspector.MAPIInspector.PartialGetServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialGetProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                    && MapiInspector.MAPIInspector.PartialGetClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    this.pType = MapiInspector.MAPIInspector.pGetType;
-                    this.pID = MapiInspector.MAPIInspector.pGetId;
+                    this.propertyType = MapiInspector.MAPIInspector.PartialGetType;
+                    this.propertyID = MapiInspector.MAPIInspector.PartialGetId;
 
                     // clear
-                    MapiInspector.MAPIInspector.pGetType = 0;
-                    MapiInspector.MAPIInspector.pGetId = 0;
+                    MapiInspector.MAPIInspector.PartialGetType = 0;
+                    MapiInspector.MAPIInspector.PartialGetId = 0;
+
+                    if (MapiInspector.MAPIInspector.PartialGetRemainSize == -1)
+                    {
+                        MapiInspector.MAPIInspector.PartialGetServerUrl = string.Empty;
+                        MapiInspector.MAPIInspector.PartialGetProcessName = string.Empty;
+                        MapiInspector.MAPIInspector.PartialGetClientInfo = string.Empty;
+                    }
                 }
 
                 ushort typeValue;
-                ushort idValue;
+                ushort identifyValue;
 
                 if (this.PropType != null)
                 {
@@ -5297,33 +7360,40 @@ namespace MAPIInspector.Parsers
                 }
                 else
                 {
-                    typeValue = this.pType;
+                    typeValue = this.propertyType;
                 }
+
                 if (this.PropID != null)
                 {
-                    idValue = (ushort)this.PropID;
+                    identifyValue = (ushort)this.PropID;
                 }
                 else
                 {
-                    idValue = this.pID;
+                    identifyValue = this.propertyID;
                 }
 
-                if (idValue != 0x4011 && idValue != 0x4008)
+                if (identifyValue != 0x4011 && identifyValue != 0x4008)
                 {
                     this.PropValue = stream.ReadUInt32();
                 }
-                else if (idValue == 0x4011)
+                else if (identifyValue == 0x4011)
                 {
-                    PtypBinary pBinary = new PtypBinary(CountWideEnum.fourBytes);
+                    PtypBinary ptypeBinary = new PtypBinary(CountWideEnum.fourBytes);
+
                     if (!stream.IsEndOfStream)
                     {
                         long spositon = stream.Position;
-                        if (MapiInspector.MAPIInspector.pGetRemainSize != -1)
+
+                        if (MapiInspector.MAPIInspector.PartialGetRemainSize != -1 && MapiInspector.MAPIInspector.PartialGetServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialGetProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                            && MapiInspector.MAPIInspector.PartialGetClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                         {
-                            this.length = MapiInspector.MAPIInspector.pGetRemainSize;
+                            this.length = MapiInspector.MAPIInspector.PartialGetRemainSize;
 
                             // clear
-                            MapiInspector.MAPIInspector.pGetRemainSize = -1;
+                            MapiInspector.MAPIInspector.PartialGetRemainSize = -1;
+                            MapiInspector.MAPIInspector.PartialGetServerUrl = string.Empty;
+                            MapiInspector.MAPIInspector.PartialGetProcessName = string.Empty;
+                            MapiInspector.MAPIInspector.PartialGetClientInfo = string.Empty;
                         }
                         else
                         {
@@ -5332,21 +7402,28 @@ namespace MAPIInspector.Parsers
 
                         if ((stream.Length - stream.Position) < this.length)
                         {
-                            MapiInspector.MAPIInspector.pGetType = typeValue;
-                            MapiInspector.MAPIInspector.pGetId = idValue;
-                            MapiInspector.MAPIInspector.pGetRemainSize = this.length - (int)(stream.Length - stream.Position);
-                            if (spositon != stream.Position)// the length value is from the previous ropbuffer
+                            MapiInspector.MAPIInspector.PartialGetType = typeValue;
+                            MapiInspector.MAPIInspector.PartialGetId = identifyValue;
+                            MapiInspector.MAPIInspector.PartialGetRemainSize = this.length - (int)(stream.Length - stream.Position);
+                            MapiInspector.MAPIInspector.PartialGetServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                            MapiInspector.MAPIInspector.PartialGetProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                            MapiInspector.MAPIInspector.PartialGetClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
+
+                            if (spositon != stream.Position)
                             {
-                                pBinary.Count = (int)(stream.Length - stream.Position);
+                                // the length value is from the previous RopBuffer
+                                ptypeBinary.Count = (int)(stream.Length - stream.Position);
                             }
-                            pBinary.Value = stream.ReadBlock(this.length);
+
+                            ptypeBinary.Value = stream.ReadBlock(this.length);
                         }
                         else
                         {
                             stream.Position -= 4;
-                            pBinary.Parse(stream);
+                            ptypeBinary.Parse(stream);
                         }
-                        this.PropValue = pBinary;
+
+                        this.PropValue = ptypeBinary;
                     }
                 }
                 else
@@ -5360,30 +7437,42 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// The MetaPropValue represents identification information and the value of the Metaproperty.
+    /// The MetaPropValue represents identification information and the value of the Meta property.
     /// </summary>
     public class MetaPropValuePutPartial : SyntacticalBase
     {
-        // The property type.
+        /// <summary>
+        /// The property type.
+        /// </summary>
         public ushort? PropType;
 
-        // The property id.
+        /// <summary>
+        /// The property id.
+        /// </summary>
         public ushort? PropID;
 
-        // The property value.
+        /// <summary>
+        /// The property value.
+        /// </summary>
         public object PropValue;
 
-        // The property type for partial split.
-        private ushort pType;
+        /// <summary>
+        /// The property type for partial split.
+        /// </summary>
+        private ushort propertyType;
 
-        // The property id for partial split.
-        private ushort pID;
+        /// <summary>
+        /// The property id for partial split.
+        /// </summary>
+        private ushort propertyID;
 
-        // The length value is for ptypBinary
+        /// <summary>
+        /// The length value is for ptypBinary
+        /// </summary>
         private int length;
 
         /// <summary>
-        /// Initializes a new instance of the MetaPropValue class.
+        /// Initializes a new instance of the MetaPropValuePutPartial class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
         public MetaPropValuePutPartial(FastTransferStream stream)
@@ -5397,7 +7486,8 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
-            if (MapiInspector.MAPIInspector.pPutType == 0)
+            if (MapiInspector.MAPIInspector.PartialPutType == 0 || (MapiInspector.MAPIInspector.PartialPutType != 0 && !(MapiInspector.MAPIInspector.PartialPutServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                && MapiInspector.MAPIInspector.PartialPutClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])))
             {
                 this.PropType = stream.ReadUInt16();
                 this.PropID = stream.ReadUInt16();
@@ -5405,22 +7495,34 @@ namespace MAPIInspector.Parsers
 
             if (stream.IsEndOfStream)
             {
-                MapiInspector.MAPIInspector.pPutType = (ushort)this.PropType;
-                MapiInspector.MAPIInspector.pPutId = (ushort)this.PropID;
+                MapiInspector.MAPIInspector.PartialPutType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialPutId = (ushort)this.PropID;
+                MapiInspector.MAPIInspector.PartialPutServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                MapiInspector.MAPIInspector.PartialPutProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                MapiInspector.MAPIInspector.PartialPutClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIInspector.pPutType != 0)
+                if (MapiInspector.MAPIInspector.PartialPutType != 0 && MapiInspector.MAPIInspector.PartialPutServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                    && MapiInspector.MAPIInspector.PartialPutClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    this.pType = MapiInspector.MAPIInspector.pPutType;
-                    this.pID = MapiInspector.MAPIInspector.pPutId;
+                    this.propertyType = MapiInspector.MAPIInspector.PartialPutType;
+                    this.propertyID = MapiInspector.MAPIInspector.PartialPutId;
 
                     // clear
-                    MapiInspector.MAPIInspector.pPutType = 0;
-                    MapiInspector.MAPIInspector.pPutId = 0;
+                    MapiInspector.MAPIInspector.PartialPutType = 0;
+                    MapiInspector.MAPIInspector.PartialPutId = 0;
+
+                    if (MapiInspector.MAPIInspector.PartialPutRemainSize == -1)
+                    {
+                        MapiInspector.MAPIInspector.PartialPutServerUrl = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutProcessName = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutClientInfo = string.Empty;
+                    }
                 }
+
                 ushort typeValue;
-                ushort idValue;
+                ushort identifyValue;
 
                 if (this.PropType != null)
                 {
@@ -5428,33 +7530,40 @@ namespace MAPIInspector.Parsers
                 }
                 else
                 {
-                    typeValue = this.pType;
+                    typeValue = this.propertyType;
                 }
+
                 if (this.PropID != null)
                 {
-                    idValue = (ushort)this.PropID;
+                    identifyValue = (ushort)this.PropID;
                 }
                 else
                 {
-                    idValue = this.pID;
+                    identifyValue = this.propertyID;
                 }
 
-                if (idValue != 0x4011 && idValue != 0x4008)
+                if (identifyValue != 0x4011 && identifyValue != 0x4008)
                 {
                     this.PropValue = stream.ReadUInt32();
                 }
-                else if (idValue == 0x4011)
+                else if (identifyValue == 0x4011)
                 {
-                    PtypBinary pBinary = new PtypBinary(CountWideEnum.fourBytes);
+                    PtypBinary ptypeBinary = new PtypBinary(CountWideEnum.fourBytes);
+
                     if (!stream.IsEndOfStream)
                     {
                         long spositon = stream.Position;
-                        if (MapiInspector.MAPIInspector.pPutRemainSize != -1)
+
+                        if (MapiInspector.MAPIInspector.PartialPutRemainSize != -1 && MapiInspector.MAPIInspector.PartialPutServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                            && MapiInspector.MAPIInspector.PartialPutClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                         {
-                            this.length = MapiInspector.MAPIInspector.pPutRemainSize;
+                            this.length = MapiInspector.MAPIInspector.PartialPutRemainSize;
 
                             // clear
-                            MapiInspector.MAPIInspector.pPutRemainSize = -1;
+                            MapiInspector.MAPIInspector.PartialPutRemainSize = -1;
+                            MapiInspector.MAPIInspector.PartialPutServerUrl = string.Empty;
+                            MapiInspector.MAPIInspector.PartialPutProcessName = string.Empty;
+                            MapiInspector.MAPIInspector.PartialPutClientInfo = string.Empty;
                         }
                         else
                         {
@@ -5463,21 +7572,27 @@ namespace MAPIInspector.Parsers
 
                         if ((stream.Length - stream.Position) < this.length)
                         {
-                            MapiInspector.MAPIInspector.pGetType = typeValue;
-                            MapiInspector.MAPIInspector.pGetId = idValue;
-                            MapiInspector.MAPIInspector.pPutRemainSize = this.length - (int)(stream.Length - stream.Position);
+                            MapiInspector.MAPIInspector.PartialPutType = typeValue;
+                            MapiInspector.MAPIInspector.PartialPutId = identifyValue;
+                            MapiInspector.MAPIInspector.PartialPutRemainSize = this.length - (int)(stream.Length - stream.Position);
+                            MapiInspector.MAPIInspector.PartialPutServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                            MapiInspector.MAPIInspector.PartialPutProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                            MapiInspector.MAPIInspector.PartialPutClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
+
                             if (spositon != stream.Position)
                             {
-                                pBinary.Count = (int)(stream.Length - stream.Position);
+                                ptypeBinary.Count = (int)(stream.Length - stream.Position);
                             }
-                            pBinary.Value = stream.ReadBlock(this.length);
+
+                            ptypeBinary.Value = stream.ReadBlock(this.length);
                         }
                         else
                         {
                             stream.Position -= 4;
-                            pBinary.Parse(stream);
+                            ptypeBinary.Parse(stream);
                         }
-                        this.PropValue = pBinary;
+
+                        this.PropValue = ptypeBinary;
                     }
                 }
                 else
@@ -5491,30 +7606,42 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// The MetaPropValue represents identification information and the value of the Metaproperty.
+    /// The MetaPropValue represents identification information and the value of the Meta property.
     /// </summary>
     public class MetaPropValuePutExtendPartial : SyntacticalBase
     {
-        // The property type.
+        /// <summary>
+        /// The property type.
+        /// </summary>
         public ushort? PropType;
 
-        // The property id.
+        /// <summary>
+        /// The property id.
+        /// </summary>
         public ushort? PropID;
 
-        // The property value.
+        /// <summary>
+        /// The property value.
+        /// </summary>
         public object PropValue;
 
-        // The property type for partial split.
-        private ushort pType;
+        /// <summary>
+        /// The property type for partial split.
+        /// </summary>
+        private ushort propertyType;
 
-        // The property id for partial split.
-        private ushort pID;
+        /// <summary>
+        /// The property id for partial split.
+        /// </summary>
+        private ushort propertyID;
 
-        // The length value is for ptypBinary
+        /// <summary>
+        /// The length value is for ptypBinary
+        /// </summary>
         private int length;
 
         /// <summary>
-        /// Initializes a new instance of the MetaPropValue class.
+        /// Initializes a new instance of the MetaPropValuePutExtendPartial class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
         public MetaPropValuePutExtendPartial(FastTransferStream stream)
@@ -5528,7 +7655,8 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
-            if (MapiInspector.MAPIInspector.pPutExtendType == 0)
+            if (MapiInspector.MAPIInspector.PartialPutExtendType == 0 || (MapiInspector.MAPIInspector.PartialPutType != 0 && !(MapiInspector.MAPIInspector.PartialPutExtendServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutExtendProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                && MapiInspector.MAPIInspector.PartialPutExtendClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])))
             {
                 this.PropType = stream.ReadUInt16();
                 this.PropID = stream.ReadUInt16();
@@ -5536,22 +7664,34 @@ namespace MAPIInspector.Parsers
 
             if (stream.IsEndOfStream)
             {
-                MapiInspector.MAPIInspector.pPutExtendType = (ushort)this.PropType;
-                MapiInspector.MAPIInspector.pPutExtendId = (ushort)this.PropID;
+                MapiInspector.MAPIInspector.PartialPutExtendType = (ushort)this.PropType;
+                MapiInspector.MAPIInspector.PartialPutExtendId = (ushort)this.PropID;
+                MapiInspector.MAPIInspector.PartialPutExtendServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                MapiInspector.MAPIInspector.PartialPutExtendProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                MapiInspector.MAPIInspector.PartialPutExtendClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIInspector.pPutExtendType != 0)
+                if (MapiInspector.MAPIInspector.PartialPutExtendType != 0 && MapiInspector.MAPIInspector.PartialPutExtendServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutExtendProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                    && MapiInspector.MAPIInspector.PartialPutExtendClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    this.pType = MapiInspector.MAPIInspector.pPutExtendType;
-                    this.pID = MapiInspector.MAPIInspector.pPutExtendId;
+                    this.propertyType = MapiInspector.MAPIInspector.PartialPutExtendType;
+                    this.propertyID = MapiInspector.MAPIInspector.PartialPutExtendId;
 
                     // clear
-                    MapiInspector.MAPIInspector.pPutExtendType = 0;
-                    MapiInspector.MAPIInspector.pPutExtendId = 0;
+                    MapiInspector.MAPIInspector.PartialPutExtendType = 0;
+                    MapiInspector.MAPIInspector.PartialPutExtendId = 0;
+
+                    if (MapiInspector.MAPIInspector.PartialPutExtendRemainSize == -1)
+                    {
+                        MapiInspector.MAPIInspector.PartialPutExtendServerUrl = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutExtendProcessName = string.Empty;
+                        MapiInspector.MAPIInspector.PartialPutExtendClientInfo = string.Empty;
+                    }
                 }
+
                 ushort typeValue;
-                ushort idValue;
+                ushort identifyValue;
 
                 if (this.PropType != null)
                 {
@@ -5559,33 +7699,40 @@ namespace MAPIInspector.Parsers
                 }
                 else
                 {
-                    typeValue = this.pType;
+                    typeValue = this.propertyType;
                 }
+
                 if (this.PropID != null)
                 {
-                    idValue = (ushort)this.PropID;
+                    identifyValue = (ushort)this.PropID;
                 }
                 else
                 {
-                    idValue = this.pID;
+                    identifyValue = this.propertyID;
                 }
 
-                if (idValue != 0x4011 && idValue != 0x4008)
+                if (identifyValue != 0x4011 && identifyValue != 0x4008)
                 {
                     this.PropValue = stream.ReadUInt32();
                 }
-                else if (idValue == 0x4011)
+                else if (identifyValue == 0x4011)
                 {
-                    PtypBinary pBinary = new PtypBinary(CountWideEnum.fourBytes);
+                    PtypBinary ptypeBinary = new PtypBinary(CountWideEnum.fourBytes);
+
                     if (!stream.IsEndOfStream)
                     {
                         long spositon = stream.Position;
-                        if (MapiInspector.MAPIInspector.pPutExtendRemainSize != -1)
+
+                        if (MapiInspector.MAPIInspector.PartialPutExtendRemainSize != -1 && MapiInspector.MAPIInspector.PartialPutExtendServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutExtendProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                            && MapiInspector.MAPIInspector.PartialPutExtendClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                         {
-                            this.length = MapiInspector.MAPIInspector.pPutExtendRemainSize;
+                            this.length = MapiInspector.MAPIInspector.PartialPutExtendRemainSize;
 
                             // clear
-                            MapiInspector.MAPIInspector.pPutExtendRemainSize = -1;
+                            MapiInspector.MAPIInspector.PartialPutExtendRemainSize = -1;
+                            MapiInspector.MAPIInspector.PartialPutExtendServerUrl = string.Empty;
+                            MapiInspector.MAPIInspector.PartialPutExtendProcessName = string.Empty;
+                            MapiInspector.MAPIInspector.PartialPutExtendClientInfo = string.Empty;
                         }
                         else
                         {
@@ -5594,21 +7741,27 @@ namespace MAPIInspector.Parsers
 
                         if ((stream.Length - stream.Position) < this.length)
                         {
-                            MapiInspector.MAPIInspector.pGetType = typeValue;
-                            MapiInspector.MAPIInspector.pGetId = idValue;
-                            MapiInspector.MAPIInspector.pPutExtendRemainSize = this.length - (int)(stream.Length - stream.Position);
+                            MapiInspector.MAPIInspector.PartialGetType = typeValue;
+                            MapiInspector.MAPIInspector.PartialGetId = identifyValue;
+                            MapiInspector.MAPIInspector.PartialPutExtendRemainSize = this.length - (int)(stream.Length - stream.Position);
+                            MapiInspector.MAPIInspector.PartialPutExtendServerUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                            MapiInspector.MAPIInspector.PartialPutExtendProcessName = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
+                            MapiInspector.MAPIInspector.PartialPutExtendClientInfo = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
+
                             if (spositon != stream.Position)
                             {
-                                pBinary.Count = (int)(stream.Length - stream.Position);
+                                ptypeBinary.Count = (int)(stream.Length - stream.Position);
                             }
-                            pBinary.Value = stream.ReadBlock(this.length);
+
+                            ptypeBinary.Value = stream.ReadBlock(this.length);
                         }
                         else
                         {
                             stream.Position -= 4;
-                            pBinary.Parse(stream);
+                            ptypeBinary.Parse(stream);
                         }
-                        this.PropValue = pBinary;
+
+                        this.PropValue = ptypeBinary;
                     }
                 }
                 else
@@ -5626,16 +7779,23 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class TransferGetBufferElement : SyntacticalBase
     {
-        // MetaTagDnPrefix
+        /// <summary>
+        /// MetaTagDnPrefix field
+        /// </summary>
         public MetaPropValueGetPartial MetaValue;
 
-        public PropValue propValue;
+        /// <summary>
+        /// PropValue field
+        /// </summary>
+        public PropValue PropValue;
 
-        // The start marker of TopFolder.
+        /// <summary>
+        /// Marker field
+        /// </summary>
         public object Marker;
 
         /// <summary>
-        /// Initializes a new instance of the TransferElement class.
+        /// Initializes a new instance of the TransferGetBufferElement class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
         public TransferGetBufferElement(FastTransferStream stream)
@@ -5657,40 +7817,41 @@ namespace MAPIInspector.Parsers
         /// Parse fields from a FastTransferStream.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
-        /// <param name="isGetBuffer">A bool value indicates if this parse is for Getbuffer rop.</param>
-        public override void Parse(FastTransferStream stream)//, bool isGetBuffer
+        public override void Parse(FastTransferStream stream)
         {
-            if (MapiInspector.MAPIInspector.pGetType != 0)
+            if (MapiInspector.MAPIInspector.PartialGetType != 0 && MapiInspector.MAPIInspector.PartialGetServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialGetProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                && MapiInspector.MAPIInspector.PartialGetClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
             {
                 if (MarkersHelper.IsMarker(stream.VerifyUInt32()))
                 {
                     this.Marker = stream.ReadMarker();
                 }
-                else if (LexicalTypeHelper.IsMetaPropertyID(MapiInspector.MAPIInspector.pGetId))
+                else if (LexicalTypeHelper.IsMetaPropertyID(MapiInspector.MAPIInspector.PartialGetId))
                 {
                     this.MetaValue = new MetaPropValueGetPartial(stream);
                 }
                 else
                 {
-                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)MapiInspector.MAPIInspector.pGetType))
+                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)MapiInspector.MAPIInspector.PartialGetType) && MapiInspector.MAPIInspector.PartialGetRemainSize == -1)
                     {
-                        if (MapiInspector.MAPIInspector.pGetType == (ushort)PropertyDataType.PtypInteger32 && MapiInspector.MAPIInspector.pGetId == 0x4017)
+                        if (MapiInspector.MAPIInspector.PartialGetType == (ushort)PropertyDataType.PtypInteger32 && MapiInspector.MAPIInspector.PartialGetId == 0x4017)
                         {
-                            this.propValue = new VarPropTypePropValueGetPartial(stream); ;
+                            this.PropValue = new VarPropTypePropValueGetPartial(stream);
                         }
                         else
                         {
-                            this.propValue = new FixedPropTypePropValueGetPartial(stream);
+                            this.PropValue = new FixedPropTypePropValueGetPartial(stream);
                         }
                     }
-                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)MapiInspector.MAPIInspector.pGetType)
-                    || LexicalTypeHelper.IsCodePageType(MapiInspector.MAPIInspector.pGetType))
+                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)MapiInspector.MAPIInspector.PartialGetType)
+                    || LexicalTypeHelper.IsCodePageType(MapiInspector.MAPIInspector.PartialGetType) ||
+                    (LexicalTypeHelper.IsFixedType((PropertyDataType)MapiInspector.MAPIInspector.PartialGetType) && MapiInspector.MAPIInspector.PartialGetRemainSize != -1))
                     {
-                        this.propValue = new VarPropTypePropValueGetPartial(stream);
+                        this.PropValue = new VarPropTypePropValueGetPartial(stream);
                     }
-                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)MapiInspector.MAPIInspector.pGetType))
+                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)MapiInspector.MAPIInspector.PartialGetType))
                     {
-                        this.propValue = new MvPropTypePropValueGetPartial(stream);
+                        this.PropValue = new MvPropTypePropValueGetPartial(stream);
                     }
                 }
             }
@@ -5706,22 +7867,22 @@ namespace MAPIInspector.Parsers
                 }
                 else
                 {
-                    long sPosition = stream.Position;
-                    PropValue propValue = new PropValue(stream);
-                    stream.Position = sPosition;
+                    long streamPosition = stream.Position;
+                    PropValue propertyValue = new PropValue(stream);
+                    stream.Position = streamPosition;
 
-                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)propValue.PropType) && !PropValue.IsMetaTagIdsetGiven(stream))
+                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)propertyValue.PropType) && !PropValue.IsMetaTagIdsetGiven(stream))
                     {
-                        this.propValue = new FixedPropTypePropValueGetPartial(stream);
+                        this.PropValue = new FixedPropTypePropValueGetPartial(stream);
                     }
-                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)propValue.PropType) || PropValue.IsMetaTagIdsetGiven(stream)
-                    || LexicalTypeHelper.IsCodePageType((ushort)propValue.PropType))
+                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)propertyValue.PropType) || PropValue.IsMetaTagIdsetGiven(stream)
+                    || LexicalTypeHelper.IsCodePageType((ushort)propertyValue.PropType))
                     {
-                        this.propValue = new VarPropTypePropValueGetPartial(stream);
+                        this.PropValue = new VarPropTypePropValueGetPartial(stream);
                     }
-                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)propValue.PropType) && !PropValue.IsMetaTagIdsetGiven(stream))
+                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)propertyValue.PropType))
                     {
-                        this.propValue = new MvPropTypePropValueGetPartial(stream);
+                        this.PropValue = new MvPropTypePropValueGetPartial(stream);
                     }
                 }
             }
@@ -5733,16 +7894,23 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class TransferPutBufferElement : SyntacticalBase
     {
-        // MetaTagDnPrefix
+        /// <summary>
+        /// MetaTagDnPrefix field
+        /// </summary>
         public MetaPropValuePutPartial MetaValue;
 
-        public PropValue propValue;
+        /// <summary>
+        /// PropValue  field
+        /// </summary>
+        public PropValue PropValue;
 
-        // The start marker of TopFolder.
+        /// <summary>
+        /// Marker field
+        /// </summary>
         public object Marker;
 
         /// <summary>
-        /// Initializes a new instance of the TransferElement class.
+        /// Initializes a new instance of the TransferPutBufferElement class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
         public TransferPutBufferElement(FastTransferStream stream)
@@ -5766,37 +7934,38 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
-            if (MapiInspector.MAPIInspector.pPutType != 0)
+            if (MapiInspector.MAPIInspector.PartialPutType != 0 && MapiInspector.MAPIInspector.PartialPutServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                && MapiInspector.MAPIInspector.PartialPutClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
             {
                 if (MarkersHelper.IsMarker(stream.VerifyUInt32()))
                 {
                     this.Marker = stream.ReadMarker();
                 }
-                else if (LexicalTypeHelper.IsMetaPropertyID(MapiInspector.MAPIInspector.pPutId))
+                else if (LexicalTypeHelper.IsMetaPropertyID(MapiInspector.MAPIInspector.PartialPutId))
                 {
                     this.MetaValue = new MetaPropValuePutPartial(stream);
                 }
                 else
                 {
-                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)MapiInspector.MAPIInspector.pPutType))
+                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)MapiInspector.MAPIInspector.PartialPutType))
                     {
-                        if (MapiInspector.MAPIInspector.pPutType == (ushort)PropertyDataType.PtypInteger32 && MapiInspector.MAPIInspector.pPutId == 0x4017)
+                        if (MapiInspector.MAPIInspector.PartialPutType == (ushort)PropertyDataType.PtypInteger32 && MapiInspector.MAPIInspector.PartialPutId == 0x4017)
                         {
-                            this.propValue = new VarPropTypePropValuePutPartial(stream);
+                            this.PropValue = new VarPropTypePropValuePutPartial(stream);
                         }
                         else
                         {
-                            this.propValue = new FixedPropTypePropValuePutPartial(stream);
+                            this.PropValue = new FixedPropTypePropValuePutPartial(stream);
                         }
                     }
-                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)MapiInspector.MAPIInspector.pPutType)
-                    || LexicalTypeHelper.IsCodePageType(MapiInspector.MAPIInspector.pPutType))
+                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)MapiInspector.MAPIInspector.PartialPutType)
+                    || LexicalTypeHelper.IsCodePageType(MapiInspector.MAPIInspector.PartialPutType))
                     {
-                        this.propValue = new VarPropTypePropValuePutPartial(stream);
+                        this.PropValue = new VarPropTypePropValuePutPartial(stream);
                     }
-                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)MapiInspector.MAPIInspector.pPutType))
+                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)MapiInspector.MAPIInspector.PartialPutType))
                     {
-                        this.propValue = new MvPropTypePropValuePutPartial(stream);
+                        this.PropValue = new MvPropTypePropValuePutPartial(stream);
                     }
                 }
             }
@@ -5812,22 +7981,22 @@ namespace MAPIInspector.Parsers
                 }
                 else
                 {
-                    long sPosition = stream.Position;
+                    long streamPosition = stream.Position;
                     PropValue propValue = new PropValue(stream);
-                    stream.Position = sPosition;
+                    stream.Position = streamPosition;
 
                     if (LexicalTypeHelper.IsFixedType((PropertyDataType)propValue.PropType) && !PropValue.IsMetaTagIdsetGiven(stream))
                     {
-                        this.propValue = new FixedPropTypePropValuePutPartial(stream);
+                        this.PropValue = new FixedPropTypePropValuePutPartial(stream);
                     }
                     else if (LexicalTypeHelper.IsVarType((PropertyDataType)propValue.PropType) || PropValue.IsMetaTagIdsetGiven(stream)
                     || LexicalTypeHelper.IsCodePageType((ushort)propValue.PropType))
                     {
-                        this.propValue = new VarPropTypePropValuePutPartial(stream);
+                        this.PropValue = new VarPropTypePropValuePutPartial(stream);
                     }
                     else if (LexicalTypeHelper.IsMVType((PropertyDataType)propValue.PropType) && !PropValue.IsMetaTagIdsetGiven(stream))
                     {
-                        this.propValue = new MvPropTypePropValuePutPartial(stream);
+                        this.PropValue = new MvPropTypePropValuePutPartial(stream);
                     }
                 }
             }
@@ -5839,16 +8008,23 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class TransferPutBufferExtendElement : SyntacticalBase
     {
-        // MetaTagDnPrefix
+        /// <summary>
+        /// MetaTagDnPrefix field
+        /// </summary>
         public MetaPropValuePutExtendPartial MetaValue;
 
-        public PropValue propValue;
+        /// <summary>
+        /// PropValue field
+        /// </summary>
+        public PropValue PropValue;
 
-        // The start marker of TopFolder.
+        /// <summary>
+        /// Marker field
+        /// </summary>
         public object Marker;
 
         /// <summary>
-        /// Initializes a new instance of the TransferElement class.
+        /// Initializes a new instance of the TransferPutBufferExtendElement class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
         public TransferPutBufferExtendElement(FastTransferStream stream)
@@ -5872,37 +8048,38 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
-            if (MapiInspector.MAPIInspector.pPutExtendType != 0)
+            if (MapiInspector.MAPIInspector.PartialPutExtendType != 0 && MapiInspector.MAPIInspector.PartialPutExtendServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutExtendProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
+                && MapiInspector.MAPIInspector.PartialPutExtendClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
             {
                 if (MarkersHelper.IsMarker(stream.VerifyUInt32()))
                 {
                     this.Marker = stream.ReadMarker();
                 }
-                else if (LexicalTypeHelper.IsMetaPropertyID(MapiInspector.MAPIInspector.pPutExtendId))
+                else if (LexicalTypeHelper.IsMetaPropertyID(MapiInspector.MAPIInspector.PartialPutExtendId))
                 {
                     this.MetaValue = new MetaPropValuePutExtendPartial(stream);
                 }
                 else
                 {
-                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)MapiInspector.MAPIInspector.pPutExtendType))
+                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)MapiInspector.MAPIInspector.PartialPutExtendType))
                     {
-                        if (MapiInspector.MAPIInspector.pPutExtendType == (ushort)PropertyDataType.PtypInteger32 && MapiInspector.MAPIInspector.pPutExtendId == 0x4017)
+                        if (MapiInspector.MAPIInspector.PartialPutExtendType == (ushort)PropertyDataType.PtypInteger32 && MapiInspector.MAPIInspector.PartialPutExtendId == 0x4017)
                         {
-                            this.propValue = new VarPropTypePropValuePutExtendPartial(stream);
+                            this.PropValue = new VarPropTypePropValuePutExtendPartial(stream);
                         }
                         else
                         {
-                            this.propValue = new FixedPropTypePropValuePutExtendPartial(stream);
+                            this.PropValue = new FixedPropTypePropValuePutExtendPartial(stream);
                         }
                     }
-                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)MapiInspector.MAPIInspector.pPutExtendType)
-                    || LexicalTypeHelper.IsCodePageType(MapiInspector.MAPIInspector.pPutExtendType))
+                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)MapiInspector.MAPIInspector.PartialPutExtendType)
+                    || LexicalTypeHelper.IsCodePageType(MapiInspector.MAPIInspector.PartialPutExtendType))
                     {
-                        this.propValue = new VarPropTypePropValuePutExtendPartial(stream);
+                        this.PropValue = new VarPropTypePropValuePutExtendPartial(stream);
                     }
-                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)MapiInspector.MAPIInspector.pPutExtendType))
+                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)MapiInspector.MAPIInspector.PartialPutExtendType))
                     {
-                        this.propValue = new MvPropTypePropValuePutExtendPartial(stream);
+                        this.PropValue = new MvPropTypePropValuePutExtendPartial(stream);
                     }
                 }
             }
@@ -5918,22 +8095,22 @@ namespace MAPIInspector.Parsers
                 }
                 else
                 {
-                    long sPosition = stream.Position;
+                    long streamPosition = stream.Position;
                     PropValue propValue = new PropValue(stream);
-                    stream.Position = sPosition;
+                    stream.Position = streamPosition;
 
                     if (LexicalTypeHelper.IsFixedType((PropertyDataType)propValue.PropType) && !PropValue.IsMetaTagIdsetGiven(stream))
                     {
-                        this.propValue = new FixedPropTypePropValuePutExtendPartial(stream);
+                        this.PropValue = new FixedPropTypePropValuePutExtendPartial(stream);
                     }
                     else if (LexicalTypeHelper.IsVarType((PropertyDataType)propValue.PropType) || PropValue.IsMetaTagIdsetGiven(stream)
                     || LexicalTypeHelper.IsCodePageType((ushort)propValue.PropType))
                     {
-                        this.propValue = new VarPropTypePropValuePutExtendPartial(stream);
+                        this.PropValue = new VarPropTypePropValuePutExtendPartial(stream);
                     }
                     else if (LexicalTypeHelper.IsMVType((PropertyDataType)propValue.PropType) && !PropValue.IsMetaTagIdsetGiven(stream))
                     {
-                        this.propValue = new MvPropTypePropValuePutExtendPartial(stream);
+                        this.PropValue = new MvPropTypePropValuePutExtendPartial(stream);
                     }
                 }
             }
@@ -5945,16 +8122,24 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class TopFolder : SyntacticalBase
     {
-        // MetaTagDnPrefix
+        /// <summary>
+        /// The MetaTagDnPrefix
+        /// </summary>
         public MetaPropValue MetaTagDnPrefix;
 
-        // The start marker of TopFolder.
+        /// <summary>
+        /// The start marker of TopFolder.
+        /// </summary>
         public Markers StartMarker;
 
-        // A FolderContentNoDelProps value contains the content of a folder: its properties, messages, and subfolders.
+        /// <summary>
+        /// A FolderContentNoDelProps value contains the content of a folder: its properties, messages, and subFolders.
+        /// </summary>
         public FolderContentNoDelProps FolderContentNoDelProps;
 
-        // The end marker of TopFolder.
+        /// <summary>
+        /// The end marker of TopFolder.
+        /// </summary>
         public Markers EndMarker;
 
         /// <summary>
@@ -5986,10 +8171,12 @@ namespace MAPIInspector.Parsers
             {
                 this.MetaTagDnPrefix = new MetaPropValue(stream);
             }
+
             if (stream.ReadMarker() == Markers.StartTopFld)
             {
                 this.StartMarker = Markers.StartTopFld;
                 this.FolderContentNoDelProps = new FolderContentNoDelProps(stream);
+
                 if (stream.ReadMarker() == Markers.EndFolder)
                 {
                     this.EndMarker = Markers.EndFolder;
@@ -6003,22 +8190,34 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class FolderContent : SyntacticalBase
     {
-        // MetaTagDnPrefix
+        /// <summary>
+        /// The MetaTagDnPrefix
+        /// </summary>
         public MetaPropValue MetaTagDnPrefix;
 
-        // Contains the properties of the Folder object, which are possibly affected by property filters.
+        /// <summary>
+        /// Contains the properties of the Folder object, which are possibly affected by property filters.
+        /// </summary>
         public PropList PropList;
 
-        // A MetaTagNewFXFolder property.
+        /// <summary>
+        /// A MetaTagNewFXFolder property.
+        /// </summary>
         public MetaPropValue MetaTagNewFXFolder;
 
-        // The folderMessages element contains the messages contained in a folder.
+        /// <summary>
+        /// The folderMessages element contains the messages contained in a folder.
+        /// </summary>
         public FolderMessages FolderMessages;
 
-        // A MetaTagFXDelProp property.
+        /// <summary>
+        /// A MetaTagFXDelProp property.
+        /// </summary>
         public MetaPropValue MetaTagFXDelProp;
 
-        // The subFolders element contains subFolders of a folder.
+        /// <summary>
+        /// The subFolders element contains subFolders of a folder.
+        /// </summary>
         public SubFolder[] SubFolders;
 
         /// <summary>
@@ -6050,10 +8249,13 @@ namespace MAPIInspector.Parsers
             {
                 this.MetaTagDnPrefix = new MetaPropValue(stream);
             }
+
             this.PropList = new PropList(stream);
+
             if (!stream.IsEndOfStream)
             {
-                List<SubFolder> InterSubFolders = new List<SubFolder>();
+                List<SubFolder> interSubFolders = new List<SubFolder>();
+
                 if (stream.VerifyMetaProperty(MetaProperties.MetaTagNewFXFolder))
                 {
                     this.MetaTagNewFXFolder = new MetaPropValue(stream);
@@ -6072,9 +8274,10 @@ namespace MAPIInspector.Parsers
                 {
                     while (SubFolder.Verify(stream))
                     {
-                        InterSubFolders.Add(new SubFolder(stream));
+                        interSubFolders.Add(new SubFolder(stream));
                     }
-                    this.SubFolders = InterSubFolders.ToArray();
+
+                    this.SubFolders = interSubFolders.ToArray();
                 }
             }
         }
@@ -6085,23 +8288,33 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class FolderContentNoDelProps : SyntacticalBase
     {
-        // Contains the properties of the Folder object, which are possibly affected by property filters.
+        /// <summary>
+        /// Contains the properties of the Folder object, which are possibly affected by property filters.
+        /// </summary>
         public PropList PropList;
 
-        // A MetaTagNewFXFolder property.
+        /// <summary>
+        /// A MetaTagNewFXFolder property.
+        /// </summary>
         public MetaPropValue MetaTagNewFXFolder;
 
-        // The FolderMessagesNoDelProps element contains the messages contained in a folder.
+        /// <summary>
+        /// The FolderMessagesNoDelProps element contains the messages contained in a folder.
+        /// </summary>
         public FolderMessagesNoDelProps FolderMessagesNoDelProps;
 
-        // A MetaTagFXDelProp property.
+        /// <summary>
+        /// A MetaTagFXDelProp property.
+        /// </summary>
         public MetaPropValue MetaTagFXDelProp;
 
-        // The subFolders element contains subFolders of a folder.
+        /// <summary>
+        /// The subFolders element contains subFolders of a folder.
+        /// </summary>
         public SubFolderNoDelProps[] SubFolderNoDelPropList;
 
         /// <summary>
-        /// Initializes a new instance of the folderContentNoDelProps class.
+        /// Initializes a new instance of the FolderContentNoDelProps class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
         public FolderContentNoDelProps(FastTransferStream stream)
@@ -6126,9 +8339,11 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             this.PropList = new PropList(stream);
+
             if (!stream.IsEndOfStream)
             {
-                List<SubFolderNoDelProps> InterSubFolders = new List<SubFolderNoDelProps>();
+                List<SubFolderNoDelProps> interSubFolders = new List<SubFolderNoDelProps>();
+
                 if (stream.VerifyMetaProperty(MetaProperties.MetaTagNewFXFolder))
                 {
                     this.MetaTagNewFXFolder = new MetaPropValue(stream);
@@ -6142,9 +8357,10 @@ namespace MAPIInspector.Parsers
                 {
                     while (SubFolderNoDelProps.Verify(stream))
                     {
-                        InterSubFolders.Add(new SubFolderNoDelProps(stream));
+                        interSubFolders.Add(new SubFolderNoDelProps(stream));
                     }
-                    this.SubFolderNoDelPropList = InterSubFolders.ToArray();
+
+                    this.SubFolderNoDelPropList = interSubFolders.ToArray();
                 }
             }
         }
@@ -6155,13 +8371,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class SubFolder : SyntacticalBase
     {
-        // The start marker of SubFolder.
+        /// <summary>
+        /// The start marker of SubFolder.
+        /// </summary>
         public Markers StartMarker;
 
-        // A folderContent value contains the content of a folder: its properties, messages, and subfolders.
+        /// <summary>
+        /// A folderContent value contains the content of a folder: its properties, messages, and subFolders.
+        /// </summary>
         public FolderContent FolderContent;
 
-        // The end marker of SubFolder.
+        /// <summary>
+        /// The end marker of SubFolder.
+        /// </summary>
         public Markers EndMarker;
 
         /// <summary>
@@ -6210,13 +8432,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class SubFolderNoDelProps : SyntacticalBase
     {
-        // The start marker of SubFolder.
+        /// <summary>
+        /// The start marker of SubFolder.
+        /// </summary>
         public Markers StartMarker;
 
-        // A folderContentNoDelProps value contains the content of a folder: its properties, messages, and subfolders.
-        public FolderContentNoDelProps folderContentNoDelProps;
+        /// <summary>
+        /// A folderContentNoDelProps value contains the content of a folder: its properties, messages, and subFolders.
+        /// </summary>
+        public FolderContentNoDelProps FolderContentNoDelProps;
 
-        // The end marker of SubFolder.
+        /// <summary>
+        /// The end marker of SubFolder.
+        /// </summary>
         public Markers EndMarker;
 
         /// <summary>
@@ -6247,7 +8475,8 @@ namespace MAPIInspector.Parsers
             if (stream.ReadMarker() == Markers.StartSubFld)
             {
                 this.StartMarker = Markers.StartSubFld;
-                this.folderContentNoDelProps = new FolderContentNoDelProps(stream);
+                this.FolderContentNoDelProps = new FolderContentNoDelProps(stream);
+
                 if (stream.ReadMarker() == Markers.EndFolder)
                 {
                     this.EndMarker = Markers.EndFolder;
@@ -6265,7 +8494,9 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class FolderMessages : SyntacticalBase
     {
-        // A list of MetaTagFxDelPropMessageList.
+        /// <summary>
+        /// A list of MetaTagFxDelPropMessageList.
+        /// </summary>
         public MetaTagFxDelPropMessageList[] MetaTagFxDelPropMessageLists;
 
         /// <summary>
@@ -6294,36 +8525,43 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             int count = 0;
-            List<MetaTagFxDelPropMessageList> InterMessageLists = new List<MetaTagFxDelPropMessageList>();
+            List<MetaTagFxDelPropMessageList> interMessageLists = new List<MetaTagFxDelPropMessageList>();
+
             while (!stream.IsEndOfStream && count < 2)
             {
                 if (MetaTagFxDelPropMessageList.Verify(stream))
                 {
-                    InterMessageLists.Add(new MetaTagFxDelPropMessageList(stream));
+                    interMessageLists.Add(new MetaTagFxDelPropMessageList(stream));
                 }
                 else
                 {
                     break;
                 }
+
                 count++;
             }
-            this.MetaTagFxDelPropMessageLists = InterMessageLists.ToArray();
+
+            this.MetaTagFxDelPropMessageLists = interMessageLists.ToArray();
         }
     }
 
     /// <summary>
-    /// The MetaTagFxDelPropMessageList is defined to help Parsering folderMessages class.
+    /// The MetaTagFxDelPropMessageList is used to parse folderMessages class.
     /// </summary>
     public class MetaTagFxDelPropMessageList : SyntacticalBase
     {
-        // A MetaTagFXDelProp property. 
+        /// <summary>
+        /// A MetaTagFXDelProp property. 
+        /// </summary>
         public MetaPropValue MetaTagFXDelProp;
 
-        // A list of messageList.
+        /// <summary>
+        /// A list of messageList.
+        /// </summary>
         public MessageList MessageLists;
 
         /// <summary>
-        /// Initializes a new instance of the FolderMessages class.
+        /// Initializes a new instance of the MetaTagFxDelPropMessageList class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
         public MetaTagFxDelPropMessageList(FastTransferStream stream)
@@ -6357,7 +8595,9 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class FolderMessagesNoDelProps : SyntacticalBase
     {
-        // A list of MessageList.
+        /// <summary>
+        /// A list of MessageList.
+        /// </summary>
         public MessageList[] MessageLists;
 
         /// <summary>
@@ -6387,21 +8627,23 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             int count = 0;
-            List<MessageList> InterMessageLists = new List<MessageList>();
+            List<MessageList> interMessageLists = new List<MessageList>();
+
             while (!stream.IsEndOfStream && count < 2)
             {
                 if (MessageList.Verify(stream))
                 {
-                    InterMessageLists.Add(new MessageList(stream));
+                    interMessageLists.Add(new MessageList(stream));
                 }
                 else
                 {
                     break;
                 }
+
                 count++;
             }
-            this.MessageLists = InterMessageLists.ToArray();
 
+            this.MessageLists = interMessageLists.ToArray();
         }
     }
 
@@ -6410,16 +8652,24 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class Message : SyntacticalBase
     {
-        // The start marker of message.
+        /// <summary>
+        /// The start marker of message.
+        /// </summary>
         public Markers? StartMarker1;
 
-        // The start marker of message.
+        /// <summary>
+        /// The start marker of message.
+        /// </summary>
         public Markers? StartMarker2;
 
-        // A MessageContent value.Represents the content of a message: its properties, the recipients, and the attachments.
+        /// <summary>
+        /// A MessageContent value.Represents the content of a message: its properties, the recipients, and the attachments.
+        /// </summary>
         public MessageContent Content;
 
-        // The end marker of message.
+        /// <summary>
+        /// The end marker of message.
+        /// </summary>
         public Markers EndMarker;
 
         /// <summary>
@@ -6449,14 +8699,20 @@ namespace MAPIInspector.Parsers
         public override void Parse(FastTransferStream stream)
         {
             Markers marker = stream.ReadMarker();
+
             if (marker == Markers.StartMessage || marker == Markers.StartFAIMsg)
             {
                 if (marker == Markers.StartMessage)
-                { this.StartMarker1 = Markers.StartMessage; }
+                {
+                    this.StartMarker1 = Markers.StartMessage;
+                }
                 else
-                { this.StartMarker2 = Markers.StartFAIMsg; }
+                {
+                    this.StartMarker2 = Markers.StartFAIMsg;
+                }
 
                 this.Content = new MessageContent(stream);
+
                 if (stream.ReadMarker() == Markers.EndMessage)
                 {
                     this.EndMarker = Markers.EndMessage;
@@ -6474,13 +8730,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class MessageContent : SyntacticalBase
     {
-        // MetaTagDnPrefix
+        /// <summary>
+        /// The MetaTagDnPrefix
+        /// </summary>
         public MetaPropValue MetaTagDnPrefix;
 
-        // A propList value.
+        /// <summary>
+        /// A PropList value.
+        /// </summary>
         public PropList PropList;
 
-        // Represents children of the Message objects: Recipient and Attachment objects.
+        /// <summary>
+        /// Represents children of the Message objects: Recipient and Attachment objects.
+        /// </summary>
         public MessageChildren MessageChildren;
 
         /// <summary>
@@ -6512,6 +8774,7 @@ namespace MAPIInspector.Parsers
             {
                 this.MetaTagDnPrefix = new MetaPropValue(stream);
             }
+
             this.PropList = new PropList(stream);
             this.MessageChildren = new MessageChildren(stream);
         }
@@ -6522,16 +8785,24 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class MessageChildren : SyntacticalBase
     {
-        // A MetaTagFXDelProp property.
+        /// <summary>
+        /// A MetaTagFXDelProp property.
+        /// </summary>
         public MetaPropValue FxdelPropsBeforeRecipient;
 
-        // A list of recipients.
+        /// <summary>
+        /// A list of recipients.
+        /// </summary>
         public Recipient[] Recipients;
 
-        // Another MetaTagFXDelProp property.
+        /// <summary>
+        /// Another MetaTagFXDelProp property.
+        /// </summary>
         public MetaPropValue FxdelPropsBeforeAttachment;
 
-        // A list of attachments.
+        /// <summary>
+        /// A list of attachments.
+        /// </summary>
         public Attachment[] Attachments;
 
         /// <summary>
@@ -6549,8 +8820,9 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
-            List<Attachment> InterAttachments = new List<Attachment>();
-            List<Recipient> InterRecipients = new List<Recipient>();
+            List<Attachment> interAttachments = new List<Attachment>();
+            List<Recipient> interRecipients = new List<Recipient>();
+
             if (stream.VerifyMetaProperty(MetaProperties.MetaTagFXDelProp))
             {
                 this.FxdelPropsBeforeRecipient = new MetaPropValue(stream);
@@ -6558,10 +8830,11 @@ namespace MAPIInspector.Parsers
 
             if (Recipient.Verify(stream))
             {
-                InterRecipients = new List<Recipient>();
+                interRecipients = new List<Recipient>();
+
                 while (Recipient.Verify(stream))
                 {
-                    InterRecipients.Add(new Recipient(stream));
+                    interRecipients.Add(new Recipient(stream));
                 }
             }
 
@@ -6572,11 +8845,11 @@ namespace MAPIInspector.Parsers
 
             while (Attachment.Verify(stream))
             {
-                InterAttachments.Add(new Attachment(stream));
+                interAttachments.Add(new Attachment(stream));
             }
 
-            this.Attachments = InterAttachments.ToArray();
-            this.Recipients = InterRecipients.ToArray();
+            this.Attachments = interAttachments.ToArray();
+            this.Recipients = interRecipients.ToArray();
         }
     }
 
@@ -6585,13 +8858,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class Recipient : SyntacticalBase
     {
-        // The start marker of Recipient.
+        /// <summary>
+        /// The start marker of Recipient.
+        /// </summary>
         public Markers StartMarker;
 
-        // A propList value.
+        /// <summary>
+        /// A PropList value.
+        /// </summary>
         public PropList PropList;
 
-        // The end marker of Recipient.
+        /// <summary>
+        /// The end marker of Recipient.
+        /// </summary>
         public Markers EndMarker;
 
         /// <summary>
@@ -6623,6 +8902,7 @@ namespace MAPIInspector.Parsers
             {
                 this.StartMarker = Markers.StartRecip;
                 this.PropList = new PropList(stream);
+
                 if (stream.ReadMarker() == Markers.EndToRecip)
                 {
                     this.EndMarker = Markers.EndToRecip;
@@ -6640,16 +8920,24 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class Attachment : SyntacticalBase
     {
-        // The  start marker of an attachment object.
+        /// <summary>
+        /// The  start marker of an attachment object.
+        /// </summary>
         public Markers StartMarker;
 
-        // A PidTagAttachNumber property.
+        /// <summary>
+        /// A PidTagAttachNumber property.
+        /// </summary>
         public FixedPropTypePropValue PidTagAttachNumber;
 
-        // Attachment content.
+        /// <summary>
+        /// Attachment content.
+        /// </summary>
         public AttachmentContent AttachmentContent;
 
-        // The end marker of an attachment object.
+        /// <summary>
+        /// The end marker of an attachment object.
+        /// </summary>
         public Markers EndMarker;
 
         /// <summary>
@@ -6682,6 +8970,7 @@ namespace MAPIInspector.Parsers
                 this.StartMarker = Markers.NewAttach;
                 this.PidTagAttachNumber = new FixedPropTypePropValue(stream);
                 this.AttachmentContent = new AttachmentContent(stream);
+
                 if (stream.ReadMarker() == Markers.EndAttach)
                 {
                     this.EndMarker = Markers.EndAttach;
@@ -6699,13 +8988,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class AttachmentContent : SyntacticalBase
     {
-        // MetaTagDnPrefix
+        /// <summary>
+        /// The MetaTagDnPrefix
+        /// </summary>
         public MetaPropValue MetaTagDnPrefix;
 
-        // A propList value.
+        /// <summary>
+        /// A PropList value.
+        /// </summary>
         public PropList PropList;
 
-        // An EmbeddedMessage value.
+        /// <summary>
+        /// An EmbeddedMessage value.
+        /// </summary>
         public EmbeddedMessage EmbeddedMessage;
 
         /// <summary>
@@ -6737,7 +9032,9 @@ namespace MAPIInspector.Parsers
             {
                 this.MetaTagDnPrefix = new MetaPropValue(stream);
             }
+
             this.PropList = new PropList(stream);
+
             if (EmbeddedMessage.Verify(stream))
             {
                 this.EmbeddedMessage = new EmbeddedMessage(stream);
@@ -6750,13 +9047,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class EmbeddedMessage : SyntacticalBase
     {
-        // The start marker of the EmbeddedMessage.
+        /// <summary>
+        /// The start marker of the EmbeddedMessage.
+        /// </summary>
         public Markers StartMarker;
 
-        // A MessageContent value represents the content of a message: its properties, the recipients, and the attachments.
+        /// <summary>
+        /// A MessageContent value represents the content of a message: its properties, the recipients, and the attachments.
+        /// </summary>
         public MessageContent MessageContent;
 
-        // The end marker of the EmbeddedMessage.
+        /// <summary>
+        /// The end marker of the EmbeddedMessage.
+        /// </summary>
         public Markers EndMarker;
 
         /// <summary>
@@ -6788,6 +9091,7 @@ namespace MAPIInspector.Parsers
             {
                 this.StartMarker = Markers.NewAttach;
                 this.MessageContent = new MessageContent(stream);
+
                 if (stream.ReadMarker() == Markers.EndEmbed)
                 {
                     this.EndMarker = Markers.EndEmbed;
@@ -6805,7 +9109,9 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class MessageList : SyntacticalBase
     {
-        // A list of MetaTagMessage objects.
+        /// <summary>
+        /// A list of MetaTagMessage objects.
+        /// </summary>
         public MetaTagMessage[] MetaTagMessages;
 
         /// <summary>
@@ -6833,33 +9139,39 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
-            List<MetaTagMessage> InterMessageList = new List<MetaTagMessage>();
+            List<MetaTagMessage> interMessageList = new List<MetaTagMessage>();
 
             while (Verify(stream))
             {
-                InterMessageList.Add(new MetaTagMessage(stream));
+                interMessageList.Add(new MetaTagMessage(stream));
             }
 
-            this.MetaTagMessages = InterMessageList.ToArray();
+            this.MetaTagMessages = interMessageList.ToArray();
         }
     }
 
     /// <summary>
-    /// The MetaTagEcWaringMessage is defined to help Parsering MessageList class.
+    /// The MetaTagEcWaringMessage is used to parse MessageList class.
     /// </summary>
     public class MetaTagMessage : SyntacticalBase
     {
-        // MetaTagDnPrefix
+        /// <summary>
+        /// The MetaTagDnPrefix
+        /// </summary>
         public MetaPropValue MetaTagDnPrefix;
 
-        // MetaTagEcWaring indicates a MetaTagEcWaring property.
+        /// <summary>
+        /// MetaTagEcWaring indicates a MetaTagEcWaring property.
+        /// </summary>
         public MetaPropValue MetaTagEcWaring;
 
-        // Message indicates a Message object.
+        /// <summary>
+        /// Message indicates a Message object.
+        /// </summary>
         public Message Message;
 
         /// <summary>
-        /// Initializes a new instance of the MetaTagEcWaringMessage class.
+        /// Initializes a new instance of the MetaTagMessage class.
         /// </summary>
         /// <param name="stream">The stream.</param>
         public MetaTagMessage(FastTransferStream stream)
@@ -6908,10 +9220,14 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class Deletions : SyntacticalBase
     {
-        // The start marker of Deletions.
+        /// <summary>
+        /// The start marker of Deletions.
+        /// </summary>
         public Markers StartMarker;
 
-        // A propList value.
+        /// <summary>
+        /// A PropList value.
+        /// </summary>
         public PropList PropList;
 
         /// <summary>
@@ -6952,10 +9268,14 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class FolderChange : SyntacticalBase
     {
-        // The start marker of FolderChange.
+        /// <summary>
+        /// The start marker of FolderChange.
+        /// </summary>
         public Markers StartMarker;
 
-        // A propList value.
+        /// <summary>
+        /// A PropList value.
+        /// </summary>
         public PropList PropList;
 
         /// <summary>
@@ -6996,16 +9316,24 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class GroupInfo : SyntacticalBase
     {
-        // The start marker of GroupInfo.
+        /// <summary>
+        /// The start marker of GroupInfo.
+        /// </summary>
         public Markers StartMarker;
 
-        // The propertyTag for ProgressInformation.
-        public uint propertiesTag;
+        /// <summary>
+        /// The propertyTag for ProgressInformation.
+        /// </summary>
+        public uint PropertiesTag;
 
-        // The count of the PropList.
-        public uint propertiesLength;
+        /// <summary>
+        /// The count of the PropList.
+        /// </summary>
+        public uint PropertiesLength;
 
-        // A propList value.
+        /// <summary>
+        /// A PropList value.
+        /// </summary>
         public PropertyGroupInfo PropList;
 
         /// <summary>
@@ -7036,8 +9364,8 @@ namespace MAPIInspector.Parsers
             if (stream.ReadMarker() == Markers.IncrSyncGroupInfo)
             {
                 this.StartMarker = Markers.IncrSyncGroupInfo;
-                this.propertiesTag = stream.ReadUInt32();
-                this.propertiesLength = stream.ReadUInt32();
+                this.PropertiesTag = stream.ReadUInt32();
+                this.PropertiesLength = stream.ReadUInt32();
                 PropertyGroupInfo tmpGroupInfo = new PropertyGroupInfo();
                 tmpGroupInfo.Parse(stream);
                 this.PropList = tmpGroupInfo;
@@ -7050,10 +9378,14 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class ProgressPerMessage : SyntacticalBase
     {
-        // The start marker of ProgressPerMessage.
+        /// <summary>
+        /// The start marker of ProgressPerMessage.
+        /// </summary>
         public Markers StartMarker;
 
-        // A propList value.
+        /// <summary>
+        /// A PropList value.
+        /// </summary>
         public PropList PropList;
 
         /// <summary>
@@ -7094,20 +9426,28 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class ProgressTotal : SyntacticalBase
     {
-        // The start marker of progressTotal.
+        /// <summary>
+        /// The start marker of progressTotal.
+        /// </summary>
         public Markers StartMarker;
 
-        // The propertyTag for ProgressInformation.
-        public uint propertiesTag;
+        /// <summary>
+        /// The propertyTag for ProgressInformation.
+        /// </summary>
+        public uint PropertiesTag;
 
-        // The count of the PropList.
-        public uint propertiesLength;
+        /// <summary>
+        /// The count of the PropList.
+        /// </summary>
+        public uint PropertiesLength;
 
-        // A propList value.
+        /// <summary>
+        /// A PropList value.
+        /// </summary>
         public ProgressInformation PropList;
 
         /// <summary>
-        /// Initializes a new instance of the progressTotal class.
+        /// Initializes a new instance of the ProgressTotal class.
         /// </summary>
         /// <param name="stream">The stream.</param>
         public ProgressTotal(FastTransferStream stream)
@@ -7134,8 +9474,8 @@ namespace MAPIInspector.Parsers
             if (stream.ReadMarker() == Markers.IncrSyncProgressMode)
             {
                 this.StartMarker = Markers.IncrSyncProgressMode;
-                this.propertiesTag = stream.ReadUInt32();
-                this.propertiesLength = stream.ReadUInt32();
+                this.PropertiesTag = stream.ReadUInt32();
+                this.PropertiesLength = stream.ReadUInt32();
                 ProgressInformation tmpProgressInfo = new ProgressInformation();
                 tmpProgressInfo.Parse(stream);
                 this.PropList = tmpProgressInfo;
@@ -7148,14 +9488,18 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class ReadStateChanges : SyntacticalBase
     {
-        // The start marker of ReadStateChange.
+        /// <summary>
+        /// The start marker of ReadStateChange.
+        /// </summary>
         public Markers StartMarker;
 
-        // A propList value.
+        /// <summary>
+        /// A PropList value.
+        /// </summary>
         public PropList PropList;
 
         /// <summary>
-        /// Initializes a new instance of the ReadStateChange class.
+        /// Initializes a new instance of the ReadStateChanges class.
         /// </summary>
         /// <param name="stream">The stream.</param>
         public ReadStateChanges(FastTransferStream stream)
@@ -7192,13 +9536,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class State : SyntacticalBase
     {
-        // The start marker of ReadStateChange.
+        /// <summary>
+        /// The start marker of ReadStateChange.
+        /// </summary>
         public Markers StartMarker;
 
-        // A propList value.
+        /// <summary>
+        /// A PropList value.
+        /// </summary>
         public PropList PropList;
 
-        // The end marker of ReadStateChange.
+        /// <summary>
+        /// The end marker of ReadStateChange.
+        /// </summary>
         public Markers EndMarker;
 
         /// <summary>
@@ -7230,6 +9580,7 @@ namespace MAPIInspector.Parsers
             {
                 this.StartMarker = Markers.IncrSyncStateBegin;
                 this.PropList = new PropList(stream);
+
                 if (stream.ReadMarker() == Markers.IncrSyncStateEnd)
                 {
                     this.EndMarker = Markers.IncrSyncStateEnd;
@@ -7247,22 +9598,34 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class ContentsSync : SyntacticalBase
     {
-        // A ProgressTotal value
+        /// <summary>
+        /// A ProgressTotal value
+        /// </summary>
         public ProgressTotal ProgressTotal;
 
-        // A list of ProgressPerMessageChange value
+        /// <summary>
+        /// A list of ProgressPerMessageChange value
+        /// </summary>
         public ProgressPerMessageChange[] ProgressPerMessageChanges;
 
-        // A Deletions value
+        /// <summary>
+        /// A Deletions value
+        /// </summary>
         public Deletions Deletions;
 
-        // A readStateChanges value.
+        /// <summary>
+        /// A readStateChanges value.
+        /// </summary>
         public ReadStateChanges ReadStateChanges;
 
-        // A state value.
+        /// <summary>
+        /// A state value.
+        /// </summary>
         public State State;
 
-        // A end marker of ContentSync.
+        /// <summary>
+        /// A end marker of ContentSync.
+        /// </summary>
         public Markers EndMarker;
 
         /// <summary>
@@ -7286,7 +9649,7 @@ namespace MAPIInspector.Parsers
                 || Deletions.Verify(stream)
                 || ReadStateChanges.Verify(stream)
                 || State.Verify(stream))
-                && stream.VerifyMarker(Markers.IncrSyncEnd, (int)stream.Length - 4 - (int)stream.Position); ;
+                && stream.VerifyMarker(Markers.IncrSyncEnd, (int)stream.Length - 4 - (int)stream.Position);
         }
 
         /// <summary>
@@ -7295,7 +9658,8 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
-            List<ProgressPerMessageChange> InterProgressPerMessageChanges = new List<ProgressPerMessageChange>();
+            List<ProgressPerMessageChange> interProgressPerMessageChanges = new List<ProgressPerMessageChange>();
+
             if (ProgressTotal.Verify(stream))
             {
                 this.ProgressTotal = new ProgressTotal(stream);
@@ -7303,9 +9667,10 @@ namespace MAPIInspector.Parsers
 
             while (ProgressPerMessageChange.Verify(stream))
             {
-                InterProgressPerMessageChanges.Add(new ProgressPerMessageChange(stream));
+                interProgressPerMessageChanges.Add(new ProgressPerMessageChange(stream));
             }
-            this.ProgressPerMessageChanges = InterProgressPerMessageChanges.ToArray();
+
+            this.ProgressPerMessageChanges = interProgressPerMessageChanges.ToArray();
 
             if (Deletions.Verify(stream))
             {
@@ -7318,6 +9683,7 @@ namespace MAPIInspector.Parsers
             }
 
             this.State = new State(stream);
+
             if (stream.ReadMarker() == Markers.IncrSyncEnd)
             {
                 this.EndMarker = Markers.IncrSyncEnd;
@@ -7330,14 +9696,18 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// The ProgressPerMessageChange is defined to help Parsering ContentSync class.
+    /// The ProgressPerMessageChange is used to parse ContentSync class.
     /// </summary>
     public class ProgressPerMessageChange : SyntacticalBase
     {
-        // A ProgressPerMessage value.
+        /// <summary>
+        /// A ProgressPerMessage value.
+        /// </summary>
         public ProgressPerMessage ProgressPerMessage;
 
-        // A MessageChange value.
+        /// <summary>
+        /// A MessageChange value.
+        /// </summary>
         public MessageChange MessageChange;
 
         /// <summary>
@@ -7379,16 +9749,24 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class HierarchySync : SyntacticalBase
     {
-        // A list of FolderChange value.
+        /// <summary>
+        /// A list of FolderChange value.
+        /// </summary>
         public FolderChange[] FolderChanges;
 
-        // A Deletions value.
+        /// <summary>
+        /// A Deletions value.
+        /// </summary>
         public Deletions Deletions;
 
-        // The State value.
+        /// <summary>
+        /// The State value.
+        /// </summary>
         public State State;
 
-        // The end marker of hierarchySync.
+        /// <summary>
+        /// The end marker of hierarchySync.
+        /// </summary>
         public Markers EndMarker;
 
         /// <summary>
@@ -7419,12 +9797,14 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
-            List<FolderChange> InterFolderChanges = new List<FolderChange>();
+            List<FolderChange> interFolderChanges = new List<FolderChange>();
+
             while (FolderChange.Verify(stream))
             {
-                InterFolderChanges.Add(new FolderChange(stream));
+                interFolderChanges.Add(new FolderChange(stream));
             }
-            this.FolderChanges = InterFolderChanges.ToArray();
+
+            this.FolderChanges = interFolderChanges.ToArray();
 
             if (Deletions.Verify(stream))
             {
@@ -7432,6 +9812,7 @@ namespace MAPIInspector.Parsers
             }
 
             this.State = new State(stream);
+
             if (stream.ReadMarker() == Markers.IncrSyncEnd)
             {
                 this.EndMarker = Markers.IncrSyncEnd;
@@ -7444,14 +9825,18 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// The Messagechange element contains information for the changed messages.
+    /// The MessageChange element contains information for the changed messages.
     /// </summary>
     public class MessageChange : SyntacticalBase
     {
-        // A MessageChangeFull value.
+        /// <summary>
+        /// A MessageChangeFull value.
+        /// </summary>
         public MessageChangeFull MessageChangeFull;
 
-        // A MessageChangePartial value.
+        /// <summary>
+        /// A MessageChangePartial value.
+        /// </summary>
         public MessageChangePartial MesageChangePartial;
 
         /// <summary>
@@ -7495,20 +9880,30 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class MessageChangeFull : SyntacticalBase
     {
-        // A start marker for MessageChangeFull.
+        /// <summary>
+        /// A start marker for MessageChangeFull.
+        /// </summary>
         public Markers StartMarker;
 
-        // A messageChangeHeader value.
-        public PropList messageChangeHeader;
+        /// <summary>
+        /// A MessageChangeHeader value.
+        /// </summary>
+        public PropList MessageChangeHeader;
 
-        // A second marker for MessageChangeFull.
+        /// <summary>
+        /// A second marker for MessageChangeFull.
+        /// </summary>
         public Markers SecondMarker;
 
-        // A propList value.
-        public PropList propList;
+        /// <summary>
+        /// A PropList value.
+        /// </summary>
+        public PropList PropList;
 
-        // A MessageChildren value.
-        public MessageChildren messageChildren;
+        /// <summary>
+        /// A MessageChildren value.
+        /// </summary>
+        public MessageChildren MessageChildren;
 
         /// <summary>
         /// Initializes a new instance of the MessageChangeFull class.
@@ -7539,13 +9934,13 @@ namespace MAPIInspector.Parsers
             if (stream.ReadMarker() == Markers.IncrSyncChg)
             {
                 this.StartMarker = Markers.IncrSyncChg;
-                this.messageChangeHeader = new PropList(stream);
+                this.MessageChangeHeader = new PropList(stream);
 
                 if (stream.ReadMarker() == Markers.IncrSyncMessage)
                 {
                     this.SecondMarker = Markers.IncrSyncMessage;
-                    this.propList = new PropList(stream);
-                    this.messageChildren = new MessageChildren(stream);
+                    this.PropList = new PropList(stream);
+                    this.MessageChildren = new MessageChildren(stream);
                 }
                 else
                 {
@@ -7560,22 +9955,34 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class MessageChangePartial : SyntacticalBase
     {
-        // A groupInfo value.
-        public GroupInfo groupInfo;
+        /// <summary>
+        /// A groupInfo value.
+        /// </summary>
+        public GroupInfo GroupInfo;
 
-        // A MetaTagIncrSyncGroupId property.
+        /// <summary>
+        /// A MetaTagIncrSyncGroupId property.
+        /// </summary>
         public MetaPropValue MetaTagIncrSyncGroupId;
 
-        // the MessageChangePartial marker.
+        /// <summary>
+        /// The MessageChangePartial marker.
+        /// </summary>
         public Markers Marker;
 
-        // A messageChangeHeader value.
-        public PropList messageChangeHeader;
+        /// <summary>
+        /// A MessageChangeHeader value.
+        /// </summary>
+        public PropList MessageChangeHeader;
 
-        // A list of SyncMessagePartialPropList values.
+        /// <summary>
+        /// A list of SyncMessagePartialPropList values.
+        /// </summary>
         public SyncMessagePartialPropList[] SyncMessagePartialPropList;
 
-        // A MessageChildren field.
+        /// <summary>
+        /// A MessageChildren field.
+        /// </summary>
         public MessageChildren MessageChildren;
 
         /// <summary>
@@ -7603,8 +10010,9 @@ namespace MAPIInspector.Parsers
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
-            List<SyncMessagePartialPropList> InterMessagePartialList = new List<SyncMessagePartialPropList>();
-            this.groupInfo = new GroupInfo(stream);
+            List<SyncMessagePartialPropList> interMessagePartialList = new List<SyncMessagePartialPropList>();
+            this.GroupInfo = new GroupInfo(stream);
+
             if (stream.VerifyMetaProperty(MetaProperties.MetaTagIncrSyncGroupId))
             {
                 this.MetaTagIncrSyncGroupId = new MetaPropValue(stream);
@@ -7613,13 +10021,14 @@ namespace MAPIInspector.Parsers
             if (stream.ReadMarker() == Markers.IncrSyncChgPartial)
             {
                 this.Marker = Markers.IncrSyncChgPartial;
-                this.messageChangeHeader = new PropList(stream);
+                this.MessageChangeHeader = new PropList(stream);
 
                 while (stream.VerifyMetaProperty(MetaProperties.MetaTagIncrementalSyncMessagePartial))
                 {
-                    InterMessagePartialList.Add(new SyncMessagePartialPropList(stream));
+                    interMessagePartialList.Add(new SyncMessagePartialPropList(stream));
                 }
-                this.SyncMessagePartialPropList = InterMessagePartialList.ToArray();
+
+                this.SyncMessagePartialPropList = interMessagePartialList.ToArray();
                 this.MessageChildren = new MessageChildren(stream);
             }
             else
@@ -7630,15 +10039,19 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// The SyncMessagePartialPropList is defined to help Parsering MessageChangePartial element.
+    /// The SyncMessagePartialPropList is used to parse MessageChangePartial element.
     /// </summary>
     public class SyncMessagePartialPropList : SyntacticalBase
     {
-        // A MetaTagIncrementalSyncMessagePartial property.
-        public MetaPropValue Meta_SyncMessagePartial;
+        /// <summary>
+        /// A MetaTagIncrementalSyncMessagePartial property.
+        /// </summary>
+        public MetaPropValue MetaSyncMessagePartial;
 
-        // A PropList value.
-        PropList PropList;
+        /// <summary>
+        /// A PropList value.
+        /// </summary>
+        public PropList PropList;
 
         /// <summary>
         /// Initializes a new instance of the SyncMessagePartialPropList class.
@@ -7667,12 +10080,13 @@ namespace MAPIInspector.Parsers
         {
             if (stream.VerifyMetaProperty(MetaProperties.MetaTagIncrementalSyncMessagePartial))
             {
-                this.Meta_SyncMessagePartial = new MetaPropValue(stream);
+                this.MetaSyncMessagePartial = new MetaPropValue(stream);
             }
+
             this.PropList = new PropList(stream);
         }
     }
-    # endregion
+    #endregion
 
     #region FastTransfer help
     /// <summary>
@@ -7681,15 +10095,15 @@ namespace MAPIInspector.Parsers
     public class MarkersHelper
     {
         /// <summary>
-        /// Indicate whether a uint is a Marker.
+        /// Indicate whether a UInt is a Marker.
         /// </summary>
-        /// <param name="marker">The uints value.</param>
+        /// <param name="marker">The UInts value.</param>
         /// <returns>If is a Marker, return true, else false.</returns>
-        public static bool IsMarker(uint Marker)
+        public static bool IsMarker(uint marker)
         {
             foreach (Markers ma in Enum.GetValues(typeof(Markers)))
             {
-                if ((uint)ma == Marker)
+                if ((uint)ma == marker)
                 {
                     return true;
                 }
@@ -7699,15 +10113,15 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Indicate whether a uint is a MetaProperties.
+        /// Indicate whether a UInt is a MetaProperties.
         /// </summary>
-        /// <param name="marker">The uints value.</param>
+        /// <param name="metaTag">The UInts value.</param>
         /// <returns>If is a MetaProperties, return true, else false.</returns>
-        public static bool IsMetaTag(uint MetaTag)
+        public static bool IsMetaTag(uint metaTag)
         {
             foreach (MetaProperties me in Enum.GetValues(typeof(MetaProperties)))
             {
-                if (MetaTag == (uint)me)
+                if (metaTag == (uint)me)
                 {
                     return true;
                 }
@@ -7722,27 +10136,37 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class LexicalTypeHelper
     {
-        // Contains fixedPropTypes.
-        private static List<PropertyDataType> FixedTypes;
+        /// <summary>
+        /// Contains fixedPropTypes.
+        /// </summary>
+        private static List<PropertyDataType> fixedTypes;
 
-        // Contains varPropTypes.
-        private static List<PropertyDataType> VarTypes;
+        /// <summary>
+        /// Contains varPropTypes.
+        /// </summary>
+        private static List<PropertyDataType> varTypes;
 
-        // Contains mvPropTypes.
-        private static List<PropertyDataType> MVTypes;
+        /// <summary>
+        /// Contains mvPropTypes.
+        /// </summary>
+        private static List<PropertyDataType> mVTypes;
 
-        // Contains CodePageTypes.
-        private static List<CodePageType> CodePageTypes;
+        /// <summary>
+        /// Contains CodePageTypes.
+        /// </summary>
+        private static List<CodePageType> codePageTypes;
 
-        // Contains MetaProperty Ids.
-        private static List<ushort> MetaPropIds;
+        /// <summary>
+        /// Contains MetaProperty Ids.
+        /// </summary>
+        private static List<ushort> metaPropIds;
 
         /// <summary>
         /// Initializes static members of the LexicalTypeHelper class.
         /// </summary>
         static LexicalTypeHelper()
         {
-            FixedTypes = new List<PropertyDataType>
+            fixedTypes = new List<PropertyDataType>
             {
                 PropertyDataType.PtypInteger16,
                 PropertyDataType.PtypInteger32,
@@ -7757,7 +10181,7 @@ namespace MAPIInspector.Parsers
                 PropertyDataType.PtypGuid
             };
 
-            VarTypes = new List<PropertyDataType>
+            varTypes = new List<PropertyDataType>
             {
                 PropertyDataType.PtypString,
                 PropertyDataType.PtypString8,
@@ -7766,7 +10190,7 @@ namespace MAPIInspector.Parsers
                 PropertyDataType.PtypObject_Or_PtypEmbeddedTable
             };
 
-            MVTypes = new List<PropertyDataType>
+            mVTypes = new List<PropertyDataType>
             {
                 PropertyDataType.PtypMultipleInteger16,
                 PropertyDataType.PtypMultipleInteger32,
@@ -7782,15 +10206,15 @@ namespace MAPIInspector.Parsers
                 PropertyDataType.PtypMultipleBinary
             };
 
-            CodePageTypes = new List<CodePageType>
+            codePageTypes = new List<CodePageType>
             {
                 CodePageType.PtypCodePageUnicode,
                 CodePageType.PtypCodePageUnicodeBigendian,
                 CodePageType.PtypCodePageWesternEuropean
             };
 
-            MetaPropIds = new List<ushort> 
-            { 
+            metaPropIds = new List<ushort>
+            {
                 0x4016,
                 0x400f,
                 0x4011,
@@ -7807,7 +10231,7 @@ namespace MAPIInspector.Parsers
         /// <returns>If the PropertyDataType is a multi-value type return true, else false.</returns>
         public static bool IsMVType(PropertyDataType type)
         {
-            return MVTypes.Contains(type);
+            return mVTypes.Contains(type);
         }
 
         /// <summary>
@@ -7817,7 +10241,7 @@ namespace MAPIInspector.Parsers
         /// <returns>If the PropertyDataType is a either PtypString, PtypString8 or PtypBinary, PtypServerId, or PtypObject return true, else false.</returns>
         public static bool IsVarType(PropertyDataType type)
         {
-            return VarTypes.Contains(type);
+            return varTypes.Contains(type);
         }
 
         /// <summary>
@@ -7827,24 +10251,24 @@ namespace MAPIInspector.Parsers
         /// <returns>If a property type value of any type that has a fixed length, return true , else return false.</returns>
         public static bool IsFixedType(PropertyDataType type)
         {
-            return FixedTypes.Contains(type);
+            return fixedTypes.Contains(type);
         }
 
         /// <summary>
         /// Indicate whether a PropertyID is a Meta property ID.
         /// </summary>
-        /// <param name="id">A ushort value.</param>
+        /// <param name="id">A UShort value.</param>
         /// <returns>If a PropertyID is a Meta property ID, return true, else return false.</returns>
         public static bool IsMetaPropertyID(ushort id)
         {
-            return MetaPropIds.Contains(id);
+            return metaPropIds.Contains(id);
         }
 
         /// <summary>
-        /// Indicate whether a ushort value is a codePage property type. 
+        /// Indicate whether a UShort value is a codePage property type. 
         /// </summary>
-        /// <param name="type">A ushort value.</param>
-        /// <returns>If the ushort is a either PtypCodePageUnicode, PtypCodePageUnicodeBigendian or PtypCodePageWesternEuropean return true, else false.</returns>
+        /// <param name="type">A UShort value.</param>
+        /// <returns>If the UShort is a either PtypCodePageUnicode, PtypCodePageUnicodeBigendian or PtypCodePageWesternEuropean return true, else false.</returns>
         public static bool IsCodePageType(ushort type)
         {
             foreach (CodePageType t in Enum.GetValues(typeof(CodePageType)))
@@ -7864,249 +10288,26 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class LengthOfBlock
     {
-        public int totalSize;
+        /// <summary>
+        /// Specifies the number of blocks
+        /// </summary>
+        public int TotalSize;
+
+        /// <summary>
+        /// Specifies block length
+        /// </summary>
         public byte[] BlockSize;
-        public LengthOfBlock(int totalSize, byte[] BlockSize)
+
+        /// <summary>
+        /// Initializes a new instance of the LengthOfBlock class
+        /// </summary>
+        /// <param name="totalSize">The total size</param>
+        /// <param name="blockSize">The block size</param>
+        public LengthOfBlock(int totalSize, byte[] blockSize)
         {
-            this.totalSize = totalSize;
-            this.BlockSize = BlockSize;
+            this.TotalSize = totalSize;
+            this.BlockSize = blockSize;
         }
-    }
-    #endregion
-
-    #region Enum
-
-    /// <summary>
-    /// Code page property types are used to transmit string properties using the code page format of the string as stored on the server,
-    /// </summary>
-    public enum CodePageType : ushort
-    {
-        PtypCodePageUnicode = 0x84B0,
-        PtypCodePageUnicodeBigendian = 0x84B1,
-        PtypCodePageWesternEuropean = 0x84E4
-    }
-
-    /// <summary>
-    /// Represents the type of FastTransfer stream.
-    /// </summary>
-    public enum FastTransferStreamType
-    {
-        contentsSync = 1,
-        hierarchySync = 2,
-        state = 3,
-        folderContent = 4,
-        MessageContent = 5,
-        attachmentContent = 6,
-        MessageList = 7,
-        TopFolder = 8
-    }
-
-    /// <summary>
-    ///  Object handles type. 
-    /// </summary>
-    public enum ObjectHandlesType : byte
-    {
-        FolderHandles = 0x01,
-        MessageHandles = 0x02,
-        AttachmentHandles = 0x03,
-    }
-
-    /// <summary>
-    /// Syntactical markers
-    /// </summary>
-    public enum Markers : uint
-    {
-        StartTopFld = 0x40090003,
-        EndFolder = 0x400B0003,
-        StartSubFld = 0x400A0003,
-        StartMessage = 0x400C0003,
-        EndMessage = 0x400D0003,
-        StartFAIMsg = 0x40100003,
-        StartEmbed = 0x40010003,
-        EndEmbed = 0x40020003,
-        StartRecip = 0x40030003,
-        EndToRecip = 0x40040003,
-        NewAttach = 0x40000003,
-        EndAttach = 0x400E0003,
-        IncrSyncChg = 0x40120003,
-        IncrSyncChgPartial = 0x407D0003,
-        IncrSyncDel = 0x40130003,
-        IncrSyncEnd = 0x40140003,
-        IncrSyncRead = 0x402F0003,
-        IncrSyncStateBegin = 0x403A0003,
-        IncrSyncStateEnd = 0x403B0003,
-        IncrSyncProgressMode = 0x4074000B,
-        IncrSyncProgressPerMsg = 0x4075000B,
-        IncrSyncMessage = 0x40150003,
-        IncrSyncGroupInfo = 0x407B0102,
-        FXErrorInfo = 0x40180003,
-    }
-
-    /// <summary>
-    /// Meta properties
-    /// </summary>
-    public enum MetaProperties : uint
-    {
-        MetaTagEcWarning = 0x400f0003,
-        MetaTagNewFXFolder = 0x40110102,
-        MetaTagFXDelProp = 0x40160003,
-        MetaTagIncrSyncGroupId = 0x407c0003,
-        MetaTagIncrementalSyncMessagePartial = 0x407a0003,
-        MetaTagDnPrefix = 0x4008001E
-    }
-
-    /// <summary>
-    /// An enumeration that specifies the current status of the transfer. 
-    /// </summary>
-    public enum TransferStatus : ushort
-    {
-        Error = 0x0000,
-        Partial = 0x0001,
-        NoRoom = 0x0002,
-        Done = 0x0003,
-    }
-
-    /// <summary>
-    /// An enumeration that specifies flags control the type of RopFastTransferSourceCopyFolder operation. 
-    /// </summary>
-    public enum CopyFlags_CopyFolder : byte
-    {
-        Move = 0x01,
-        Unused1 = 0x02,
-        Unused2 = 0x04,
-        Unused3 = 0x08,
-        CopySubfolders = 0x10,
-    }
-
-    /// <summary>
-    /// An enumeration that specifies flags control the type of RopFastTransferSourceCopyMessages operation. 
-    /// </summary>
-    public enum CopyFlags_CopyMessages : byte
-    {
-        Move = 0x01,
-        Unused1 = 0x02,
-        Unused2 = 0x04,
-        Unused3 = 0x08,
-        BestBody = 0x10,
-        SendEntryId = 0x20,
-    }
-
-    /// <summary>
-    /// An enumeration that specifies flags control the type of RopFastTransferSourceCopyProperties operation. 
-    /// </summary>
-    public enum CopyFlags_CopyProperties : byte
-    {
-        Move = 0x01,
-        Unused1 = 0x02,
-        Unused2 = 0x04,
-        Unused3 = 0x08,
-    }
-
-    /// <summary>
-    /// An enumeration that specifies flags control the type of RopFastTransferSourceCopyTo operation. 
-    /// </summary>
-    public enum CopyFlags_CopyTo : uint
-    {
-        Move = 0x00000001,
-        Unused1 = 0x00000002,
-        Unused2 = 0x00000004,
-        Unused3 = 0x00000008,
-        Unused4 = 0x00000200,
-        Unused5 = 0x00000400,
-        BestBody = 0x0002000,
-    }
-
-    /// <summary>
-    /// An enumeration that specifies flags control the behavior of RopFastTransferSourceCopy operations. 
-    /// </summary>
-    [Flags]
-    public enum SendOptions : byte
-    {
-        Unicode = 0x01,
-        UseCpid = 0x02,
-        ForUpload = 0x03,
-        RecoverMode = 0x04,
-        ForceUnicode = 0x08,
-        PartialItem = 0x10,
-        Reserved1 = 0x20,
-        Reserved2 = 0x40,
-    }
-
-    /// <summary>
-    /// An enumeration that defines the type of synchronization requested. 
-    /// </summary>
-    public enum SynchronizationType : byte
-    {
-        Contents = 0x01,
-        Hierarchy = 0x02,
-    }
-
-    /// <summary>
-    /// A flags structure that contains flags that control the behavior of the synchronization.
-    /// </summary>
-    [Flags]
-    public enum SynchronizationFlags : ushort
-    {
-        Unicode = 0x0001,
-        NoDeletions = 0x0002,
-        IgnoreNoLongerInScope = 0x0004,
-        ReadState = 0x0008,
-        FAI = 0x0010,
-        Normal = 0x0020,
-        OnlySpecifiedProperties = 0x0080,
-        NoForeignIdentifies = 0x0100,
-        Reserved = 0x1000,
-        BesBody = 0x2000,
-        IgnoreSpecifiedOnFAI = 0x4000,
-        Progress = 0x8000,
-    }
-
-    /// <summary>
-    /// A flags structure that contains flags control the additional behavior of the synchronization.
-    /// </summary>
-    public enum SynchronizationExtraFlags : uint
-    {
-        Eid = 0x00000001,
-        MessageSize = 0x00000002,
-        CN = 0x00000004,
-        OrderByDeliveryTime = 0x00000008,
-    }
-
-    /// <summary>
-    /// This enumeration is used to specify the type of data in a FastTransfer stream that is uploaded by using the RopFastTransferDestinationPutBuffer ROP.
-    /// </summary>
-    public enum SourceOperation : byte
-    {
-        CopyTo = 0x01,
-        CopyProperties = 0x02,
-        CopyMessages = 0x03,
-        CopyFolder = 0x04,
-    }
-
-    /// <summary>
-    /// This enumeration is used to specify CopyFlags for destination configure.
-    /// </summary>
-    public enum CopyFlags_DestinationConfigure : byte
-    {
-        Move = 0x01,
-    }
-
-    /// <summary>
-    /// An flag structure that defines the parameters of the import operation.
-    /// </summary>
-    public enum ImportDeleteFlags : byte
-    {
-        Hierarchy = 0x01,
-        HardDelete = 0x02,
-    }
-
-    /// <summary>
-    /// An flag structure that defines the parameters of the import operation.
-    /// </summary>
-    public enum ImportFlag : byte
-    {
-        Associated = 0x10,
-        FailOnConflict = 0x40,
     }
     #endregion
 
@@ -8128,12 +10329,12 @@ namespace MAPIInspector.Parsers
         public ulong GlobalCounter;
 
         /// <summary>
-        /// An unshort.
+        /// An UShort.
         /// </summary>
-        public ushort pad;
+        public ushort Pad;
 
         /// <summary>
-        /// Initializes a new instance of the LongTermId structure.
+        /// Initializes a new instance of the LongTermId class.
         /// </summary>
         /// <param name="stream">A FastTransferStream.</param>
         public LongTermId(FastTransferStream stream)
@@ -8142,16 +10343,14 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Parse the ROP response buffer.
+        /// Parse the LongTermId structure
         /// </summary>
-        /// <param name="ropBytes">ROPs bytes in response.</param>
-        /// <param name="startIndex">The start index of this ROP.</param>
-        /// <returns>The size of response buffer structure.</returns>
+        /// <param name="stream">The stream to parse</param>
         public override void Parse(FastTransferStream stream)
         {
             this.DatabaseGuid = stream.ReadGuid();
             this.GlobalCounter = BitConverter.ToUInt64(stream.ReadBlock(6), 0);
-            this.pad = stream.ReadUInt16();
+            this.Pad = stream.ReadUInt16();
         }
     }
     #endregion

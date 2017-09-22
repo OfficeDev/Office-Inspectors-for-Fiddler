@@ -1,35 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
-using Outlook = Microsoft.Office.Interop.Outlook;
-using System.Configuration;
-using System.Threading;
-using System.IO;
-using System.Windows.Automation;
-using System.Xml.Serialization;
-using System.Xml.Linq;
-using System.Xml;
-using System.Linq;
-
-namespace MAPIAutomationTest
+﻿namespace MAPIAutomationTest
 {
     extern alias FiddlerCore;
     extern alias FiddlerExe;
-    using System.Diagnostics;
+
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using System.Threading;
+
+    /// <summary>
+    /// The class is used to parse the capture files.
+    /// </summary>
     public class MessageParser
     {
-        public static List<FiddlerCore.Fiddler.Session> oAllSessions;
-        public static FiddlerCore.Fiddler.Proxy oSecureEndpoint;
-        public static string sSecureEndpointHostname = "localhost";
-        public static int iSecureEndpointPort = 7777;
+        /// <summary>
+        /// The all sessions read
+        /// </summary>
+        public static List<FiddlerCore.Fiddler.Session> OAllSessions;
+
+        /// <summary>
+        /// The secure endpoint to use
+        /// </summary>
+        public static FiddlerCore.Fiddler.Proxy OSecureEndpoint;
+
+        /// <summary>
+        /// The secure host name
+        /// </summary>
+        public static string SSecureEndpointHostname = "localhost";
+
+        /// <summary>
+        /// The secure endpoint port
+        /// </summary>
+        public static int ISecureEndpointPort = 7777;
 
         /// <summary>
         /// Start Fiddler application to get the capture file
         /// </summary>
         public static void StartFiddler()
         {
-            oAllSessions = new List<FiddlerCore.Fiddler.Session>();
+            OAllSessions = new List<FiddlerCore.Fiddler.Session>();
 
             FiddlerCore.Fiddler.FiddlerApplication.BeforeRequest += delegate(FiddlerCore.Fiddler.Session oS)
             {
@@ -39,9 +50,9 @@ namespace MAPIAutomationTest
                 // the response in the BeforeResponse handler rather than streaming
                 // the response to the client as the response comes in.
                 oS.bBufferResponse = false;
-                Monitor.Enter(oAllSessions);
-                oAllSessions.Add(oS);
-                Monitor.Exit(oAllSessions);
+                Monitor.Enter(OAllSessions);
+                OAllSessions.Add(oS);
+                Monitor.Exit(OAllSessions);
 
                 // Set this property if you want FiddlerCore to automatically authenticate by
                 // answering Digest/Negotiate/NTLM/Kerberos challenges itself
@@ -67,34 +78,23 @@ namespace MAPIAutomationTest
                     200 text/html                               <-- GET request received by the secure endpoint, port 7777
                 */
 
-                if ((oS.oRequest.pipeClient.LocalPort == iSecureEndpointPort) && (oS.hostname == sSecureEndpointHostname))
+                if ((oS.oRequest.pipeClient.LocalPort == ISecureEndpointPort) && (oS.hostname == SSecureEndpointHostname))
                 {
                     oS.utilCreateResponseAndBypassServer();
                     oS.oResponse.headers.SetStatus(200, "Ok");
                     oS.oResponse["Content-Type"] = "text/html; charset=UTF-8";
                     oS.oResponse["Cache-Control"] = "private, max-age=0";
-                    oS.utilSetResponseBody("<html><body>Request for httpS://" + sSecureEndpointHostname + ":" + iSecureEndpointPort.ToString() + " received. Your request was:<br /><plaintext>" + oS.oRequest.headers.ToString());
+                    oS.utilSetResponseBody("<html><body>Request for httpS://" + SSecureEndpointHostname + ":" + ISecureEndpointPort.ToString() + " received. Your request was:<br /><plaintext>" + oS.oRequest.headers.ToString());
                 }
             };
 
-
             FiddlerCore.Fiddler.FiddlerApplication.AfterSessionComplete += delegate(FiddlerCore.Fiddler.Session oS)
             {
-                //Console.WriteLine("Finished session:\t" + oS.fullUrl); 
-                Console.Title = ("Session list contains: " + oAllSessions.Count.ToString() + " sessions");
+                Console.Title = "Session list contains: " + OAllSessions.Count.ToString() + " sessions";
             };
-
 
             string sSAZInfo = "NoSAZ";
             sSAZInfo = Assembly.GetAssembly(typeof(Ionic.Zip.ZipFile)).FullName;
-
-            // You can load Transcoders from any different assembly if you'd like, using the ImportTranscoders(string AssemblyPath) 
-            // overload.
-            //
-            //if (!FiddlerApplication.oTranscoders.ImportTranscoders(Assembly.GetExecutingAssembly()))
-            //{
-            //    Console.WriteLine("This assembly was not compiled with a SAZ-exporter");
-            //}
 
             Fiddler.DNZSAZProvider.fnObtainPwd = () =>
             {
@@ -110,59 +110,18 @@ namespace MAPIAutomationTest
             // sites that use invalid certificates. Change this from the default only
             // if you know EXACTLY what that implies.
             FiddlerCore.Fiddler.CONFIG.IgnoreServerCertErrors = false;
-
-            // ... but you can allow a specific (even invalid) certificate by implementing and assigning a callback...
-            // FiddlerApplication.OnValidateServerCertificate += new System.EventHandler<ValidateServerCertificateEventArgs>(CheckCert);
-
             FiddlerCore.Fiddler.FiddlerApplication.Prefs.SetBoolPref("fiddler.network.streaming.abortifclientaborts", true);
 
             // For forward-compatibility with updated FiddlerCore libraries, it is strongly recommended that you 
             // start with the DEFAULT options and manually disable specific unwanted options.
             FiddlerCore.Fiddler.FiddlerCoreStartupFlags oFCSF = FiddlerCore.Fiddler.FiddlerCoreStartupFlags.Default;
-            int iPort = 8877;
+            int fiddlerPort = 8877;
             if (!FiddlerCore.Fiddler.FiddlerApplication.IsStarted())
             {
-                FiddlerCore.Fiddler.FiddlerApplication.Startup(iPort, oFCSF);
+                FiddlerCore.Fiddler.FiddlerApplication.Startup(fiddlerPort, oFCSF);
             }
                      
-            oSecureEndpoint = FiddlerCore.Fiddler.FiddlerApplication.CreateProxyEndpoint(iSecureEndpointPort, true, sSecureEndpointHostname);
-
-            /*
-            // Inside your main object, create a list to hold the sessions
-            // This generic list type requires your source file includes #using System.Collections.Generic.
-            oAllSessions = new List<FiddlerCore.Fiddler.Session>();
-            //MessageParser.ClearSessions();
-
-            // Inside your attached event handlers, add the session to the list:
-            FiddlerCore.Fiddler.FiddlerApplication.BeforeRequest += delegate (FiddlerCore.Fiddler.Session oS)
-            {
-                Monitor.Enter(oAllSessions);
-                oAllSessions.Add(oS);
-                Monitor.Exit(oAllSessions);
-            };
-
-            FiddlerCore.Fiddler.FiddlerApplication.AfterSessionComplete += delegate(FiddlerCore.Fiddler.Session oS)
-            {
-            };
-
-            string sSAZInfo = "NoSAZ";
-            sSAZInfo = Assembly.GetAssembly(typeof(Ionic.Zip.ZipFile)).FullName;
-
-            Fiddler.DNZSAZProvider.fnObtainPwd = () =>
-            {
-                Console.WriteLine("Enter the password (or just hit Enter to cancel):");
-                string sResult = Console.ReadLine();
-                Console.WriteLine();
-                return sResult;
-            };
-
-            FiddlerCore.Fiddler.FiddlerApplication.oSAZProvider = new Fiddler.DNZSAZProvider();
-
-            if (!FiddlerCore.Fiddler.FiddlerApplication.IsStarted())
-            {
-                FiddlerCore.Fiddler.FiddlerApplication.Startup(8888, FiddlerCore.Fiddler.FiddlerCoreStartupFlags.Default);
-            }
-            */
+            OSecureEndpoint = FiddlerCore.Fiddler.FiddlerApplication.CreateProxyEndpoint(ISecureEndpointPort, true, SSecureEndpointHostname);
         }
 
         /// <summary>
@@ -170,99 +129,128 @@ namespace MAPIAutomationTest
         /// </summary>
         public static void ClearSessions()
         {
-            Monitor.Enter(oAllSessions);
-            oAllSessions.Clear();
-            Monitor.Exit(oAllSessions);
+            Monitor.Enter(OAllSessions);
+            OAllSessions.Clear();
+            Monitor.Exit(OAllSessions);
         }
-
 
         /// <summary>
         /// Save Fiddler sessions to local machine
         /// </summary>
-        /// <param name="oAllSessions">All sessions in Fiddler</param>
+        /// <param name="testName">The test case name</param>
+        /// <returns>Saved result, true means success</returns>
         public static string SaveSessionsToLocal(string testName)
         {
-            bool bSuccess = false;
-            string fileName = "";
-            string sFilenamePath = TestBase.testingfolderPath + Path.DirectorySeparatorChar + testName;
-            string sFileName = DateTime.Now.ToString("hh-mm-ss") + ".saz";
-            string fullName = sFilenamePath + Path.DirectorySeparatorChar + sFileName;
-            List<FiddlerCore.Fiddler.Session> oAllSessionsNew = new List<FiddlerCore.Fiddler.Session>();
-            oAllSessionsNew = oAllSessions;
+            bool isSuccessful = false;
+            string fileName = string.Empty;
+            string secureFilenamePath = TestBase.TestingfolderPath + Path.DirectorySeparatorChar + testName;
+            string secureFileName = DateTime.Now.ToString("hh-mm-ss") + ".saz";
+            //string fullName = secureFilenamePath + Path.DirectorySeparatorChar + secureFileName;
+            string fullName = @"E:\MAPIInspector\new" + secureFileName;
+            List<FiddlerCore.Fiddler.Session> allSessionsNew = new List<FiddlerCore.Fiddler.Session>();
+            allSessionsNew = OAllSessions;
             try
             {
                 try
                 {
-                    Monitor.Enter(oAllSessionsNew);
-                    string sPassword = null;
-                    if (!Directory.Exists(sFilenamePath))
+                    Monitor.Enter(allSessionsNew);
+                    string password = null;
+                    if (!Directory.Exists(secureFilenamePath))
                     {
-                        Directory.CreateDirectory(sFilenamePath);
+                        Directory.CreateDirectory(secureFilenamePath);
                     }
-                    bSuccess = FiddlerCore.Fiddler.Utilities.WriteSessionArchive(fullName, oAllSessionsNew.ToArray(), sPassword, false);
-                    if (bSuccess)
+
+                    isSuccessful = FiddlerCore.Fiddler.Utilities.WriteSessionArchive(fullName, allSessionsNew.ToArray(), password, false);
+                    if (isSuccessful)
                     {
                         fileName = fullName;
                     }
                 }
                 finally
                 {
-                    Monitor.Exit(oAllSessionsNew);
+                    Monitor.Exit(allSessionsNew);
                 }
             }
             catch (Exception eX)
             {
                 Console.WriteLine("Save failed: " + eX.Message);
             }
+
             return fileName;
         }
 
-        public static bool ParseMessageUsingMAPIInspector(string fileName)
+        /// <summary>
+        /// Parse the capture file using the MAPI Inspector
+        /// </summary>
+        /// <param name="fileName">The file name to parse</param>
+        /// <param name="allRops">All ROPs contained in list</param>
+        /// <returns>Parse result, true means success</returns>
+        public static bool ParseMessageUsingMAPIInspector(string fileName, out List<string> allRops)
         {
             bool result = true;
             List<FiddlerExe.Fiddler.Session> allSessions = new List<FiddlerExe.Fiddler.Session>();
             FiddlerExe.Fiddler.Session sessionExe;
 
-            List<FiddlerCore.Fiddler.Session> oAllSessionsNew = FiddlerCore.Fiddler.Utilities.ReadSessionArchive(fileName, false, "MAPIAutomationTest").ToList();
-            int sessionCount = oAllSessionsNew.Count;
+            List<FiddlerCore.Fiddler.Session> allSessionsNew = FiddlerCore.Fiddler.Utilities.ReadSessionArchive(fileName, false, "MAPIAutomationTest").ToList();
+            int sessionCount = allSessionsNew.Count;
 
             for (int i = 0; i < sessionCount; i++)
             {
                 FiddlerExe.Fiddler.HTTPRequestHeaders requestHeader = new FiddlerExe.Fiddler.HTTPRequestHeaders();
-                if (oAllSessionsNew[i].RequestHeaders.Exists("X-RequestType"))
+                if (allSessionsNew[i].RequestHeaders.Exists("X-RequestType"))
                 {
-                    requestHeader["X-RequestType"] = oAllSessionsNew[i].RequestHeaders["X-RequestType"];
-                }
-                if (oAllSessionsNew[i].RequestHeaders.ExistsAndContains("Content-Type", "application/mapi-http"))
-                {
-                    requestHeader["Content-Type"] = oAllSessionsNew[i].RequestHeaders["Content-Type"];
+                    requestHeader["X-RequestType"] = allSessionsNew[i].RequestHeaders["X-RequestType"];
                 }
 
-                sessionExe = new FiddlerExe.Fiddler.Session(requestHeader, oAllSessionsNew[i].requestBodyBytes);
-                sessionExe.responseBodyBytes = oAllSessionsNew[i].responseBodyBytes;
-
-                if (oAllSessionsNew[i].ResponseHeaders.Exists("Transfer-Encoding"))
+                if (allSessionsNew[i].RequestHeaders.ExistsAndContains("Content-Type", "application/mapi-http"))
                 {
-                    sessionExe["Transfer-Encoding"] = oAllSessionsNew[i].ResponseHeaders["Transfer-Encoding"];
+                    requestHeader["Content-Type"] = allSessionsNew[i].RequestHeaders["Content-Type"];
                 }
 
-                if (oAllSessionsNew[i].ResponseHeaders.Exists("X-ResponseCode"))
+                if (allSessionsNew[i].RequestHeaders.Exists("X-ClientInfo"))
                 {
-                    sessionExe["X-ResponseCode"] = oAllSessionsNew[i].ResponseHeaders["X-ResponseCode"];
+                    requestHeader["X-ClientInfo"] = allSessionsNew[i].RequestHeaders["X-ClientInfo"];
                 }
-                if (oAllSessionsNew[i].ResponseHeaders.Exists("Content-Type"))
+
+                sessionExe = new FiddlerExe.Fiddler.Session(requestHeader, allSessionsNew[i].requestBodyBytes);
+                sessionExe.responseBodyBytes = allSessionsNew[i].responseBodyBytes;
+
+                if (allSessionsNew[i].ResponseHeaders.Exists("Transfer-Encoding"))
                 {
-                    sessionExe["Content-Type"] = oAllSessionsNew[i].ResponseHeaders["Content-Type"];
+                    sessionExe["Transfer-Encoding"] = allSessionsNew[i].ResponseHeaders["Transfer-Encoding"];
                 }
-                sessionExe.fullUrl = oAllSessionsNew[i].fullUrl;
+
+                if (allSessionsNew[i].ResponseHeaders.Exists("X-ResponseCode"))
+                {
+                    sessionExe["X-ResponseCode"] = allSessionsNew[i].ResponseHeaders["X-ResponseCode"];
+                }
+
+                if (allSessionsNew[i].ResponseHeaders.Exists("Content-Type"))
+                {
+                    sessionExe["Content-Type"] = allSessionsNew[i].ResponseHeaders["Content-Type"];
+                }
+
+                if (allSessionsNew[i].LocalProcess != string.Empty)
+                {
+                    sessionExe["LocalProcess"] = allSessionsNew[i].LocalProcess;
+                }
+
+                sessionExe.fullUrl = allSessionsNew[i].fullUrl;
                 sessionExe["VirtualID"] = (i + 1).ToString();
 
                 allSessions.Add(sessionExe);
             }
 
             MapiInspector.MAPIInspector ma = new MapiInspector.MAPIInspector();
-            string errorPath = TestBase.testingfolderPath + Path.DirectorySeparatorChar + TestBase.testName;
-            result = ma.ParseCaptureFile(allSessions.ToArray(), errorPath);
+            // string errorPath = TestBase.TestingfolderPath + Path.DirectorySeparatorChar + TestBase.TestName;
+            string errorPath = TestBase.filePath;
+            result = ma.ParseCaptureFile(allSessions.ToArray(), errorPath, TestBase.TestName, out allRops);
+
+            if (!result)
+            {
+                string filenameNew = fileName.Split('\\').Last().Split('.').First();
+                File.Move(errorPath + "\\" + "error.txt", errorPath + "\\" + filenameNew + ".txt");
+            }
             return result;
         }
 
@@ -271,22 +259,24 @@ namespace MAPIAutomationTest
         /// </summary>
         public static void CloseFiddler()
         {
-            if (null != oSecureEndpoint) oSecureEndpoint.Dispose();
-            //oSecureEndpoint.Detach();
-            FiddlerCore.Fiddler.FiddlerApplication.Shutdown();
-            Thread.Sleep(500);
+            if (null != OSecureEndpoint)
+            {
+                OSecureEndpoint.Dispose();
+                FiddlerCore.Fiddler.FiddlerApplication.Shutdown();
+                Thread.Sleep(500);
+            }
         }
 
         /// <summary>
         /// Parse the capture file
         /// </summary>
-        /// <returns>The parsing result, true means no error.</returns>
-        public static bool ParseMessage()
+        /// <param name="allRops">All ROP list covered</param>
+        /// <returns>The parsing result, true means no error</returns>
+        public static bool ParseMessage(out List<string> allRops)
         {
             bool result = true;
-            string fileNameToParse = SaveSessionsToLocal(TestBase.testName);
-            //CloseFiddler();
-            result = ParseMessageUsingMAPIInspector(fileNameToParse);
+            string fileNameToParse = SaveSessionsToLocal(TestBase.TestName);
+            result = ParseMessageUsingMAPIInspector(fileNameToParse, out allRops);
             return result;
         }
     }

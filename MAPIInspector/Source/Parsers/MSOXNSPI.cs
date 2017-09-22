@@ -1,41 +1,179 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-
-namespace MAPIInspector.Parsers
+﻿namespace MAPIInspector.Parsers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
+
+    #region Enums values
+
+    #region 2.2.3 Display Type Values
+
+    /// <summary>
+    /// The DisplayTypeValues enum type 
+    /// </summary>
+    public enum DisplayTypeValues : uint
+    {
+        /// <summary>
+        /// A typical messaging user.
+        /// </summary>
+        DT_MAILUSER = 0x00000000,
+
+        /// <summary>
+        /// A distribution list.
+        /// </summary>
+        DT_DISTLIST = 0x00000001,
+
+        /// <summary>
+        /// A forum, such as a bulletin board service or a public or shared folder.
+        /// </summary>
+        DT_FORUM = 0x00000002,
+
+        /// <summary>
+        /// An automated agent, such as Quote-Of-The-Day or a weather chart display
+        /// </summary>
+        DT_AGENT = 0x00000003,
+
+        /// <summary>
+        /// An Address Book object defined for a large group
+        /// </summary>
+        DT_ORGANIZATION = 0x00000004,
+
+        /// <summary>
+        /// A private, personally administered distribution list.
+        /// </summary>
+        DT_PRIVATE_DISTLIST = 0x00000005,
+
+        /// <summary>
+        /// An Address Book object known to be from a foreign or remote messaging system
+        /// </summary>
+        DT_REMOTE_MAILUSER = 0x00000006,
+
+        /// <summary>
+        /// An address book hierarchy table container.
+        /// </summary>
+        DT_CONTAINER = 0x00000100,
+
+        /// <summary>
+        /// A display template object. An Exchange NSPI server MUST NOT return this display type.
+        /// </summary>
+        DT_TEMPLATE = 0x00000101,
+
+        /// <summary>
+        /// An address creation template. 
+        /// </summary>
+        DT_ADDRESS_TEMPLATE = 0x00000102,
+
+        /// <summary>
+        /// A search template
+        /// </summary>
+        DT_SEARCH = 0x00000200
+    }
+
+    #endregion
+
+    #region 2.2.8   Positioning Minimal Entry IDs
+    /// <summary>
+    /// The PositioningMinimalEntryIDs enum type 
+    /// </summary>
+    public enum PositioningMinimalEntryIDs : uint
+    {
+        /// <summary>
+        /// Specifies the position before the first row in the current address book container.
+        /// </summary>
+        MID_BEGINNING_OF_TABLE = 0x00000000,
+
+        /// <summary>
+        /// Specifies the position after the last row in the current address book container
+        /// </summary>
+        MID_END_OF_TABLE = 0x00000002,
+
+        /// <summary>
+        /// Specifies the current position in a table.
+        /// </summary>
+        MID_CURRENT = 0x00000001
+    }
+
+    #endregion
+
+    #region 2.2.10   Table Sort Order
+    /// <summary>
+    /// The TableSortOrders enum type 
+    /// </summary>
+    public enum TableSortOrders : uint
+    {
+        /// <summary>
+        /// The table is sorted ascending on the PidTagDisplayName property
+        /// </summary>
+        SortTypeDisplayName = 0x00000000,
+
+        /// <summary>
+        /// The table is sorted ascending on the PidTagAddressBookPhoneticDisplayName property
+        /// </summary>
+        SortTypePhoneticDisplayName = 0x00000003,
+
+        /// <summary>
+        /// The table is sorted ascending on the PidTagDisplayName property
+        /// </summary>
+        SortTypeDisplayName_RO = 0x000003E8,
+
+        /// <summary>
+        /// The table is sorted ascending on the PidTagDisplayName property
+        /// </summary>
+        SortTypeDisplayName_W = 0x000003E9
+    }
+    #endregion
+    #endregion
+    
     #region 2.2.8	STAT
     /// <summary>
     /// A class indicates the STAT structure.
     /// </summary>
     public class STAT : BaseStructure
     {
-        // A DWORD [MS-DTYP] value that specifies a sort order.
+        /// <summary>
+        /// A DWORD [MS-DTYP] value that specifies a sort order.
+        /// </summary>
         public uint SortType;
 
-        // A DWORD value that specifies the Minimal Entry ID of the address book container that this STAT structure represents. 
+        /// <summary>
+        /// A DWORD value that specifies the Minimal Entry ID of the address book container that this STAT structure represents. 
+        /// </summary>
         public uint ContainerID;
 
-        // A DWORD value that specifies a beginning position in the table for the start of an NSPI method. 
+        /// <summary>
+        /// A DWORD value that specifies a beginning position in the table for the start of an NSPI method. 
+        /// </summary>
         public uint CurrentRec;
 
-        // A long value that specifies an offset from the beginning position in the table for the start of an NSPI method. 
+        /// <summary>
+        /// A long value that specifies an offset from the beginning position in the table for the start of an NSPI method. 
+        /// </summary>
         public uint Delta;
 
-        // A DWORD value that specifies a position in the table. 
+        /// <summary>
+        /// A DWORD value that specifies a position in the table. 
+        /// </summary>
         public uint NumPos;
 
-        // A DWORD value that specifies the number of rows in the table. 
+        /// <summary>
+        /// A DWORD value that specifies the number of rows in the table. 
+        /// </summary>
         public uint TotalRecs;
 
-        // A DWORD value that represents a code page. 
+        /// <summary>
+        /// A DWORD value that represents a code page. 
+        /// </summary>
         public uint CodePage;
 
-        // A DWORD value that represents a language code identifier (LCID). 
+        /// <summary>
+        /// A DWORD value that represents a language code identifier (LCID). 
+        /// </summary>
         public uint TemplateLocale;
 
-        // A DWORD value that represents an LCID. 
+        /// <summary>
+        /// A DWORD value that represents an LCID. 
+        /// </summary>
         public uint SortLocale;
 
         /// <summary>
@@ -45,15 +183,15 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.SortType = ReadUint();
-            this.ContainerID = ReadUint();
-            this.CurrentRec = ReadUint();
-            this.Delta = ReadUint();
-            this.NumPos = ReadUint();
-            this.TotalRecs = ReadUint();
-            this.CodePage = ReadUint();
-            this.TemplateLocale = ReadUint();
-            this.SortLocale = ReadUint();
+            this.SortType = this.ReadUint();
+            this.ContainerID = this.ReadUint();
+            this.CurrentRec = this.ReadUint();
+            this.Delta = this.ReadUint();
+            this.NumPos = this.ReadUint();
+            this.TotalRecs = this.ReadUint();
+            this.CodePage = this.ReadUint();
+            this.TemplateLocale = this.ReadUint();
+            this.SortLocale = this.ReadUint();
         }
     }
     #endregion
@@ -66,7 +204,9 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class MinimalEntryID : BaseStructure
     {
-        // A Minimal Entry ID is a single DWORD value that identifies a specific object in the address book. 
+        /// <summary>
+        /// A Minimal Entry ID is a single DWORD value that identifies a specific object in the address book. 
+        /// </summary>
         public uint MinEntryID;
 
         /// <summary>
@@ -76,7 +216,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.MinEntryID = ReadUint();
+            this.MinEntryID = this.ReadUint();
         }
     }
     #endregion
@@ -88,28 +228,44 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class EphemeralEntryID : BaseStructure
     {
-        // The type of this ID.
+        /// <summary>
+        /// The type of this ID.
+        /// </summary>
         public byte Type;
 
-        // Reserved, generally this value is a constant 0x00.
+        /// <summary>
+        /// Reserved, generally this value is a constant 0x00.
+        /// </summary>
         public byte R1;
 
-        // Reserved, generally this value is a constant 0x00.
+        /// <summary>
+        /// Reserved, generally this value is a constant 0x00.
+        /// </summary>
         public byte R2;
 
-        // Reserved, generally this value is a constant 0x00.
+        /// <summary>
+        /// Reserved, generally this value is a constant 0x00.
+        /// </summary>
         public byte R3;
 
-        // A FlatUID_r value contains the GUID of the server that issued this Ephemeral Entry ID.
+        /// <summary>
+        /// A FlatUID_r value contains the GUID of the server that issued this Ephemeral Entry ID.
+        /// </summary>
         public Guid ProviderUID;
 
-        // Reserved, generally this value is a constant 0x00000001.
+        /// <summary>
+        /// Reserved, generally this value is a constant 0x00000001.
+        /// </summary>
         public uint R4;
 
-        // The display type of the object specified by this Ephemeral Entry ID. 
+        /// <summary>
+        /// The display type of the object specified by this Ephemeral Entry ID. 
+        /// </summary>
         public DisplayTypeValues DisplayType;
 
-        // The Minimal Entry ID of this object. 
+        /// <summary>
+        /// The Minimal Entry ID of this object. 
+        /// </summary>
         public MinimalEntryID Mid;
 
         /// <summary>
@@ -119,13 +275,13 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.Type = ReadByte();
-            this.R1 = ReadByte();
-            this.R2 = ReadByte();
-            this.R3 = ReadByte();
-            this.ProviderUID = ReadGuid();
-            this.R4 = ReadUint();
-            this.DisplayType = (DisplayTypeValues)ReadUint();
+            this.Type = this.ReadByte();
+            this.R1 = this.ReadByte();
+            this.R2 = this.ReadByte();
+            this.R3 = this.ReadByte();
+            this.ProviderUID = this.ReadGuid();
+            this.R4 = this.ReadUint();
+            this.DisplayType = (DisplayTypeValues)this.ReadUint();
             this.Mid = new MinimalEntryID();
             this.Mid.Parse(s);
         }
@@ -140,28 +296,44 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class PermanentEntryID : BaseStructure
     {
-        // The type of this ID. 
+        /// <summary>
+        /// The type of this ID. 
+        /// </summary>
         public byte IDType;
 
-        // Reserved. All clients and servers MUST set this value to the constant 0x00.
+        /// <summary>
+        /// Reserved. All clients and servers MUST set this value to the constant 0x00.
+        /// </summary>
         public byte R1;
 
-        // Reserved. All clients and servers MUST set this value to the constant 0x00.
+        /// <summary>
+        /// Reserved. All clients and servers MUST set this value to the constant 0x00.
+        /// </summary>
         public byte R2;
 
-        // Reserved. All clients and servers MUST set this value to the constant 0x00.
+        /// <summary>
+        /// Reserved. All clients and servers MUST set this value to the constant 0x00.
+        /// </summary>
         public byte R3;
 
-        // A FlatUID_r value that contains the constant GUID specified in Permanent Entry ID GUID, 
+        /// <summary>
+        /// A FlatUID_r value that contains the constant GUID specified in Permanent Entry ID GUID, 
+        /// </summary>
         public Guid ProviderUID;
 
-        // Reserved. All clients and servers MUST set this value to the constant 0x00000001.
+        /// <summary>
+        /// Reserved. All clients and servers MUST set this value to the constant 0x00000001.
+        /// </summary>
         public uint R4;
 
-        // The display type of the object specified by this Permanent Entry ID. 
+        /// <summary>
+        /// The display type of the object specified by this Permanent Entry ID. 
+        /// </summary>
         public DisplayTypeValues DisplayTypeString;
 
-        // The DN (1) of the object specified by this Permanent Entry ID. 
+        /// <summary>
+        /// The DN (1) of the object specified by this Permanent Entry ID. 
+        /// </summary>
         public MAPIString DistinguishedName;
 
         /// <summary>
@@ -171,13 +343,13 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.IDType = ReadByte();
-            this.R1 = ReadByte();
-            this.R2 = ReadByte();
-            this.R3 = ReadByte();
-            this.ProviderUID = ReadGuid();
-            this.R4 = ReadUint();
-            this.DisplayTypeString = (DisplayTypeValues)ReadUint();
+            this.IDType = this.ReadByte();
+            this.R1 = this.ReadByte();
+            this.R2 = this.ReadByte();
+            this.R3 = this.ReadByte();
+            this.ProviderUID = this.ReadGuid();
+            this.R4 = this.ReadUint();
+            this.DisplayTypeString = (DisplayTypeValues)this.ReadUint();
             this.DistinguishedName = new MAPIString(Encoding.ASCII);
             this.DistinguishedName.Parse(s);
         }
@@ -188,17 +360,16 @@ namespace MAPIInspector.Parsers
     #endregion
 
     #region 2.2.2	Property Values
-    /// <summary>
-    /// 2.2.2.1	FlatUID_r Structure
-    /// </summary>
 
     /// <summary>
     /// A class indicates the FlatUID_r structure.
     /// </summary>
     public class FlatUID_r : BaseStructure
     {
-        // Encodes the ordered bytes of the FlatUID data structure.
-        public Guid ab;
+        /// <summary>
+        /// Encodes the ordered bytes of the FlatUID data structure.
+        /// </summary>
+        public Guid Ab;
 
         /// <summary>
         /// Parse the FlatUID_r payload of session.
@@ -207,7 +378,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.ab = ReadGuid();
+            this.Ab = this.ReadGuid();
         }
     }
 
@@ -216,14 +387,20 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class PropertyValue_r : BaseStructure
     {
-        // Encodes the proptag of the property whose value is represented by the PropertyValue_r data structure.
-        public uint ulPropTag;
+        /// <summary>
+        /// Encodes the PropTag of the property whose value is represented by the PropertyValue_r data structure.
+        /// </summary>
+        public uint UlPropTag;
 
-        // Reserved. All clients and servers MUST set this value to the constant 0x00000000.
+        /// <summary>
+        /// Reserved. All clients and servers MUST set this value to the constant 0x00000000.
+        /// </summary>
         public uint Reserved;
 
-        // Encodes the actual value of the property represented by the PropertyValue_r data structure. 
-        public PROP_VAL_UNION value;
+        /// <summary>
+        /// Encodes the actual value of the property represented by the PropertyValue_r data structure. 
+        /// </summary>
+        public PROP_VAL_UNION Value;
 
         /// <summary>
         /// Parse the PropertyValue_r payload of session.
@@ -232,12 +409,11 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.ulPropTag = ReadUint();
-            this.Reserved = ReadUint();
-            this.value = new PROP_VAL_UNION((int)this.ulPropTag & 0XFFFF);
-            this.value.Parse(s);
+            this.UlPropTag = this.ReadUint();
+            this.Reserved = this.ReadUint();
+            this.Value = new PROP_VAL_UNION((int)this.UlPropTag & 0XFFFF);
+            this.Value.Parse(s);
         }
-
     }
 
     /// <summary>
@@ -245,62 +421,98 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class PROP_VAL_UNION : BaseStructure
     {
-        // PROP_VAL_UNION contains an encoding of the value of a property that can contain a single 16-bit integer value.
-        public short? i;
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the value of a property that can contain a single 16-bit integer value.
+        /// </summary>
+        public short? I;
 
-        // PROP_VAL_UNION contains an encoding of the value of a property that can contain a single 32-bit integer value.
-        public int? l;
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the value of a property that can contain a single 32-bit integer value.
+        /// </summary>
+        public int? L;
 
-        // PROP_VAL_UNION contains an encoding of the value of a property that can contain a single Boolean value. 
-        public ushort? b;
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the value of a property that can contain a single Boolean value. 
+        /// </summary>
+        public ushort? B;
 
-        // PROP_VAL_UNION contains an encoding of the value of a property that can contain a single 8-bit character string value. 
-        public String_r lpszA;
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the value of a property that can contain a single 8-bit character string value. 
+        /// </summary>
+        public String_r LpszA;
 
-        // PROP_VAL_UNION contains an encoding of the value of a property that can contain a single binary data value. 
-        public Binary_r bin;
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the value of a property that can contain a single binary data value. 
+        /// </summary>
+        public Binary_r Bin;
 
-        // PROP_VAL_UNION contains an encoding of the value of a property that can contain a single Unicode string value. 
-        public WString_r lpszW;
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the value of a property that can contain a single Unicode string value.
+        /// </summary>
+        public WString_r LpszW;
 
-        // PROP_VAL_UNION contains an encoding of the value of a property that can contain a single GUID value. 
-        public FlatUID_r lpguid;
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the value of a property that can contain a single GUID value. 
+        /// </summary>
+        public FlatUID_r Lpguid;
 
-        // PROP_VAL_UNION contains an encoding of the value of a property that can contain a single 64-bit integer value. 
-        public PtypTime ft;
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the value of a property that can contain a single 64-bit integer value. 
+        /// </summary>
+        public PtypTime Ft;
 
-        // PROP_VAL_UNION contains an encoding of the value of a property that can contain a single PtypErrorCode value.
-        public int? err;
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the value of a property that can contain a single PtypErrorCode value.
+        /// </summary>
+        public int? Err;
 
-        // PROP_VAL_UNION contains an encoding of the values of a property that can contain multiple 16-bit integer values. 
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the values of a property that can contain multiple 16-bit integer values. 
+        /// </summary>
         public ShortArray_r MVi;
 
-        // PROP_VAL_UNION contains an encoding of the values of a property that can contain multiple 32-bit integer values. 
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the values of a property that can contain multiple 32-bit integer values. 
+        /// </summary>
         public LongArray_r MVl;
 
-        // PROP_VAL_UNION contains an encoding of the values of a property that can contain multiple 8-bit character string values. 
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the values of a property that can contain multiple 8-bit character string values. 
+        /// </summary>
         public StringArray_r MVszA;
 
-        // PROP_VAL_UNION contains an encoding of the values of a property that can contain multiple binary data values. 
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the values of a property that can contain multiple binary data values. 
+        /// </summary>
         public BinaryArray_r MVbin;
 
-        // PROP_VAL_UNION contains an encoding of the values of a property that can contain multiple GUID values. 
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the values of a property that can contain multiple GUID values. 
+        /// </summary>
         public FlatUIDArray_r MVguid;
 
-        // PROP_VAL_UNION contains an encoding of the values of a property that can contain multiple Unicode string values. 
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the values of a property that can contain multiple Unicode string values. 
+        /// </summary>
         public WStringArray_r MVszW;
 
-        // PROP_VAL_UNION contains an encoding of the value of a property that can contain multiple 64-bit integer values. 
+        /// <summary>
+        /// PROP_VAL_UNION contains an encoding of the value of a property that can contain multiple 64-bit integer values. 
+        /// </summary>
         public DateTimeArray_r MVft;
 
-        // Reserved. All clients and servers MUST set this value to the constant 0x00000000.
-        public int? lReserved;
+        /// <summary>
+        /// Reserved. All clients and servers MUST set this value to the constant 0x00000000.
+        /// </summary>
+        public int? LReserved;
 
-        // Int value to initialize PROP_VAL_UNION constructed function.
+        /// <summary>
+        /// Int value to initialize PROP_VAL_UNION constructed function.
+        /// </summary>
         private int tag;
 
         /// <summary>
-        /// The constructed function.
+        /// Initializes a new instance of the PROP_VAL_UNION class.
         /// </summary>
         /// <param name="tag">The int value to initialize the function.</param>
         public PROP_VAL_UNION(int tag)
@@ -318,36 +530,36 @@ namespace MAPIInspector.Parsers
             switch (this.tag)
             {
                 case 0x00000002:
-                    this.i = ReadINT16();
+                    this.I = this.ReadINT16();
                     break;
                 case 0x00000003:
-                    this.l = ReadINT32();
+                    this.L = this.ReadINT32();
                     break;
                 case 0x0000000B:
-                    this.b = ReadUshort();
+                    this.B = this.ReadUshort();
                     break;
                 case 0x0000001E:
-                    this.lpszA = new String_r();
-                    this.lpszA.Parse(s);
+                    this.LpszA = new String_r();
+                    this.LpszA.Parse(s);
                     break;
                 case 0x00000102:
-                    this.bin = new Binary_r();
-                    this.bin.Parse(s);
+                    this.Bin = new Binary_r();
+                    this.Bin.Parse(s);
                     break;
                 case 0x0000001F:
-                    this.lpszW = new WString_r();
-                    this.lpszW.Parse(s);
+                    this.LpszW = new WString_r();
+                    this.LpszW.Parse(s);
                     break;
                 case 0x00000048:
-                    this.lpguid = new FlatUID_r();
-                    this.lpguid.Parse(s);
+                    this.Lpguid = new FlatUID_r();
+                    this.Lpguid.Parse(s);
                     break;
                 case 0x00000040:
-                    this.ft = new PtypTime();
-                    this.ft.Parse(s);
+                    this.Ft = new PtypTime();
+                    this.Ft.Parse(s);
                     break;
                 case 0x0000000A:
-                    this.err = ReadINT32();
+                    this.Err = this.ReadINT32();
                     break;
                 case 0x00001002:
                     this.MVi = new ShortArray_r();
@@ -379,7 +591,7 @@ namespace MAPIInspector.Parsers
                     break;
                 case 0x00000001:
                 case 0x0000000D:
-                    this.lReserved = ReadINT32();
+                    this.LReserved = this.ReadINT32();
                     break;
                 default:
                     break;
@@ -392,10 +604,14 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class String_r : BaseStructure
     {
-        // A variable value
+        /// <summary>
+        /// A variable value
+        /// </summary>
         public byte? MagicNumber;
 
-        // A single 8-bit character string value. This value is NULL-terminated.
+        /// <summary>
+        /// A single 8-bit character string value. This value is NULL-terminated.
+        /// </summary>
         public MAPIString Value;
 
         /// <summary>
@@ -414,6 +630,7 @@ namespace MAPIInspector.Parsers
             {
                 s.Position -= 1;
             }
+
             this.Value = new MAPIString(Encoding.ASCII);
             this.Value.Parse(s);
         }
@@ -424,10 +641,14 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class WString_r : BaseStructure
     {
-        // A variable value
+        /// <summary>
+        /// A variable value
+        /// </summary>
         public byte? MagicNumber;
 
-        // A single Unicode string value. This value is NULL-terminated.
+        /// <summary>
+        /// A single Unicode string value. This value is NULL-terminated.
+        /// </summary>
         public MAPIString Value;
 
         /// <summary>
@@ -446,6 +667,7 @@ namespace MAPIInspector.Parsers
             {
                 s.Position -= 1;
             }
+
             this.Value = new MAPIString(Encoding.Unicode);
             this.Value.Parse(s);
         }
@@ -456,14 +678,20 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class Binary_r : BaseStructure
     {
-        // A variable value // TODO: Verify whether there is MagicNumber here
+        /// <summary>
+        /// A variable value // TODO: Verify whether there is MagicNumber here
+        /// </summary>
         public byte? MagicNumber;
 
-        // The number of uninterpreted bytes represented in this structure. This value MUST NOT exceed 2,097,152.
-        public uint cb;
+        /// <summary>
+        /// The number of uninterpreted bytes represented in this structure. This value MUST NOT exceed 2,097,152.
+        /// </summary>
+        public uint Cb;
 
-        // The uninterpreted bytes.
-        public byte[] lpb;
+        /// <summary>
+        /// The uninterpreted bytes.
+        /// </summary>
+        public byte[] Lpb;
 
         /// <summary>
         /// Parse the Binary_r payload of session.
@@ -472,7 +700,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            byte temp = ReadByte();
+            byte temp = this.ReadByte();
             if (temp == 0xFF)
             {
                 this.MagicNumber = temp;
@@ -481,8 +709,9 @@ namespace MAPIInspector.Parsers
             {
                 s.Position -= 1;
             }
-            this.cb = ReadUint();
-            this.lpb = ReadBytes((int)this.cb);
+
+            this.Cb = this.ReadUint();
+            this.Lpb = this.ReadBytes((int)this.Cb);
         }
     }
 
@@ -491,11 +720,15 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class ShortArray_r : BaseStructure
     {
-        // The number of 16-bit integer values represented in the ShortArray_r structure. This value MUST NOT exceed 100,000.
-        public uint cValues;
+        /// <summary>
+        /// The number of 16-bit integer values represented in the ShortArray_r structure. This value MUST NOT exceed 100,000.
+        /// </summary>
+        public uint CValues;
 
-        // The 16-bit integer values.
-        public short[] lpi;
+        /// <summary>
+        /// The 16-bit integer values.
+        /// </summary>
+        public short[] Lpi;
 
         /// <summary>
         /// Parse the ShortArray_r payload of session.
@@ -504,13 +737,14 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.cValues = ReadUint();
+            this.CValues = this.ReadUint();
             List<short> tempList = new List<short>();
-            for (ulong i = 0; i < this.cValues; i++)
+            for (ulong i = 0; i < this.CValues; i++)
             {
-                tempList.Add(ReadINT16());
+                tempList.Add(this.ReadINT16());
             }
-            this.lpi = tempList.ToArray();
+
+            this.Lpi = tempList.ToArray();
         }
     }
 
@@ -519,11 +753,15 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class LongArray_r : BaseStructure
     {
-        // The number of 32-bit integers represented in this structure. This value MUST NOT exceed 100,000.
-        public uint cValues;
+        /// <summary>
+        /// The number of 32-bit integers represented in this structure. This value MUST NOT exceed 100,000.
+        /// </summary>
+        public uint CValues;
 
-        // The 32-bit integer values.
-        public int[] lpl;
+        /// <summary>
+        /// The 32-bit integer values.
+        /// </summary>
+        public int[] Lpl;
 
         /// <summary>
         /// Parse the LongArray_r payload of session.
@@ -532,13 +770,14 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.cValues = ReadUint();
+            this.CValues = this.ReadUint();
             List<int> tempList = new List<int>();
-            for (int i = 0; i < this.cValues; i++)
+            for (int i = 0; i < this.CValues; i++)
             {
-                tempList.Add(ReadINT32());
+                tempList.Add(this.ReadINT32());
             }
-            this.lpl = tempList.ToArray();
+
+            this.Lpl = tempList.ToArray();
         }
     }
 
@@ -547,14 +786,20 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class StringArray_r : BaseStructure
     {
-        // A variable value
+        /// <summary>
+        /// A variable value
+        /// </summary>
         public byte? MagicNumber;
 
-        // The number of 8-bit character string references represented in the StringArray_r structure. This value MUST NOT exceed 100,000.
-        public uint cValues;
+        /// <summary>
+        /// The number of 8-bit character string references represented in the StringArray_r structure. This value MUST NOT exceed 100,000.
+        /// </summary>
+        public uint CValues;
 
-        // The 8-bit character string references. The strings referred to are NULL-terminated.
-        public MAPIString[] lppszA;
+        /// <summary>
+        /// The 8-bit character string references. The strings referred to are NULL-terminated.
+        /// </summary>
+        public MAPIString[] LppszA;
 
         /// <summary>
         /// Parse the StringArray_r payload of session.
@@ -563,7 +808,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            byte temp = ReadByte();
+            byte temp = this.ReadByte();
             if (temp == 0xFF)
             {
                 this.MagicNumber = temp;
@@ -572,17 +817,18 @@ namespace MAPIInspector.Parsers
             {
                 s.Position -= 1;
             }
-            this.cValues = ReadUint();
+
+            this.CValues = this.ReadUint();
             List<MAPIString> temBytes = new List<MAPIString>();
-            for (ulong i = 0; i < this.cValues; i++)
+            for (ulong i = 0; i < this.CValues; i++)
             {
                 MAPIString tempByte = new MAPIString(Encoding.ASCII);
                 tempByte.Parse(s);
                 temBytes.Add(tempByte);
             }
-            this.lppszA = temBytes.ToArray();
-        }
 
+            this.LppszA = temBytes.ToArray();
+        }
     }
 
     /// <summary>
@@ -590,14 +836,20 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class BinaryArray_r : BaseStructure
     {
-        // A variable value
+        /// <summary>
+        /// A variable value
+        /// </summary>
         public byte? MagicNumber;
 
-        // The number of Binary_r data structures represented in the BinaryArray_r structure. This value MUST NOT exceed 100,000.
-        public uint cValues;
+        /// <summary>
+        /// The number of Binary_r data structures represented in the BinaryArray_r structure. This value MUST NOT exceed 100,000.
+        /// </summary>
+        public uint CValues;
 
-        // The Binary_r data structures.
-        public Binary_r[] lpbin;
+        /// <summary>
+        /// The Binary_r data structures.
+        /// </summary>
+        public Binary_r[] Lpbin;
 
         /// <summary>
         /// Parse the BinaryArray_r payload of session.
@@ -606,7 +858,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            byte temp = ReadByte();
+            byte temp = this.ReadByte();
             if (temp == 0xFF)
             {
                 this.MagicNumber = temp;
@@ -615,15 +867,17 @@ namespace MAPIInspector.Parsers
             {
                 s.Position -= 1;
             }
-            this.cValues = ReadUint();
+
+            this.CValues = this.ReadUint();
             List<Binary_r> temBytes = new List<Binary_r>();
-            for (ulong i = 0; i < this.cValues; i++)
+            for (ulong i = 0; i < this.CValues; i++)
             {
                 Binary_r br = new Binary_r();
                 br.Parse(s);
                 temBytes.Add(br);
             }
-            this.lpbin = temBytes.ToArray();
+
+            this.Lpbin = temBytes.ToArray();
         }
     }
 
@@ -632,11 +886,15 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class FlatUIDArray_r : BaseStructure
     {
-        // The number of FlatUID_r structures represented in the FlatUIDArray_r structure. This value MUST NOT exceed 100,000.
-        public uint cValues;
+        /// <summary>
+        /// The number of FlatUID_r structures represented in the FlatUIDArray_r structure. This value MUST NOT exceed 100,000.
+        /// </summary>
+        public uint CValues;
 
-        // The FlatUID_r data structures.
-        public FlatUID_r[] lpguid;
+        /// <summary>
+        /// The FlatUID_r data structures.
+        /// </summary>
+        public FlatUID_r[] Lpguid;
 
         /// <summary>
         /// Parse the FlatUIDArray_r payload of session.
@@ -645,15 +903,16 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.cValues = ReadUint();
+            this.CValues = this.ReadUint();
             List<FlatUID_r> temBytes = new List<FlatUID_r>();
-            for (ulong i = 0; i < this.cValues; i++)
+            for (ulong i = 0; i < this.CValues; i++)
             {
                 FlatUID_r br = new FlatUID_r();
                 br.Parse(s);
                 temBytes.Add(br);
             }
-            this.lpguid = temBytes.ToArray();
+
+            this.Lpguid = temBytes.ToArray();
         }
     }
 
@@ -662,14 +921,20 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class WStringArray_r : BaseStructure
     {
-        // A variable value
+        /// <summary>
+        /// A variable value
+        /// </summary>
         public byte? MagicNumber;
 
-        // The number of Unicode character string references represented in the WStringArray_r structure. This value MUST NOT exceed 100,000.
-        public uint cValues;
+        /// <summary>
+        /// The number of Unicode character string references represented in the WStringArray_r structure. This value MUST NOT exceed 100,000.
+        /// </summary>
+        public uint CValues;
 
-        // The Unicode character string references. The strings referred to are NULL-terminated.
-        public MAPIString[] lppszW;
+        /// <summary>
+        /// The Unicode character string references. The strings referred to are NULL-terminated.
+        /// </summary>
+        public MAPIString[] LppszW;
 
         /// <summary>
         /// Parse the WStringArray_r payload of session.
@@ -678,7 +943,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            byte temp = ReadByte();
+            byte temp = this.ReadByte();
             if (temp == 0xFF)
             {
                 this.MagicNumber = temp;
@@ -687,15 +952,17 @@ namespace MAPIInspector.Parsers
             {
                 s.Position -= 1;
             }
-            this.cValues = ReadUint();
+
+            this.CValues = this.ReadUint();
             List<MAPIString> temBytes = new List<MAPIString>();
-            for (ulong i = 0; i < this.cValues; i++)
+            for (ulong i = 0; i < this.CValues; i++)
             {
                 MAPIString tempByte = new MAPIString(Encoding.Unicode);
                 tempByte.Parse(s);
                 temBytes.Add(tempByte);
             }
-            this.lppszW = temBytes.ToArray();
+
+            this.LppszW = temBytes.ToArray();
         }
     }
 
@@ -704,11 +971,15 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class DateTimeArray_r : BaseStructure
     {
-        // The number of FILETIME data structures represented in the DateTimeArray_r structure. This value MUST NOT exceed 100,000.
-        public uint cValues;
+        /// <summary>
+        /// The number of FILETIME data structures represented in the DateTimeArray_r structure. This value MUST NOT exceed 100,000.
+        /// </summary>
+        public uint CValues;
 
-        // The FILETIME data structures.
-        public PtypTime[] lpft;
+        /// <summary>
+        /// The FILETIME data structures.
+        /// </summary>
+        public PtypTime[] Lpft;
 
         /// <summary>
         /// Parse the DateTimeArray_r payload of session.
@@ -717,15 +988,16 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.cValues = ReadUint();
+            this.CValues = this.ReadUint();
             List<PtypTime> temBytes = new List<PtypTime>();
-            for (ulong i = 0; i < this.cValues; i++)
+            for (ulong i = 0; i < this.CValues; i++)
             {
                 PtypTime pt = new PtypTime();
                 pt.Parse(s);
                 temBytes.Add(pt);
             }
-            this.lpft = temBytes.ToArray();
+
+            this.Lpft = temBytes.ToArray();
         }
     }
 
@@ -734,13 +1006,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class StringsArray_r : BaseStructure
     {
-        // A variable value
+        /// <summary>
+        /// A variable value
+        /// </summary>
         public byte? MagicNumber;
 
-        // The number of character string structures in this aggregation. The value MUST NOT exceed 100,000.
+        /// <summary>
+        /// The number of character string structures in this aggregation. The value MUST NOT exceed 100,000.
+        /// </summary>
         public uint Count;
 
-        // The list of character type strings in this aggregation. The strings in this list are NULL-terminated.
+        /// <summary>
+        /// The list of character type strings in this aggregation. The strings in this list are NULL-terminated.
+        /// </summary>
         public MAPIString[] Strings;
 
         /// <summary>
@@ -750,7 +1028,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            byte temp = ReadByte();
+            byte temp = this.ReadByte();
             if (temp == 0xFF)
             {
                 this.MagicNumber = temp;
@@ -759,7 +1037,8 @@ namespace MAPIInspector.Parsers
             {
                 s.Position -= 1;
             }
-            this.Count = ReadUint();
+
+            this.Count = this.ReadUint();
             List<MAPIString> temBytes = new List<MAPIString>();
             for (ulong i = 0; i < this.Count; i++)
             {
@@ -767,6 +1046,7 @@ namespace MAPIInspector.Parsers
                 tempByte.Parse(s);
                 temBytes.Add(tempByte);
             }
+
             this.Strings = temBytes.ToArray();
         }
     }
@@ -776,13 +1056,19 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class WStringsArray_r : BaseStructure
     {
-        // A variable value
+        /// <summary>
+        /// A variable value
+        /// </summary>
         public byte? MagicNumber;
 
-        // The number of character strings structures in this aggregation. The value MUST NOT exceed 100,000.
+        /// <summary>
+        /// The number of character strings structures in this aggregation. The value MUST NOT exceed 100,000.
+        /// </summary>
         public uint Count;
 
-        // The list of wchar_t type strings in this aggregation. The strings in this list are NULL-terminated.
+        /// <summary>
+        /// The list of wchar_t type strings in this aggregation. The strings in this list are NULL-terminated.
+        /// </summary>
         public MAPIString[] Strings;
 
         /// <summary>
@@ -792,7 +1078,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            byte temp = ReadByte();
+            byte temp = this.ReadByte();
             if (temp == 0xFF)
             {
                 this.MagicNumber = temp;
@@ -801,7 +1087,8 @@ namespace MAPIInspector.Parsers
             {
                 s.Position -= 1;
             }
-            this.Count = ReadUint();
+
+            this.Count = this.ReadUint();
             List<MAPIString> temBytes = new List<MAPIString>();
             for (ulong i = 0; i < this.Count; i++)
             {
@@ -809,60 +1096,10 @@ namespace MAPIInspector.Parsers
                 tempByte.Parse(s);
                 temBytes.Add(tempByte);
             }
+
             this.Strings = temBytes.ToArray();
         }
     }
 
-    #endregion
-
-    #region Enums values
-
-    #region 2.2.3 Display Type Values
-
-    /// <summary>
-    /// The DisplayTypeValues enum type 
-    /// </summary>
-    public enum DisplayTypeValues : uint
-    {
-        DT_MAILUSER = 0x00000000,
-        DT_DISTLIST = 0x00000001,
-        DT_FORUM = 0x00000002,
-        DT_AGENT = 0x00000003,
-        DT_ORGANIZATION = 0x00000004,
-        DT_PRIVATE_DISTLIST = 0x00000005,
-        DT_REMOTE_MAILUSER = 0x00000006,
-        DT_CONTAINER = 0x00000100,
-        DT_TEMPLATE = 0x00000101,
-        DT_ADDRESS_TEMPLATE = 0x00000102,
-        DT_SEARCH = 0x00000200
-    };
-
-    #endregion
-
-    #region 2.2.8   Positioning Minimal Entry IDs
-    /// <summary>
-    /// The PositioningMinimalEntryIDs enum type 
-    /// </summary>
-    public enum PositioningMinimalEntryIDs : uint
-    {
-        MID_BEGINNING_OF_TABLE = 0x00000000,
-        MID_END_OF_TABLE = 0x00000002,
-        MID_CURRENT = 0x00000001
-    };
-
-    #endregion
-
-    #region 2.2.10   Table Sort Order
-    /// <summary>
-    /// The TableSortOrders enum type 
-    /// </summary>
-    public enum TableSortOrders : uint
-    {
-        SortTypeDisplayName = 0x00000000,
-        SortTypePhoneticDisplayName = 0x00000003,
-        SortTypeDisplayName_RO = 0x000003E8,
-        SortTypeDisplayName_W = 0x000003E9
-    };
-    #endregion
     #endregion
 }
