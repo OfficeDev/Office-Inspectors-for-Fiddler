@@ -165,11 +165,6 @@
         [TestInitialize]
         public void Initialize()
         {
-
-            TestingfolderPath = TestContext.TestDeploymentDir;
-            TestName = TestContext.TestName;
-
-            /*
             this.GetTestCatgoryInformation();
             EndStartedOutLook();
             Thread.Sleep(10000);
@@ -235,7 +230,6 @@
             sentMailFolder = outlookApp.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderSentMail);
             deletedItemsFolders = outlookApp.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderDeletedItems);
             draftsFolders = outlookApp.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderDrafts);
-            */
         }
 
         /// <summary>
@@ -244,12 +238,10 @@
         [TestCleanup]
         public void CleanUp()
         {
-            /*
             Utilities.DeleteAllItemInMAPIFolder(sentMailFolder);
             Utilities.DeleteAllItemInMAPIFolder(deletedItemsFolders);
             Utilities.DeleteAllItemInMAPIFolder(inboxFolders);
             EndStartedOutLook();
-            */
         }
 
         /// <summary>
