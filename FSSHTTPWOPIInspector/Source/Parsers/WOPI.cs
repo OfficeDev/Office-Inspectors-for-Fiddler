@@ -700,6 +700,10 @@
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(false)]
         public bool useParent { get; set; }
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public string targetext { get; set; }
     }
 
     /// <remarks/>
@@ -768,6 +772,24 @@
 
         /// <remarks/>
         getinfo,
+
+        /// <remarks/>
+        convert,
+
+        /// <remarks/>
+        syndicate,
+
+        /// <remarks/>
+        legacywebservice,
+
+        /// <remarks/>
+        collab,
+
+        /// <remarks/>
+        formpreview,
+
+        /// <remarks/>
+        documentchat
     }
 
     /// <remarks/>
