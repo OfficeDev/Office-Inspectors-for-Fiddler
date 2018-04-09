@@ -16,6 +16,19 @@ The FSSHTTPandWOPI Inspector is displayed under the *Inspectors* tab in Fiddler 
 
 This repository also includes Jscript that adds an *MS Protocol* column in the Fiddler web session panel. The *MS Protocol* column displays protocols that are relevant to MAPI, FSSHTTP, and WOPI messages, thereby allowing you to easily identify which HTTP requests and responses contain the respective message payloads.
 
+## Building the Inspectors
+Each of the inspectors has a Visual Studio solution file in the Source folder, for example: 
+    
+    `Office-Inspectors-for-Fiddler\FSSHTTPWOPIInspector\Source\FSSHTTPandWOPIInspector.sln`
+    `Office-Inspectors-for-Fiddler\MAPIInspector\Source\MAPIInspector.sln`
+
+These will allow you to modify and build the inspector dlls. 
+
+NOTE: There are dependencies on a few libraries and some of these are found in the Fiddler install folder. Specifically, the correct versions of the **Xceed** and **HexBox** libraries can be found in your system's install folder for Fiddler. These are the libraries that you should point the Visual Studio inspector projects to for references. For example: 
+
+    `C:\Users\<username>\AppData\Local\Programs\Fiddler\Be.Windows.Forms.HexBox.dll`
+    `C:\Users\<username>\AppData\Local\Programs\Fiddler\Xceed.Compression.v5.4.dll`
+
 ## Installation 
 First install the latest [Fiddler](http://www.telerik.com/fiddler) tool and then run it. Note that Fiddler must be run at least once before installing any inspectors. To install the inspector of your choice (MAPI, FSSHTTPWOPI) or to install both, add the respective DLL files and the scripts.
 
