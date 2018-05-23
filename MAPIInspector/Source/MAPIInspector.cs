@@ -1337,6 +1337,7 @@
                         }
 
                         currentSession = AllSessions[Convert.ToInt32(currentSession["Number"]) + 1];
+                        if (currentSessionID == currentSession.id) break;
                         currentSessionID = currentSession.id;
                     }
 
