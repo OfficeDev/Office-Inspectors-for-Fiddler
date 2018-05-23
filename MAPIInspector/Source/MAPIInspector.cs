@@ -1350,7 +1350,7 @@
                     bytes = bytesForHexView;
                 }
             }
-            else if ((RopIdType)ropID == RopIdType.RopFastTransferDestinationPutBuffer || (RopIdType)ropID == RopIdType.RopFastTransferDestinationPutBufferExtended)
+            else if (ropID == RopIdType.RopFastTransferDestinationPutBuffer || ropID == RopIdType.RopFastTransferDestinationPutBufferExtended)
             {
                 if (this.requestDic.ContainsKey(thisSessionID))
                 {
@@ -1393,7 +1393,7 @@
                     Session currentSession = AllSessions[1];
                     int currentSessionID = currentSession.id;
 
-                    if ((RopIdType)ropID == RopIdType.RopFastTransferDestinationPutBuffer)
+                    if (ropID == RopIdType.RopFastTransferDestinationPutBuffer)
                     {
                         int sessionPutContextCount = HandleWithSessionPutContextInformation.Count;
 
