@@ -1227,7 +1227,7 @@
         /// <param name="parameters">The handle information</param>
         /// <param name="bytes">The output bytes returned</param>
         /// <returns>The parsed result for current session</returns>
-        public object Partial(ushort ropID, uint parameters, out byte[] bytes)
+        public object Partial(RopIdType ropID, uint parameters, out byte[] bytes)
         {
             byte[] bytesForHexView = new byte[0];
             object obj = new object();
@@ -1235,7 +1235,7 @@
             Session thisSession = MAPIInspector.ParsingSession;
             int thisSessionID = thisSession.id;
 
-            if ((RopIdType)ropID == RopIdType.RopFastTransferSourceGetBuffer)
+            if (ropID == RopIdType.RopFastTransferSourceGetBuffer)
             {
                 if (this.responseDic.ContainsKey(thisSessionID))
                 {
@@ -2111,9 +2111,9 @@
                 this.HandleContextInformation(missingException.RopID, out objectOut, out bytes, missingException.Parameters);
                 return objectOut;
             }
-            catch (MissingPartialInformationException missingPartailException)
+            catch (MissingPartialInformationException missingPartialException)
             {
-                objectOut = this.Partial(missingPartailException.RopID, missingPartailException.Parameter, out bytes);
+                objectOut = this.Partial(missingPartialException.RopID, missingPartialException.Parameter, out bytes);
                 return objectOut;
             }
             catch (Exception ex)
