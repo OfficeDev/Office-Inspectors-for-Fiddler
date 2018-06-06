@@ -1360,7 +1360,7 @@
                                 {
                                     if (!DecodingContext.PartialInformationReady.ContainsKey((int)destinationParsingSessionID))
                                     {
-                                        throw new MissingPartialInformationException((ushort)currentByte, ropPutbufferHandle);
+                                        throw new MissingPartialInformationException((RopIdType)currentByte, ropPutbufferHandle);
                                     }
                                 }
                                 else
@@ -1410,7 +1410,7 @@
                                 {
                                     if (!DecodingContext.PartialInformationReady.ContainsKey((int)aimsParsingSessionID))
                                     {
-                                        throw new MissingPartialInformationException((ushort)currentByte, ropPutExtendbufferHandle);
+                                        throw new MissingPartialInformationException((RopIdType)currentByte, ropPutExtendbufferHandle);
                                     }
                                 }
                                 else
@@ -2558,7 +2558,7 @@
                                 {
                                     if (!DecodingContext.PartialInformationReady.ContainsKey((int)getParsingSessionID))
                                     {
-                                        throw new MissingPartialInformationException((ushort)currentByte, ropGetbufferHandle);
+                                        throw new MissingPartialInformationException((RopIdType)currentByte, ropGetbufferHandle);
                                     }
                                 }
 
@@ -4395,7 +4395,7 @@
         /// <summary>
         /// The ROP ID needs context information
         /// </summary>
-        public ushort RopID;
+        public RopIdType RopID;
 
         /// <summary>
         /// The source ROP parameters to pass
@@ -4407,7 +4407,7 @@
         /// </summary>
         /// <param name="ropID">ROP id</param>
         /// <param name="parameter">parameters for this missing partial information exception</param>
-        public MissingPartialInformationException(ushort ropID, uint parameter)
+        public MissingPartialInformationException(RopIdType ropID, uint parameter)
         {
             this.RopID = ropID;
             this.Parameter = parameter;
