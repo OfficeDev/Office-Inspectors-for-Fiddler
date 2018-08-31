@@ -1227,7 +1227,7 @@
         /// <param name="parameters">The handle information</param>
         /// <param name="bytes">The output bytes returned</param>
         /// <returns>The parsed result for current session</returns>
-        public object Partial(ushort ropID, uint parameters, out byte[] bytes)
+        public object Partial(RopIdType ropID, uint parameters, out byte[] bytes)
         {
             byte[] bytesForHexView = new byte[0];
             object obj = new object();
@@ -1235,7 +1235,7 @@
             Session thisSession = MAPIInspector.ParsingSession;
             int thisSessionID = thisSession.id;
 
-            if ((RopIdType)ropID == RopIdType.RopFastTransferSourceGetBuffer)
+            if (ropID == RopIdType.RopFastTransferSourceGetBuffer)
             {
                 if (this.responseDic.ContainsKey(thisSessionID))
                 {
@@ -1337,6 +1337,7 @@
                         }
 
                         currentSession = AllSessions[Convert.ToInt32(currentSession["Number"]) + 1];
+                        if (currentSessionID == currentSession.id) break;
                         currentSessionID = currentSession.id;
                     }
 
@@ -1350,7 +1351,7 @@
                     bytes = bytesForHexView;
                 }
             }
-            else if ((RopIdType)ropID == RopIdType.RopFastTransferDestinationPutBuffer || (RopIdType)ropID == RopIdType.RopFastTransferDestinationPutBufferExtended)
+            else if (ropID == RopIdType.RopFastTransferDestinationPutBuffer || ropID == RopIdType.RopFastTransferDestinationPutBufferExtended)
             {
                 if (this.requestDic.ContainsKey(thisSessionID))
                 {
@@ -1393,7 +1394,7 @@
                     Session currentSession = AllSessions[1];
                     int currentSessionID = currentSession.id;
 
-                    if ((RopIdType)ropID == RopIdType.RopFastTransferDestinationPutBuffer)
+                    if (ropID == RopIdType.RopFastTransferDestinationPutBuffer)
                     {
                         int sessionPutContextCount = HandleWithSessionPutContextInformation.Count;
 
@@ -2111,9 +2112,9 @@
                 this.HandleContextInformation(missingException.RopID, out objectOut, out bytes, missingException.Parameters);
                 return objectOut;
             }
-            catch (MissingPartialInformationException missingPartailException)
+            catch (MissingPartialInformationException missingPartialException)
             {
-                objectOut = this.Partial(missingPartailException.RopID, missingPartailException.Parameter, out bytes);
+                objectOut = this.Partial(missingPartialException.RopID, missingPartialException.Parameter, out bytes);
                 return objectOut;
             }
             catch (Exception ex)

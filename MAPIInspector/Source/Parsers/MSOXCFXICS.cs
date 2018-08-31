@@ -4428,7 +4428,7 @@
         /// <summary>
         /// The propType.
         /// </summary>
-        public ushort? PropType;
+        public PropertyDataType? PropType;
 
         /// <summary>
         /// The PropInfo.
@@ -4515,7 +4515,7 @@
                 (MapiInspector.MAPIInspector.IsGet == true && (MapiInspector.MAPIInspector.PartialGetType == 0 || (MapiInspector.MAPIInspector.PartialGetType != 0 && !(MapiInspector.MAPIInspector.PartialGetServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialGetProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess && MapiInspector.MAPIInspector.PartialGetClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])))) ||
                 (MapiInspector.MAPIInspector.IsPutExtend == true && (MapiInspector.MAPIInspector.PartialPutExtendType == 0 || (MapiInspector.MAPIInspector.PartialPutType != 0 && !(MapiInspector.MAPIInspector.PartialPutExtendServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialPutExtendProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess && MapiInspector.MAPIInspector.PartialPutExtendClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])))))
             {
-                this.PropType = stream.ReadUInt16();
+                this.PropType = (PropertyDataType)stream.ReadUInt16();
                 this.PropInfo = PropInfo.ParseFrom(stream) as PropInfo;
             }
         }
@@ -5506,7 +5506,7 @@
         /// <summary>
         /// Length value for partial split
         /// </summary>
-        public int Plength;
+        private int Plength;
 
         /// <summary>
         /// Initializes a new instance of the MvPropTypePropValueGetPartial class.
@@ -6163,7 +6163,7 @@
         /// <summary>
         /// Length for partial
         /// </summary>
-        public int Plength;
+        private int Plength;
 
         /// <summary>
         /// Initializes a new instance of the MvPropTypePropValuePutPartial class.
@@ -6823,7 +6823,7 @@
         /// <summary>
         /// Length for partial
         /// </summary>
-        public int Plength;
+        private int Plength;
 
         /// <summary>
         /// Initializes a new instance of the MvPropTypePropValuePutExtendPartial class.

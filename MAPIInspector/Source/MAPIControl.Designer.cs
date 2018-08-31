@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using System;
+using System.Text;
 
 namespace MapiInspector
 {
@@ -50,6 +51,16 @@ namespace MapiInspector
             this.mapiTreeView.Name = "mapiTreeView";
             this.mapiTreeView.Size = new System.Drawing.Size(424, 472);
             this.mapiTreeView.TabIndex = 0;
+            ContextMenu mapiTreeViewContextMenu = new ContextMenu();
+            this.mapiTreeView.ContextMenu = mapiTreeViewContextMenu;
+            MenuItem mapiTreeViewMenuItem1 = this.mapiTreeView.ContextMenu.MenuItems.Add("Copy selected text");
+            MenuItem mapiTreeViewMenuItem2 = this.mapiTreeView.ContextMenu.MenuItems.Add("Copy tree");
+            MenuItem mapiTreeViewMenuItem3 = this.mapiTreeView.ContextMenu.MenuItems.Add("Expand");
+            MenuItem mapiTreeViewMenuItem4 = this.mapiTreeView.ContextMenu.MenuItems.Add("Collapse");
+            mapiTreeViewMenuItem1.Click += new EventHandler(MapiTreeViewMenuItem1_Click);
+            mapiTreeViewMenuItem2.Click += new EventHandler(MapiTreeViewMenuItem2_Click);
+            mapiTreeViewMenuItem3.Click += new EventHandler(MapiTreeViewMenuItem3_Click);
+            mapiTreeViewMenuItem4.Click += new EventHandler(MapiTreeViewMenuItem4_Click);
             // 
             // mapiRichTextBox
             // 
@@ -102,9 +113,17 @@ namespace MapiInspector
             this.mapiHexBox.CanCopy();
 
             ContextMenu cm = new ContextMenu();
-            this.mapiHexBox.ContextMenu = cm;    
-            MenuItem item = this.mapiHexBox.ContextMenu.MenuItems.Add("Copy");
+            this.mapiHexBox.ContextMenu = cm;
+            MenuItem item = this.mapiHexBox.ContextMenu.MenuItems.Add("Copy (no spaces)");
             item.Click += new EventHandler(MAPI_Copy);
+            MenuItem item4 = this.mapiHexBox.ContextMenu.MenuItems.Add("Copy (with spaces)");
+            item4.Click += new EventHandler(MAPI_CopyWithSpaces);
+            MenuItem item2 = this.mapiHexBox.ContextMenu.MenuItems.Add("Copy as 16 byte blocks");
+            item2.Click += new EventHandler(MAPI_CopyAsByteBlocks);
+            MenuItem item3 = this.mapiHexBox.ContextMenu.MenuItems.Add("Copy as 16 byte blocks (with prefix)");
+            item3.Click += new EventHandler(MAPI_CopyAsByteBlocksWithPrefix);
+            MenuItem item5 = this.mapiHexBox.ContextMenu.MenuItems.Add("Copy as 0x00 code block");
+            item5.Click += new EventHandler(MAPI_CopyAsCodeBlock);
 
 
             // 
@@ -160,7 +179,7 @@ namespace MapiInspector
         void CopyMethod(object sender, EventArgs e, Be.Windows.Forms.HexBox hexBox)
         {
             byte[] targetBytes = new byte[hexBox.SelectionLength];
-            Array.Copy(hexBox.GetAllBytes(), hexBox.SelectionStart,targetBytes,0, hexBox.SelectionLength);
+            Array.Copy(hexBox.GetAllBytes(), hexBox.SelectionStart, targetBytes, 0, hexBox.SelectionLength);
             string hex = BitConverter.ToString(targetBytes).Replace("-", string.Empty);
             Clipboard.SetText(hex);
         }
@@ -173,6 +192,124 @@ namespace MapiInspector
         void CROPS_Copy(object sender, EventArgs e)
         {
             CopyMethod(sender, e, this.CROPSHexBox);
+        }
+
+        private void MapiTreeViewMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (this.mapiTreeView.SelectedNode != null)
+            {
+                Clipboard.SetText(this.mapiTreeView.SelectedNode.Text);
+            }
+        }
+
+        private void MapiTreeViewMenuItem2_Click(object sender, EventArgs e)
+        {
+            StringBuilder sb = new StringBuilder();
+            GetNodeTreeText(sb, mapiTreeView.SelectedNode ?? mapiTreeView.Nodes[0], -1);
+            Clipboard.SetText(sb.ToString());
+        }
+
+        private void MapiTreeViewMenuItem3_Click(object sender, EventArgs e)
+        {
+            var node = mapiTreeView.SelectedNode ?? mapiTreeView.Nodes[0];
+            node.ExpandAll();
+        }
+
+        private void MapiTreeViewMenuItem4_Click(object sender, EventArgs e)
+        {
+            var node = mapiTreeView.SelectedNode ?? mapiTreeView.Nodes[0];
+            node.Collapse();
+        }
+
+        private void GetNodeTreeText(StringBuilder sb, TreeNode node, int count)
+        {
+            var indents = ++count;
+            for (int i = 0; i < indents; i++)
+                sb.Append("   ");
+            sb.AppendLine(node.Text.Replace("\0", "\\0"));
+            foreach (var n in node.Nodes)
+                GetNodeTreeText(sb, n as TreeNode, indents);
+        }
+
+        private void MAPI_CopyWithSpaces(object sender, EventArgs e)
+        {
+            byte[] targetBytes = new byte[mapiHexBox.SelectionLength];
+            Array.Copy(mapiHexBox.GetAllBytes(), mapiHexBox.SelectionStart, targetBytes, 0, mapiHexBox.SelectionLength);
+
+            StringBuilder sb = new StringBuilder();
+            int counter = 0;
+            foreach (var c in targetBytes)
+            {
+                if (counter != 0)
+                    sb.Append(" ");
+                counter++;
+                sb.Append(c.ToString("x2"));
+            }
+            Clipboard.SetText(sb.ToString());
+        }
+
+        private void MAPI_CopyAsByteBlocks(object sender, EventArgs e)
+        {
+            byte[] targetBytes = new byte[mapiHexBox.SelectionLength];
+            Array.Copy(mapiHexBox.GetAllBytes(), mapiHexBox.SelectionStart, targetBytes, 0, mapiHexBox.SelectionLength);
+
+            StringBuilder sb = new StringBuilder();
+            int counter = 0;
+            foreach (var c in targetBytes)
+            {
+                if ((counter % 16) == 0 && counter != 0)
+                    sb.AppendLine();
+                else if (counter != 0)
+                    sb.Append(" ");
+                counter++;
+                sb.Append(c.ToString("x2"));
+            }
+            Clipboard.SetText(sb.ToString());
+        }
+
+        private void MAPI_CopyAsByteBlocksWithPrefix(object sender, EventArgs e)
+        {
+            byte[] targetBytes = new byte[mapiHexBox.SelectionLength];
+            Array.Copy(mapiHexBox.GetAllBytes(), mapiHexBox.SelectionStart, targetBytes, 0, mapiHexBox.SelectionLength);
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("POSITION | 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F");
+            sb.AppendLine("----------------------------------------------------------");
+
+            int counter = 0;
+            foreach (var c in targetBytes)
+            {
+                if ((counter % 16) == 0)
+                {
+                    if (counter != 0)
+                        sb.AppendLine();
+                    sb.Append($"{(counter / 16) * 16:X8} | ");
+                }
+                else if (counter != 0)
+                    sb.Append(" ");
+                counter++;
+                sb.Append(c.ToString("x2"));
+            }
+            Clipboard.SetText(sb.ToString());
+        }
+
+        private void MAPI_CopyAsCodeBlock(object sender, EventArgs e)
+        {
+            byte[] targetBytes = new byte[mapiHexBox.SelectionLength];
+            Array.Copy(mapiHexBox.GetAllBytes(), mapiHexBox.SelectionStart, targetBytes, 0, mapiHexBox.SelectionLength);
+
+            StringBuilder sb = new StringBuilder("byte[] arrOutput = { ");
+            int counter = 0;
+            foreach (var c in targetBytes)
+            {
+                if (counter != 0)
+                    sb.Append(", ");
+                counter++;
+                sb.Append("0x" + c.ToString("x2"));
+            }
+
+            sb.Append("};");
+            Clipboard.SetText(sb.ToString());
         }
 
         #endregion

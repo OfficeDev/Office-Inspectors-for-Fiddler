@@ -379,8 +379,7 @@
                         // the size of underlying type of enum. 
                         Type fieldType = type;
 
-                        // TODO: display decimal value to hex one
-                        TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, info[i].GetValue(obj).ToString()));
+                        TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, EnumToString(info[i].GetValue(obj))));
                         res.Nodes.Add(tn);
 
                         if (type.Name == "String")
@@ -451,20 +450,20 @@
                                 else
                                 {
                                     // Array type just display the first 30 values if the array length is more than 30.
-                                    int dispalylength = 30;
+                                    int displayLength = 30;
                                     result.Append("[");
 
                                     foreach (var ar in arr)
                                     {
                                         result.Append(ar.ToString() + ",");
 
-                                        if (dispalylength <= 1)
+                                        if (displayLength <= 1)
                                         {
                                             result.Insert(result.Length - 1, "...");
                                             break;
                                         }
 
-                                        dispalylength--;
+                                        displayLength--;
                                     }
 
                                     result.Remove(result.Length - 1, 1);
@@ -1027,6 +1026,23 @@
             }
 
             return chars[0];
+        }
+
+        /// <summary>
+        /// Converts a simple (non-flag) enum to string. If the value is not present in the underlying enum, converts to a hex string.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private static string EnumToString(object obj)
+        {
+            if (Enum.IsDefined(obj.GetType(), obj))
+            {
+                return obj.ToString();
+            }
+            else
+            {
+                return $"0x{Convert.ToUInt64(obj):X}";
+            }
         }
 
         /// <summary>
