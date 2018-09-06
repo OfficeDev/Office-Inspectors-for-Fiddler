@@ -465,15 +465,39 @@ namespace FSSHTTPandWOPIInspector
                                 {
                                     res = string.Format("{0}{1}{2}", @"<Body>", text, "</Body>");
                                 }
-                                ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(res ?? ""));
-                                XmlSerializer serializer = new XmlSerializer(typeof(ResponseEnvelopeBody));
-                                ResponseEnvelopeBody body = (ResponseEnvelopeBody)serializer.Deserialize(ms);
-                                objectOut = body;
 
-                                // if SubResponseData has fsshttpb messages do parser.
-                                if (body.ResponseCollection != null)
+                                try
                                 {
-                                    TryParseFSSHTTPBResponseMessage(body.ResponseCollection.Response, bytesFromHTTP);
+                                    ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(res ?? ""));
+                                    XmlSerializer serializer = new XmlSerializer(typeof(ResponseEnvelopeBody));
+                                    ResponseEnvelopeBody body = (ResponseEnvelopeBody)serializer.Deserialize(ms);
+                                    objectOut = body;
+
+                                    // if SubResponseData has fsshttpb messages do parser.
+                                    if (body.ResponseCollection != null)
+                                    {
+                                        TryParseFSSHTTPBResponseMessage(body.ResponseCollection.Response, bytesFromHTTP);
+                                    }
+                                }
+                                catch
+                                {
+                                    Regex SOAPRegex = new Regex(@"\<s:Envelop.*\<\/s:Envelope\>"); // extract envelop from http payload.
+                                    if (SOAPRegex.Match(res).Success)
+                                    {
+                                        XmlDocument doc = new XmlDocument();
+                                        string soapbody = SOAPRegex.Match(res).Value;
+
+                                        MemoryStream memoryStream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(soapbody ?? ""));
+                                        XmlSerializer serializer = new XmlSerializer(typeof(ResponseEnvelope));
+                                        ResponseEnvelope responseEnvelop = (ResponseEnvelope)serializer.Deserialize(memoryStream);
+                                        objectOut = responseEnvelop.Body;
+
+                                        // if SubResponseData has fsshttpb messages do parser.
+                                        if (responseEnvelop.Body.ResponseCollection != null)
+                                        {
+                                            TryParseFSSHTTPBResponseMessage(responseEnvelop.Body.ResponseCollection.Response, bytesFromHTTP);
+                                        }
+                                    }
                                 }
                                 break;
                             }
