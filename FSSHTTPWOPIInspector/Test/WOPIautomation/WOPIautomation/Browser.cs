@@ -11,6 +11,8 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Configuration;
 using OpenQA.Selenium.Support.Events;
+using OpenQA.Selenium.Interactions;
+
 namespace WOPIautomation
 {
     public static class Browser
@@ -33,11 +35,20 @@ namespace WOPIautomation
             }
         }
 
+        public static string DocumentAddress
+        {
+            get
+            {
+                string address = ConfigurationManager.AppSettings["DocumentAddress"];
+                return address.EndsWith("/") ? address.Substring(0, address.Length - 1) : address;
+            }
+        }
+
         /// <summary>
         ///  Browser initialize
         /// </summary>
         /// <param name="postfix">string value indicate address postfix</param>
-        public static void Initialize(string postfix = "")
+        public static void Initialize(string postfix = "Shared%20Documents/Forms/AllItems.aspx")
         {
             switch (ConfigurationManager.AppSettings["Browser"].ToLower())
             {
@@ -45,13 +56,13 @@ namespace WOPIautomation
                     InternetExplorerOptions IEOption32 = new InternetExplorerOptions();
                     IEOption32.IntroduceInstabilityByIgnoringProtectedModeSettings = true;
                     IEOption32.RequireWindowFocus = true;
-                    webDriver = new InternetExplorerDriver(System.IO.Directory.GetCurrentDirectory().Replace(@"\bin\Debug", "") + @"\Drivers\IE32\", IEOption32);
+                    webDriver = new InternetExplorerDriver(System.IO.Directory.GetCurrentDirectory().Replace(@"\bin\Debug", "") + @"\Drivers\IE32\", IEOption32, TimeSpan.FromSeconds(30));                  
                     break;
                 case ("ie64"):
                     InternetExplorerOptions IEOption64 = new InternetExplorerOptions();
                     IEOption64.IntroduceInstabilityByIgnoringProtectedModeSettings = true;
                     IEOption64.RequireWindowFocus = true;
-                    webDriver = new InternetExplorerDriver(System.IO.Directory.GetCurrentDirectory().Replace(@"\bin\Debug", "") + @"\Drivers\IE64\", IEOption64);
+                    webDriver = new InternetExplorerDriver(System.IO.Directory.GetCurrentDirectory().Replace(@"\bin\Debug", "") + @"\Drivers\IE64\", IEOption64, TimeSpan.FromSeconds(60));
                     break;
                 default:
                     break;
@@ -65,9 +76,10 @@ namespace WOPIautomation
             {
                 address = BaseAddress + "/" + postfix;
             }
+            webDriver.Manage().Window.Maximize();
             webDriver.Navigate().GoToUrl(address);
-            checkAlert();
             signIncheckAlert();
+
         }
 
         /// <summary>
@@ -136,8 +148,9 @@ namespace WOPIautomation
         public static void SetWaitTime(TimeSpan timeSpan)
         {
             webDriver.Manage().Timeouts().ImplicitlyWait(timeSpan);
-            webDriver.Manage().Timeouts().SetPageLoadTimeout(TimeSpan.FromSeconds(timeSpan.TotalSeconds * 2));
-            webDriver.Manage().Timeouts().SetScriptTimeout(TimeSpan.FromSeconds(timeSpan.TotalSeconds * 2));
+            webDriver.Manage().Timeouts().SetPageLoadTimeout(TimeSpan.FromSeconds(timeSpan.TotalSeconds * 3));
+            webDriver.Manage().Timeouts().SetScriptTimeout(TimeSpan.FromSeconds(timeSpan.TotalSeconds * 3));
+       
         }
 
         /// <summary>
@@ -191,7 +204,8 @@ namespace WOPIautomation
         {
             try
             {
-                (webDriver as IJavaScriptExecutor).ExecuteScript("arguments[0].click();", element);
+                OpenQA.Selenium.Interactions.Actions action = new OpenQA.Selenium.Interactions.Actions(webDriver);
+                action.Click(element).Perform();
             }
             catch (WebDriverException)
             {
@@ -207,7 +221,8 @@ namespace WOPIautomation
         {
             try
             {
-                (webDriver as IJavaScriptExecutor).ExecuteScript("arguments[0].fireEvent('oncontextmenu');", element);
+                OpenQA.Selenium.Interactions.Actions action = new OpenQA.Selenium.Interactions.Actions(webDriver);
+                action.ContextClick(element).Perform();
             }
             catch (WebDriverException)
             {
@@ -215,6 +230,19 @@ namespace WOPIautomation
             }
         }
 
+
+        internal static void MovetoElement(IWebElement element)
+        {
+            try
+            {
+                OpenQA.Selenium.Interactions.Actions action = new OpenQA.Selenium.Interactions.Actions(webDriver);
+                action.MoveToElement(element).Perform();
+            }
+            catch (WebDriverException)
+            {
+                Wait(TimeSpan.FromSeconds(15));
+            }
+        }
         /// <summary>
         /// Find an iframe element
         /// </summary>
@@ -269,7 +297,9 @@ namespace WOPIautomation
             {
                 throw new Exception(e.Message);
             }
+
         }
+       
 
         /// <summary>
         /// Check a Alert with sign in
@@ -278,18 +308,14 @@ namespace WOPIautomation
         {
             try
             {
-                WebDriverWait wait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(30));
-                wait.Until(ExpectedConditions.AlertIsPresent());
-                IAlert alert = webDriver.SwitchTo().Alert();
                 string username = ConfigurationManager.AppSettings["UserName"];
                 string password = ConfigurationManager.AppSettings["Password"];
-                alert.SetAuthenticationCredentials(username, password);
-                alert.Accept();
+                Utility.SigninWindowsSecurity(username, password);
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
-            }
+                throw e;
+            }            
         }
     }
 }

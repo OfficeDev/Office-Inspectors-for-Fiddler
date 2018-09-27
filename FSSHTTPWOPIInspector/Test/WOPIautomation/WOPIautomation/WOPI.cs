@@ -27,13 +27,22 @@ namespace WOPIautomation
         private static string Excel = ConfigurationManager.AppSettings["Excel"];
         private static string filename = Excel.Split('\\').Last().Split('.').First();
 
-      [TestMethod, TestCategory("WOPI")]
+        [TestMethod, TestCategory("WOPI")]
         public void SaveAsCopyAndRename()
         {
+            //Turn to ClassicMode
+            Thread.Sleep(5000);
+            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
+            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
+            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Excel);
             // Refresh web address
-            Browser.Goto(Browser.BaseAddress);
+            Browser.Goto(Browser.DocumentAddress);
+            Browser.Wait(By.XPath("//a[@title='Documents']"));
+            var documents = Browser.webDriver.FindElement(By.XPath("//a[@title='Documents']"));
+            Browser.Click(documents);
+            Thread.Sleep(3000);
             // Find and open document
             Browser.Wait(By.CssSelector("a[href*='" + filename + ".xlsx']"));
             var Docment = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".xlsx']"));
@@ -60,6 +69,9 @@ namespace WOPIautomation
             Thread.Sleep(8000);
             // Back to base address
             Browser.Goto(Browser.BaseAddress);
+            Browser.Wait(By.XPath("//a[@title='Documents']"));
+            documents = Browser.webDriver.FindElement(By.XPath("//a[@title='Documents']"));
+            Browser.Click(documents);
             Thread.Sleep(3000);
             Docment = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".xlsx']"));
             Browser.Click(Docment);
@@ -80,6 +92,10 @@ namespace WOPIautomation
             Thread.Sleep(8000);
             // Back to base address
             Browser.Goto(Browser.BaseAddress);
+            Browser.Wait(By.XPath("//a[@title='Documents']"));
+            documents = Browser.webDriver.FindElement(By.XPath("//a[@title='Documents']"));
+            Browser.Click(documents);
+            Thread.Sleep(3000);
             // Delete the new created copy document
             SharepointClient.DeleteFile("Copy" + filename + ".xlsx");
             // Delete the new upload document
@@ -92,17 +108,22 @@ namespace WOPIautomation
         [TestMethod, TestCategory("WOPI")]
         public void NewFolder()
         {
+            //Turn to ClassicMode
+            Thread.Sleep(5000);
+            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
+            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
+            Browser.Click(turntoClassicMode);
             // Click the New button to create a new folder
             Browser.Wait(By.XPath("//button[@id='QCB1_Button1']"));
             var newButton = Browser.webDriver.FindElement(By.XPath("//button[@id='QCB1_Button1']"));
             Browser.Click(newButton);
             // Click "New Folder" button in popup window
-            var newFolder = Browser.webDriver.FindElement(By.XPath("//a[@id='js-newdocWOPI-divFolder-WPQ4']"));
+            var newFolder = Browser.webDriver.FindElement(By.XPath("//a[@id='js-newdocWOPI-divFolder-WPQ1']"));
             Browser.Click(newFolder);
             Thread.Sleep(3000);
             // Enter a name for new folder
             var foldername = Browser.webDriver.FindElement(By.XPath("//input[@id='ccfc_folderNameInput_0_onetidIOFile']"));
-            (Browser.webDriver as IJavaScriptExecutor).ExecuteScript("arguments[0].setAttribute('value',arguments[1])", foldername,"NewFolder");
+            (Browser.webDriver as IJavaScriptExecutor).ExecuteScript("arguments[0].setAttribute('value',arguments[1])", foldername, "NewFolder");
             // Click "Create" button in new folder dialog window
             var create = Browser.webDriver.FindElement(By.XPath("//input[@id='csfd_createButton_toolBarTbl_RightRptControls_diidIOSaveItem']"));
             Browser.Click(create);
@@ -116,11 +137,12 @@ namespace WOPIautomation
             var newButton_infolder = Browser.webDriver.FindElement(By.XPath("//button[@id='QCB1_Button1']"));
             Browser.Click(newButton_infolder);
             // Select "New OneNote"
-            var newOneNote = Browser.webDriver.FindElement(By.XPath("//a[@id='js-newdocWOPI-divOneNote-WPQ4']"));
+            var newOneNote = Browser.webDriver.FindElement(By.XPath("//a[@id='js-newdocWOPI-divOneNote-WPQ1']"));
             Browser.Click(newOneNote);
             Thread.Sleep(1000);
             // Switch to new OneNote dialog frame
             var frameSrc = Browser.webDriver.FindElement(By.CssSelector("[src*='/_layouts/15/CreateNewDocument.aspx?SaveLocation=%2FShared%20Documents%2FNewFolder']"));
+            //var frameSrc = Browser.webDriver.FindElement(By.ClassName("ms-dlgFrame"));
             Browser.webDriver.SwitchTo().Frame(frameSrc);
             // Enter a name for OneNote
             var OneNoteName = Browser.webDriver.FindElement(By.XPath("//input[@id='ctl00_PlaceHolderMain_ctl00_ctl01_textBoxFileName']"));
@@ -133,12 +155,12 @@ namespace WOPIautomation
             // Click navigation button
             Browser.Wait(By.XPath("//a[@id='NavigationViewExpandButton']"));
             var navigationView = Browser.webDriver.FindElement(By.XPath("//a[@id='NavigationViewExpandButton']"));
-            Browser.Click(navigationView);
+            (Browser.webDriver as IJavaScriptExecutor).ExecuteScript("arguments[0].click();", navigationView);
             // Click new session button
             var newsession = Browser.webDriver.FindElement(By.XPath("//div[@id='NewSectionButton']/a"));
-            Browser.Click(newsession);
+            (Browser.webDriver as IJavaScriptExecutor).ExecuteScript("arguments[0].click();", newsession);
             var sessionCancel = Browser.webDriver.FindElement(By.XPath("//button[@id='WACDialogCancelButton'][text()='Cancel']"));
-            Browser.Click(sessionCancel);
+            (Browser.webDriver as IJavaScriptExecutor).ExecuteScript("arguments[0].click();", sessionCancel);
             // Back to base address
             Browser.Goto(Browser.BaseAddress);
             // Delete the new created folder
