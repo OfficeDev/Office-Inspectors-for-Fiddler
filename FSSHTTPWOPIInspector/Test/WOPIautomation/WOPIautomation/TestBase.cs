@@ -52,6 +52,7 @@ namespace WOPIautomation
             GetTestCatgoryInformation();
             if (!isWOPI)
             {
+                GetTestingFolder();
                 FormatConvert.StartFiddlerExe();
             }
             else
