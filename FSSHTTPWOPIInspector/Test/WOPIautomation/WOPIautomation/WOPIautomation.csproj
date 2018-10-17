@@ -48,9 +48,8 @@
       <HintPath>..\ExternalReference\FiddlerCore.dll</HintPath>
       <Aliases>FiddlerCore</Aliases>
     </Reference>
-    <Reference Include="FSSHTTPandWOPIFiddlerInspector, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ExternalReference\FSSHTTPandWOPIFiddlerInspector.dll</HintPath>
+    <Reference Include="FSSHTTPandWOPIFiddlerInspector">
+      <HintPath>..\..\..\..\Releases\FSSHTTPandWOPIFiddlerInspector.dll</HintPath>
     </Reference>
     <Reference Include="Interop.AutoItX3Lib">
       <HintPath>..\ExternalReference\Interop.AutoItX3Lib.dll</HintPath>
