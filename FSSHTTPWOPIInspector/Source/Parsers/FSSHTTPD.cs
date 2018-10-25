@@ -97,27 +97,6 @@ namespace FSSHTTPandWOPIInspector.Parsers
         }
     }
 
-    /// <summary>
-    /// UnKnowStructure
-    /// </summary>
-    public class UnKnownStructure : BaseStructure
-    {
-        public bit16StreamObjectHeaderStart StructureHeader;
-        public byte[] StructureData;
-
-        /// <summary>
-        /// Parse the LeafNodeObjectData structure.
-        /// </summary>
-        /// <param name="s">A stream containing LeafNodeObjectData structure.</param>
-        public override void Parse(Stream s)
-        {
-            base.Parse(s);
-            this.StructureHeader = new bit16StreamObjectHeaderStart();
-            this.StructureHeader.Parse(s);
-            this.StructureData = ReadBytes(this.StructureHeader.Length);
-        }
-    }
-
     public class ZIPFileStructure : BaseStructure
     {
         public LocalFileHeader[] fileHeader;
