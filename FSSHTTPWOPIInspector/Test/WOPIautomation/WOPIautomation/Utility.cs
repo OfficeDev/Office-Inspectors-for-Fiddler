@@ -28,26 +28,55 @@ namespace WOPIautomation
         public static void OfficeSignIn(string userName, string Password)
         {
             var desktop = AutomationElement.RootElement;
-            AutomationElement documentFormat = WaitForElement(desktop, new PropertyCondition(AutomationElement.NameProperty, "Word"), TreeScope.Children,true);
+            AutomationElement documentFormat = WaitForElement(desktop, new PropertyCondition(AutomationElement.NameProperty, "Word"), TreeScope.Children, true);
             Thread.Sleep(1000);
-            AutomationElement windowsSecurityDialog = documentFormat.FindFirst(TreeScope.Descendants, new PropertyCondition(AutomationElement.NameProperty, "Windows Security"));
+            Utility.SigninWindowsSecurity(userName, Password);
+        }
 
-            PropertyCondition username_edit = new PropertyCondition(AutomationElement.NameProperty, "User name");
-            AutomationElement item_username = windowsSecurityDialog.FindFirst(TreeScope.Descendants, username_edit);
-            ValuePattern Pattern_username = (ValuePattern)item_username.GetCurrentPattern(ValuePattern.Pattern);
-            item_username.SetFocus();
-            Pattern_username.SetValue(userName);
+        /// <summary>
+        /// Sign in "Windows Security" alert with right account
+        /// </summary>
+        /// <param name="username">username used to sign in</param>
+        /// <param name="password">Password for the relative username</param>
+        public static void SigninWindowsSecurity(string username, string password)
+        {
+            Thread.Sleep(2000);
+            AutoItX3Lib.AutoItX3 autoIT = new AutoItX3Lib.AutoItX3();
+            autoIT.WinActivate("Windows Security");
+            if (autoIT.WinExists("Windows Security") == 1)
+            {
+                username = AutoITStringFormat(username);
+                password = AutoITStringFormat(password);
+                autoIT.Send(username + "{TAB}");
+                autoIT.Send(password);
+                autoIT.Send("{ENTER}");
+            }
+        }
 
-            Condition password_edit = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Edit), new PropertyCondition(AutomationElement.NameProperty, "Password"));
-            AutomationElement item_password = windowsSecurityDialog.FindFirst(TreeScope.Descendants, password_edit);
-            ValuePattern Pattern_password = (ValuePattern)item_password.GetCurrentPattern(ValuePattern.Pattern);
-            item_password.SetFocus();
-            Pattern_password.SetValue(Password);
-
-            Condition OK_button = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "OK"));
-            AutomationElement item_OK = windowsSecurityDialog.FindFirst(TreeScope.Descendants, OK_button);
-            InvokePattern Pattern_OK = (InvokePattern)item_OK.GetCurrentPattern(InvokePattern.Pattern);
-            Pattern_OK.Invoke(); 
+        /// <summary>
+        /// Transfer special symbol to AutoIt format
+        /// </summary>
+        /// <param name="originalStr">Original String</param>
+        public static string AutoITStringFormat(string originalStr)
+        {
+            string result = string.Empty;
+            List<int> targetIndexs = new List<int>();
+            List<char> tmp = new List<char>();
+            for (int i = 0; i < originalStr.Length; i++)
+            {
+                if (originalStr[i] == '{' || originalStr[i] == '}' || originalStr[i] == '^' || originalStr[i] == '+' || originalStr[i] == '!' || originalStr[i] == '#')
+                {
+                    tmp.Add('{');
+                    tmp.Add(originalStr[i]);
+                    tmp.Add('}');
+                }
+                else
+                {
+                    tmp.Add(originalStr[i]);
+                }
+            }
+            result = new string(tmp.ToArray());
+            return result;
         }
 
         /// <summary>
@@ -118,6 +147,22 @@ namespace WOPIautomation
             Pattern_OK.Invoke();
         }
 
+
+        /// <summary>
+        /// Close FileNowAvailable window
+        /// </summary>
+        /// <param name="docName">Document name</param>
+        public static void CloseFileNowAvailable(string docName)
+        {
+            var desktop = AutomationElement.RootElement;
+            AutomationElement document = WaitForElement(desktop, new PropertyCondition(AutomationElement.NameProperty, docName + ".docx [Read-Only] - Word"), TreeScope.Children, true);
+            AutomationElement FileNowAvailableDialog = WaitForElement(document, new PropertyCondition(AutomationElement.NameProperty, "File Now Available"), TreeScope.Children, true);
+            Condition Cancel_button = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Cancel"));
+            AutomationElement item_Cancel = FileNowAvailableDialog.FindFirst(TreeScope.Descendants, Cancel_button);
+            InvokePattern Pattern_Cancel = (InvokePattern)item_Cancel.GetCurrentPattern(InvokePattern.Pattern);
+            Pattern_Cancel.Invoke();
+        }
+
         /// <summary>
         /// Get the Opened document window in word online
         /// </summary>
@@ -155,7 +200,7 @@ namespace WOPIautomation
 
             Condition Group_Info = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Group), new PropertyCondition(AutomationElement.NameProperty, "Info"));
             AutomationElement item_Info = docOnline.FindFirst(TreeScope.Descendants,Group_Info);
-            Condition Con_ManageVersions = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem), new PropertyCondition(AutomationElement.NameProperty, "Manage Versions"));
+            Condition Con_ManageVersions = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem), new PropertyCondition(AutomationElement.NameProperty, "Manage Document"));
             AutomationElement item_ManageVersions = item_Info.FindFirst(TreeScope.Descendants, Con_ManageVersions);
 
             ExpandCollapsePattern Pattern_ManageVersions = (ExpandCollapsePattern)item_ManageVersions.GetCurrentPattern(ExpandCollapsePatternIdentifiers.Pattern);

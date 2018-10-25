@@ -388,6 +388,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
         [XmlAttribute()]
         public string WebUrl { get; set; }
+
+        [XmlAttribute()]
+        public string WebUrlIsEncoded { get; set; }
     }
 
     /// <summary>
@@ -424,6 +427,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
         [XmlAttribute()]
         public string ResourceID { get; set; }
+
+        [XmlAttribute()]
+        public string UrlIsEncoded { get; set; }
     }
 
     /// <summary>

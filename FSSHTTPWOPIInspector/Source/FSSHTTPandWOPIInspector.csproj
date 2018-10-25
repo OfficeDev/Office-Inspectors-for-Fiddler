@@ -82,13 +82,11 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Be.Windows.Forms.HexBox, Version=2.4.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Program Files\Fiddler2\Be.Windows.Forms.HexBox.dll</HintPath>
+    <Reference Include="Be.Windows.Forms.HexBox">
+      <HintPath>..\..\..\..\..\..\Software\DevelopTool\Fiddler\Be.Windows.Forms.HexBox.dll</HintPath>
     </Reference>
-    <Reference Include="Fiddler, Version=4.6.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Program Files\Fiddler2\Fiddler.exe</HintPath>
+    <Reference Include="Fiddler">
+      <HintPath>..\..\..\..\..\..\Software\DevelopTool\Fiddler\Fiddler.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -106,9 +104,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Xceed.Compression.Formats.v5.4, Version=5.4.13572.13590, Culture=neutral, PublicKeyToken=ba83ff368b7563c6, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Program Files\Fiddler2\Inspectors\Xceed.Compression.Formats.v5.4.dll</HintPath>
+    <Reference Include="Xceed.Compression.Formats.v5.4">
+      <HintPath>..\..\..\..\..\..\Software\DevelopTool\Fiddler\Xceed.Compression.Formats.v5.4.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
