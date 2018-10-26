@@ -181,7 +181,8 @@ namespace WOPIautomation
         {
             bool bSuccess = false;
             string fileName = "";
-            string sFilenamePath = TestBase.testingfolderPath + Path.DirectorySeparatorChar + testName;
+            string folderPath = System.Text.RegularExpressions.Regex.Replace(TestBase.testingfolderPath, @"\s+", "");
+            string sFilenamePath = folderPath + Path.DirectorySeparatorChar + testName;
             string sFileName = DateTime.Now.ToString("hh-mm-ss") + ".saz";
             string fullName = sFilenamePath + Path.DirectorySeparatorChar + sFileName;
             List<FiddlerCore.Fiddler.Session> oAllSessionsNew = new List<FiddlerCore.Fiddler.Session>();
@@ -220,7 +221,8 @@ namespace WOPIautomation
             List<FiddlerExe.Fiddler.Session> allSessions = new List<FiddlerExe.Fiddler.Session>();
             FiddlerExe.Fiddler.Session sessionExe;
 
-            List<FiddlerCore.Fiddler.Session> oAllSessionsNew = FiddlerCore.Fiddler.Utilities.ReadSessionArchive(fileName, false, "MAPIAutomationTest").ToList();
+            //List<FiddlerCore.Fiddler.Session> oAllSessionsNew = FiddlerCore.Fiddler.Utilities.ReadSessionArchive(fileName, false, "MAPIAutomationTest").ToList();
+            List<FiddlerCore.Fiddler.Session> oAllSessionsNew = FiddlerCore.Fiddler.Utilities.ReadSessionArchive(fileName, false, "WOPIautomation").ToList();
             int sessionCount = oAllSessionsNew.Count;
 
             for (int i = 0; i < sessionCount; i++)
@@ -279,11 +281,50 @@ namespace WOPIautomation
                 allSessions.Add(sessionExe);
             }
 
-            FSSHTTPandWOPIInspector.FSSHTTPandWOPIInspector WOPIInspector = new FSSHTTPandWOPIInspector.FSSHTTPandWOPIInspector();
+            
             string errorPath = TestBase.testingfolderPath;
-            result = WOPIInspector.ParseCaptureFile(allSessions.ToArray(), TestBase.testResultPath);
+            result = ParseCaptureFile(allSessions.ToArray(), TestBase.testResultPath);
             
             return result;
+        }
+
+        public static bool ParseCaptureFile(FiddlerExe.Fiddler.Session[] sessions, string filePath)
+        {
+            FSSHTTPandWOPIInspector.FSSHTTPandWOPIRequestInspector WOPIInspector = new FSSHTTPandWOPIInspector.FSSHTTPandWOPIRequestInspector();
+            List<string> errorStringList = new List<string>();
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (var session in sessions)
+            {
+                try
+                {
+                    string binaryStructureRopName = string.Empty;
+                    object objIn = WOPIInspector.ParseHTTPPayloadForWOPI(session.RequestHeaders, session.ResponseHeaders, session.url, session.RequestBody, out binaryStructureRopName, FSSHTTPandWOPIInspector.FSSHTTPandWOPIInspector.TrafficDirection.In);
+                }
+                catch (Exception ex)
+                {
+                    errorStringList.Add(string.Format("{0}. Error: Frame#{1} Error Message:{2}", errorStringList.Count + 1, session["VirtualID"], ex.Message));
+                }
+                try
+                {
+                    string binaryStructureRopName = string.Empty;
+                    object objOut = WOPIInspector.ParseHTTPPayloadForWOPI(session.RequestHeaders, session.ResponseHeaders, session.url, session.ResponseBody, out binaryStructureRopName, FSSHTTPandWOPIInspector.FSSHTTPandWOPIInspector.TrafficDirection.Out);
+                }
+                catch (Exception ex)
+                {
+                    errorStringList.Add(string.Format("{0}. Error: Frame#{1} Error Message:{2}", errorStringList.Count + 1, session["VirtualID"], ex.Message));
+                }
+            }
+            foreach (string errorString in errorStringList)
+            {
+                stringBuilder.AppendLine(errorString);
+            }
+            if (stringBuilder.Length != 0)
+            {
+                string path = filePath + Path.DirectorySeparatorChar ;
+                File.WriteAllText(path, stringBuilder.ToString());
+                return false;
+            }
+            return true;
         }
 
         /// <summary>

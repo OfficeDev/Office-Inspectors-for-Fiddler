@@ -720,7 +720,7 @@
         edit,
 
         /// <remarks/>
-        mobileview,
+        mobileView,
 
         /// <remarks/>
         embedview,

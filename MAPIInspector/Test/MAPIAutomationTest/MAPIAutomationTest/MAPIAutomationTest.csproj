@@ -64,9 +64,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ExternalReference\ionic.zip.reduced.dll</HintPath>
     </Reference>
-    <Reference Include="MAPIFiddlerInspector, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ExternalReference\MAPIFiddlerInspector.dll</HintPath>
+    <Reference Include="MAPIFiddlerInspector">
+      <HintPath>..\..\..\..\Releases\MAPIFiddlerInspector.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Office.Interop.Outlook, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">

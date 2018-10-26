@@ -26,6 +26,9 @@ namespace WOPIautomation
         public static void LockItem(string filename)
         {
             ClientContext clientContext = new ClientContext(Browser.BaseAddress);
+            string username = ConfigurationManager.AppSettings["UserName"];
+            string password = ConfigurationManager.AppSettings["Password"];
+            clientContext.Credentials = new System.Net.NetworkCredential(username, password);
             List spList = clientContext.Web.Lists.GetByTitle("Documents");
             Microsoft.SharePoint.Client.CamlQuery query = new Microsoft.SharePoint.Client.CamlQuery();
             query.ViewXml = "<View>"
@@ -56,6 +59,9 @@ namespace WOPIautomation
         public static void UnLockItem(string filename)
         {
             ClientContext clientContext = new ClientContext(Browser.BaseAddress);
+            string username = ConfigurationManager.AppSettings["UserName"];
+            string password = ConfigurationManager.AppSettings["Password"];
+            clientContext.Credentials = new System.Net.NetworkCredential(username, password);
             List spList = clientContext.Web.Lists.GetByTitle("Documents");
             Microsoft.SharePoint.Client.CamlQuery query = new Microsoft.SharePoint.Client.CamlQuery();
             query.ViewXml = "<View>"
@@ -86,6 +92,9 @@ namespace WOPIautomation
         public static void UpdateItem(string filename)
         {
             ClientContext clientContext = new ClientContext(Browser.BaseAddress);
+            string username = ConfigurationManager.AppSettings["UserName"];
+            string password = ConfigurationManager.AppSettings["Password"];
+            clientContext.Credentials = new System.Net.NetworkCredential(username, password);
             List spList = clientContext.Web.Lists.GetByTitle("Documents");
             Microsoft.SharePoint.Client.CamlQuery query = new Microsoft.SharePoint.Client.CamlQuery();
             query.ViewXml = "<View>"
@@ -111,6 +120,9 @@ namespace WOPIautomation
         public static void DeleteFile(string filename)
         {
             ClientContext clientContext = new ClientContext(Browser.BaseAddress);
+            string username = ConfigurationManager.AppSettings["UserName"];
+            string password = ConfigurationManager.AppSettings["Password"];
+            clientContext.Credentials = new System.Net.NetworkCredential(username, password);
             List spList = clientContext.Web.Lists.GetByTitle("Documents");
             Microsoft.SharePoint.Client.CamlQuery query = new Microsoft.SharePoint.Client.CamlQuery();
             query.ViewXml = "<View>"
@@ -141,6 +153,9 @@ namespace WOPIautomation
         public static void DeleteFolder(string foldername)
         {
             ClientContext clientContext = new ClientContext(Browser.BaseAddress);
+            string username = ConfigurationManager.AppSettings["UserName"];
+            string password = ConfigurationManager.AppSettings["Password"];
+            clientContext.Credentials = new System.Net.NetworkCredential(username, password);
             List spList = clientContext.Web.Lists.GetByTitle("Documents");
             Microsoft.SharePoint.Client.CamlQuery query = new Microsoft.SharePoint.Client.CamlQuery();
             query.ViewXml = "<View>"
@@ -166,6 +181,9 @@ namespace WOPIautomation
         public static void UploadFile(string path)
         {
             ClientContext context = new ClientContext(Browser.BaseAddress);
+            string username = ConfigurationManager.AppSettings["UserName"];
+            string password = ConfigurationManager.AppSettings["Password"];
+            context.Credentials = new System.Net.NetworkCredential(username, password);
             Web web = context.Web;
 
             // new file

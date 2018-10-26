@@ -29,15 +29,21 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void CoautherWithoutConflict()
         {
+            //Turn to ClassicMode
+            Thread.Sleep(5000);
+            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
+            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
+            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
-            Browser.Goto(Browser.BaseAddress);
+            Browser.Goto(Browser.DocumentAddress);
             // Find document on site
             IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
             // Open document by office word
             Browser.RClick(document);
-            var elementOpenInWord = Browser.webDriver.FindElement(By.XPath("//div[@id='ID_EditIn_Word']"));
+            Browser.Wait(By.LinkText("Open in Word"));
+            var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
             // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
@@ -62,7 +68,7 @@ namespace WOPIautomation
             editInbrowser.SendKeys(OpenQA.Selenium.Keys.Enter);
             SendKeys.SendWait("Enter");
             // Wait for document is opened
-            var saved = Browser.FindElement(By.XPath("//span[@id='BreadcrumbSaveStatus'][text()='Saved']"), false);
+            Browser.Wait(By.XPath("//span[@id='BreadcrumbSaveStatus'][text()='Saved']"));
             oDocument.Save();
             oDocument.Close();
             Utility.DeleteDefaultWordFormat();
@@ -73,7 +79,7 @@ namespace WOPIautomation
             // Delete the new upload document
             SharepointClient.DeleteFile(filename + ".docx");
 
-            bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
+            bool result = FormatConvert.SaveSAZ(testResultPath, testName, out file);
             Assert.IsTrue(result, "The saz file should be saved successfully.");
             bool parsingResult = MessageParser.ParseMessageUsingWOPIInspector(file);
             Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
@@ -82,20 +88,26 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void CoautherWithConflict()
         {
+            //Turn to ClassicMode
+            Thread.Sleep(2000);
+            Browser.Wait(By.CssSelector("span.LeftNav-linkText"));
+            var turntoClassicMode = Browser.webDriver.FindElement(By.CssSelector("span.LeftNav-linkText"));
+            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
-            Browser.Goto(Browser.BaseAddress);
+            Browser.Goto(Browser.DocumentAddress);
             // Find document on site
             IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
             // Open document by office word
             Browser.RClick(document);
-            var elementOpenInWord = Browser.webDriver.FindElement(By.XPath("//div[@id='ID_EditIn_Word']"));
+            Browser.Wait(By.LinkText("Open in Word"));
+            var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
-            // Close microsoft office dialog and access using expected account
+            // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
-            string username = ConfigurationManager.AppSettings["OtherUserName"];
-            string password = ConfigurationManager.AppSettings["OtherPassword"];
+            string username = ConfigurationManager.AppSettings["UserName"];
+            string password = ConfigurationManager.AppSettings["Password"];
             Utility.OfficeSignIn(username, password);
             // Wait for document is opened
             Utility.WaitForDocumentOpenning(filename);
@@ -114,19 +126,22 @@ namespace WOPIautomation
             editInbrowser.SendKeys(OpenQA.Selenium.Keys.Enter);
             SendKeys.SendWait("Enter");
             // Wait for document is opened
-            var saved = Browser.FindElement(By.XPath("//span[@id='BreadcrumbSaveStatus'][text()='Saved']"), false);
+            Thread.Sleep(2000);
+            Browser.Wait(By.XPath("//span[@id='BreadcrumbSaveStatus'][text()='Saved']"));
             // Edit it in online
             SendKeys.SendWait("HelloOfficeOnlineConflict");
             // Wait for online edit saved
-            saved = Browser.FindElement(By.XPath("//span[@id='BreadcrumbSaveStatus'][text()='Saved']"), false);
+            Thread.Sleep(2000);
+            Browser.Wait(By.XPath("//span[@id='BreadcrumbSaveStatus'][text()='Saved']"));
+            //saved = Browser.FindElement(By.XPath("//span[@id='BreadcrumbSaveStatus']"), false);
             Thread.Sleep(60000);
             // Refresh web address
-            Browser.Goto(Browser.BaseAddress);
+            Browser.Goto(Browser.DocumentAddress);
             // Save it in office word and close and release word process
             Utility.WordEditSave(filename);
             Thread.Sleep(10000);
             Utility.CloseMicrosoftWordDialog(filename,"OK");
-            Utility.WordConflictMerge(filename);
+            //Utility.WordConflictMerge(filename);
             oDocument.Close();
             Utility.DeleteDefaultWordFormat();
             Marshal.ReleaseComObject(oDocument);
@@ -144,15 +159,21 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void Schemalock()
         {
+            //Turn to ClassicMode
+            Thread.Sleep(5000);
+            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
+            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
+            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
-            Browser.Goto(Browser.BaseAddress);
+            Browser.Goto(Browser.DocumentAddress);
             // Find document on site
             IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
             Browser.RClick(document);
             // Open document in Edit Word mode
-            var elementOpenInWord = Browser.webDriver.FindElement(By.XPath("//div[@id='ID_EditIn_Word']")); //ID_CA_Open in Word Online
+            Browser.Wait(By.LinkText("Open in Word"));
+            var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
             Utility.CloseMicrosoftOfficeDialog();
             string username = ConfigurationManager.AppSettings["UserName"];
@@ -181,23 +202,30 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void Exclusivelock()
         {
+            //Turn to ClassicMode
+            Thread.Sleep(5000);
+            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
+            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
+            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
-            Browser.Goto(Browser.BaseAddress);
+            Browser.Goto(Browser.DocumentAddress);
             // Find document on site
             IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
             // Checkout the document
             SharepointClient.LockItem(filename + ".docx");
             // Open it in office word
             Browser.RClick(document);
-            var elementOpenInWord = Browser.webDriver.FindElement(By.XPath("//div[@id='ID_EditIn_Word']")); //ID_CA_Open in Word Online
+            Browser.Wait(By.LinkText("Open in Word"));
+            var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
-            // Sign in office word and wait for it opening
+            // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
             Utility.OfficeSignIn(username, password);
+            // Wait for document is opened
             Utility.WaitForDocumentOpenning(filename);
             // Update the document content
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
@@ -222,15 +250,21 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void SchemalockToExclusivelock()
         {
+            //Turn to ClassicMode
+            Thread.Sleep(5000);
+            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
+            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
+            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
-            Browser.Goto(Browser.BaseAddress);
+            Browser.Goto(Browser.DocumentAddress);
             // Find document on site
             IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
             // Open it in office word
             Browser.RClick(document);
-            var elementOpenInWord = Browser.webDriver.FindElement(By.XPath("//div[@id='ID_EditIn_Word']"));
+            Browser.Wait(By.LinkText("Open in Word"));
+            var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
             Utility.CloseMicrosoftOfficeDialog();
             // Sign in office word and wait for it opening
@@ -262,18 +296,24 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void ExclusiveLockGetlock()
         {
+            //Turn to ClassicMode
+            Thread.Sleep(5000);
+            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
+            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
+            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
-            Browser.Goto(Browser.BaseAddress);
+            Browser.Goto(Browser.DocumentAddress);
             // Find document on site
             IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
             // Open it in office word
             Browser.RClick(document);
-            var elementOpenInWord = Browser.webDriver.FindElement(By.XPath("//div[@id='ID_EditIn_Word']"));
+            Browser.Wait(By.LinkText("Open in Word"));
+            var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
+            // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
-            // Sign in office word and wait for it opening
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
             Utility.OfficeSignIn(username, password);
@@ -290,14 +330,15 @@ namespace WOPIautomation
             Utility.CloseMicrosoftWordDialog(filename,"Yes");
             Utility.CloseCheckInPane(filename,true);
             // Go back to base address
-            Browser.Goto(Browser.BaseAddress);
+            Browser.Goto(Browser.DocumentAddress);
             // Reopen document in office word
             document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
             Browser.RClick(document);
-            var elementToOpen = Browser.webDriver.FindElement(By.XPath("//div[@id='ID_EditIn_Word']")); 
+            Browser.Wait(By.LinkText("Open in Word"));
+            var elementToOpen = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementToOpen);
+            // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
-            // Sign in office word and wait for it opening
             username = ConfigurationManager.AppSettings["UserName"];
             password = ConfigurationManager.AppSettings["Password"];
             Utility.OfficeSignIn(username, password);
@@ -325,17 +366,23 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void SchemalockCheck()
         {
+            //Turn to ClassicMode
+            Thread.Sleep(5000);
+            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
+            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
+            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
-            Browser.Goto(Browser.BaseAddress);
+            Browser.Goto(Browser.DocumentAddress);
             // Find document on site
             IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
             // Checked out it
             SharepointClient.LockItem(filename + ".docx");
             // Open it by word
             Browser.RClick(document);
-            var elementOpenInWord = Browser.webDriver.FindElement(By.XPath("//div[@id='ID_EditIn_Word']"));
+            Browser.Wait(By.LinkText("Open in Word"));
+            var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
             Utility.CloseMicrosoftOfficeDialog();
             // Sign in office word with another account and wait for it opening in readonly mode
@@ -366,20 +413,26 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void ExclusivelockCheck()
         {
+            //Turn to ClassicMode
+            Thread.Sleep(5000);
+            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
+            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
+            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
-            Browser.Goto(Browser.BaseAddress);
+            Browser.Goto(Browser.DocumentAddress);
             // Find document on site
             IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" +filename+ ".docx']"));
             // Open it by word
             Browser.RClick(document);
-            var elementOpenInWord = Browser.webDriver.FindElement(By.XPath("//div[@id='ID_EditIn_Word']")); 
+            Browser.Wait(By.LinkText("Open in Word"));
+            var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
+            // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
-            // Sign in office word and wait it opening
-            string username = ConfigurationManager.AppSettings["UserName"];
-            string password = ConfigurationManager.AppSettings["Password"];
+            string username = ConfigurationManager.AppSettings["OtherUserName"];
+            string password = ConfigurationManager.AppSettings["OtherPassword"];
             Utility.OfficeSignIn(username, password);
             Utility.WaitForDocumentOpenning(filename);
             // Check it out in info page
@@ -390,16 +443,17 @@ namespace WOPIautomation
             oDocument.Close();
             Utility.DeleteDefaultWordFormat();
             // Go back to base address
-            Browser.Goto(Browser.BaseAddress);
+            Browser.Goto(Browser.DocumentAddress);
             // Reopen the document in word
             document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
             Browser.RClick(document);
-            var elementToOpen = Browser.webDriver.FindElement(By.XPath("//div[@id='ID_EditIn_Word']")); //ID_CA_Open in Word Online
-            Browser.Click(elementToOpen);
-            // Sign in with another account and wait for it opening
+            Browser.Wait(By.LinkText("Open in Word"));
+            elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
+            Browser.Click(elementOpenInWord);
+            // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
-            username = ConfigurationManager.AppSettings["OtherUserName"];
-            password = ConfigurationManager.AppSettings["OtherPassword"];
+            username = ConfigurationManager.AppSettings["UserName"];
+            password = ConfigurationManager.AppSettings["Password"];
             Utility.OfficeSignIn(username, password);
             Utility.CloseFileInUsePane(filename);
             Utility.WaitForDocumentOpenning(filename, true);
@@ -409,6 +463,7 @@ namespace WOPIautomation
             // CheckLockAvailability
             Thread.Sleep(60000);
             // Close and release word process
+            Utility.CloseFileNowAvailable(filename);
             oDocument.Close();
             Utility.DeleteDefaultWordFormat();
             Marshal.ReleaseComObject(oDocument);
