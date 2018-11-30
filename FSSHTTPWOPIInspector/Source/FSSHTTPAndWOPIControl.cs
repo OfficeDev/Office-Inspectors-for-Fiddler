@@ -1,5 +1,5 @@
-﻿using System.Windows.Forms;
-using Be.Windows.Forms;
+﻿using Be.Windows.Forms;
+using System.Windows.Forms;
 
 namespace FSSHTTPandWOPIInspector
 {
