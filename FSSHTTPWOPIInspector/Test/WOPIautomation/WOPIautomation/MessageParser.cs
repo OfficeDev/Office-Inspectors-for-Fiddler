@@ -221,8 +221,15 @@ namespace WOPIautomation
             List<FiddlerExe.Fiddler.Session> allSessions = new List<FiddlerExe.Fiddler.Session>();
             FiddlerExe.Fiddler.Session sessionExe;
 
-            //List<FiddlerCore.Fiddler.Session> oAllSessionsNew = FiddlerCore.Fiddler.Utilities.ReadSessionArchive(fileName, false, "MAPIAutomationTest").ToList();
-            List<FiddlerCore.Fiddler.Session> oAllSessionsNew = FiddlerCore.Fiddler.Utilities.ReadSessionArchive(fileName, false, "WOPIautomation").ToList();
+            List<FiddlerCore.Fiddler.Session> oAllSessionsNew = null;
+            try
+            {
+                oAllSessionsNew = FiddlerCore.Fiddler.Utilities.ReadSessionArchive(fileName, false, "WOPIautomation").ToList();
+            }
+            catch
+            {
+                oAllSessionsNew = FiddlerCore.Fiddler.Utilities.ReadSessionArchive(fileName, false, "MAPIAutomationTest").ToList();
+            }
             int sessionCount = oAllSessionsNew.Count;
 
             for (int i = 0; i < sessionCount; i++)

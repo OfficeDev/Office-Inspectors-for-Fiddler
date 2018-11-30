@@ -5,9 +5,9 @@ param ([string]$username, [string]$password, [string]$RemoteCapturePath, [string
 	$pass = ConvertTo-SecureString -AsPlainText $Password -Force
 	$Cred = New-Object System.Management.Automation.PSCredential -ArgumentList $Username,$pass
 
-	if (Test-Connection -ComputerName sut04 -Quiet)
+	if (Test-Connection -ComputerName sut03 -Quiet)
 	{
-		Invoke-Command -ComputerName sut04 -Credential $Cred  -ScriptBlock {ping 1.2.3.4}
+		Invoke-Command -ComputerName sut03 -Credential $Cred  -ScriptBlock {ping 1.2.3.4}
 	}
         if (!(test-path $LocalCapturePath))
 	{
