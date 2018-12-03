@@ -29,11 +29,6 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void CoautherWithoutConflict()
         {
-            //Turn to ClassicMode
-            Thread.Sleep(5000);
-            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
-            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
-            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
@@ -47,8 +42,10 @@ namespace WOPIautomation
             Browser.Click(elementOpenInWord);
             // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
+            Utility.WaitForDocumentOpenning(filename);
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
+            Utility.OfficeSignIn(username, password);
             Utility.OfficeSignIn(username, password);
             // Wait for document is opened
             Utility.WaitForDocumentOpenning(filename);
@@ -88,11 +85,6 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void CoautherWithConflict()
         {
-            //Turn to ClassicMode
-            Thread.Sleep(2000);
-            Browser.Wait(By.CssSelector("span.LeftNav-linkText"));
-            var turntoClassicMode = Browser.webDriver.FindElement(By.CssSelector("span.LeftNav-linkText"));
-            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
@@ -106,8 +98,10 @@ namespace WOPIautomation
             Browser.Click(elementOpenInWord);
             // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
+            Utility.WaitForDocumentOpenning(filename);
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
+            Utility.OfficeSignIn(username, password);
             Utility.OfficeSignIn(username, password);
             // Wait for document is opened
             Utility.WaitForDocumentOpenning(filename);
@@ -140,7 +134,7 @@ namespace WOPIautomation
             // Save it in office word and close and release word process
             Utility.WordEditSave(filename);
             Thread.Sleep(10000);
-            Utility.CloseMicrosoftWordDialog(filename,"OK");
+            //Utility.CloseMicrosoftWordDialog(filename,"OK");
             //Utility.WordConflictMerge(filename);
             oDocument.Close();
             Utility.DeleteDefaultWordFormat();
@@ -159,11 +153,6 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void Schemalock()
         {
-            //Turn to ClassicMode
-            Thread.Sleep(5000);
-            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
-            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
-            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
@@ -176,8 +165,10 @@ namespace WOPIautomation
             var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
             Utility.CloseMicrosoftOfficeDialog();
+            Utility.WaitForDocumentOpenning(filename);
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
+            Utility.OfficeSignIn(username, password);
             Utility.OfficeSignIn(username, password);
             Utility.WaitForDocumentOpenning(filename);
             // Update the document content
@@ -202,11 +193,6 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void Exclusivelock()
         {
-            //Turn to ClassicMode
-            Thread.Sleep(5000);
-            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
-            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
-            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
@@ -222,8 +208,10 @@ namespace WOPIautomation
             Browser.Click(elementOpenInWord);
             // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
+            Utility.WaitForDocumentOpenning(filename);
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
+            Utility.OfficeSignIn(username, password);
             Utility.OfficeSignIn(username, password);
             // Wait for document is opened
             Utility.WaitForDocumentOpenning(filename);
@@ -250,11 +238,6 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void SchemalockToExclusivelock()
         {
-            //Turn to ClassicMode
-            Thread.Sleep(5000);
-            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
-            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
-            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
@@ -267,9 +250,11 @@ namespace WOPIautomation
             var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
             Utility.CloseMicrosoftOfficeDialog();
+            Utility.WaitForDocumentOpenning(filename);
             // Sign in office word and wait for it opening
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
+            Utility.OfficeSignIn(username, password);
             Utility.OfficeSignIn(username, password);
             Utility.WaitForDocumentOpenning(filename);
             // Update the document content
@@ -296,11 +281,6 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void ExclusiveLockGetlock()
         {
-            //Turn to ClassicMode
-            Thread.Sleep(5000);
-            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
-            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
-            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
@@ -314,8 +294,10 @@ namespace WOPIautomation
             Browser.Click(elementOpenInWord);
             // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
+            Utility.WaitForDocumentOpenning(filename);
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
+            Utility.OfficeSignIn(username, password);
             Utility.OfficeSignIn(username, password);
             Utility.WaitForDocumentOpenning(filename);
             // Check Out it from the info pag
@@ -339,8 +321,10 @@ namespace WOPIautomation
             Browser.Click(elementToOpen);
             // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
+            Utility.WaitForDocumentOpenning(filename);
             username = ConfigurationManager.AppSettings["UserName"];
             password = ConfigurationManager.AppSettings["Password"];
+            Utility.OfficeSignIn(username, password);
             Utility.OfficeSignIn(username, password);
             Utility.WaitForDocumentOpenning(filename);
             // Edit it 
@@ -366,11 +350,6 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void SchemalockCheck()
         {
-            //Turn to ClassicMode
-            Thread.Sleep(5000);
-            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
-            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
-            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
@@ -385,9 +364,11 @@ namespace WOPIautomation
             var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
             Utility.CloseMicrosoftOfficeDialog();
+            Utility.WaitForDocumentOpenning(filename);
             // Sign in office word with another account and wait for it opening in readonly mode
             string username = ConfigurationManager.AppSettings["OtherUserName"];
             string password = ConfigurationManager.AppSettings["OtherPassword"];
+            Utility.OfficeSignIn(username, password);
             Utility.OfficeSignIn(username, password);
             Utility.CloseFileInUsePane(filename);
             Utility.WaitForDocumentOpenning(filename, true);
@@ -413,11 +394,6 @@ namespace WOPIautomation
         [TestMethod, TestCategory("FSSHTTP")]
         public void ExclusivelockCheck()
         {
-            //Turn to ClassicMode
-            Thread.Sleep(5000);
-            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
-            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
-            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
@@ -431,8 +407,10 @@ namespace WOPIautomation
             Browser.Click(elementOpenInWord);
             // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
+            Utility.WaitForDocumentOpenning(filename);
             string username = ConfigurationManager.AppSettings["OtherUserName"];
             string password = ConfigurationManager.AppSettings["OtherPassword"];
+            Utility.OfficeSignIn(username, password);
             Utility.OfficeSignIn(username, password);
             Utility.WaitForDocumentOpenning(filename);
             // Check it out in info page
@@ -452,10 +430,12 @@ namespace WOPIautomation
             Browser.Click(elementOpenInWord);
             // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
+            Utility.WaitForDocumentOpenning(filename);
             username = ConfigurationManager.AppSettings["UserName"];
             password = ConfigurationManager.AppSettings["Password"];
             Utility.OfficeSignIn(username, password);
             Utility.CloseFileInUsePane(filename);
+            Utility.OfficeSignIn(username, password);
             Utility.WaitForDocumentOpenning(filename, true);
             
             wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
@@ -468,7 +448,7 @@ namespace WOPIautomation
             Utility.DeleteDefaultWordFormat();
             Marshal.ReleaseComObject(oDocument);
             Marshal.ReleaseComObject(wordToOpen);
-            SharepointClient.UnLockItem(filename + ".docx");
+            SharepointClient.UnLockItem(filename + ".docx", ConfigurationManager.AppSettings["OtherUserName"], ConfigurationManager.AppSettings["OtherPassword"]);
             // Delete the new upload document
             SharepointClient.DeleteFile(filename + ".docx");
 

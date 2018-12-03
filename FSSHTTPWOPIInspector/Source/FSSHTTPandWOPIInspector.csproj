@@ -83,10 +83,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Be.Windows.Forms.HexBox">
-      <HintPath>..\..\..\..\..\..\Software\DevelopTool\Fiddler\Be.Windows.Forms.HexBox.dll</HintPath>
+      <HintPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Be.Windows.Forms.HexBox.dll</HintPath>
     </Reference>
     <Reference Include="Fiddler">
-      <HintPath>..\..\..\..\..\..\Software\DevelopTool\Fiddler\Fiddler.exe</HintPath>
+      <HintPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Fiddler.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -105,7 +105,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Xceed.Compression.Formats.v5.4">
-      <HintPath>..\..\..\..\..\..\Software\DevelopTool\Fiddler\Xceed.Compression.Formats.v5.4.dll</HintPath>
+      <HintPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Xceed.Compression.Formats.v5.4.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

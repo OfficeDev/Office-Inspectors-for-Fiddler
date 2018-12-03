@@ -407,6 +407,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
         [XmlAttribute()]
         public string Url { get; set; }
 
+        [XmlAttribute()]
+        public string UrlIsEncoded { get; set; }
+
         [XmlAttribute(DataType = "nonNegativeInteger")]
         public string RequestToken { get; set; }
 
@@ -429,7 +432,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public string ResourceID { get; set; }
 
         [XmlAttribute()]
-        public string UrlIsEncoded { get; set; }
+        public string IntervalOverride { get; set; }
     }
 
     /// <summary>

@@ -26,7 +26,7 @@ call:checkFile
 ::-- Function section starts below here
 ::--------------------------------------------------------
 :checkFile    - passing a variable by reference
-if exist %target% goto foundIt
+if exist %target% goto foundId
 rem if not exist wait for 10 seconds
 timeout /t 10 >null
 goto:checkFile
@@ -34,4 +34,6 @@ goto:checkFile
 :foundId
 echo found %target%
 goto:eof
+
+pause
 

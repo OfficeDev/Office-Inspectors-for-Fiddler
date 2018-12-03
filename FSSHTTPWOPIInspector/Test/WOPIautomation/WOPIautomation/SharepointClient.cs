@@ -52,15 +52,9 @@ namespace WOPIautomation
             }
         }
 
-        /// <summary>
-        /// UnLock a file
-        /// </summary>
-        /// <param name="name">file name</param>
-        public static void UnLockItem(string filename)
+        public static void UnLockItem(string filename, string username, string password)
         {
             ClientContext clientContext = new ClientContext(Browser.BaseAddress);
-            string username = ConfigurationManager.AppSettings["UserName"];
-            string password = ConfigurationManager.AppSettings["Password"];
             clientContext.Credentials = new System.Net.NetworkCredential(username, password);
             List spList = clientContext.Web.Lists.GetByTitle("Documents");
             Microsoft.SharePoint.Client.CamlQuery query = new Microsoft.SharePoint.Client.CamlQuery();
@@ -75,6 +69,7 @@ namespace WOPIautomation
             clientContext.ExecuteQuery();
             foreach (Microsoft.SharePoint.Client.ListItem listitem in listItems)
             {
+                Thread.Sleep(1000);
                 listitem.File.UndoCheckOut();
                 try { clientContext.ExecuteQuery(); }
                 catch
@@ -83,6 +78,17 @@ namespace WOPIautomation
                     clientContext.ExecuteQuery();
                 }
             }
+        }
+
+        /// <summary>
+        /// UnLock a file
+        /// </summary>
+        /// <param name="name">file name</param>
+        public static void UnLockItem(string filename)
+        {
+            string username = ConfigurationManager.AppSettings["UserName"];
+            string password = ConfigurationManager.AppSettings["Password"];
+            UnLockItem(filename, username, password);
         }
 
         /// <summary>
