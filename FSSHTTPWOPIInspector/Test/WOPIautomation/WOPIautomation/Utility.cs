@@ -159,6 +159,10 @@ namespace WOPIautomation
             var desktop = AutomationElement.RootElement;
             AutomationElement document = WaitForElement(desktop, new PropertyCondition(AutomationElement.NameProperty, docName + ".docx [Read-Only] - Word"), TreeScope.Children, true);
             AutomationElement FileNowAvailableDialog = WaitForElement(document, new PropertyCondition(AutomationElement.NameProperty, "File Now Available"), TreeScope.Children, true);
+            if (FileNowAvailableDialog == null)
+            {
+                return;
+            }
             Condition Cancel_button = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Cancel"));
             AutomationElement item_Cancel = FileNowAvailableDialog.FindFirst(TreeScope.Descendants, Cancel_button);
             InvokePattern Pattern_Cancel = (InvokePattern)item_Cancel.GetCurrentPattern(InvokePattern.Pattern);
@@ -190,22 +194,6 @@ namespace WOPIautomation
             return ele;
         }
 
-
-        // Get a handle to an application window.
-        [DllImport("USER32.DLL", CharSet = CharSet.Unicode)]
-        public static extern IntPtr FindWindow(string lpClassName,
-            string lpWindowName);
-
-        // Activate an application window.
-        [DllImport("USER32.DLL")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
-
-        [DllImport("User32.dll")]
-        static extern bool SetFocus(IntPtr hWndLock);
-
-        [DllImport("user32.dll")]
-        internal static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
         /// <summary>
         /// Check out a document on opening word
         /// </summary>
@@ -227,16 +215,6 @@ namespace WOPIautomation
             ExpandCollapsePattern Pattern_ManageVersions = (ExpandCollapsePattern)item_ManageVersions.GetCurrentPattern(ExpandCollapsePatternIdentifiers.Pattern);
             Pattern_ManageVersions.Expand();
 
-            // Find Word Window
-            //IntPtr wordWindowHandle = FindWindow("OpusApp", "Doc.docx - Word");
-            //SetForegroundWindow(wordWindowHandle);            
-            //SetFocus(wordWindowHandle);
-            //// Show Window SW_SHOWMAXIMIZED 3
-            //ShowWindow(wordWindowHandle, 3);
-            //// Send shortcut key Alt+i
-            //SendKeys.SendWait("%i");
-            //// Send shortcut Key R
-            //SendKeys.SendWait("r");
             Condition Con_CheckOut = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem), new PropertyCondition(AutomationElement.NameProperty, "Check Out"));
             AutomationElement item_CheckOut = item_Info.FindFirst(TreeScope.Descendants,Con_CheckOut);
 
@@ -406,8 +384,8 @@ namespace WOPIautomation
         public static void WordEditSave(string filename)
         {
             var desktop = AutomationElement.RootElement;
-            //Orignal: Condition Con_Document = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window), new PropertyCondition(AutomationElement.NameProperty, filename + ".docx - Word"));
-            Condition Con_Document = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window), new PropertyCondition(AutomationElement.NameProperty, filename + " - Word"));
+            Condition Con_Document = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window),
+                new OrCondition(new PropertyCondition(AutomationElement.NameProperty, filename + ".docx - Word"), new PropertyCondition(AutomationElement.NameProperty, filename + " - Word")));
             AutomationElement item_Document = desktop.FindFirst(TreeScope.Children, Con_Document);
             Condition Con_Save = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Save"));
             AutomationElement item_Save = WaitForElement(item_Document, Con_Save, TreeScope.Descendants, false);
@@ -490,7 +468,8 @@ namespace WOPIautomation
         {
             string powershellPath = ConfigurationManager.AppSettings["Powershell_Path"];
             string userName = ConfigurationManager.AppSettings["UserName"];
-            string password = ConfigurationManager.AppSettings["PasswordForExecuteScript"];
+            string password = ConfigurationManager.AppSettings["Password"];
+            password = GetExecuteScripPassword(password);
             string path = ConfigurationManager.AppSettings["Path"];
             string destination = ConfigurationManager.AppSettings["Destination"];
 
@@ -505,6 +484,10 @@ namespace WOPIautomation
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = "CMD.exe";
             startInfo.Verb = "runas";
+            if (!Directory.Exists(TestBase.testResultPath))
+            {
+                Directory.CreateDirectory(TestBase.testResultPath);
+            }
             if (isStart)
             {
                 startInfo.Arguments = "/user:Administrator cmd /c " + "powershell " + scriptPath + " " + userName + " " + password;
@@ -537,6 +520,16 @@ namespace WOPIautomation
                 Thread.Sleep(6000);
             }
             while (!System.IO.File.Exists(fileName));
+        }
+
+        public static string GetExecuteScripPassword(string orignialPass)
+        {
+            string result = orignialPass;
+            if (orignialPass.Contains("|"))
+            {
+                result = orignialPass.Replace("|", "`^|");
+            }
+            return result;
         }
         
     }

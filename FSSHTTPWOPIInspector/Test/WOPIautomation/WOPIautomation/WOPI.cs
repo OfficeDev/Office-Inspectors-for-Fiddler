@@ -30,11 +30,6 @@ namespace WOPIautomation
         [TestMethod, TestCategory("WOPI")]
         public void SaveAsCopyAndRename()
         {
-            //Turn to ClassicMode
-            Thread.Sleep(5000);
-            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
-            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
-            Browser.Click(turntoClassicMode);
             // Upload a document
             SharepointClient.UploadFile(Excel);
             // Refresh web address
@@ -47,14 +42,15 @@ namespace WOPIautomation
             Browser.Wait(By.CssSelector("a[href*='" + filename + ".xlsx']"));
             var Docment = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".xlsx']"));
             Browser.Click(Docment);
+            Browser.Wait(By.Id("WebApplicationFrame"));
+            Browser.webDriver.SwitchTo().Frame("WebApplicationFrame");
+            Thread.Sleep(10000);
             // Find and click "Edit WorkBook" tab
             var editExcel = Browser.FindElement(By.XPath("//a[@id='m_excelWebRenderer_ewaCtl_flyoutExcelEdit-Medium20']"), false);
-            editExcel.SendKeys(OpenQA.Selenium.Keys.Enter);
-            //SendKeys.SendWait("Enter");
+            editExcel.Click();
             // Find and click "Edit in Browser" tab
             var editInbrowser = Browser.webDriver.FindElement(By.XPath("//a[@id = 'm_excelWebRenderer_ewaCtl_btnEditInWebApp-Menu32']"));
-            editInbrowser.SendKeys(OpenQA.Selenium.Keys.Enter);
-            //SendKeys.SendWait("Enter");
+            editInbrowser.Click();
             // Click the title of the online excel and renamed it by add "new"
             var rename = Browser.webDriver.FindElement(By.XPath("//div[@id='BreadcrumbTitle']"));
             (Browser.webDriver as IJavaScriptExecutor).ExecuteScript("arguments[0].innerHTML = arguments[1];", rename, "new" + rename.Text + "\r");
@@ -75,20 +71,21 @@ namespace WOPIautomation
             Thread.Sleep(3000);
             Docment = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".xlsx']"));
             Browser.Click(Docment);
+            Browser.Wait(By.Id("WebApplicationFrame"));
+            Browser.webDriver.SwitchTo().Frame("WebApplicationFrame");
+            Thread.Sleep(10000);
             // Find and click tab ...
             var elementInframe = Browser.FindElement(By.XPath("//a[@id='m_excelWebRenderer_ewaCtl_ExcelViewerHeroDockOverflowMenuLauncher-Small20']"), false);
-            elementInframe.SendKeys(OpenQA.Selenium.Keys.Enter);
-            //SendKeys.SendWait("Enter");
+            elementInframe.Click();
             // Find and click SaveAsCopy tab
             var saveacopy = Browser.webDriver.FindElement(By.XPath("//a[@id='m_excelWebRenderer_ewaCtl_Jewel.SaveACopy-Menu20']"));
-            saveacopy.SendKeys(OpenQA.Selenium.Keys.Enter);
-            //SendKeys.SendWait("Enter");
+            saveacopy.Click();
             // Input a name for the new copy document
             var saveAs = Browser.webDriver.FindElement(By.XPath("//input[@id='workbookName']"));
             saveAs.SendKeys("Copy" + saveAs.Text);
             // Click save button
             var save = Browser.webDriver.FindElement(By.XPath("//button[@type='submit']"));
-            save.SendKeys(OpenQA.Selenium.Keys.Enter);
+            save.Click();
             Thread.Sleep(8000);
             // Back to base address
             Browser.Goto(Browser.BaseAddress);
@@ -108,14 +105,9 @@ namespace WOPIautomation
         [TestMethod, TestCategory("WOPI")]
         public void NewFolder()
         {
-            //Turn to ClassicMode
-            Thread.Sleep(5000);
-            Browser.Wait(By.XPath("//div[2]/div/div/div/a/span"));
-            var turntoClassicMode = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
-            Browser.Click(turntoClassicMode);
             // Click the New button to create a new folder
-            Browser.Wait(By.XPath("//button[@id='QCB1_Button1']"));
-            var newButton = Browser.webDriver.FindElement(By.XPath("//button[@id='QCB1_Button1']"));
+            Browser.Wait(By.Id("QCB1_Button1"));
+            var newButton = Browser.webDriver.FindElement(By.Id("QCB1_Button1"));
             Browser.Click(newButton);
             // Click "New Folder" button in popup window
             var newFolder = Browser.webDriver.FindElement(By.XPath("//a[@id='js-newdocWOPI-divFolder-WPQ1']"));
