@@ -53,17 +53,18 @@ namespace WOPIautomation
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
             Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
             oDocument.Content.InsertAfter("HelloWord");
-
             // Double click the document in root site 
             Browser.Click(document);
+            Browser.Wait(By.Id("WebApplicationFrame"));
+            Browser.webDriver.SwitchTo().Frame("WebApplicationFrame");
+            Thread.Sleep(10000);
             // Find and click "Edit Document" tab
             var editWord = Browser.FindElement(By.XPath("//a[@id='flyoutWordViewerEdit-Medium20']"), false);
-            editWord.SendKeys(OpenQA.Selenium.Keys.Enter);
-            SendKeys.SendWait("Enter");
+            editWord.Click();
             // Find and click "Edit in Browser" tab
+            Browser.Wait(By.Id("btnFlyoutEditOnWeb-Menu32"));
             var editInbrowser = Browser.webDriver.FindElement(By.XPath("//a[@id ='btnFlyoutEditOnWeb-Menu32']"));
-            editInbrowser.SendKeys(OpenQA.Selenium.Keys.Enter);
-            SendKeys.SendWait("Enter");
+            editInbrowser.Click();
             // Wait for document is opened
             Browser.Wait(By.XPath("//span[@id='BreadcrumbSaveStatus'][text()='Saved']"));
             oDocument.Save();
@@ -109,16 +110,17 @@ namespace WOPIautomation
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
             Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
             oDocument.Content.InsertBefore("HelloWordConfilict");
-            // Double click the document in root site 
+            // Click the document in root site 
             Browser.Click(document);
+            Browser.Wait(By.Id("WebApplicationFrame"));
+            Browser.webDriver.SwitchTo().Frame("WebApplicationFrame");
+            Thread.Sleep(10000);
             // Find and click "Edit Document" tab
             var editWord = Browser.FindElement(By.XPath("//a[@id='flyoutWordViewerEdit-Medium20']"), false);
-            editWord.SendKeys(OpenQA.Selenium.Keys.Enter);
-            SendKeys.SendWait("Enter");
+            editWord.Click();
             // Find and click "Edit in Browser" tab
             var editInbrowser = Browser.webDriver.FindElement(By.XPath("//a[@id ='btnFlyoutEditOnWeb-Menu32']"));
-            editInbrowser.SendKeys(OpenQA.Selenium.Keys.Enter);
-            SendKeys.SendWait("Enter");
+            editInbrowser.Click();
             // Wait for document is opened
             Thread.Sleep(2000);
             Browser.Wait(By.XPath("//span[@id='BreadcrumbSaveStatus'][text()='Saved']"));
@@ -134,8 +136,8 @@ namespace WOPIautomation
             // Save it in office word and close and release word process
             Utility.WordEditSave(filename);
             Thread.Sleep(10000);
-            //Utility.CloseMicrosoftWordDialog(filename,"OK");
-            //Utility.WordConflictMerge(filename);
+            Utility.CloseMicrosoftWordDialog(filename, "OK");
+            Utility.WordConflictMerge(filename);
             oDocument.Close();
             Utility.DeleteDefaultWordFormat();
             Marshal.ReleaseComObject(oDocument);
@@ -376,6 +378,7 @@ namespace WOPIautomation
             Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
             // Wait for CheckLockAvailability
             Thread.Sleep(60000);
+            Utility.CloseFileNowAvailable(filename);
             // Close and release word process
             oDocument.Close();
             Utility.DeleteDefaultWordFormat();
@@ -408,8 +411,8 @@ namespace WOPIautomation
             // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
             Utility.WaitForDocumentOpenning(filename);
-            string username = ConfigurationManager.AppSettings["OtherUserName"];
-            string password = ConfigurationManager.AppSettings["OtherPassword"];
+            string username = ConfigurationManager.AppSettings["UserName"];
+            string password = ConfigurationManager.AppSettings["Password"];
             Utility.OfficeSignIn(username, password);
             Utility.OfficeSignIn(username, password);
             Utility.WaitForDocumentOpenning(filename);
@@ -431,8 +434,8 @@ namespace WOPIautomation
             // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
             Utility.WaitForDocumentOpenning(filename);
-            username = ConfigurationManager.AppSettings["UserName"];
-            password = ConfigurationManager.AppSettings["Password"];
+            username = ConfigurationManager.AppSettings["OtherUserName"];
+            password = ConfigurationManager.AppSettings["OtherPassword"];
             Utility.OfficeSignIn(username, password);
             Utility.CloseFileInUsePane(filename);
             Utility.OfficeSignIn(username, password);
@@ -448,7 +451,7 @@ namespace WOPIautomation
             Utility.DeleteDefaultWordFormat();
             Marshal.ReleaseComObject(oDocument);
             Marshal.ReleaseComObject(wordToOpen);
-            SharepointClient.UnLockItem(filename + ".docx", ConfigurationManager.AppSettings["OtherUserName"], ConfigurationManager.AppSettings["OtherPassword"]);
+            SharepointClient.UnLockItem(filename + ".docx");
             // Delete the new upload document
             SharepointClient.DeleteFile(filename + ".docx");
 
