@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Text;
     using System.Windows.Forms;
     using System.Xml;
     using Be.Windows.Forms;
@@ -241,6 +242,26 @@
         private Dictionary<int, byte[]> responseBytesForHexview = new Dictionary<int, byte[]>();
 
         /// <summary>
+        /// The JsonResult is used to save the Json string which converted by parse result
+        /// </summary>
+        public static string JsonResult = string.Empty;
+
+        /// <summary>
+        /// The JsonFile is used to set a file name to save JsonResult
+        /// </summary>
+        public static string JsonFile = "Json.txt";
+
+        /// <summary>
+        /// The JsonFile is used to set a file name to save error messages when automation test
+        /// </summary>
+        public static string ErrorFile = "Error.txt";
+
+        /// <summary>
+        /// The AllRopsList is used to save all Rop messages when automation test.
+        /// </summary>
+        public static List<string> AllRopsList = new List<string>();
+
+        /// <summary>
         /// Enum for traffic direction
         /// </summary>
         public enum TrafficDirection
@@ -327,16 +348,31 @@
                     {
                         return this.session.RequestHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
                     }
-                    else if ((this is IResponseInspector2) && this.session.ResponseHeaders.Exists("X-ResponseCode"))
+                    else if ((this is IResponseInspector2) && this.session.id != 0)
                     {
-                        string responseCode = this.session.ResponseHeaders["X-ResponseCode"];
+                        if ((this is IResponseInspector2) && this.session.ResponseHeaders.Exists("X-ResponseCode"))
+                        {
+                            string responseCode = this.session.ResponseHeaders["X-ResponseCode"];
+                            if (responseCode == "0")
+                            {
+                                return this.session.ResponseHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
+                            }
+                            else if (responseCode != string.Empty)
+                            {
+                                return this.session.ResponseHeaders.ExistsAndContains("Content-Type", "text/html");
+                            }
+                        }
+                    }
+                    else if ((this is IResponseInspector2) && this.session["X-ResponseCode"] != null)
+                    {
+                        string responseCode = this.session["X-ResponseCode"];
                         if (responseCode == "0")
                         {
-                            return this.session.ResponseHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
+                            return this.session["Content-Type"] != null && this.session["Content-Type"] == "application/mapi-http";
                         }
                         else if (responseCode != string.Empty)
                         {
-                            return this.session.ResponseHeaders.ExistsAndContains("Content-Type", "text/html");
+                            return this.session["Content-Type"] != null && this.session["Content-Type"] == "text/html";
                         }
                     }
                 }
@@ -367,7 +403,8 @@
             if (IsMapihttpSession(currentSession, TrafficDirection.Out))
             {
                 byte[] bytesForHexView;
-                object mapiResponse = ParseHTTPExecuteResponsePayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                object mapiResponse;                
+                mapiResponse = ParseHTTPExecuteResponsePayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);                              
                 int rgbOutputBufferCount = (mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Length;
 
                 for (int i = 0; i < rgbOutputBufferCount; i++)
@@ -393,22 +430,47 @@
             object objectOut = null;
             byte[] emptyByte = new byte[0];
             bytes = emptyByte;
-
-            if (bytesFromHTTP == null || bytesFromHTTP.Length == 0 || headers == null || !headers.Exists("X-RequestType"))
+            string requestType = string.Empty;
+            if (!MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
             {
-                return null;
+                if (bytesFromHTTP == null || bytesFromHTTP.Length == 0 || headers == null || !headers.Exists("X-RequestType"))
+                {
+                    return null;
+                }
+
+                requestType = headers["X-RequestType"];
+
+                if (requestType == null)
+                {
+                    return null;
+                }
             }
-
-            string requestType = headers["X-RequestType"];
-
-            if (requestType == null)
+            else
             {
-                return null;
+                if (bytesFromHTTP == null || bytesFromHTTP.Length == 0 || currentSession.RequestHeaders == null || !currentSession.RequestHeaders.Exists("X-RequestType"))
+                {
+                    return null;
+                }
+
+                requestType = currentSession.RequestHeaders["X-RequestType"];
+
+                if (requestType == null)
+                {
+                    return null;
+                }
             }
 
             try
             {
-                if (direction == TrafficDirection.Out && headers.Exists("Transfer-Encoding") && headers["Transfer-Encoding"] == "chunked")
+                if (direction == TrafficDirection.Out && MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
+                {
+                    if(currentSession["Transfer-Encoding"] != null && currentSession["Transfer-Encoding"] == "chunked")
+                    {
+                        bytesFromHTTP = Utilities.GetPaylodFromChunkedBody(bytesFromHTTP);
+                        bytes = bytesFromHTTP;
+                    }
+                }
+                else if(direction == TrafficDirection.Out && headers.Exists("Transfer-Encoding") && headers["Transfer-Encoding"] == "chunked")
                 {
                     bytesFromHTTP = Utilities.GetPaylodFromChunkedBody(bytesFromHTTP);
                     bytes = bytesFromHTTP;
@@ -451,19 +513,34 @@
                 {
                     return currentSession.RequestHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
                 }
-                else if (direction == TrafficDirection.Out && currentSession.ResponseHeaders.Exists("X-ResponseCode"))
+                else if (direction == TrafficDirection.Out && !MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
                 {
-                    string responseCode = currentSession.ResponseHeaders["X-ResponseCode"];
+                    if (currentSession.ResponseHeaders.Exists("X-ResponseCode"))
+                    {
+                        string responseCode = currentSession.ResponseHeaders["X-ResponseCode"];
 
+                        if (responseCode == "0")
+                        {
+                            return currentSession.ResponseHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
+                        }
+                        else if (responseCode != string.Empty)
+                        {
+                            return currentSession.ResponseHeaders.ExistsAndContains("Content-Type", "text/html");
+                        }
+                    }
+                }
+                else if(direction == TrafficDirection.Out && currentSession["X-ResponseCode"] != null)
+                {
+                    string responseCode = currentSession["X-ResponseCode"];            
                     if (responseCode == "0")
                     {
-                        return currentSession.ResponseHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
+                        return currentSession["Content-Type"] != null && currentSession["Content-Type"] == "application/mapi-http";
                     }
                     else if (responseCode != string.Empty)
                     {
-                        return currentSession.ResponseHeaders.ExistsAndContains("Content-Type", "text/html");
+                        return currentSession["Content-Type"] != null && currentSession["Content-Type"] == "text/html";
                     }
-                }
+                }             
             }
 
             return false;
@@ -643,7 +720,10 @@
             object result = new object();
             Session thisSession = MAPIInspector.ParsingSession;
             int thisSessionID = thisSession.id;
-
+            if (MapiInspector.MAPIInspector.IsFromFiddlerCore(thisSession))
+            {
+                thisSessionID = int.Parse(thisSession["VirtualID"]);
+            }
             if ((RopIdType)sourceRopID == RopIdType.RopLogon)
             {
                 this.ParseRequestMessage(thisSession, out bytesForHexView, true);
@@ -823,6 +903,10 @@
             {
                 Session currentSession = thisSession;
                 int currentSessionID = currentSession.id;
+                if (MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
+                {
+                    currentSessionID = int.Parse(currentSession["VirtualID"]);
+                }
                 Dictionary<int, uint> dic_QueryRows = new Dictionary<int, uint>();
                 Dictionary<ushort, Dictionary<int, uint>> targetDic = new Dictionary<ushort, Dictionary<int, uint>>();
                 dic_QueryRows.Add(thisSessionID, parameters[1]);
@@ -842,7 +926,14 @@
                     else
                     {
                         currentSession = AllSessions[Convert.ToInt32(thisSession["Number"]) - 1];
-                        currentSessionID = currentSession.id;
+                        if (MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
+                        {
+                            currentSessionID = int.Parse(currentSession["VirtualID"]);
+                        }
+                        else
+                        {
+                            currentSessionID = currentSession.id;
+                        }
                         while (currentSessionID >= 1 && currentSessionID < thisSessionID)
                         {
                             string currentServerPath = currentSession.RequestHeaders.RequestPath;
@@ -872,7 +963,14 @@
                                 else
                                 {
                                     currentSession = AllSessions[Convert.ToInt32(currentSession["Number"]) - 1];
-                                    currentSessionID = currentSession.id;
+                                    if (MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
+                                    {
+                                        currentSessionID = int.Parse(currentSession["VirtualID"]);
+                                    }
+                                    else
+                                    {
+                                        currentSessionID = currentSession.id;
+                                    }
                                 }
                             }
                         }
@@ -932,6 +1030,10 @@
             {
                 Session currentSession = thisSession;
                 int currentSessionID = currentSession.id;
+                if (MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
+                {
+                    currentSessionID = int.Parse(currentSession["VirtualID"]);
+                }
                 uint targetSessionID = 0;
                 Dictionary<int, uint> dic_Notify = new Dictionary<int, uint>();
                 Dictionary<ushort, Dictionary<int, uint>> targetDic = new Dictionary<ushort, Dictionary<int, uint>>();
@@ -952,8 +1054,15 @@
                     }
                     else
                     {
-                        currentSession = AllSessions[Convert.ToInt32(thisSession["Number"]) - 1];
-                        currentSessionID = currentSession.id;
+                        currentSession = AllSessions[Convert.ToInt32(thisSession["Number"]) - 1];          
+                        if (MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
+                        {
+                            currentSessionID = int.Parse(currentSession["VirtualID"]);
+                        }
+                        else
+                        {
+                            currentSessionID = currentSession.id;
+                        }
 
                         // isFound used to specify whether the setColumns for this notify has found.
                         bool isFound = false;
@@ -1052,7 +1161,14 @@
                             else
                             {
                                 currentSession = AllSessions[Convert.ToInt32(currentSession["Number"]) - 1];
-                                currentSessionID = currentSession.id;
+                                if (MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
+                                {
+                                    currentSessionID = int.Parse(currentSession["VirtualID"]);
+                                }
+                                else
+                                {
+                                    currentSessionID = currentSession.id;
+                                }
                             }
                         }
                     }
@@ -1234,6 +1350,10 @@
             bytes = bytesForHexView;
             Session thisSession = MAPIInspector.ParsingSession;
             int thisSessionID = thisSession.id;
+            if (MapiInspector.MAPIInspector.IsFromFiddlerCore(thisSession))
+            {
+                thisSessionID = int.Parse(thisSession["VirtualID"]);
+            }     
 
             if (ropID == RopIdType.RopFastTransferSourceGetBuffer)
             {
@@ -1259,6 +1379,10 @@
                 {
                     Session currentSession = AllSessions[1];
                     int currentSessionID = currentSession.id;
+                    if (MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
+                    {
+                        currentSessionID = int.Parse(currentSession["VirtualID"]);
+                    }
                     int sessionGetContextCount = HandleWithSessionGetContextInformation.Count;
 
                     if (sessionGetContextCount > 0 && HandleWithSessionGetContextInformation.ContainsKey(parameters))
@@ -1294,8 +1418,14 @@
 
                             currentSession = AllSessions[Convert.ToInt32(PartialGetSession["Number"]) + 1];
                         }
-
-                        currentSessionID = currentSession.id;
+                        if (MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
+                        {
+                            currentSessionID = int.Parse(currentSession["VirtualID"]);
+                        }
+                        else
+                        {
+                            currentSessionID = currentSession.id;
+                        }
                     }
 
                     string serverurl = thisSession.RequestHeaders.RequestPath;
@@ -1337,8 +1467,15 @@
                         }
 
                         currentSession = AllSessions[Convert.ToInt32(currentSession["Number"]) + 1];
-                        if (currentSessionID == currentSession.id) break;
-                        currentSessionID = currentSession.id;
+                        if (currentSessionID == currentSession.id || currentSessionID == int.Parse(currentSession["VirtualID"])) break;
+                        if (MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
+                        {
+                            currentSessionID = int.Parse(currentSession["VirtualID"]);
+                        }
+                        else
+                        {
+                            currentSessionID = currentSession.id;
+                        }
                     }
 
                     if (!DecodingContext.PartialInformationReady.ContainsKey(thisSessionID))
@@ -1393,7 +1530,10 @@
                 {
                     Session currentSession = AllSessions[1];
                     int currentSessionID = currentSession.id;
-
+                    if (MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
+                    {
+                        currentSessionID = int.Parse(currentSession["VirtualID"]);
+                    }        
                     if (ropID == RopIdType.RopFastTransferDestinationPutBuffer)
                     {
                         int sessionPutContextCount = HandleWithSessionPutContextInformation.Count;
@@ -1431,7 +1571,14 @@
                                 currentSession = AllSessions[Convert.ToInt32(PartialPutSession["Number"]) + 1];
                             }
 
-                            currentSessionID = currentSession.id;
+                            if (MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
+                            {
+                                currentSessionID = int.Parse(currentSession["VirtualID"]);
+                            }
+                            else
+                            {
+                                currentSessionID = currentSession.id;
+                            }
                         }
                     }
                     else
@@ -1471,7 +1618,14 @@
                                 currentSession = AllSessions[Convert.ToInt32(PartialPutExtendSession["Number"]) + 1];
                             }
 
-                            currentSessionID = currentSession.id;
+                            if (MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
+                            {
+                                currentSessionID = int.Parse(currentSession["VirtualID"]);
+                            }
+                            else
+                            {
+                                currentSessionID = currentSession.id;
+                            }
                         }
                     }
 
@@ -1538,7 +1692,14 @@
                         }
 
                         currentSession = AllSessions[Convert.ToInt32(currentSession["Number"]) + 1];
-                        currentSessionID = currentSession.id;
+                        if (MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
+                        {
+                            currentSessionID = int.Parse(currentSession["VirtualID"]);
+                        }
+                        else
+                        {
+                            currentSessionID = currentSession.id;
+                        }
                     }
 
                     if (!DecodingContext.PartialInformationReady.ContainsKey(thisSessionID))
@@ -1574,6 +1735,10 @@
                 mapiRequest = this.ParseHTTPPayload(parsingSession.RequestHeaders, parsingSession, parsingSession.requestBodyBytes, TrafficDirection.In, out bytesForHexView);
                 hexViewBytes = bytesForHexView;
                 int parsingSessionID = parsingSession.id;
+                if (MapiInspector.MAPIInspector.IsFromFiddlerCore(parsingSession))
+                {
+                    parsingSessionID = int.Parse(parsingSession["VirtualID"]);
+                }
 
                 if (mapiRequest != null)
                 {
@@ -1614,50 +1779,97 @@
         /// <summary>
         /// Parse special session's response message
         /// </summary>
-        /// <param name="parsingSession">The session to parse</param>
+        /// <param name="currentSession">The session to parse</param>
         /// <param name="hexViewBytes">Byte array for display in RopHexView</param>
         /// <param name="isLooper">A boolean value indicates if this session is in a loop for parsing context sessions</param>
         /// <returns>MAPI response object</returns>
-        public object ParseResponseMessage(Session parsingSession, out byte[] hexViewBytes, bool isLooper = false)
+        public object ParseResponseMessage(Session currentSession, out byte[] hexViewBytes, bool isLooper = false)
         {
             object mapiResponse = null;
             hexViewBytes = new byte[0];
-
-            if (IsMapihttpSession(parsingSession, TrafficDirection.Out) && parsingSession.ResponseHeaders["X-ResponseCode"] == "0")
+            if(!MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
             {
-                NeedToParseCROPSLayer = isLooper;
-                byte[] bytesForHexView;
-                mapiResponse = this.ParseHTTPPayload(parsingSession.ResponseHeaders, parsingSession, parsingSession.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
-                hexViewBytes = bytesForHexView;
-                int parsingSessionID = parsingSession.id;
-
-                if (mapiResponse != null)
+                if (IsMapihttpSession(currentSession, TrafficDirection.Out) && currentSession.ResponseHeaders["X-ResponseCode"] == "0")
                 {
-                    if (parsingSession.responseBodyBytes.Length != 0 && mapiResponse.GetType().Name == "ExecuteResponseBody" && this.responseDic != null && !this.responseDic.ContainsKey(parsingSessionID))
+                    NeedToParseCROPSLayer = isLooper;
+                    byte[] bytesForHexView;
+                    mapiResponse = this.ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                    hexViewBytes = bytesForHexView;
+                    int parsingSessionID = currentSession.id;
+                    if (MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
                     {
-                        if (!IsOnlyGetServerHandle)
+                        parsingSessionID = int.Parse(currentSession["VirtualID"]);
+                    }
+                    if (mapiResponse != null)
+                    {
+                        if (currentSession.responseBodyBytes.Length != 0 && mapiResponse.GetType().Name == "ExecuteResponseBody" && this.responseDic != null && !this.responseDic.ContainsKey(parsingSessionID))
                         {
-                            this.responseDic.Add(parsingSessionID, mapiResponse);
-                            this.responseBytesForHexview.Add(parsingSessionID, bytesForHexView);
-                        }
-                        else
-                        {
-                            if (!this.handleGetDic.ContainsKey(parsingSessionID))
+                            if (!IsOnlyGetServerHandle)
                             {
-                                if ((mapiResponse as ExecuteResponseBody).RopBuffer != null && (mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
+                                this.responseDic.Add(parsingSessionID, mapiResponse);
+                                this.responseBytesForHexview.Add(parsingSessionID, bytesForHexView);
+                            }
+                            else
+                            {
+                                if (!this.handleGetDic.ContainsKey(parsingSessionID))
                                 {
-                                    this.handleGetDic.Add(parsingSessionID, ((ROPOutputBuffer_WithoutCROPS)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList());
+                                    if ((mapiResponse as ExecuteResponseBody).RopBuffer != null && (mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
+                                    {
+                                        this.handleGetDic.Add(parsingSessionID, ((ROPOutputBuffer_WithoutCROPS)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList());
+                                    }
                                 }
                             }
                         }
-                    }
-                    else if (parsingSession.responseBodyBytes.Length != 0 && mapiResponse.GetType().Name == "ExecuteResponseBody" && this.responseDic != null && this.responseDic.ContainsKey(parsingSessionID) && !IsOnlyGetServerHandle)
-                    {
-                        this.responseDic.Remove(parsingSessionID);
-                        this.responseDic.Add(parsingSessionID, mapiResponse);
+                        else if (currentSession.responseBodyBytes.Length != 0 && mapiResponse.GetType().Name == "ExecuteResponseBody" && this.responseDic != null && this.responseDic.ContainsKey(parsingSessionID) && !IsOnlyGetServerHandle)
+                        {
+                            this.responseDic.Remove(parsingSessionID);
+                            this.responseDic.Add(parsingSessionID, mapiResponse);
+                        }
                     }
                 }
             }
+            else
+            {
+                if (IsMapihttpSession(currentSession, TrafficDirection.Out) && currentSession["X-ResponseCode"] == "0")
+                {
+                    NeedToParseCROPSLayer = isLooper;
+                    byte[] bytesForHexView;
+                    mapiResponse = this.ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                    hexViewBytes = bytesForHexView;
+                    int parsingSessionID = currentSession.id;
+                    if (currentSession.id == 0)
+                    {
+                        parsingSessionID = int.Parse(currentSession["VirtualID"]);
+                    }
+                    if (mapiResponse != null)
+                    {
+                        if (currentSession.responseBodyBytes.Length != 0 && mapiResponse.GetType().Name == "ExecuteResponseBody" && this.responseDic != null && !this.responseDic.ContainsKey(parsingSessionID))
+                        {
+                            if (!IsOnlyGetServerHandle)
+                            {
+                                this.responseDic.Add(parsingSessionID, mapiResponse);
+                                this.responseBytesForHexview.Add(parsingSessionID, bytesForHexView);
+                            }
+                            else
+                            {
+                                if (!this.handleGetDic.ContainsKey(parsingSessionID))
+                                {
+                                    if ((mapiResponse as ExecuteResponseBody).RopBuffer != null && (mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
+                                    {
+                                        this.handleGetDic.Add(parsingSessionID, ((ROPOutputBuffer_WithoutCROPS)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList());
+                                    }
+                                }
+                            }
+                        }
+                        else if (currentSession.responseBodyBytes.Length != 0 && mapiResponse.GetType().Name == "ExecuteResponseBody" && this.responseDic != null && this.responseDic.ContainsKey(parsingSessionID) && !IsOnlyGetServerHandle)
+                        {
+                            this.responseDic.Remove(parsingSessionID);
+                            this.responseDic.Add(parsingSessionID, mapiResponse);
+                        }
+                    }
+                }
+            }
+            
 
             if (isLooper)
             {
@@ -1681,26 +1893,56 @@
             object objectOut = null;
             byte[] emptyByte = new byte[0];
             bytes = emptyByte;
+            string requestType = string.Empty;
 
-            if (bytesFromHTTP == null || bytesFromHTTP.Length == 0)
+            if (!MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
             {
-                return "Payload length from HTTP layer is 0";
+                if (bytesFromHTTP == null || bytesFromHTTP.Length == 0)
+                {
+                    return "Payload length from HTTP layer is 0";
+                }
+                else if (headers == null || !headers.Exists("X-RequestType"))
+                {
+                    return "X-RequestType header does not exist.";
+                }
+
+                requestType = headers["X-RequestType"];
+
+                if (requestType == null)
+                {
+                    return "Request type is null";
+                }
             }
-            else if (headers == null || !headers.Exists("X-RequestType"))
+            else
             {
-                return "X-RequestType header does not exist.";
-            }
+                if (bytesFromHTTP == null || bytesFromHTTP.Length == 0)
+                {
+                    return "Payload length from HTTP layer is 0";
+                }
+                else if (headers == null || !currentSession.RequestHeaders.Exists("X-RequestType"))
+                {
+                    return "X-RequestType header does not exist.";
+                }
 
-            string requestType = headers["X-RequestType"];
+                requestType = currentSession.RequestHeaders["X-RequestType"];
 
-            if (requestType == null)
-            {
-                return "Request type is null";
+                if (requestType == null)
+                {
+                    return "Request type is null";
+                }
             }
 
             try
             {
-                if (direction == TrafficDirection.Out && headers.Exists("Transfer-Encoding") && headers["Transfer-Encoding"] == "chunked")
+                if (direction == TrafficDirection.Out && MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
+                {
+                    if (currentSession["Transfer-Encoding"] != null && currentSession["Transfer-Encoding"] == "chunked")
+                    {
+                        bytesFromHTTP = Utilities.GetPaylodFromChunkedBody(bytesFromHTTP);
+                        bytes = bytesFromHTTP;
+                    }
+                }
+                else if (direction == TrafficDirection.Out && headers.Exists("Transfer-Encoding") && headers["Transfer-Encoding"] == "chunked") 
                 {
                     bytesFromHTTP = Utilities.GetPaylodFromChunkedBody(bytesFromHTTP);
                     bytes = bytesFromHTTP;
@@ -1907,6 +2149,10 @@
                                 break;
                             }
                     }
+                    if (AllRopsList.Count <= 0 || !AllRopsList.Contains(requestType + "Request"))
+                    {
+                        AllRopsList.Add(requestType + "Request");
+                    }
                 }
                 else
                 {
@@ -2101,6 +2347,10 @@
                                 objectOut = "Unavailable Response Type";
                                 break;
                             }
+                    }
+                    if (AllRopsList.Count <= 0 || !AllRopsList.Contains(requestType + "Response"))
+                    {
+                        AllRopsList.Add(requestType + "Response");
                     }
                 }
 
@@ -2307,6 +2557,138 @@
             {
                 return;
             }
+        }
+
+        /// <summary>
+        /// Method to judge whether a session is from FiddlerCore or FiddlerExe
+        /// </summary>
+        /// <param name="currentSession">The session to be judged</param>
+        /// <returns>Boole value indicates whether this session is from FiddlerCore or not</returns>
+        public static bool IsFromFiddlerCore(Session session)
+        {
+            bool result = false;
+            if(session.id == 0)
+            {
+                result = true;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Method to judge whether a session is MAPIHTTP message or not when Automation Test
+        /// </summary>        
+        /// <returns>Boole value indicates whether this session is MAPIHTTP layer message</returns>
+        public bool IsMapihttpWithoutUI()
+        {
+            if (MapiInspector.MAPIInspector.ParsingSession != null)
+            {
+                return MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
+            }
+            if (MapiInspector.MAPIInspector.ParsingSession["X-ResponseCode"] != null)
+            {
+                string a = MapiInspector.MAPIInspector.ParsingSession["X-ResponseCode"];
+                if (a == "0")
+                {
+                    return MapiInspector.MAPIInspector.ParsingSession["Content-Type"] != null && MapiInspector.MAPIInspector.ParsingSession["Content-Type"] == "application/mapi-http";
+                }
+                if (a != "")
+                {
+                    return MapiInspector.MAPIInspector.ParsingSession["Content-Type"] != null && MapiInspector.MAPIInspector.ParsingSession["Content-Type"] == "text/html";
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Parse the sessions from capture file using the MAPI Inspector
+        /// </summary>
+        /// <param name="sessionsFromCore">The sessions which from FiddlerCore to parse</param>
+        /// <param name="pathName">The path for save result file</param>
+        /// <param name="autoCaseName">The test case name to parse</param>
+        /// <param name="allRops">All ROPs contained in list</param>
+        /// <returns>Parse result, true means success</returns>
+        public bool ParseCaptureFile(Fiddler.Session[] sessionsFromCore, string pathName, string autoCaseName, out List<string> allRops)
+        {
+            var errorStringList = new List<string>();
+            StringBuilder stringBuilder = new StringBuilder();
+            AllSessions = sessionsFromCore;
+            DecodingContext decodingContext = new DecodingContext();
+            ResetPartialParameters();
+            ResetPartialContextInformation();
+            ResetHanleInformation();
+            for (int i = 0; i < AllSessions.Length; i++)
+            {
+                var session = AllSessions[i];
+                Session val = AllSessions[i];
+                if (AllSessions[i]["VirtualID"] != null)
+                {
+                    MapiInspector.MAPIInspector.ParsingSession = val;
+                }
+                if (AllSessions.Length > 0 && AllSessions[AllSessions.Length - 1]["Number"] == null)
+                {
+                    SetIndexForContextRelatedMethods();
+                }
+                if (IsMapihttpWithoutUI())
+                {
+                    try
+                    {
+                        MapiInspector.MAPIInspector.IsLooperCall = false;
+                        ResetPartialParameters();
+                        BaseHeaders = val.RequestHeaders;
+                        byte[] bytes;
+                        object obj = ParseHTTPPayload(BaseHeaders, val, val.requestBodyBytes, TrafficDirection.In, out bytes);
+                        JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: true, obj);
+                        if (val["X-ResponseCode"] == "0")
+                        {
+                            object obj2 = ParseHTTPPayload(BaseHeaders, val, val.responseBodyBytes, TrafficDirection.Out, out bytes);
+                            JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: false, obj2);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        errorStringList.Add(string.Format("{0}. Error: Frame#{1} Error Message:{2}", errorStringList.Count + 1, val["VirtualID"], ex.Message));
+                    }
+                    finally
+                    {
+                        DecodingContext.Notify_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[], string>>>();
+                        DecodingContext.RowRops_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[]>>>();
+                        TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
+                        ContextInformationCollection = new List<ContextInformation>();
+                        MapiInspector.MAPIInspector.IsLooperCall = true;
+                    }
+                }
+                if (i % 10 == 0 && JsonResult.Length != 0)
+                {
+                    string path = pathName + Path.DirectorySeparatorChar.ToString() + autoCaseName + "-" + JsonFile;
+                    if (!File.Exists(path))
+                    {
+                        using (StreamWriter streamWriter = File.CreateText(path))
+                        {
+                            streamWriter.WriteLine(JsonResult);
+                        }
+                    }
+                    else
+                    {
+                        using (StreamWriter streamWriter2 = File.AppendText(path))
+                        {
+                            streamWriter2.WriteLine(JsonResult);
+                        }
+                    }
+                    JsonResult = string.Empty;
+                }
+            }
+            allRops = AllRopsList;
+            foreach (string errorString in errorStringList)
+            {
+                stringBuilder.AppendLine(errorString);
+            }
+            if (stringBuilder.Length != 0)
+            {
+                string path2 = pathName + Path.DirectorySeparatorChar.ToString() + autoCaseName + "-" + ErrorFile;
+                File.WriteAllText(path2, stringBuilder.ToString());
+                return false;
+            }
+            return true;
         }
     }
 }

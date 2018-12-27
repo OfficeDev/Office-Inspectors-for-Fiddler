@@ -283,7 +283,7 @@ namespace MapiInspector
                 {
                     if (counter != 0)
                         sb.AppendLine();
-                    sb.Append($"{(counter / 16) * 16:X8} | ");
+                    sb.Append("${(counter / 16) * 16:X8} | ");
                 }
                 else if (counter != 0)
                     sb.Append(" ");
