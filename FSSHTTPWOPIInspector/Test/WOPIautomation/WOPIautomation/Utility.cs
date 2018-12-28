@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Configuration;
 using System.Text.RegularExpressions;
 using System.Management.Automation;
+using System.Windows.Forms;
 
 namespace WOPIautomation
 {
@@ -27,11 +28,14 @@ namespace WOPIautomation
         /// <param name="Password">Password for the relative username</param>
         public static void OfficeSignIn(string userName, string Password)
         {
-            var desktop = AutomationElement.RootElement;
-            AutomationElement documentFormat = WaitForElement(desktop, new PropertyCondition(AutomationElement.NameProperty, "Word"), TreeScope.Children, true);
-            Thread.Sleep(1000);
-            Utility.SigninWindowsSecurity(userName, Password);
+            User32API.KeybdInput(userName);
+            User32API.keybd_event((byte)System.Windows.Forms.Keys.Tab, 0, 0, 0);
+            User32API.keybd_event((byte)System.Windows.Forms.Keys.Tab, 0, 2, 0);
+            User32API.KeybdInput(Password);
+            User32API.keybd_event((byte)System.Windows.Forms.Keys.Enter, 0, 0, 0);
+            User32API.keybd_event((byte)System.Windows.Forms.Keys.Enter, 0, 2, 0);
         }
+
 
         /// <summary>
         /// Sign in "Windows Security" alert with right account
@@ -40,17 +44,12 @@ namespace WOPIautomation
         /// <param name="password">Password for the relative username</param>
         public static void SigninWindowsSecurity(string username, string password)
         {
-            Thread.Sleep(2000);
-            AutoItX3Lib.AutoItX3 autoIT = new AutoItX3Lib.AutoItX3();
-            autoIT.WinActivate("Windows Security");
-            if (autoIT.WinExists("Windows Security") == 1)
-            {
-                username = AutoITStringFormat(username);
-                password = AutoITStringFormat(password);
-                autoIT.Send(username + "{TAB}");
-                autoIT.Send(password);
-                autoIT.Send("{ENTER}");
-            }
+            User32API.KeybdInput(username);
+            User32API.keybd_event((byte)System.Windows.Forms.Keys.Tab, 0, 0, 0);
+            User32API.keybd_event((byte)System.Windows.Forms.Keys.Tab, 0, 2, 0);
+            User32API.KeybdInput(password);
+            User32API.keybd_event((byte)System.Windows.Forms.Keys.Enter, 0, 0, 0);
+            User32API.keybd_event((byte)System.Windows.Forms.Keys.Enter, 0, 2, 0);
         }
 
         /// <summary>
@@ -88,12 +87,14 @@ namespace WOPIautomation
         {
             var desktop = AutomationElement.RootElement;
             if(isreadonly)
-            {
-                AutomationElement document = WaitForElement(desktop, new PropertyCondition(AutomationElement.NameProperty, docName + ".docx [Read-Only] - Word"), TreeScope.Children,true);
+            {                
+                Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + ".docx [Read-Only] - Word"), new PropertyCondition(AutomationElement.NameProperty, docName + " [Read-Only] - Word"), new PropertyCondition(AutomationElement.NameProperty, "Word"), new PropertyCondition(AutomationElement.NameProperty, docName + " - Word"), new PropertyCondition(AutomationElement.NameProperty, docName + ".docx - Word"));
+                AutomationElement document = WaitForElement(desktop, multiCondition, TreeScope.Children,true);
             }
             else
             {
-                AutomationElement document = WaitForElement(desktop, new PropertyCondition(AutomationElement.NameProperty, docName + ".docx - Word"), TreeScope.Children,true);
+                Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + " - Word"), new PropertyCondition(AutomationElement.NameProperty, docName + ".docx - Word"), new PropertyCondition(AutomationElement.NameProperty, "Word"));
+                AutomationElement document = WaitForElement(desktop, multiCondition, TreeScope.Children,true);
             } 
         }
 
@@ -139,7 +140,8 @@ namespace WOPIautomation
         public static void CloseFileInUsePane(string docName)
         {
             var desktop = AutomationElement.RootElement;
-            AutomationElement documentFormat = WaitForElement(desktop, new PropertyCondition(AutomationElement.NameProperty, "Word"), TreeScope.Children,true);
+            Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + " - Word"), new PropertyCondition(AutomationElement.NameProperty, docName + ".docx - Word"), new PropertyCondition(AutomationElement.NameProperty, "Word"));
+            AutomationElement documentFormat = WaitForElement(desktop, multiCondition, TreeScope.Children,true);
             AutomationElement FileInUseDialog = WaitForElement(documentFormat, new PropertyCondition(AutomationElement.NameProperty, "File In Use"), TreeScope.Children,true);
             Condition OK_button = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "OK"));
             AutomationElement item_OK = FileInUseDialog.FindFirst(TreeScope.Descendants, OK_button);
@@ -157,6 +159,10 @@ namespace WOPIautomation
             var desktop = AutomationElement.RootElement;
             AutomationElement document = WaitForElement(desktop, new PropertyCondition(AutomationElement.NameProperty, docName + ".docx [Read-Only] - Word"), TreeScope.Children, true);
             AutomationElement FileNowAvailableDialog = WaitForElement(document, new PropertyCondition(AutomationElement.NameProperty, "File Now Available"), TreeScope.Children, true);
+            if (FileNowAvailableDialog == null)
+            {
+                return;
+            }
             Condition Cancel_button = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Cancel"));
             AutomationElement item_Cancel = FileNowAvailableDialog.FindFirst(TreeScope.Descendants, Cancel_button);
             InvokePattern Pattern_Cancel = (InvokePattern)item_Cancel.GetCurrentPattern(InvokePattern.Pattern);
@@ -173,12 +179,14 @@ namespace WOPIautomation
             Process[] pro = Process.GetProcessesByName("WINWORD");
             string title = "";
             AutomationElement ele = null;
+            WaitForElement(AutomationElement.RootElement, new PropertyCondition(AutomationElement.NameProperty, name + ".docx - Word"), TreeScope.Descendants);
+
             foreach (Process p in pro)
             {
                 title = p.MainWindowTitle;
                 if (title == (name + ".docx - Word"))
                 {
-                    var desktop = AutomationElement.RootElement;
+                    var desktop = AutomationElement.RootElement;                    
                     ele = desktop.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.NameProperty, title));
                     break;
                 }
@@ -194,6 +202,7 @@ namespace WOPIautomation
         {
             AutomationElement docOnline = GetWordOnlineWindow(name);
             Condition File_Tab = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "File Tab"));
+            WaitForElement(docOnline, File_Tab, TreeScope.Descendants);
             AutomationElement item_File = docOnline.FindFirst(TreeScope.Descendants, File_Tab);
             InvokePattern Pattern_File = (InvokePattern)item_File.GetCurrentPattern(InvokePattern.Pattern);
             Pattern_File.Invoke();
@@ -205,6 +214,7 @@ namespace WOPIautomation
 
             ExpandCollapsePattern Pattern_ManageVersions = (ExpandCollapsePattern)item_ManageVersions.GetCurrentPattern(ExpandCollapsePatternIdentifiers.Pattern);
             Pattern_ManageVersions.Expand();
+
             Condition Con_CheckOut = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem), new PropertyCondition(AutomationElement.NameProperty, "Check Out"));
             AutomationElement item_CheckOut = item_Info.FindFirst(TreeScope.Descendants,Con_CheckOut);
 
@@ -312,7 +322,8 @@ namespace WOPIautomation
         public static void CloseMicrosoftWordDialog(string filename, string Accept)
         {
             var desktop = AutomationElement.RootElement;
-            Condition Con_Document = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window), new PropertyCondition(AutomationElement.NameProperty, filename + ".docx - Word"));
+            Condition orCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, filename + " - Word"), new PropertyCondition(AutomationElement.NameProperty, filename + ".docx - Word"));
+            Condition Con_Document = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window), orCondition);
             //AutomationElement item_Document = WaitForWindow(desktop, Con_Document, TreeScope.Children);
             AutomationElement item_Document = desktop.FindFirst(TreeScope.Children, Con_Document);
             Condition Con_Acc = null;
@@ -373,7 +384,8 @@ namespace WOPIautomation
         public static void WordEditSave(string filename)
         {
             var desktop = AutomationElement.RootElement;
-            Condition Con_Document = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window), new PropertyCondition(AutomationElement.NameProperty, filename + ".docx - Word"));
+            Condition Con_Document = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window),
+                new OrCondition(new PropertyCondition(AutomationElement.NameProperty, filename + ".docx - Word"), new PropertyCondition(AutomationElement.NameProperty, filename + " - Word")));
             AutomationElement item_Document = desktop.FindFirst(TreeScope.Children, Con_Document);
             Condition Con_Save = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Save"));
             AutomationElement item_Save = WaitForElement(item_Document, Con_Save, TreeScope.Descendants, false);
@@ -427,7 +439,7 @@ namespace WOPIautomation
             while (window == null)
             {
                 window = parent.FindFirst(scop, condition);
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
                 Count += 1;
                 if (isWindowElement)
                 {
@@ -457,6 +469,7 @@ namespace WOPIautomation
             string powershellPath = ConfigurationManager.AppSettings["Powershell_Path"];
             string userName = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
+            password = GetExecuteScripPassword(password);
             string path = ConfigurationManager.AppSettings["Path"];
             string destination = ConfigurationManager.AppSettings["Destination"];
 
@@ -471,6 +484,10 @@ namespace WOPIautomation
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = "CMD.exe";
             startInfo.Verb = "runas";
+            if (!Directory.Exists(TestBase.testResultPath))
+            {
+                Directory.CreateDirectory(TestBase.testResultPath);
+            }
             if (isStart)
             {
                 startInfo.Arguments = "/user:Administrator cmd /c " + "powershell " + scriptPath + " " + userName + " " + password;
@@ -480,7 +497,7 @@ namespace WOPIautomation
                 startInfo.Arguments = "/user:Administrator cmd /c " + "powershell " + scriptPath + " " + userName + " " + password + " " + path + " " + TestBase.testResultPath + " " + WOPIautomation.TestBase.testName;
             }
             System.Diagnostics.Process.Start(startInfo);
-
+        
             if (!isStart)
             {
                 string captureFulPath = TestBase.testResultPath + Path.DirectorySeparatorChar + WOPIautomation.TestBase.testName + ".cap";
@@ -503,6 +520,16 @@ namespace WOPIautomation
                 Thread.Sleep(6000);
             }
             while (!System.IO.File.Exists(fileName));
+        }
+
+        public static string GetExecuteScripPassword(string orignialPass)
+        {
+            string result = orignialPass;
+            if (orignialPass.Contains("|"))
+            {
+                result = orignialPass.Replace("|", "`^|");
+            }
+            return result;
         }
         
     }

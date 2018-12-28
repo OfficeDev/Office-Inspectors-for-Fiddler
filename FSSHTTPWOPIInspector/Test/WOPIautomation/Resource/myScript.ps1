@@ -1,4 +1,4 @@
-		$path = "c:\temp\v-huid3"
+		$path = "c:\Wenbo"
 		$captureFileName = "aa.cap"
 		$fullPath = $path + "\" + $captureFileName;
 		if (!(test-path $path))
