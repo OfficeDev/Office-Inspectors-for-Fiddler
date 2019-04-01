@@ -262,15 +262,18 @@
             Condition cd_write = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.CheckBox), new PropertyCondition(AutomationElement.NameProperty, "Edit all"));
             AutomationElement item_write = Utilities.WaitForElement(window_FolderProp, cd_write, TreeScope.Descendants, 10);
             TogglePattern pattern_write = (TogglePattern)item_write.GetCurrentPattern(TogglePattern.Pattern);
-            pattern_write.Toggle();
+            if(pattern_write.Current.ToggleState == ToggleState.Off)
+            {
+                pattern_write.Toggle();           
 
-            // Click OK in Microsoft Outlook dialog box
-            var condition_Dailog = new PropertyCondition(AutomationElement.NameProperty, "Microsoft Outlook");
-            var window_Dailog = Utilities.WaitForElement(window_FolderProp, condition_Dailog, TreeScope.Children, 10);
-            var condition_DailogOK = new PropertyCondition(AutomationElement.AutomationIdProperty, "6");
-            var item_DailogOK = Utilities.WaitForElement(window_Dailog, condition_DailogOK, TreeScope.Children, 10);
-            InvokePattern clickPattern_DailogOK = (InvokePattern)item_DailogOK.GetCurrentPattern(InvokePattern.Pattern);
-            clickPattern_DailogOK.Invoke();
+                // Click OK in Microsoft Outlook dialog box
+                var condition_Dailog = new PropertyCondition(AutomationElement.NameProperty, "Microsoft Outlook");
+                var window_Dailog = Utilities.WaitForElement(window_FolderProp, condition_Dailog, TreeScope.Children, 10);
+                var condition_DailogOK = new PropertyCondition(AutomationElement.AutomationIdProperty, "6");
+                var item_DailogOK = Utilities.WaitForElement(window_Dailog, condition_DailogOK, TreeScope.Children, 10);
+                InvokePattern clickPattern_DailogOK = (InvokePattern)item_DailogOK.GetCurrentPattern(InvokePattern.Pattern);
+                clickPattern_DailogOK.Invoke();
+            }
 
             // Click OK in "Inbox Properties" window
             var condition_FolderPropOK = new PropertyCondition(AutomationElement.AutomationIdProperty, "1");
@@ -317,7 +320,8 @@
             Utilities.DeleteAllItemInMAPIFolder(sentMailFolder);
             // Parse the saved trace using MAPI Inspector
             List<string> allRopLists = new List<string>();
-            bool result = MessageParser.ParseMessage(out allRopLists);
+            bool result = false;
+            result = MessageParser.ParseMessage(out allRopLists);           
 
             // Update the XML file for the covered message
             Utilities.UpdateXMLFile(allRopLists);

@@ -171,7 +171,15 @@
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
-                PropertyTag[] proTags = DecodingContext.GetPropertiesSpec_propertyTags[MapiInspector.MAPIInspector.ParsingSession.id][this.InputHandleIndex].Dequeue();
+                PropertyTag[] proTags = new PropertyTag[0];
+                if (!MapiInspector.MAPIInspector.IsFromFiddlerCore(MapiInspector.MAPIInspector.ParsingSession))
+                {
+                    proTags = DecodingContext.GetPropertiesSpec_propertyTags[MapiInspector.MAPIInspector.ParsingSession.id][this.InputHandleIndex].Dequeue();
+                }
+                else
+                {
+                    proTags = DecodingContext.GetPropertiesSpec_propertyTags[int.Parse(MapiInspector.MAPIInspector.ParsingSession["VirtualID"])][this.InputHandleIndex].Dequeue();
+                }
                 this.RowData = new PropertyRow(proTags);
                 this.RowData.Parse(s);
             }
