@@ -2504,6 +2504,7 @@
     }
     #endregion 2.2.5.9
 
+
     #region 2.2.5.10 ModLinkAtt
     /// <summary>
     ///  A class indicates the ModLinkAttRequest structure.
@@ -2571,9 +2572,9 @@
 
                 for (int i = 0; i < this.EntryIdCount; i++)
                 {
+                    var cb = this.ReadUint(); //See details on MS-OXNSPI  3.1.4.1.15	NspiModLinkAtt (Opnum 14) and 2.2.2.3	Binary_r Structure
                     byte currentByte = this.ReadByte();
                     s.Position -= 1;
-
                     if (currentByte == 0x87)
                     {
                         EphemeralEntryID ephemeralEntryID = new EphemeralEntryID();
