@@ -65,7 +65,8 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public BinaryItem SignatureData;
         public bit16StreamObjectHeaderStart DataSizeHeader;
         public ulong DataSize;
-        public UnKnowStructure OtherData;
+        public bit16StreamObjectHeaderStart LeafNodeDataHashHeader;
+        public BinaryItem LeafNodeDataHash;
         public bit8StreamObjectHeaderEnd LeafNodeEnd;
 
         /// <summary>
@@ -86,32 +87,13 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.DataSize = ReadUlong();
             if (ContainsStreamObjectStart16BitHeader(0x2F))
             {
-                this.OtherData = new UnKnowStructure();
-                this.OtherData.Parse(s);
+                this.LeafNodeDataHashHeader = new bit16StreamObjectHeaderStart();
+                this.LeafNodeDataHashHeader.Parse(s);
+                this.LeafNodeDataHash = new BinaryItem();
+                this.LeafNodeDataHash.Parse(s);
             }
             this.LeafNodeEnd = new bit8StreamObjectHeaderEnd();
             this.LeafNodeEnd.Parse(s);
-        }
-    }
-
-    /// <summary>
-    /// UnKnowStructure
-    /// </summary>
-    public class UnKnowStructure : BaseStructure
-    {
-        public bit16StreamObjectHeaderStart StructureHeader;
-        public byte[] StructureData;
-
-        /// <summary>
-        /// Parse the LeafNodeObjectData structure.
-        /// </summary>
-        /// <param name="s">A stream containing LeafNodeObjectData structure.</param>
-        public override void Parse(Stream s)
-        {
-            base.Parse(s);
-            this.StructureHeader = new bit16StreamObjectHeaderStart();
-            this.StructureHeader.Parse(s);
-            this.StructureData = ReadBytes(this.StructureHeader.Length);
         }
     }
 

@@ -3,6 +3,8 @@
     extern alias FiddlerCore;
     extern alias FiddlerExe;
 
+    using Fiddler;
+    using MAPIInspector.Parsers;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -146,7 +148,7 @@
             string secureFilenamePath = TestBase.TestingfolderPath + Path.DirectorySeparatorChar + testName;
             string secureFileName = DateTime.Now.ToString("hh-mm-ss") + ".saz";
             //string fullName = secureFilenamePath + Path.DirectorySeparatorChar + secureFileName;
-            string fullName = @"E:\MAPIInspector\new" + secureFileName;
+            string fullName = @"C:\MAPIInspector\new" + secureFileName;
             List<FiddlerCore.Fiddler.Session> allSessionsNew = new List<FiddlerCore.Fiddler.Session>();
             allSessionsNew = OAllSessions;
             try
@@ -190,7 +192,6 @@
             bool result = true;
             List<FiddlerExe.Fiddler.Session> allSessions = new List<FiddlerExe.Fiddler.Session>();
             FiddlerExe.Fiddler.Session sessionExe;
-
             List<FiddlerCore.Fiddler.Session> allSessionsNew = FiddlerCore.Fiddler.Utilities.ReadSessionArchive(fileName, false, "MAPIAutomationTest").ToList();
             int sessionCount = allSessionsNew.Count;
 
@@ -214,42 +215,37 @@
 
                 sessionExe = new FiddlerExe.Fiddler.Session(requestHeader, allSessionsNew[i].requestBodyBytes);
                 sessionExe.responseBodyBytes = allSessionsNew[i].responseBodyBytes;
-
                 if (allSessionsNew[i].ResponseHeaders.Exists("Transfer-Encoding"))
                 {
                     sessionExe["Transfer-Encoding"] = allSessionsNew[i].ResponseHeaders["Transfer-Encoding"];
                 }
-
                 if (allSessionsNew[i].ResponseHeaders.Exists("X-ResponseCode"))
                 {
                     sessionExe["X-ResponseCode"] = allSessionsNew[i].ResponseHeaders["X-ResponseCode"];
                 }
-
                 if (allSessionsNew[i].ResponseHeaders.Exists("Content-Type"))
                 {
                     sessionExe["Content-Type"] = allSessionsNew[i].ResponseHeaders["Content-Type"];
                 }
-
                 if (allSessionsNew[i].LocalProcess != string.Empty)
                 {
                     sessionExe["LocalProcess"] = allSessionsNew[i].LocalProcess;
                 }
-
                 sessionExe.fullUrl = allSessionsNew[i].fullUrl;
-                sessionExe["VirtualID"] = (i + 1).ToString();
-
+                sessionExe["VirtualID"] = allSessionsNew[i].id.ToString();
                 allSessions.Add(sessionExe);
             }
-
-            MapiInspector.MAPIInspector ma = new MapiInspector.MAPIInspector();
-            // string errorPath = TestBase.TestingfolderPath + Path.DirectorySeparatorChar + TestBase.TestName;
-            string errorPath = TestBase.filePath;
-            result = ma.ParseCaptureFile(allSessions.ToArray(), errorPath, TestBase.TestName, out allRops);
-
+            MapiInspector.MAPIRequestInspector ma = new MapiInspector.MAPIRequestInspector();
+            string filepath = TestBase.TestingfolderPath + Path.DirectorySeparatorChar + TestBase.TestName;
+            if (!Directory.Exists(filepath))
+            {
+                Directory.CreateDirectory(filepath);
+            }
+            result = ma.ParseCaptureFile(allSessions.ToArray(), filepath, TestBase.TestName, out allRops);
             if (!result)
             {
                 string filenameNew = fileName.Split('\\').Last().Split('.').First();
-                File.Move(errorPath + "\\" + "error.txt", errorPath + "\\" + filenameNew + ".txt");
+                File.Move(filepath + "\\" + "error.txt", filepath + "\\" + filenameNew + ".txt");
             }
             return result;
         }

@@ -1687,9 +1687,19 @@
             this.DataOffset = this.ReadUint();
             this.DataSize = this.ReadUshort();
             this.Data = this.ReadBytes((int)this.DataSize);
-            if (this.DataOffset == 0 && (((byte)DecodingContext.SessionLogonFlagMapLogId[MapiInspector.MAPIInspector.ParsingSession.id][this.LogonId] & (byte)LogonFlags.Private) == (byte)LogonFlags.Private))
+            if(!MapiInspector.MAPIInspector.IsFromFiddlerCore(MapiInspector.MAPIInspector.ParsingSession))
             {
-                this.ReplGuid = this.ReadGuid();
+                if (this.DataOffset == 0 && (((byte)DecodingContext.SessionLogonFlagMapLogId[MapiInspector.MAPIInspector.ParsingSession.id][this.LogonId] & (byte)LogonFlags.Private) == (byte)LogonFlags.Private))
+                {
+                    this.ReplGuid = this.ReadGuid();
+                }
+            }
+            else
+            {
+                if (this.DataOffset == 0 && (((byte)DecodingContext.SessionLogonFlagMapLogId[int.Parse(MapiInspector.MAPIInspector.ParsingSession["VirtualID"])][this.LogonId] & (byte)LogonFlags.Private) == (byte)LogonFlags.Private))
+                {
+                    this.ReplGuid = this.ReadGuid();
+                }
             }
         }
     }

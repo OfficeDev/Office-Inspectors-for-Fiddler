@@ -1,5 +1,6 @@
 ﻿namespace MapiInspector
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
 
@@ -88,6 +89,73 @@
             }
             while (chunkSize > 0);            
             return payload.ToArray();
+        }
+
+        /// <summary>
+        /// The SealTheObject Class is used to sealing the parse result.
+        /// </summary>
+        public class SealTheObject
+        {
+            private string title;
+
+            private string message;
+
+            private object obj;
+
+            public string Title
+            {
+                get
+                {
+                    return title;
+                }
+                set
+                {
+                    title = value;
+                }
+            }
+
+            public string Message
+            {
+                get
+                {
+                    return message;
+                }
+                set
+                {
+                    message = value;
+                }
+            }
+
+            public object Obj
+            {
+                get
+                {
+                    return obj;
+                }
+                set
+                {
+                    obj = value;
+                }
+            }
+
+            public SealTheObject(int id, bool isRequest, object obj)
+            {
+                title = "Frame" + id + (isRequest ? "Request" : "Response");
+                message = obj.GetType().Name;
+                Obj = obj;
+            }
+        }
+        /// <summary>
+        /// Method to seal parse result to Json string
+        /// </summary>
+        /// <param name="id">The id of Fiddler session</param>
+        /// <param name="isRequest">Bool value indicates the session is a HttpRequest message or HttpResponse message</param>
+        /// <param name="obj">The object of parse result</param>
+        /// <returns>Json string converted by parse result</returns>
+        public static string ConvertCSharpToJson(int id, bool isRequest, object obj)
+        {
+            SealTheObject sealTheObject = new SealTheObject(id, isRequest, obj);
+            return JsonConvert.SerializeObject((object)sealTheObject);
         }
     }
 }

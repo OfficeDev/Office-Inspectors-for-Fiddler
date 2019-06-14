@@ -1533,10 +1533,19 @@
             this.ResponseHandleIndex = this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
             this.ReadFlags = (ReadFlags)this.ReadByte();
-
-            if (((byte)DecodingContext.SessionLogonFlagMapLogId[MapiInspector.MAPIInspector.ParsingSession.id][this.LogonId] & (byte)LogonFlags.Private) != (byte)LogonFlags.Private)
+            if(!MapiInspector.MAPIInspector.IsFromFiddlerCore(MapiInspector.MAPIInspector.ParsingSession))
             {
-                this.ClientData = this.ConvertArray(this.ReadBytes(24));
+                if (((byte)DecodingContext.SessionLogonFlagMapLogId[MapiInspector.MAPIInspector.ParsingSession.id][this.LogonId] & (byte)LogonFlags.Private) != (byte)LogonFlags.Private)
+                {
+                    this.ClientData = this.ConvertArray(this.ReadBytes(24));
+                }
+            }
+            else
+            {
+                if (((byte)DecodingContext.SessionLogonFlagMapLogId[int.Parse(MapiInspector.MAPIInspector.ParsingSession["VirtualID"])][this.LogonId] & (byte)LogonFlags.Private) != (byte)LogonFlags.Private)
+                {
+                    this.ClientData = this.ConvertArray(this.ReadBytes(24));
+                }
             }
         }
     }

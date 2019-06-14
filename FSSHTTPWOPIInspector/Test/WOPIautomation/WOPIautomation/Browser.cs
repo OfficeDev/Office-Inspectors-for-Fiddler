@@ -56,12 +56,14 @@ namespace WOPIautomation
                     InternetExplorerOptions IEOption32 = new InternetExplorerOptions();
                     IEOption32.IntroduceInstabilityByIgnoringProtectedModeSettings = true;
                     IEOption32.RequireWindowFocus = true;
-                    webDriver = new InternetExplorerDriver(System.IO.Directory.GetCurrentDirectory().Replace(@"\bin\Debug", "") + @"\Drivers\IE32\", IEOption32, TimeSpan.FromSeconds(30));                  
+                    IEOption32.PageLoadStrategy = InternetExplorerPageLoadStrategy.Normal;
+                    webDriver = new InternetExplorerDriver(System.IO.Directory.GetCurrentDirectory().Replace(@"\bin\Debug", "") + @"\Drivers\IE32\", IEOption32, TimeSpan.FromSeconds(60));                  
                     break;
                 case ("ie64"):
                     InternetExplorerOptions IEOption64 = new InternetExplorerOptions();
                     IEOption64.IntroduceInstabilityByIgnoringProtectedModeSettings = true;
                     IEOption64.RequireWindowFocus = true;
+                    IEOption64.PageLoadStrategy = InternetExplorerPageLoadStrategy.Normal;
                     webDriver = new InternetExplorerDriver(System.IO.Directory.GetCurrentDirectory().Replace(@"\bin\Debug", "") + @"\Drivers\IE64\", IEOption64, TimeSpan.FromSeconds(60));
                     break;
                 default:
@@ -79,7 +81,42 @@ namespace WOPIautomation
             webDriver.Manage().Window.Maximize();
             webDriver.Navigate().GoToUrl(address);
             signIncheckAlert();
+            SwitchToClassicMode();
+        }
 
+        public static void SwitchToClassicMode()
+        {
+            bool isNewMode = false;
+            if (Browser.Wait(By.XPath("//div[2]/div/div/div/a/span")))
+            {
+                System.Threading.Thread.Sleep(3000);
+
+                var element = Browser.webDriver.FindElement(By.XPath("//div[2]/div/div/div/a/span"));
+                if (element.Text.Equals("Return to classic SharePoint"))
+                {
+                    isNewMode = true;
+                }
+            }
+
+            if (isNewMode)
+            {
+                Browser.Wait(By.Id("O365_MainLink_Settings"));
+                var settings = Browser.webDriver.FindElement(By.Id("O365_MainLink_Settings"));
+                Browser.Click(settings);
+                Browser.Wait(By.Id("O365_SubLink_SuiteMenu_LibrarySettings"));
+                settings = Browser.webDriver.FindElement(By.Id("O365_SubLink_SuiteMenu_LibrarySettings"));
+                Browser.Click(settings);
+                Browser.Wait(By.LinkText("Advanced settings"));
+                settings = Browser.webDriver.FindElement(By.LinkText("Advanced settings"));
+                Browser.Click(settings);
+                Browser.Wait(By.Id("ctl00_PlaceHolderMain_ContentTypeSection_ctl02_RadEnableContentTypesYes"));
+                ((IJavaScriptExecutor)Browser.webDriver).ExecuteScript("window.scrollTo(0, document.body.scrollHeight)");
+                var classicMode = Browser.webDriver.FindElement(By.Id("ctl00_PlaceHolderMain_ListExperienceSection_ctl02_RadDisplayOnClassicExperience"));
+                Browser.Click(classicMode);
+                var ok = Browser.webDriver.FindElement(By.Id("ctl00_PlaceHolderMain_ctl00_RptControls_BtnSaveAsTemplate"));
+                Browser.Click(ok);
+                Browser.Goto(Browser.DocumentAddress);
+            }
         }
 
         /// <summary>
@@ -135,10 +172,18 @@ namespace WOPIautomation
         /// Condition wait method
         /// </summary>
         /// <param name="by">Indicate which is used to find element</param>
-        public static void Wait(By by)
+        public static bool Wait(By by)
         {
-            var wait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(defaultWaitTime * 3));
-            wait.Until(ExpectedConditions.ElementExists(by));
+            try
+            {
+                var wait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(defaultWaitTime * 3));
+                wait.Until(ExpectedConditions.ElementExists(by));
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /// <summary>

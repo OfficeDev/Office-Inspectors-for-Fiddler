@@ -41,7 +41,7 @@
       <HintPath>..\ExternalReference\EQATEC.Analytics.Monitor.dll</HintPath>
     </Reference>
     <Reference Include="Fiddler">
-      <HintPath>..\..\..\..\..\..\..\..\Software\DevelopTool\Fiddler\Fiddler.exe</HintPath>
+      <HintPath>..\..\..\..\..\..\..\AppData\Local\Programs\Fiddler\Fiddler.exe</HintPath>
       <Aliases>FiddlerExe</Aliases>
     </Reference>
     <Reference Include="FiddlerCore">
@@ -49,11 +49,7 @@
       <Aliases>FiddlerCore</Aliases>
     </Reference>
     <Reference Include="FSSHTTPandWOPIFiddlerInspector">
-      <HintPath>..\..\..\..\Releases\FSSHTTPandWOPIFiddlerInspector.dll</HintPath>
-    </Reference>
-    <Reference Include="Interop.AutoItX3Lib">
-      <HintPath>..\ExternalReference\Interop.AutoItX3Lib.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\..\..\..\..\..\..\AppData\Local\Programs\Fiddler\Inspectors\FSSHTTPandWOPIFiddlerInspector.dll</HintPath>
     </Reference>
     <Reference Include="ionic.zip.reduced">
       <HintPath>..\ExternalReference\ionic.zip.reduced.dll</HintPath>
@@ -112,6 +108,7 @@
     <Compile Include="SharepointClient.cs" />
     <Compile Include="SimulateKeyInput.cs" />
     <Compile Include="TestBase.cs" />
+    <Compile Include="User32API.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="WOPI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

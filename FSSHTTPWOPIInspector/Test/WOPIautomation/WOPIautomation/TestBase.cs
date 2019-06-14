@@ -13,6 +13,9 @@ using System.Text.RegularExpressions;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using Microsoft.Win32;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support;
+using OpenQA.Selenium.IE;
 
 namespace WOPIautomation
 {
@@ -129,8 +132,9 @@ namespace WOPIautomation
         public static void GetTestingFolder()
         {
             testResultPath = string.Empty;
-            string folderPath = Regex.Replace(testingfolderPath, @"\s+", "");
-            testResultPath = folderPath + Path.DirectorySeparatorChar + testName;
+            //string folderPath = Regex.Replace(testingfolderPath, @"\s+", "");
+            testingfolderPath = Regex.Replace(testingfolderPath, @"\s+", "");
+            testResultPath = testingfolderPath + Path.DirectorySeparatorChar + testName;
             captureName = testResultPath + Path.DirectorySeparatorChar + testName + ".saz";
         }
     }
