@@ -36,6 +36,26 @@ namespace FSSHTTPandWOPIInspector.Parsers
         }
 
         /// <summary>
+        /// Parse the ObjectData structure for ONESTORE message.
+        /// </summary>
+        /// <param name="s">A stream containing ObjectData structure.</param> 
+        /// <param name="partitionId">A compact unsigned 64-bit integer that specifies the object partition Id of the object.</param> 
+        public virtual void Parse(Stream s, ulong partitionId)
+        {
+            stream = s;
+        }
+
+        /// <summary>
+        /// Parse the Data structure for ONESTORE message.
+        /// </summary>
+        /// <param name="s">A stream containing Data structure for ONESTORE message.</param>       
+        /// <param name="is2ndParse">A bool value that specifies is 2nd Parse  Data structure for ONESTORE message.</param> 
+        public virtual void Parse(Stream s, bool is2ndParse)
+        {
+            stream = s;
+        }
+   
+        /// <summary>
         /// Override the ToString method to return empty.
         /// </summary>
         /// <returns>Empty string value</returns>

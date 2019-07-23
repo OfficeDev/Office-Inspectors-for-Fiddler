@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------------
+﻿//-----------------------------------------------------------------------
 // Copyright (c) 2013 Microsoft Corporation. All rights reserved.
 // Use of this sample source code is subject to the terms of the Microsoft license 
 // agreement under which you licensed this sample source code and is provided AS-IS.
@@ -18,6 +18,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
     using System.Xml;
     using System.Xml.Schema;
     using System.Reflection;
+    using System.Linq;
 
     /// <summary>
     /// 2.2.1.1	Compact Unsigned 64-bit Integer
@@ -747,6 +748,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         /// Parse the ExtendedGUID structure.
         /// </summary>
         /// <param name="s">A stream containing ExtendedGUID structure.</param>
+        /// <returns>Return parserd ExtendedGUID structure.</returns>
         public ExtendedGUID TryParse(Stream s)
         {
             base.Parse(s);
@@ -762,6 +764,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
             {
                 extendedGUID = new ExtendedGUID5BitUintValue();
                 extendedGUID.Parse(s);
+                
             }
             else if ((temp & 0x3F) == 0x20)
             {
@@ -776,10 +779,108 @@ namespace FSSHTTPandWOPIInspector.Parsers
             else if (temp == 0x80)
             {
                 extendedGUID = new ExtendedGUID32BitUintValue();
-                extendedGUID.Parse(s);
+                extendedGUID.Parse(s);                
             }
+            
             return extendedGUID;
         }
+
+        /// <summary>
+        /// Get GUID feild in ExtendedGUID structure.
+        /// </summary>
+        /// <returns>The value of GUID feild</returns>
+        public Guid GetGUID(ExtendedGUID extendedGUID)
+        {
+            if (extendedGUID is ExtendedGUIDNullValue)
+            {
+                return Guid.Empty;
+            }
+            if (extendedGUID is ExtendedGUID5BitUintValue)
+            {
+                return (extendedGUID as ExtendedGUID5BitUintValue).GUID;
+            }
+            else if (extendedGUID is ExtendedGUID10BitUintValue)
+            {
+                return (extendedGUID as ExtendedGUID10BitUintValue).GUID;
+            }
+            else if (extendedGUID is ExtendedGUID17BitUintValue)
+            {
+                return (extendedGUID as ExtendedGUID17BitUintValue).GUID;
+            }
+            else if (extendedGUID is ExtendedGUID32BitUintValue)
+            {
+                return (extendedGUID as ExtendedGUID32BitUintValue).GUID;
+            }   
+            else
+            {
+                throw new Exception("The CompactUnsigned64bitInteger type is not right.");
+            }
+        }
+
+        /// <summary>
+        /// Get Value feild in ExtendedGUID structure.
+        /// </summary>
+        /// <returns>The value of Value feild</returns>
+        public uint GetValue(ExtendedGUID extendedGUID)
+        {
+            if (extendedGUID is ExtendedGUIDNullValue)
+            {
+                return 0;
+            }
+            if (extendedGUID is ExtendedGUID5BitUintValue)
+            {
+                return (extendedGUID as ExtendedGUID5BitUintValue).Value;
+            }
+            else if (extendedGUID is ExtendedGUID10BitUintValue)
+            {
+                return (extendedGUID as ExtendedGUID10BitUintValue).Value;
+            }
+            else if (extendedGUID is ExtendedGUID17BitUintValue)
+            {
+                return (extendedGUID as ExtendedGUID17BitUintValue).Value;
+            }
+            else if (extendedGUID is ExtendedGUID32BitUintValue)
+            {
+                return (extendedGUID as ExtendedGUID32BitUintValue).Value;
+            }
+            else
+            {
+                throw new Exception("The CompactUnsigned64bitInteger type is not right.");
+            }
+        }
+
+
+        /// <summary>
+        /// Get Type feild in ExtendedGUID structure.
+        /// </summary>
+        /// <returns>The value of Type feild</returns>
+        public uint GetType(ExtendedGUID extendedGUID)
+        {
+            if (extendedGUID is ExtendedGUIDNullValue)
+            {
+                return 0;
+            }
+            if (extendedGUID is ExtendedGUID5BitUintValue)
+            {
+                return (extendedGUID as ExtendedGUID5BitUintValue).Type;
+            }
+            else if (extendedGUID is ExtendedGUID10BitUintValue)
+            {
+                return (extendedGUID as ExtendedGUID10BitUintValue).Type;
+            }
+            else if (extendedGUID is ExtendedGUID17BitUintValue)
+            {
+                return (extendedGUID as ExtendedGUID17BitUintValue).Type;
+            }
+            else if (extendedGUID is ExtendedGUID32BitUintValue)
+            {
+                return (extendedGUID as ExtendedGUID32BitUintValue).Type;
+            }
+            else
+            {
+                throw new Exception("The CompactUnsigned64bitInteger type is not right.");
+            }
+        }        
     }
 
     /// <summary>
@@ -823,7 +924,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.Type = GetBits(tempByte, index, 3);
             index += 3;
             this.Value = GetBits(tempByte, index, 5);
-            this.GUID = ReadGuid();
+            this.GUID = ReadGuid();            
         }
     }
 
@@ -1085,10 +1186,90 @@ namespace FSSHTTPandWOPIInspector.Parsers
             List<object> DataElementsList = new List<object>();
 
             while (ContainsStreamObjectStart16BitHeader(0x01) && (DataElementPackageType == 0x01 || DataElementPackageType == 0x02 ||
-                   DataElementPackageType == 0x03 || DataElementPackageType == 0x04 || DataElementPackageType == 0x05 ||
-                   DataElementPackageType == 0x06 || DataElementPackageType == 0x0A))
+            DataElementPackageType == 0x03 || DataElementPackageType == 0x04 || DataElementPackageType == 0x05 ||
+            DataElementPackageType == 0x06 || DataElementPackageType == 0x0A))
             {
+                    switch (DataElementPackageType)
+                    {
+                        case 0x01:
+                            {
+                                StorageIndexDataElement StorageIndex = new StorageIndexDataElement();
+                                StorageIndex.Parse(s);
+                                DataElementsList.Add(StorageIndex);
+                                break;
+                            }
+                        case 0x02:
+                            {
+                                StorageManifestDataElement StorageManifest = new StorageManifestDataElement();
+                                StorageManifest.Parse(s);
+                                DataElementsList.Add(StorageManifest);
+                                break;
+                            }
+                        case 0x03:
+                            {
+                                CellManifestDataElement CellManifest = new CellManifestDataElement();
+                                CellManifest.Parse(s);
+                                DataElementsList.Add(CellManifest);
+                                break;
+                            }
+                        case 0x04:
+                            {
+                                RevisionManifestDataElement RevisionManifest = new RevisionManifestDataElement();
+                                RevisionManifest.Parse(s);                                    
+                                DataElementsList.Add(RevisionManifest);
+                                break;
+                            }
+                        case 0x05:
+                            {
+                                ObjectGroupDataElements ObjectGroup = new ObjectGroupDataElements();
+                                ObjectGroup.Parse(s);
+                                DataElementsList.Add(ObjectGroup);                                
+                                break;
+                            }
+                        case 0x06:
+                            {
+                                DataElementFragmentDataElement DataElementFragment = new DataElementFragmentDataElement();
+                                DataElementFragment.Parse(s);
+                                DataElementsList.Add(DataElementFragment);
+                                break;
+                            }
+                        case 0x0A:
+                            {
+                                ObjectDataBLOBDataElements ObjectDataBLOB = new ObjectDataBLOBDataElements();
+                                ObjectDataBLOB.Parse(s);
+                                DataElementsList.Add(ObjectDataBLOB);
+                                break;
+                            }
+                        default:
+                            throw new Exception("The DataElementPackageType is not right.");
+                    }
+                    DataElementPackageType = PreReadDataElementPackageType();                    
+            }
+    
+            this.DataElements = DataElementsList.ToArray();
+            this.DataElementPackageEnd = new bit8StreamObjectHeaderEnd();
+            this.DataElementPackageEnd.Parse(s);
+        }        
 
+        /// <summary>
+        /// Parse the DataElementPackage structure
+        /// </summary>
+        /// <param name="s">A stream containing DataElementPackage structure.</param>
+        /// <param name="is2ndParse">A bool value specify it is 2nd parse for onestore message.</param>
+        public override void Parse(Stream s,  bool is2ndParse)
+        {
+            base.Parse(s);
+            this.DataElementPackageStart = new bit16StreamObjectHeaderStart();
+            this.DataElementPackageStart.Parse(s);
+            this.Reserved = ReadByte();
+
+            long DataElementPackageType = PreReadDataElementPackageType();
+            List<object> DataElementsList = new List<object>();
+
+            while (ContainsStreamObjectStart16BitHeader(0x01) && (DataElementPackageType == 0x01 || DataElementPackageType == 0x02 ||
+            DataElementPackageType == 0x03 || DataElementPackageType == 0x04 || DataElementPackageType == 0x05 ||
+            DataElementPackageType == 0x06 || DataElementPackageType == 0x0A))
+            {
                 switch (DataElementPackageType)
                 {
                     case 0x01:
@@ -1115,14 +1296,22 @@ namespace FSSHTTPandWOPIInspector.Parsers
                     case 0x04:
                         {
                             RevisionManifestDataElement RevisionManifest = new RevisionManifestDataElement();
-                            RevisionManifest.Parse(s);
+                            if (FSSHTTPandWOPIInspector.IsOneStore)
+                            {
+                                RevisionManifest.Parse(s, is2ndParse);
+                            }
+                            else
+                            {
+                                RevisionManifest.Parse(s);
+                            }
                             DataElementsList.Add(RevisionManifest);
                             break;
                         }
                     case 0x05:
                         {
                             ObjectGroupDataElements ObjectGroup = new ObjectGroupDataElements();
-                            ObjectGroup.Parse(s);
+                            //Parse ObjectGroupDataElements for ONESTORE message.
+                            ObjectGroup.Parse(s, is2ndParse);
                             DataElementsList.Add(ObjectGroup);
                             break;
                         }
@@ -1145,6 +1334,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
                 }
                 DataElementPackageType = PreReadDataElementPackageType();
             }
+
             this.DataElements = DataElementsList.ToArray();
             this.DataElementPackageEnd = new bit8StreamObjectHeaderEnd();
             this.DataElementPackageEnd.Parse(s);
@@ -1319,7 +1509,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public Guid GUID;
         public StorageManifestRootDeclareValues[] StorageManifestRootDeclare;
         public bit8StreamObjectHeaderEnd DataElementEnd;
-
+        
         /// <summary>
         /// Parse the StorageManifestDataElement structure.
         /// </summary>
@@ -1338,6 +1528,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.StorageManifestSchemaGUID = new bit16StreamObjectHeaderStart();
             this.StorageManifestSchemaGUID.Parse(s);
             this.GUID = ReadGuid();
+
             List<StorageManifestRootDeclareValues> StorageManifestRootDeclareList = new List<StorageManifestRootDeclareValues>();
             while ((CurrentByte() & 0x03) == 0x0 && ((CurrentByte() >> 3) & 0x3F) == 0x07)
             {
@@ -1448,8 +1639,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.RevisionID = new ExtendedGUID();
             this.RevisionID = this.RevisionID.TryParse(s);
             this.BaseRevisionID = new ExtendedGUID();
-            this.BaseRevisionID = this.BaseRevisionID.TryParse(s);
-
+            this.BaseRevisionID = this.BaseRevisionID.TryParse(s);            
             int RevisionType = (CurrentByte() >> 3) & 0x3F;
             List<object> DataList = new List<object>();
             while ((CurrentByte() & 0x03) == 0x0 && (RevisionType == 0x0A || RevisionType == 0x19))
@@ -1460,6 +1650,73 @@ namespace FSSHTTPandWOPIInspector.Parsers
                         {
                             RevisionManifestRootDeclareValues RootDeclareValue = new RevisionManifestRootDeclareValues();
                             RootDeclareValue.Parse(s);
+                            DataList.Add(RootDeclareValue);                           
+                            break;
+                        }
+                    case 0x19:
+                        {
+                            RevisionManifestObjectGroupReferencesValues ObjectGroupReferencesValue = new RevisionManifestObjectGroupReferencesValues();
+                            ObjectGroupReferencesValue.Parse(s);
+                            DataList.Add(ObjectGroupReferencesValue);                            
+                            break;
+                        }
+                    default:
+                        throw new Exception("The RevisionType is not right.");
+                }
+                RevisionType = (CurrentByte() >> 3) & 0x3F;
+            }
+            this.RevisionManifestDataElementsData = DataList.ToArray();
+            this.DataElementEnd = new bit8StreamObjectHeaderEnd();
+            this.DataElementEnd.Parse(s);
+        }
+
+        /// <summary>
+        /// Parse the RevisionManifestDataElement structure for ONESTORE messsage.
+        /// </summary>
+        /// <param name="s">A stream containing RevisionManifestDataElement structure.</param>
+        /// <param name="is2ndParse">A bool value specify it is 2nd parse for onestore message.</param>
+        public override void Parse(Stream s, bool is2ndParse)
+        {
+            base.Parse(s);
+            this.DataElementStart = new bit16StreamObjectHeaderStart();
+            this.DataElementStart.Parse(s);
+            this.DataElementExtendedGUID = new ExtendedGUID();
+            this.DataElementExtendedGUID = this.DataElementExtendedGUID.TryParse(s);
+            this.SerialNumber = new SerialNumber();
+            this.SerialNumber = this.SerialNumber.TryParse(s);
+            this.DataElementType = new CompactUnsigned64bitInteger();
+            this.DataElementType = this.DataElementType.TryParse(s);
+            this.RevisionManifest = new bit16StreamObjectHeaderStart();
+            this.RevisionManifest.Parse(s);
+            this.RevisionID = new ExtendedGUID();
+            this.RevisionID = this.RevisionID.TryParse(s);
+            this.BaseRevisionID = new ExtendedGUID();
+            this.BaseRevisionID = this.BaseRevisionID.TryParse(s);
+            // A flag specify it is Encryption message for ONESTORE protocol.
+            bool isEncryption = false;
+            int RevisionType = (CurrentByte() >> 3) & 0x3F;
+            List<object> DataList = new List<object>();
+            while ((CurrentByte() & 0x03) == 0x0 && (RevisionType == 0x0A || RevisionType == 0x19))
+            {
+                switch (RevisionType)
+                {
+                    case 0x0A:
+                        {
+                            RevisionManifestRootDeclareValues RootDeclareValue = new RevisionManifestRootDeclareValues();
+                            RootDeclareValue.Parse(s);
+                            // If it is the first time parse  for ONESTORE message.
+                            if (!is2ndParse)
+                            {
+                                if (RootDeclareValue.RootExtendedGUID.GetGUID(RootDeclareValue.RootExtendedGUID).ToString() == "4A3717F8-1C14-49E7-9526-81D942DE1741".ToLower()
+                                && RootDeclareValue.RootExtendedGUID.GetValue(RootDeclareValue.RootExtendedGUID) == 3)
+                                {
+                                    if (!isEncryption)
+                                    {
+                                        isEncryption = true;
+                                    }                                    
+                                }
+                            }
+                                   
                             DataList.Add(RootDeclareValue);
                             break;
                         }
@@ -1467,6 +1724,16 @@ namespace FSSHTTPandWOPIInspector.Parsers
                         {
                             RevisionManifestObjectGroupReferencesValues ObjectGroupReferencesValue = new RevisionManifestObjectGroupReferencesValues();
                             ObjectGroupReferencesValue.Parse(s);
+                            if (!is2ndParse)
+                            {
+                                if (isEncryption)
+                                {
+                                    if (!FSSHTTPandWOPIInspector.encryptedObjectGroupIDList.Contains(ObjectGroupReferencesValue.ObjectGroupExtendedGUID))
+                                    {
+                                        FSSHTTPandWOPIInspector.encryptedObjectGroupIDList.Add(ObjectGroupReferencesValue.ObjectGroupExtendedGUID);
+                                    }                                    
+                                }
+                            }
                             DataList.Add(ObjectGroupReferencesValue);
                             break;
                         }
@@ -1475,7 +1742,6 @@ namespace FSSHTTPandWOPIInspector.Parsers
                 }
                 RevisionType = (CurrentByte() >> 3) & 0x3F;
             }
-
             this.RevisionManifestDataElementsData = DataList.ToArray();
             this.DataElementEnd = new bit8StreamObjectHeaderEnd();
             this.DataElementEnd.Parse(s);
@@ -1505,6 +1771,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.ObjectExtendedGUID = new ExtendedGUID();
             this.ObjectExtendedGUID = this.ObjectExtendedGUID.TryParse(s);
         }
+
     }
 
     /// <summary>
@@ -1617,6 +1884,149 @@ namespace FSSHTTPandWOPIInspector.Parsers
                 }
             }
             this.ObjectDataOrObjectDataBLOBReference = ObjectDataList.ToArray();
+            FSSHTTPandWOPIInspector.isNextEditorTable = false;
+            this.ObjectGroupDataEnd = new bit8StreamObjectHeaderEnd();
+            this.ObjectGroupDataEnd.Parse(s);
+            this.DataElementEnd = new bit8StreamObjectHeaderEnd();
+            this.DataElementEnd.Parse(s);
+        }
+
+        /// <summary>
+        /// Parse the ObjectGroupDataElements structure.
+        /// </summary>
+        /// <param name="s">A stream containing ObjectGroupDataElements structure.</param>
+        public override void Parse(Stream s, bool is2ndParse)
+        {
+            base.Parse(s);
+            this.DataElementStart = new bit16StreamObjectHeaderStart();
+            this.DataElementStart.Parse(s);
+            this.DataElementExtendedGUID = new ExtendedGUID();
+            this.DataElementExtendedGUID = this.DataElementExtendedGUID.TryParse(s);
+            this.SerialNumber = new SerialNumber();
+            this.SerialNumber = this.SerialNumber.TryParse(s);
+            this.DataElementType = new CompactUnsigned64bitInteger();
+            this.DataElementType = this.DataElementType.TryParse(s);
+
+            //2.2.1.5	Stream Object Header
+            //Data Element Hash	0x06
+            if (ContainsStreamObjectHeader(0x06))
+            {
+                this.DataElementHash = new DataElementHash();
+                this.DataElementHash.Parse(s);
+            }
+            this.ObjectGroupDeclarationsStart = new StreamObjectHeader();
+            this.ObjectGroupDeclarationsStart = this.ObjectGroupDeclarationsStart.TryParse(s);
+            List<object> DeclarationList = new List<object>();
+
+            // New a list to record PartitionId in DeclarationList.
+            List<ulong> PartitionIdList = new List<ulong>();
+
+            //Object Group Object Declare	0x18
+            //Object Group Object Data BLOB Declaration   0x05
+            while (ContainsStreamObjectHeader(0x18) || ContainsStreamObjectHeader(0x05))
+            {
+                //Object Group Object Declare	0x18
+                if (ContainsStreamObjectHeader(0x18))
+                {
+                    ObjectDeclaration Declaration = new ObjectDeclaration();
+                    Declaration.Parse(s);
+                    DeclarationList.Add(Declaration);
+
+                    //Add ObjectPartitionID to a list.
+                    PartitionIdList.Add(Declaration.ObjectPartitionID.GetUint(Declaration.ObjectPartitionID));
+                }
+                //Object Group Object Data BLOB Declaration   0x05
+                else if (ContainsStreamObjectHeader(0x05))
+                {
+                    ObjectDataBLOBDeclaration DeclarationBLOB = new ObjectDataBLOBDeclaration();
+                    DeclarationBLOB.Parse(s);
+                    DeclarationList.Add(DeclarationBLOB);
+
+                    //Add ObjectPartitionID to a list.
+                    PartitionIdList.Add(DeclarationBLOB.ObjectPartitionID.GetUint(DeclarationBLOB.ObjectPartitionID));
+                }
+            }
+            this.ObjectDeclarationOrObjectDataBLOBDeclaration = DeclarationList.ToArray();
+            this.ObjectGroupDeclarationsEnd = new bit8StreamObjectHeaderEnd();
+            this.ObjectGroupDeclarationsEnd.Parse(s);
+
+            //Object Group metadata declarations	0x79
+            if (ContainsStreamObjectStart32BitHeader(0x79))
+            {
+                this.ObjectMetadataDeclaration = new ObjectMetadataDeclaration();
+                this.ObjectMetadataDeclaration.Parse(s);
+            }
+
+            this.ObjectGroupDataStart = new StreamObjectHeader();
+            this.ObjectGroupDataStart = this.ObjectGroupDataStart.TryParse(s);
+            List<object> ObjectDataList = new List<object>();
+
+            FSSHTTPandWOPIInspector.isNextEditorTable = false;
+
+            int dataIndex = 0;
+            //Object Group Object Data	0x16
+            //Object Group Object Data BLOB reference	0x1C
+            while (ContainsStreamObjectHeader(0x16) || ContainsStreamObjectHeader(0x1C))
+            {
+                //Object Group Object Data	0x16
+                if (ContainsStreamObjectHeader(0x16))
+                {
+                    ObjectData data = new ObjectData();
+
+                    if (FSSHTTPandWOPIInspector.IsOneStore)
+                    {
+                        if (is2ndParse)
+                        {
+                            //If it's encrypted ObjectGroup, only parse JCID structure when 2nd Parse for ONESTORE.
+                            if ((FSSHTTPandWOPIInspector.encryptedObjectGroupIDList.Where(d => d.GetGUID(d) == this.DataElementExtendedGUID.GetGUID(this.DataElementExtendedGUID))).SingleOrDefault() != null)
+                            {
+                                if (PartitionIdList[dataIndex] == 4)
+                                {
+                                    data.Parse(s, PartitionIdList[dataIndex]);
+                                }
+                                else
+                                {
+                                    data.Parse(s);
+                                }
+
+                            }
+                            else
+                            {
+                                data.Parse(s, PartitionIdList[dataIndex]);
+                            }
+                        }
+                        else
+                        {
+                            //If it's first time parse ONESTORE message, only parse JCID structure when 2nd Parse for ONESTORE.
+                            if (PartitionIdList[dataIndex] == 4)
+                            {
+                                data.Parse(s, PartitionIdList[dataIndex]);
+                            }
+                            else
+                            {
+                                data.Parse(s);
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        data.Parse(s);
+                    }
+
+                    ObjectDataList.Add(data);
+                }//Object Group Object Data BLOB reference	0x1C
+                else if (ContainsStreamObjectHeader(0x1C))
+                {
+                    ObjectDataBLOBReference DataBLOB = new ObjectDataBLOBReference();
+                    DataBLOB.Parse(s);
+                    ObjectDataList.Add(DataBLOB);
+                }
+                dataIndex++;
+            }
+            this.ObjectDataOrObjectDataBLOBReference = ObjectDataList.ToArray();
+
+
             FSSHTTPandWOPIInspector.isNextEditorTable = false;
             this.ObjectGroupDataEnd = new bit8StreamObjectHeaderEnd();
             this.ObjectGroupDataEnd.Parse(s);
@@ -1755,8 +2165,10 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public ExtendedGUIDArray ObjectExtendedGUIDArray;
         public CellIDArray CellIDArray;
 
-        public CompactUnsigned64bitInteger DataSize;
+        public CompactUnsigned64bitInteger DataSize;        
         public object Data;
+        public JCID JCID;
+        public ObjectSpaceObjectPropSet ObjectSpaceObjectPropSet;
 
         /// <summary>
         /// Parse the ObjectData structure.
@@ -1772,7 +2184,8 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.CellIDArray = new CellIDArray();
             this.CellIDArray.Parse(s);
             this.DataSize = new CompactUnsigned64bitInteger();
-            this.DataSize = this.DataSize.TryParse(s);
+            this.DataSize = this.DataSize.TryParse(s);            
+
             if (ContainsStreamObjectStart16BitHeader(0x20))
             {
                 this.Data = new IntermediateNodeObjectData();
@@ -1786,7 +2199,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
             }
             else if ((int)this.DataSize.GetUint(this.DataSize) > 0)
             {
+
                 byte[] dataarray = ReadBytes((int)this.DataSize.GetUint(this.DataSize));
+
                 if (Utilities.IsEditorsTableHeader(dataarray))
                 {
                     this.Data = dataarray;
@@ -1850,8 +2265,126 @@ namespace FSSHTTPandWOPIInspector.Parsers
                 }
                 else
                 {
+
                     this.Data = dataarray;
                 }
+
+            }
+        }
+
+        /// <summary>
+        /// Parse the ObjectData structure for ONESTORE message.
+        /// </summary>
+        /// <param name="s">A stream containing ObjectData structure.</param>
+        /// <param name="partitionId">A compact unsigned 64-bit integer that specifies the object partition of the object.</param>
+        public override void Parse(Stream s, ulong partitionId)
+        {
+            base.Parse(s);
+            this.ObjectGroupObjectDataOrExcludedData = new StreamObjectHeader();
+            this.ObjectGroupObjectDataOrExcludedData = this.ObjectGroupObjectDataOrExcludedData.TryParse(s);
+            this.ObjectExtendedGUIDArray = new ExtendedGUIDArray();
+            this.ObjectExtendedGUIDArray.Parse(s);
+            this.CellIDArray = new CellIDArray();
+            this.CellIDArray.Parse(s);
+            this.DataSize = new CompactUnsigned64bitInteger();
+            this.DataSize = this.DataSize.TryParse(s);
+
+            if (ContainsStreamObjectStart16BitHeader(0x20))
+            {
+                this.Data = new IntermediateNodeObjectData();
+                ((IntermediateNodeObjectData)this.Data).Parse(s);
+
+            }
+            else if (ContainsStreamObjectStart16BitHeader(0x1F))
+            {
+                this.Data = new LeafNodeObjectData();
+                ((LeafNodeObjectData)this.Data).Parse(s);
+            }
+            else if ((int)this.DataSize.GetUint(this.DataSize) > 0)
+            {
+                // Record start read Position of Stream. 
+                long startPosition = s.Position;
+                byte[] dataarray = ReadBytes((int)this.DataSize.GetUint(this.DataSize));                
+                if (Utilities.IsEditorsTableHeader(dataarray))
+                {
+                    this.Data = dataarray;
+                    FSSHTTPandWOPIInspector.isNextEditorTable = true;
+                }
+                else if (Utilities.IsZIPFileHeaderMatch(dataarray, Utilities.LocalFileHeader) || Utilities.IsZIPFileHeaderMatch(dataarray, Utilities.CentralDirectoryHeader))
+                {
+                    s.Position -= (int)this.DataSize.GetUint(this.DataSize);
+                    long startPostion = s.Position;
+                    this.Data = new ZIPFileStructure();
+                    ((ZIPFileStructure)this.Data).Parse(s);
+                    if (s.Position - startPostion > (long)this.DataSize.GetUint(this.DataSize))
+                    {
+                        this.Data = dataarray;
+                    }
+                    s.Position = startPostion + (long)this.DataSize.GetUint(this.DataSize);
+                }
+                else if (Utilities.IsPNGHeader(dataarray))
+                {
+                    this.Data = dataarray;
+                }
+                else if (FSSHTTPandWOPIInspector.isNextEditorTable)
+                {
+                    string editorsTableXml = null;
+                    byte[] buffer = new byte[dataarray.Length];
+                    Array.Copy(dataarray, 0, buffer, 0, dataarray.Length);
+                    System.IO.MemoryStream ms = null;
+                    try
+                    {
+                        ms = new System.IO.MemoryStream();
+                        ms.Write(buffer, 0, buffer.Length);
+                        ms.Position = 0;
+                        using (DeflateStream stream = new DeflateStream(ms, CompressionMode.Decompress))
+                        {
+                            stream.Flush();
+                            byte[] MaxBuffer = new byte[buffer.Length * 5];
+
+                            int count = stream.Read(MaxBuffer, 0, buffer.Length * 5);
+                            byte[] decompressBuffer = new byte[count];
+
+                            Array.Copy(MaxBuffer, 0, decompressBuffer, 0, count);
+                            stream.Close();
+                            editorsTableXml = System.Text.Encoding.UTF8.GetString(decompressBuffer);
+                        }
+
+                        ms.Close();
+                        this.Data = Utilities.GetEditorsTable(editorsTableXml);
+
+                        // Record the length of the (Edit table) data in byte for map in hexview
+                        BaseStructure.editTableQueue.Enqueue(dataarray.Length);
+                    }
+                    finally
+                    {
+                        if (ms != null)
+                        {
+                            ms.Dispose();
+                        }
+                    }
+                    FSSHTTPandWOPIInspector.isNextEditorTable = false;
+                }
+                else
+                {
+                    s.Position = startPosition;
+                    if (partitionId == 4)
+                    {
+                        this.JCID = new JCID();
+                        this.JCID.Parse(s);
+                        this.Data = null;
+                    }
+                    else if (partitionId == 1)
+                    {
+                        this.ObjectSpaceObjectPropSet = new ObjectSpaceObjectPropSet();
+                        this.ObjectSpaceObjectPropSet.Parse(s);
+                        this.Data = null;
+                    }
+                    else
+                    {
+                        this.Data = dataarray;
+                    }
+                }               
 
             }
         }
@@ -3170,7 +3703,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
             byte tempByte = ReadByte();
             this.Status = GetBits(tempByte, 0, 1);
             this.Reserved = GetBits(tempByte, 1, 7);
-
+            // A ExtendedGUID list contain encrypted Object ExtendedGUID.
+            List<ExtendedGUID> encryptedObjectIDList = new List<ExtendedGUID>();
+            bool is2ndParse = false;
             if (this.Status == 0x1)
             {
                 this.ResponseError = new ResponseError();
@@ -3181,7 +3716,22 @@ namespace FSSHTTPandWOPIInspector.Parsers
                 if (ContainsStreamObjectStart16BitHeader(0x15))
                 {
                     this.DataElementPackage = new DataElementPackage();
-                    this.DataElementPackage.Parse(s);
+
+                    // Parse DataElementPackage for OneStore message
+                    if (FSSHTTPandWOPIInspector.IsOneStore)
+                    {
+                        long startIndex = s.Position;                        
+                        this.DataElementPackage.Parse(s, is2ndParse);
+                        s.Position = startIndex;
+                        is2ndParse = true;                       
+                        this.DataElementPackage.Parse(s, is2ndParse);
+                        is2ndParse = false;
+                        FSSHTTPandWOPIInspector.encryptedObjectGroupIDList.Clear();
+                    }
+                    else //Parse DataElementPackage for FSSHTTPB message
+                    {
+                        this.DataElementPackage.Parse(s);
+                    }                    
                 }
 
                 if (ContainsStreamObjectStart32BitHeader(0x041))
@@ -3199,6 +3749,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
             this.ResponseEnd = new bit16StreamObjectHeaderEnd();
             this.ResponseEnd.Parse(s);
+            
         }
     }
 
@@ -3895,7 +4446,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
     public class Editor
     {
         /// <summary>
-        /// Gets or sets an int64 representing the editor�s timeout in its UTC "ticks".
+        /// Gets or sets an int64 representing the editor’s timeout in its UTC "ticks".
         /// </summary>
         public long Timeout { get; set; }
 
