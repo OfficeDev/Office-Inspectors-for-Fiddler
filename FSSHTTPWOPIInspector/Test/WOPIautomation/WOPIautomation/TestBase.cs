@@ -103,7 +103,7 @@ namespace WOPIautomation
         public void GetTestCatgoryInformation()
         {
             // Initialize the test output folder path
-            testingfolderPath = TestContext.TestDeploymentDir;
+            testingfolderPath = TestContext.TestDeploymentDir;            
             testName = TestContext.TestName;
 
             Type classType = Type.GetType(TestContext.FullyQualifiedTestClassName);
@@ -132,9 +132,13 @@ namespace WOPIautomation
         public static void GetTestingFolder()
         {
             testResultPath = string.Empty;
-            //string folderPath = Regex.Replace(testingfolderPath, @"\s+", "");
-            testingfolderPath = Regex.Replace(testingfolderPath, @"\s+", "");
-            testResultPath = testingfolderPath + Path.DirectorySeparatorChar + testName;
+
+            if (!Directory.Exists(testingfolderPath))
+            {
+                testingfolderPath = Regex.Replace(testingfolderPath, @"\s+", "");
+            }
+            testResultPath =  testingfolderPath + Path.DirectorySeparatorChar + testName; 
+            Directory.CreateDirectory(testResultPath);
             captureName = testResultPath + Path.DirectorySeparatorChar + testName + ".saz";
         }
     }

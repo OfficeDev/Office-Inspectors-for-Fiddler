@@ -42,11 +42,15 @@ namespace WOPIautomation
             Browser.Click(elementOpenInWord);
             // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
-            Utility.WaitForDocumentOpenning(filename);
+            Utility.WaitForDocumentOpenning(filename, false, true);
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
             Utility.OfficeSignIn(username, password);
-            Utility.OfficeSignIn(username, password);
+            bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(filename, false, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+            }
             // Wait for document is opened
             Utility.WaitForDocumentOpenning(filename);
             // Get the opened word process, and edit it
@@ -91,7 +95,7 @@ namespace WOPIautomation
             // Refresh web address
             Browser.Goto(Browser.DocumentAddress);
             // Find document on site
-            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
+            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));            
             // Open document by office word
             Browser.RClick(document);
             Browser.Wait(By.LinkText("Open in Word"));
@@ -99,23 +103,29 @@ namespace WOPIautomation
             Browser.Click(elementOpenInWord);
             // Close Microsoft office dialog and access using expected account
             Utility.CloseMicrosoftOfficeDialog();
-            Utility.WaitForDocumentOpenning(filename);
+            Utility.WaitForDocumentOpenning(filename, false, true);
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
             Utility.OfficeSignIn(username, password);
-            Utility.OfficeSignIn(username, password);
+            bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(filename, false, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+            }
             // Wait for document is opened
             Utility.WaitForDocumentOpenning(filename);
             // Get the opened word process, and edit it
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
+            Thread.Sleep(1000);
             Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
             oDocument.Content.InsertBefore("HelloWordConfilict");
             // Click the document in root site 
             Browser.Click(document);
             Browser.Wait(By.Id("WebApplicationFrame"));
             Browser.webDriver.SwitchTo().Frame("WebApplicationFrame");
-            Thread.Sleep(10000);
+            Thread.Sleep(20000);
             // Find and click "Edit Document" tab
+            Browser.Wait(By.Id("flyoutWordViewerEdit-Medium20"));
             var editWord = Browser.FindElement(By.XPath("//a[@id='flyoutWordViewerEdit-Medium20']"), false);
             editWord.Click();
             // Find and click "Edit in Browser" tab
@@ -133,6 +143,7 @@ namespace WOPIautomation
             Thread.Sleep(60000);
             // Refresh web address
             Browser.Goto(Browser.DocumentAddress);
+            Thread.Sleep(50000);
             // Save it in office word and close and release word process
             Utility.WordEditSave(filename);
             Thread.Sleep(10000);

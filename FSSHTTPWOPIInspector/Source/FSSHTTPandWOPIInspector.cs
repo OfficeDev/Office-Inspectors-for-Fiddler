@@ -55,6 +55,16 @@ namespace FSSHTTPandWOPIInspector
         public List<byte[]> FSSHTTPBBytes { get; set; }
 
         /// <summary>
+        /// Gets whether the message is ONESTORE protocol message
+        /// </summary>
+        public static bool IsOneStore;
+
+        /// <summary>
+        /// Encrypted Object Group ID or Object ID List in ONESTORE protocol message
+        /// </summary>
+        public static List<ExtendedGUID> encryptedObjectGroupIDList = new List<ExtendedGUID>();
+
+        /// <summary>
         /// Bool value indicate wether errorCode in FSSHTTP response is duplicate
         /// </summary>
         public bool isErrorCodeDuplicate;
@@ -262,7 +272,7 @@ namespace FSSHTTPandWOPIInspector
                         MemoryStream ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(FSSHTTPRequest ?? ""));
                         XmlSerializer serializer = new XmlSerializer(typeof(RequestEnvelope));
                         RequestEnvelope requestEnvelop = (RequestEnvelope)serializer.Deserialize(ms);
-                        objectOut = requestEnvelop.Body;
+                        objectOut = requestEnvelop.Body;                        
 
                         // if SubRequestData has fsshttpb messages do parser.
                         if (requestEnvelop.Body.RequestCollection != null)
@@ -558,7 +568,6 @@ namespace FSSHTTPandWOPIInspector
 
             foreach (Request req in Requests)
             {
-
                 if (req.SubRequest != null && req.SubRequest.Length > 0)
                 {
                     foreach (SubRequestElementGenericType subreq in req.SubRequest)
@@ -584,8 +593,8 @@ namespace FSSHTTPandWOPIInspector
                                 FsshttpbRequest Fsshttpbreq = (FsshttpbRequest)ParseFSSHTTPBBytes(FSSHTTPBIncludeBytes, TrafficDirection.In);
                                 subreq.SubRequestData.IncludeObject = Fsshttpbreq;
                                 FSSHTTPBBytes.Add(FSSHTTPBIncludeBytes);
-                            }
-                        }
+                            }                        
+						}
                     }
                 }
             }
@@ -606,6 +615,12 @@ namespace FSSHTTPandWOPIInspector
 
             foreach (Response res in Responses)
             {
+                // If response is for ONESTORE,set FSSHTTPandWOPIInspector.IsOneStore ture.
+                if (res.Url.EndsWith(".one") || res.Url.EndsWith(".onetoc2"))
+                {
+                    FSSHTTPandWOPIInspector.IsOneStore = true;
+                }
+
                 if (res.SubResponse != null && res.SubResponse.Length > 0)
                 {
                     foreach (SubResponseElementGenericType subres in res.SubResponse)
@@ -665,6 +680,7 @@ namespace FSSHTTPandWOPIInspector
                     FsshttpbRes.Parse(s);
                     objectOut = FsshttpbRes;
                 }
+                
                 return objectOut;
 
             }

@@ -109,7 +109,7 @@ namespace WOPIautomation
                 {
                     StartInfo =
                     {
-                        Arguments = String.Format("{0} {1} {2} {3}", fiddlerPath, userName, outputPath, newName)
+                        Arguments = String.Format("\"{0}\" \"{1}\" \"{2}\" \"{3}\"", fiddlerPath, userName, outputPath, newName)
                     }
                 };
                 string fileName = newName + ".saz";

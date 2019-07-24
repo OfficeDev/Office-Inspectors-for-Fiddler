@@ -80,7 +80,7 @@ namespace WOPIautomation
             }
             webDriver.Manage().Window.Maximize();
             webDriver.Navigate().GoToUrl(address);
-            signIncheckAlert();
+            SignIncheckAlert();
             SwitchToClassicMode();
         }
 
@@ -210,7 +210,7 @@ namespace WOPIautomation
             {
                 return webDriver.FindElement(by);
             }
-            catch (NoSuchElementException)
+            catch
             {
                 IList<IWebElement> frames = webDriver.FindElements(By.TagName("iframe"));
                 IWebElement element = null;
@@ -271,7 +271,7 @@ namespace WOPIautomation
             }
             catch (WebDriverException)
             {
-                Wait(TimeSpan.FromSeconds(15));
+                Wait(TimeSpan.FromSeconds(60));
             }
         }
 
@@ -329,7 +329,7 @@ namespace WOPIautomation
         /// <summary>
         /// Check alert method
         /// </summary>
-        public static void checkAlert()
+        public static void CheckAlert()
         {
             try
             {
@@ -349,7 +349,7 @@ namespace WOPIautomation
         /// <summary>
         /// Check a Alert with sign in
         /// </summary>
-        public static void signIncheckAlert()
+        public static void SignIncheckAlert()
         {
             try
             {

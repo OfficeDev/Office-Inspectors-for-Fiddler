@@ -16,11 +16,189 @@ using System.Configuration;
 using System.Text.RegularExpressions;
 using System.Management.Automation;
 using System.Windows.Forms;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Support.Extensions;
+using OneNote = Microsoft.Office.Interop.OneNote;
+using System.Xml;
+using System.Collections.ObjectModel;
+
 
 namespace WOPIautomation
 {
     public static class Utility
     {
+        /// <summary>
+        /// Coauther OneNote file WithoutConflict
+        /// </summary>
+        /// <param name="filename">The coauthered OneNote file name</param>
+        public static void OneNoteCoauthorWithoutConflict(string oneNote)
+        {
+            string filename = oneNote.Split('\\').Last().Split('.').First();
+            // Upload a document
+            SharepointClient.UploadFile(oneNote);
+            // Refresh web address
+            Browser.Goto(Browser.DocumentAddress);
+            // Find document on site
+            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".one']"));
+            string curWinHandle = Browser.webDriver.CurrentWindowHandle;
+            // Open OneNote document in local Onenote App
+            Browser.RClick(document);
+            Thread.Sleep(1000);
+            Browser.Wait(By.LinkText("Open in OneNote"));
+            var elementOpenInOneNote = Browser.webDriver.FindElement(By.LinkText("Open in OneNote"));
+            Browser.Click(elementOpenInOneNote);
+            Utility.WaitForOneNoteDocumentOpenning(filename, false, true);
+            Thread.Sleep(2000);
+            SendKeys.SendWait("Local");
+            Thread.Sleep(3000);
+
+            // Switch To Web Browser
+            Browser.webDriver.SwitchTo().Window(curWinHandle);
+            Thread.Sleep(2000);
+
+            // Click OneNote file on Sharepoint Web Server
+            Browser.Click(document);                  
+            Thread.Sleep(3000);
+            Browser.Wait(By.Id("WebApplicationFrame"));
+            Browser.webDriver.SwitchTo().Frame("WebApplicationFrame");
+            // Wait for online edit saved
+            Thread.Sleep(3000);            
+            Browser.Wait(By.XPath("//a[@id='lblSyncStatus-Medium']/span[2][text()='Saved']"));
+            Thread.Sleep(3000);
+            SendKeys.SendWait("Online");
+            Thread.Sleep(3000);
+            Browser.Wait(By.XPath("//a[@id='lblSyncStatus-Medium']/span[2][text()='Saving...']"));
+            Thread.Sleep(10000);
+            Browser.Wait(By.XPath("//a[@id='lblSyncStatus-Medium']/span[2][text()='Saved']"));
+            Thread.Sleep(5000);
+
+
+            // Refresh web address
+            Browser.Goto(Browser.DocumentAddress);
+            Thread.Sleep(2000);
+            document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".one']"));
+            // Open OneNote document in local Onenote App
+            Browser.RClick(document);
+            Thread.Sleep(1000);
+            Browser.Wait(By.LinkText("Open in OneNote"));
+            elementOpenInOneNote = Browser.webDriver.FindElement(By.LinkText("Open in OneNote"));
+            Browser.Click(elementOpenInOneNote);
+            //Utility.WaitForOneNoteDocumentOpenning(filename, false, true);
+
+            /////////////////////////////////////////////////////////////////////////////////
+            // Get the opened OneNote process, and read the page title.
+            OneNote.Application oneNoteApp = new OneNote.Application();
+            string oneNoteXml;
+            var oneNoteWindow = oneNoteApp.Windows.CurrentWindow;
+            oneNoteApp.GetPageContent(oneNoteWindow.CurrentPageId, out oneNoteXml);
+            var xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(oneNoteXml);
+            var nsmgr = new XmlNamespaceManager(xmlDoc.NameTable);
+            nsmgr.AddNamespace("one", "http://schemas.microsoft.com/office/onenote/2013/onenote");
+            string titleXpath = "//one:Page/one:Title/one:OE/one:T";
+            System.Xml.XmlCDataSection titleNode = xmlDoc.SelectSingleNode(titleXpath, nsmgr).FirstChild as System.Xml.XmlCDataSection;
+            // If its title in local Onenote App is not updated and wait.
+            while (!titleNode.Value.ToString().Contains("OnlineLocal"))
+            {
+                Thread.Sleep(5000);
+                oneNoteWindow = oneNoteApp.Windows.CurrentWindow;
+                oneNoteApp.GetPageContent(oneNoteWindow.CurrentPageId, out oneNoteXml);
+                xmlDoc.LoadXml(oneNoteXml);
+                titleNode = xmlDoc.SelectSingleNode(titleXpath, nsmgr).FirstChild as System.Xml.XmlCDataSection;
+            }
+            ///////////////////////////////////////////////////////////////////////////////////
+            // Closed OneNote App.  
+            
+
+            oneNoteApp.Windows.CurrentWindow.Active = true;
+            SendKeys.SendWait("%{F4}");
+            // Delete the new upload document
+            SharepointClient.DeleteFile(filename + ".one");            
+        }
+
+        /// <summary>
+        /// Coauther OneNote file WithConflict
+        /// </summary>
+        /// <param name="oneNote"></param>
+        public static void OneNoteCoauthorWithConflict(string oneNote)
+        {
+            string filename = oneNote.Split('\\').Last().Split('.').First();
+            // Upload a document
+            SharepointClient.UploadFile(oneNote);
+            // Refresh web address
+            Browser.Goto(Browser.DocumentAddress);
+            // Find document on site
+            IWebElement onenote = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".one']"));
+            string DocumentWinHandle = Browser.webDriver.CurrentWindowHandle;
+
+            // Open OneNote document in local Onenote App
+            Browser.RClick(onenote);
+            Browser.Wait(By.LinkText("Open in OneNote"));
+            var elementOpenInOneNote = Browser.webDriver.FindElement(By.LinkText("Open in OneNote"));
+            Browser.Click(elementOpenInOneNote);
+            Utility.WaitForOneNoteDocumentOpenning(filename, false, true);
+            SendKeys.SendWait("Insert by onenote App");
+            Thread.Sleep(2000);
+
+
+            // Click the document in root site
+            Browser.RClick(onenote);
+            Browser.Wait(By.LinkText("Open in OneNote Online"));
+            var elementOpenOnline = Browser.webDriver.FindElement(By.LinkText("Open in OneNote Online"));
+            Browser.Click(elementOpenOnline);
+            //Browser.webDriver.FindElement(By.XPath("//a[@id='lblSyncStatus-Medium']/span[2][text()='Saved']"));
+            Thread.Sleep(5000);
+            SendKeys.SendWait("^a"); ;
+            Thread.Sleep(1000);
+            SendKeys.SendWait("{DELETE}");
+
+            // Switch To Web Browser
+            Browser.webDriver.SwitchTo().Window(DocumentWinHandle);
+            // Open OneNote document in local Onenote App
+            Browser.RClick(onenote);
+            Browser.Wait(By.LinkText("Open in OneNote"));
+            elementOpenInOneNote = Browser.webDriver.FindElement(By.LinkText("Open in OneNote"));
+            Browser.Click(elementOpenInOneNote);
+            Thread.Sleep(2000);
+            // Save current window handle
+            string curWinHandle = Browser.webDriver.CurrentWindowHandle;
+            SendKeys.SendWait("^a");
+            SendKeys.SendWait("{DELETE}");
+            Thread.Sleep(2000);
+
+            Browser.RClick(onenote);
+            Browser.Wait(By.LinkText("Open in OneNote Online"));
+            elementOpenOnline = Browser.webDriver.FindElement(By.LinkText("Open in OneNote Online"));
+            Browser.Click(elementOpenOnline);        
+            Thread.Sleep(40000);
+            
+            //var merge = Browser.webDriver.FindElement(By.XPath("//span[@class='WACBusinessBarBody'][text()='This page contains conflicting changes. Click here to show versions of the page with unmerged changes.']"));
+            Browser.RClick(onenote);
+            Browser.Wait(By.LinkText("Open in OneNote"));
+            elementOpenInOneNote = Browser.webDriver.FindElement(By.LinkText("Open in OneNote"));
+            Browser.Click(elementOpenInOneNote);
+            Thread.Sleep(30000);
+
+            //Delete conflict page version in OneNote local App.
+            SendKeys.SendWait("+(^w)");
+            Thread.Sleep(2000);
+            SendKeys.SendWait("+(^w)");
+            Thread.Sleep(2000);
+            SendKeys.SendWait("{ENTER}");
+            Thread.Sleep(2000);     
+
+
+            // Get the opened OneNote process, and edit it
+            OneNote.Application oneNoteApp = new OneNote.Application();
+            var oneNoteWindow = oneNoteApp.Windows.CurrentWindow;           
+
+            // Closed OneNote App.
+            oneNoteApp.CloseNotebook(oneNoteWindow.CurrentNotebookId);
+            SendKeys.SendWait("%{f4}");
+            // Delete the new upload document
+            SharepointClient.DeleteFile(filename + ".one");
+        }
+
         /// <summary>
         /// Sign in office with right account
         /// </summary>
@@ -35,7 +213,6 @@ namespace WOPIautomation
             User32API.keybd_event((byte)System.Windows.Forms.Keys.Enter, 0, 0, 0);
             User32API.keybd_event((byte)System.Windows.Forms.Keys.Enter, 0, 2, 0);
         }
-
 
         /// <summary>
         /// Sign in "Windows Security" alert with right account
@@ -83,21 +260,135 @@ namespace WOPIautomation
         /// </summary>
         /// <param name="docName">Doc name</param>
         /// <param name="isreadonly">A bool value indicate if the document is readonly</param>
-        public static void WaitForDocumentOpenning(string docName, bool isreadonly= false)
+        /// <param name="popWindowsSecurity">A bool value indicate if pop Windows Security</param>
+        public static bool WaitForDocumentOpenning(string docName, bool isreadonly = false, bool popWindowsSecurity = false)
         {
             var desktop = AutomationElement.RootElement;
-            if(isreadonly)
-            {                
+            AutomationElement document = null;
+            if (isreadonly)
+            {
                 Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + ".docx [Read-Only] - Word"), new PropertyCondition(AutomationElement.NameProperty, docName + " [Read-Only] - Word"), new PropertyCondition(AutomationElement.NameProperty, "Word"), new PropertyCondition(AutomationElement.NameProperty, docName + " - Word"), new PropertyCondition(AutomationElement.NameProperty, docName + ".docx - Word"));
-                AutomationElement document = WaitForElement(desktop, multiCondition, TreeScope.Children,true);
+                document = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
             }
             else
             {
                 Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + " - Word"), new PropertyCondition(AutomationElement.NameProperty, docName + ".docx - Word"), new PropertyCondition(AutomationElement.NameProperty, "Word"));
-                AutomationElement document = WaitForElement(desktop, multiCondition, TreeScope.Children,true);
-            } 
+                document = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
+            }
+
+            if (popWindowsSecurity)
+            {
+                Condition windowsSecurity = new PropertyCondition(AutomationElement.NameProperty, "Windows Security");
+                AutomationElement securityWindow = WaitForElement(document, windowsSecurity, TreeScope.Children);
+                if (securityWindow != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
+        /// <summary>
+        /// Wait for document opening with word
+        /// </summary>
+        /// <param name="docName">Wait for document opening with Office</param>
+        /// <param name="docType">A string specify the document type</param>
+        /// <param name="isreadonly">A bool value indicate if the document is readonly</param>
+        /// <param name="popWindowsSecurity">A bool value indicate if pop Windows Security</param>
+        /// <returns>A bool value indicate if the document is opening.</returns>
+        public static bool WaitForDocumentOpenning(string docName, string docType,bool isreadonly = false, bool popWindowsSecurity = false)
+        {
+            var desktop = AutomationElement.RootElement;
+            AutomationElement document = null;
+            switch (docType)
+            {
+                case "Word":
+                    if (isreadonly)
+                    {
+                        Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + ".docx [Read-Only] - Word"), new PropertyCondition(AutomationElement.NameProperty, docName + " [Read-Only] - Word"), new PropertyCondition(AutomationElement.NameProperty, "Word"), new PropertyCondition(AutomationElement.NameProperty, docName + " - Word"), new PropertyCondition(AutomationElement.NameProperty, docName + ".docx - Word"));
+                        document = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
+                    }
+                    else
+                    {
+                        Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + " - Word"), new PropertyCondition(AutomationElement.NameProperty, docName + ".docx - Word"), new PropertyCondition(AutomationElement.NameProperty, "Word"));
+                        document = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
+                    }
+
+                    if (popWindowsSecurity)
+                    {
+                        Condition windowsSecurity = new PropertyCondition(AutomationElement.NameProperty, "Windows Security");
+                        AutomationElement securityWindow = WaitForElement(document, windowsSecurity, TreeScope.Children);
+                        if (securityWindow != null)
+                        {
+                            return true;
+                        }
+                    }                    
+                    break;
+                case "OneNote":
+                    if (isreadonly)
+                    {
+                        Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + ".one [Read-Only] - OneNote"), new PropertyCondition(AutomationElement.NameProperty, docName + " [Read-Only] - OneNote"), new PropertyCondition(AutomationElement.NameProperty, "OneNote"), new PropertyCondition(AutomationElement.NameProperty, "OneNote"), new PropertyCondition(AutomationElement.NameProperty, "Untitled page - OneNote"), new PropertyCondition(AutomationElement.NameProperty, docName + ".one - OneNote"));
+                        document = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
+                    }
+                    else
+                    {
+                        Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + " - OneNote"), new PropertyCondition(AutomationElement.NameProperty, "Untitled page - OneNote"), new PropertyCondition(AutomationElement.NameProperty, docName + ".one - OneNote"), new PropertyCondition(AutomationElement.NameProperty, "OneNote"));
+                        document = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
+                    }
+
+                    if (popWindowsSecurity)
+                    {
+                        Condition windowsSecurity = new PropertyCondition(AutomationElement.NameProperty, "Windows Security");
+                        AutomationElement securityWindow = WaitForElement(document, windowsSecurity, TreeScope.Children);
+                        if (securityWindow != null)
+                        {
+                            return true;
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Wait for document opening with word
+        /// </summary>
+        /// <param name="docName">Wait for document opening with Office</param>
+        /// <param name="docType">A string specify the document type</param>
+        /// <param name="isreadonly">A bool value indicate if the document is readonly</param>
+        /// <param name="popWindowsSecurity">A bool value indicate if pop Windows Security</param>
+        /// <returns>A bool value indicate if the document is opening.</returns>        
+        public static bool WaitForOneNoteDocumentOpenning(string docName, bool isreadonly = false, bool popWindowsSecurity = false)
+        {
+            var desktop = AutomationElement.RootElement;
+            AutomationElement document = null;
+            if (isreadonly)
+            {
+                Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + ".one [Read-Only] - OneNote"), new PropertyCondition(AutomationElement.NameProperty, docName + " [Read-Only] - OneNote"), new PropertyCondition(AutomationElement.NameProperty, "OneNote"), new PropertyCondition(AutomationElement.NameProperty, "OneNote"), new PropertyCondition(AutomationElement.NameProperty, "Untitled page - OneNote"), new PropertyCondition(AutomationElement.NameProperty, docName + ".one - OneNote"));
+                document = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
+            }
+            else
+            {
+                Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + " - OneNote"), new PropertyCondition(AutomationElement.NameProperty, "Untitled page - OneNote"), new PropertyCondition(AutomationElement.NameProperty, docName + ".one - OneNote"), new PropertyCondition(AutomationElement.NameProperty, "OneNote"));
+                document = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
+            }
+
+            if (popWindowsSecurity)
+            {
+                Condition windowsSecurity = new PropertyCondition(AutomationElement.NameProperty, "Windows Security");
+                AutomationElement securityWindow = WaitForElement(document, windowsSecurity, TreeScope.Children);
+                if (securityWindow != null)
+                {
+                    return true;
+                }
+            }
+   
+            return false;
+        }
+        
         /// <summary>
         /// Wait for document opening online
         /// </summary>
@@ -121,11 +412,11 @@ namespace WOPIautomation
             AutomationElement document = null;
             if (isreadonly)
             {
-                document = WaitForElement(desktop, new PropertyCondition(AutomationElement.NameProperty, docName + ".docx [Read-Only] - Word"), TreeScope.Children,true);
+                document = WaitForElement(desktop, new PropertyCondition(AutomationElement.NameProperty, docName + ".docx [Read-Only] - Word"), TreeScope.Children, true);
             }
             else
             {
-                document = WaitForElement(desktop, new PropertyCondition(AutomationElement.NameProperty, docName + ".docx - Word"), TreeScope.Children,true);
+                document = WaitForElement(desktop, new PropertyCondition(AutomationElement.NameProperty, docName + ".docx - Word"), TreeScope.Children, true);
             }
             Condition Close_button = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Close"));
             AutomationElement item_Close = document.FindFirst(TreeScope.Descendants, Close_button);
@@ -141,8 +432,8 @@ namespace WOPIautomation
         {
             var desktop = AutomationElement.RootElement;
             Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + " - Word"), new PropertyCondition(AutomationElement.NameProperty, docName + ".docx - Word"), new PropertyCondition(AutomationElement.NameProperty, "Word"));
-            AutomationElement documentFormat = WaitForElement(desktop, multiCondition, TreeScope.Children,true);
-            AutomationElement FileInUseDialog = WaitForElement(documentFormat, new PropertyCondition(AutomationElement.NameProperty, "File In Use"), TreeScope.Children,true);
+            AutomationElement documentFormat = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
+            AutomationElement FileInUseDialog = WaitForElement(documentFormat, new PropertyCondition(AutomationElement.NameProperty, "File In Use"), TreeScope.Children, true);
             Condition OK_button = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "OK"));
             AutomationElement item_OK = FileInUseDialog.FindFirst(TreeScope.Descendants, OK_button);
             InvokePattern Pattern_OK = (InvokePattern)item_OK.GetCurrentPattern(InvokePattern.Pattern);
@@ -157,7 +448,9 @@ namespace WOPIautomation
         public static void CloseFileNowAvailable(string docName)
         {
             var desktop = AutomationElement.RootElement;
-            AutomationElement document = WaitForElement(desktop, new PropertyCondition(AutomationElement.NameProperty, docName + ".docx [Read-Only] - Word"), TreeScope.Children, true);
+            Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + ".docx [Read-Only] - Word"),
+                new PropertyCondition(AutomationElement.NameProperty, docName + @".docx  -  Read-Only - Word"));
+            AutomationElement document = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
             AutomationElement FileNowAvailableDialog = WaitForElement(document, new PropertyCondition(AutomationElement.NameProperty, "File Now Available"), TreeScope.Children, true);
             if (FileNowAvailableDialog == null)
             {
@@ -186,7 +479,7 @@ namespace WOPIautomation
                 title = p.MainWindowTitle;
                 if (title == (name + ".docx - Word"))
                 {
-                    var desktop = AutomationElement.RootElement;                    
+                    var desktop = AutomationElement.RootElement;
                     ele = desktop.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.NameProperty, title));
                     break;
                 }
@@ -208,7 +501,8 @@ namespace WOPIautomation
             Pattern_File.Invoke();
 
             Condition Group_Info = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Group), new PropertyCondition(AutomationElement.NameProperty, "Info"));
-            AutomationElement item_Info = docOnline.FindFirst(TreeScope.Descendants,Group_Info);
+            AutomationElement item_Info = docOnline.FindFirst(TreeScope.Descendants, Group_Info);
+
             Condition Con_ManageVersions = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem), new PropertyCondition(AutomationElement.NameProperty, "Manage Document"));
             AutomationElement item_ManageVersions = item_Info.FindFirst(TreeScope.Descendants, Con_ManageVersions);
 
@@ -216,7 +510,7 @@ namespace WOPIautomation
             Pattern_ManageVersions.Expand();
 
             Condition Con_CheckOut = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem), new PropertyCondition(AutomationElement.NameProperty, "Check Out"));
-            AutomationElement item_CheckOut = item_Info.FindFirst(TreeScope.Descendants,Con_CheckOut);
+            AutomationElement item_CheckOut = item_Info.FindFirst(TreeScope.Descendants, Con_CheckOut);
 
             InvokePattern Pattern_CheckOut = (InvokePattern)item_CheckOut.GetCurrentPattern(InvokePattern.Pattern);
             Pattern_CheckOut.Invoke();
@@ -249,8 +543,8 @@ namespace WOPIautomation
             AutomationElement item_DiscardCheckOut = item_AlertCheckOut.FindFirst(TreeScope.Descendants, Con_DiscardCheckOut);
             InvokePattern Pattern_CheckOut = (InvokePattern)item_DiscardCheckOut.GetCurrentPattern(InvokePattern.Pattern);
             Pattern_CheckOut.Invoke();
-            CloseMicrosoftWordDialog(name,"Yes");
-            
+            CloseMicrosoftWordDialog(name, "Yes");
+
             Condition File_Save = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Save"));
             AutomationElement item_Save = docOnline.FindFirst(TreeScope.Descendants, File_Save);
             InvokePattern Pattern_Save = (InvokePattern)item_Save.GetCurrentPattern(InvokePattern.Pattern);
@@ -288,16 +582,16 @@ namespace WOPIautomation
         {
             var desktop = AutomationElement.RootElement;
             Condition Con_IE = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Pane), new PropertyCondition(AutomationElement.NameProperty, "Home - Home - Internet Explorer"));
-            AutomationElement item_IE = WaitForElement(desktop, Con_IE, TreeScope.Children,true);
+            AutomationElement item_IE = WaitForElement(desktop, Con_IE, TreeScope.Children, true);
             PropertyCondition Con_IEDialog = new PropertyCondition(AutomationElement.NameProperty, "Internet Explorer");
-            AutomationElement item_IEDialog = item_IE.FindFirst(TreeScope.Descendants,Con_IEDialog);
-            if(item_IEDialog != null)
+            AutomationElement item_IEDialog = item_IE.FindFirst(TreeScope.Descendants, Con_IEDialog);
+            if (item_IEDialog != null)
             {
                 Condition Con_Close = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Close"));
                 AutomationElement item_Close = item_IEDialog.FindFirst(TreeScope.Descendants, Con_Close);
                 InvokePattern Pattern_Close = (InvokePattern)item_Close.GetCurrentPattern(InvokePattern.Pattern);
                 Pattern_Close.Invoke();
-            }            
+            }
         }
 
         /// <summary>
@@ -307,11 +601,15 @@ namespace WOPIautomation
         {
             var desktop = AutomationElement.RootElement;
             Condition Con_Office = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window), new PropertyCondition(AutomationElement.NameProperty, "Microsoft Office"));
-            AutomationElement item_Office = WaitForElement(desktop, Con_Office, TreeScope.Children,true);
-            Condition Con_Yes = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Yes"));
-            AutomationElement item_Yes = item_Office.FindFirst(TreeScope.Descendants,Con_Yes);
-            InvokePattern Pattern_Yes = (InvokePattern)item_Yes.GetCurrentPattern(InvokePattern.Pattern);
-            Pattern_Yes.Invoke();
+            AutomationElement item_Office = WaitForElement(desktop, Con_Office, TreeScope.Children, true);
+
+            if (item_Office != null)
+            {
+                Condition Con_Yes = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Yes"));
+                AutomationElement item_Yes = item_Office.FindFirst(TreeScope.Descendants, Con_Yes);
+                InvokePattern Pattern_Yes = (InvokePattern)item_Yes.GetCurrentPattern(InvokePattern.Pattern);
+                Pattern_Yes.Invoke();
+            }
         }
 
         /// <summary>
@@ -328,13 +626,16 @@ namespace WOPIautomation
             AutomationElement item_Document = desktop.FindFirst(TreeScope.Children, Con_Document);
             Condition Con_Acc = null;
             AutomationElement item_Acc = null;
-            if(Accept == "OK")
+            if (Accept == "OK")
             {
                 Thread.Sleep(2000);
                 Condition Con_Word = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Pane), new PropertyCondition(AutomationElement.NameProperty, "Microsoft Word"));
                 AutomationElement item_Word = WaitForElement(item_Document, Con_Word, TreeScope.Children, false);
-                Con_Acc = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "OK"));
-                item_Acc = item_Word.FindFirst(TreeScope.Descendants, Con_Acc);
+                if (item_Word != null)
+                {
+                    Con_Acc = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "OK"));
+                    item_Acc = item_Word.FindFirst(TreeScope.Descendants, Con_Acc);
+                }
             }
             else if (Accept == "Yes")
             {
@@ -359,11 +660,11 @@ namespace WOPIautomation
         {
             var desktop = AutomationElement.RootElement;
             Condition Con_Document = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window), new PropertyCondition(AutomationElement.NameProperty, filename + ".docx - Word"));
-            AutomationElement item_Document = desktop.FindFirst(TreeScope.Children,Con_Document);
-            Condition Con_Checkin = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Pane), new PropertyCondition(AutomationElement.NameProperty, "Check In"));
-            AutomationElement item_Checkin = WaitForElement(item_Document, Con_Checkin, TreeScope.Children,true);
+            AutomationElement item_Document = desktop.FindFirst(TreeScope.Children, Con_Document);
+            Condition Con_Checkin = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window), new PropertyCondition(AutomationElement.NameProperty, "Check In"));
+            AutomationElement item_Checkin = WaitForElement(item_Document, Con_Checkin, TreeScope.Children, true);
 
-            if(keepCheckOut)
+            if (keepCheckOut)
             {
                 Condition Con_CheckBox = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.CheckBox), new PropertyCondition(AutomationElement.NameProperty, "Keep the document checked out after checking in this version."));
                 AutomationElement item_CheckBox = item_Checkin.FindFirst(TreeScope.Descendants, Con_CheckBox);
@@ -400,7 +701,12 @@ namespace WOPIautomation
         public static void WordConflictMerge(string filename)
         {
             var desktop = AutomationElement.RootElement;
-            Condition Con_Document = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window), new PropertyCondition(AutomationElement.NameProperty, filename + ".docx - Word"));
+
+            //Microsoft.Office.Interop.Word.Application wordToOpen = (Microsoft.Office.Interop.Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
+            //Microsoft.Office.Interop.Word.Document oDocument = (Microsoft.Office.Interop.Word.Document)wordToOpen.ActiveDocument;
+
+            Condition Con_Document = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window),
+                new OrCondition(new PropertyCondition(AutomationElement.NameProperty, filename + ".docx - Word"), new PropertyCondition(AutomationElement.NameProperty, filename + " - Word")));
             AutomationElement item_Document = desktop.FindFirst(TreeScope.Children, Con_Document);
             Condition Con_Resolve = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Resolve"));
             AutomationElement item_Resolve = WaitForElement(item_Document, Con_Resolve, TreeScope.Descendants, false);
@@ -421,7 +727,7 @@ namespace WOPIautomation
             AutomationElement item_SaveCloseView = WaitForElement(item_Document, Con_SaveCloseView, TreeScope.Descendants, false);
             InvokePattern Pattern_SaveCloseView = (InvokePattern)item_SaveCloseView.GetCurrentPattern(InvokePattern.Pattern);
             Pattern_SaveCloseView.Invoke();
-            
+
         }
 
         /// <summary>
@@ -432,7 +738,7 @@ namespace WOPIautomation
         /// <param name="scop">The find scop</param>
         /// <param name="isWindowElement">A bool value indicate if element is a window</param>
         /// <returns></returns>
-        public static AutomationElement WaitForElement(AutomationElement parent, Condition condition, TreeScope scop,bool isWindowElement = false)
+        public static AutomationElement WaitForElement(AutomationElement parent, Condition condition, TreeScope scop, bool isWindowElement = false)
         {
             AutomationElement window = null;
             int Count = 0;
@@ -447,14 +753,15 @@ namespace WOPIautomation
                     {
                         break;
                     }
-                }else
+                }
+                else
                 {
                     if (Count >= 2)
                     {
                         break;
                     }
                 }
-                
+
             }
             return window;
         }
@@ -471,8 +778,6 @@ namespace WOPIautomation
             string password = ConfigurationManager.AppSettings["Password"];
             password = GetExecuteScripPassword(password);
             string path = ConfigurationManager.AppSettings["Path"];
-            string destination = ConfigurationManager.AppSettings["Destination"];
-
             // Configure the PowerShell execution policy to run script
             using (PowerShell PowerShellInstance = PowerShell.Create())
             {
@@ -488,16 +793,17 @@ namespace WOPIautomation
             {
                 Directory.CreateDirectory(TestBase.testResultPath);
             }
+
             if (isStart)
             {
                 startInfo.Arguments = "/user:Administrator cmd /c " + "powershell " + scriptPath + " " + userName + " " + password;
             }
             else
-            {                
-                startInfo.Arguments = "/user:Administrator cmd /c " + "powershell " + scriptPath + " " + userName + " " + password + " " + path + " " + TestBase.testResultPath + " " + WOPIautomation.TestBase.testName;
+            {
+                startInfo.Arguments = $@"/user:Administrator cmd /c powershell -command {scriptPath} -username {userName} -password {password} -RemoteCapturePath {path} -NewName {WOPIautomation.TestBase.testName} -LocalCapturePath '{TestBase.testResultPath}'";
             }
             System.Diagnostics.Process.Start(startInfo);
-        
+
             if (!isStart)
             {
                 string captureFulPath = TestBase.testResultPath + Path.DirectorySeparatorChar + WOPIautomation.TestBase.testName + ".cap";
@@ -531,6 +837,6 @@ namespace WOPIautomation
             }
             return result;
         }
-        
+
     }
 }
