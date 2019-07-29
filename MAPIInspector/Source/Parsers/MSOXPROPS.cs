@@ -4766,6 +4766,7 @@ namespace MAPIInspector.Parsers
             { "{PS_PUBLIC_STRINGS}::LineCount", "PidNameLineCount" },
             { "{PS_PUBLIC_STRINGS}::LinksDirty", "PidNameLinksDirty" },
             { "{PS_PUBLIC_STRINGS}::Manager", "PidNameManager" },
+            { "{PS_PUBLIC_STRINGS}::DoNotForward", "PidNameMeetingDoNotForward" },
             { "{PS_INTERNET_HEADERS}::msip_labels", "PidNameMSIPLabels" },
             { "{PS_PUBLIC_STRINGS}::MMClipCount", "PidNameMultimediaClipCount" },
             { "{PS_PUBLIC_STRINGS}::NoteCount", "PidNameNoteCount" },
