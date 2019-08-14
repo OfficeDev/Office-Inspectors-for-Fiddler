@@ -62,7 +62,7 @@
         /// </summary>
         NULL = 0x0000
     }
-    
+
     /// <summary>
     /// The enum value of NotificationData Availability.
     /// </summary>
@@ -585,8 +585,8 @@
 
             if (this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.TableModified && (this.TableEventType == TableEventTypeEnum.TableRowAdded || this.TableEventType == TableEventTypeEnum.TableRowModified))
             {
-				int parsingSessionID = MapiInspector.MAPIInspector.ParsingSession.id;
-                if(MapiInspector.MAPIInspector.IsFromFiddlerCore(MapiInspector.MAPIInspector.ParsingSession))
+                int parsingSessionID = MapiInspector.MAPIInspector.ParsingSession.id;
+                if (MapiInspector.MAPIInspector.IsFromFiddlerCore(MapiInspector.MAPIInspector.ParsingSession))
                 {
                     parsingSessionID = int.Parse(MapiInspector.MAPIInspector.ParsingSession["VirtualID"]);
                 }

@@ -4607,43 +4607,46 @@
             base.Parse(s);
             this.Flag = this.ReadByte();
             List<object> tempPropArray = new List<object>();
-            foreach (PropertyTag tempPropTag in this.propTags)
+            if (this.propTags != null)
             {
-                object rowPropValue = null;
-                tempPropTag.PropertyType = this.ConvertToPropType((ushort)tempPropTag.PropertyType);
-
-                if (this.Flag == 0x00)
+                foreach (PropertyTag tempPropTag in this.propTags)
                 {
-                    if (tempPropTag.PropertyType != PropertyDataType.PtypUnspecified)
-                    {
-                        PropertyValue propValue = new PropertyValue(tempPropTag.PropertyType);
-                        propValue.Parse(s);
-                        rowPropValue = propValue;
-                    }
-                    else
-                    {
-                        TypedPropertyValue typePropValue = new TypedPropertyValue();
-                        typePropValue.Parse(s);
-                        rowPropValue = typePropValue;
-                    }
-                }
-                else if (this.Flag == 0x01)
-                {
-                    if (tempPropTag.PropertyType != PropertyDataType.PtypUnspecified)
-                    {
-                        FlaggedPropertyValue flagPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType);
-                        flagPropValue.Parse(s);
-                        rowPropValue = flagPropValue;
-                    }
-                    else
-                    {
-                        FlaggedPropertyValueWithType flagPropValue = new FlaggedPropertyValueWithType();
-                        flagPropValue.Parse(s);
-                        rowPropValue = flagPropValue;
-                    }
-                }
+                    object rowPropValue = null;
+                    tempPropTag.PropertyType = this.ConvertToPropType((ushort)tempPropTag.PropertyType);
 
-                tempPropArray.Add(rowPropValue);
+                    if (this.Flag == 0x00)
+                    {
+                        if (tempPropTag.PropertyType != PropertyDataType.PtypUnspecified)
+                        {
+                            PropertyValue propValue = new PropertyValue(tempPropTag.PropertyType);
+                            propValue.Parse(s);
+                            rowPropValue = propValue;
+                        }
+                        else
+                        {
+                            TypedPropertyValue typePropValue = new TypedPropertyValue();
+                            typePropValue.Parse(s);
+                            rowPropValue = typePropValue;
+                        }
+                    }
+                    else if (this.Flag == 0x01)
+                    {
+                        if (tempPropTag.PropertyType != PropertyDataType.PtypUnspecified)
+                        {
+                            FlaggedPropertyValue flagPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType);
+                            flagPropValue.Parse(s);
+                            rowPropValue = flagPropValue;
+                        }
+                        else
+                        {
+                            FlaggedPropertyValueWithType flagPropValue = new FlaggedPropertyValueWithType();
+                            flagPropValue.Parse(s);
+                            rowPropValue = flagPropValue;
+                        }
+                    }
+
+                    tempPropArray.Add(rowPropValue);
+                }
             }
 
             this.ValueArray = tempPropArray.ToArray();
