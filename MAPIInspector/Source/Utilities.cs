@@ -3,6 +3,7 @@
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
+    using System.Text;
 
     /// <summary>
     /// The utilities class for MAPI Inspector.
@@ -16,7 +17,7 @@
         /// <returns>The converted string result</returns>
         public static string ConvertUintToString(uint data)
         {
-            return data.ToString() + " (0x" + data.ToString("X8") + ")"; 
+            return data.ToString() + " (0x" + data.ToString("X8") + ")";
         }
 
         /// <summary>
@@ -26,7 +27,62 @@
         /// <returns>The converted string result</returns>
         public static string ConvertUshortToString(ushort data)
         {
-            return data.ToString() + " (0x" + data.ToString("X4") + ")"; 
+            return data.ToString() + " (0x" + data.ToString("X4") + ")";
+        }
+
+        public static string ConvertByteArrayToString(byte[] bin, uint? limit = null)
+        {
+            if (bin == null || bin.Length == 0) return string.Empty;
+
+            var szText = new StringBuilder();
+            long length = bin.Length;
+            if (limit.HasValue) length = Math.Min(length, limit.Value);
+            for (uint i = 0; i < length; i++)
+            {
+                if (bin[i] <= 0x8)
+                {
+                    szText.Append(".");
+                }
+                else if (bin[i] >= 0xA && bin[i] <= 0x1F)
+                {
+                    szText.Append(".");
+                }
+                else if (bin[i] > 0xff)
+                {
+                    szText.Append(".");
+                }
+                else
+                {
+                    szText.Append((char)bin[i]);
+                }
+            }
+
+            return szText.ToString();
+        }
+
+        // Array type just display the first 30 values if the array length is more than 30.
+        public static string ConvertByteArrayToHexString(byte[] bin, int? limit = 30)
+        {
+            var result = new StringBuilder();
+            int displayLength = limit.HasValue?limit.Value:bin.Length;
+            result.Append("[");
+
+            foreach (var b in bin)
+            {
+                result.Append(b.ToString() + ",");
+
+                if (displayLength <= 1)
+                {
+                    result.Insert(result.Length - 1, "...");
+                    break;
+                }
+
+                displayLength--;
+            }
+
+            result.Remove(result.Length - 1, 1);
+            result.Append("]");
+            return result.ToString();
         }
 
         /// <summary>
@@ -43,11 +99,11 @@
             int i = 0;
             do
             {
-                chunkSize = 0;                
+                chunkSize = 0;
                 while (true)
                 {
                     int b = responseBodyFromFiddler[i];
-                    
+
                     if (b >= 0x30 && b <= 0x39)
                     {
                         b -= 0x30;
@@ -66,14 +122,14 @@
                     }
 
                     chunkSize = (chunkSize * 16) + b;
-                    i++;                    
+                    i++;
                 }
 
                 if (responseBodyFromFiddler[i] != 0x0D || responseBodyFromFiddler[i + 1] != 0x0A)
                 {
                     throw new Exception();
-                }   
-                             
+                }
+
                 i += 2;
                 for (int k = 0; k < chunkSize; k++, i++)
                 {
@@ -85,9 +141,9 @@
                     throw new Exception();
                 }
 
-                i += 2;                
+                i += 2;
             }
-            while (chunkSize > 0);            
+            while (chunkSize > 0);
             return payload.ToArray();
         }
 

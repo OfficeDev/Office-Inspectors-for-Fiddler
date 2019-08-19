@@ -5066,8 +5066,12 @@
                         }
 
                     default:
-                        this.AuxiliaryBlock = this.ReadBytes((int)this.AUXHEADER.Size - 4);
-                        break;
+                        {
+                            AnnotatedBytes auxiliaryBlock = new AnnotatedBytes(this.AUXHEADER.Size - 4);
+                            auxiliaryBlock.Parse(s);
+                            this.AuxiliaryBlock = auxiliaryBlock;
+                            break;
+                        }
                 }
             }
             else if (this.AUXHEADER.Version == PayloadDataVersion.AUX_VERSION_2)
@@ -5164,13 +5168,19 @@
                         }
 
                     default:
-                        this.AuxiliaryBlock = this.ReadBytes((int)this.AUXHEADER.Size - 4);
-                        break;
+                        {
+                            AnnotatedBytes auxiliaryBlock = new AnnotatedBytes(this.AUXHEADER.Size - 4);
+                            auxiliaryBlock.Parse(s);
+                            this.AuxiliaryBlock = auxiliaryBlock;
+                            break;
+                        }
                 }
             }
             else
             {
-                this.AuxiliaryBlock = this.ReadBytes((int)this.AUXHEADER.Size - 4);
+                AnnotatedBytes auxiliaryBlock = new AnnotatedBytes(this.AUXHEADER.Size - 4);
+                auxiliaryBlock.Parse(s);
+                this.AuxiliaryBlock = auxiliaryBlock;
             }
         }
     }
