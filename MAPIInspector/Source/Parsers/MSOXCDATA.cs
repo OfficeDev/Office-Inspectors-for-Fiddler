@@ -1,5 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using MapiInspector;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -3855,6 +3856,56 @@
         /// TRUE if the value of the object's property is in the DL membership of the specified property value. 
         /// </summary>
         RelationalOperatorMemberOfDL = 0x64
+    }
+
+    /// <summary>
+    /// The AnnotatedBytes class to a byte stream with an alternate version of it (typically ConvertByteArrayToString)
+    /// </summary>
+    public class AnnotatedBytes : BaseStructure
+    {
+        /// <summary>
+        /// Bytes as byte array.
+        /// </summary>
+        public byte[] bytes;
+
+        /// <summary>
+        /// The annotated value
+        /// </summary>
+        public string Annotation;
+
+        //public int StartIndex;
+
+        private int Size;
+
+        /// <summary>
+        /// Initializes a new instance of the MAPIString class without parameters.
+        /// </summary>
+        public AnnotatedBytes()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Information class with parameters.
+        /// </summary>
+        /// <param name="size">Size of the byte array</param>
+        public AnnotatedBytes(int size)
+        {
+            this.Size = size;
+        }
+
+        /// <summary>
+        /// Parse method
+        /// </summary>
+        /// <param name="s">The stream to parse</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            var offset = (int)s.Position;
+            this.bytes = this.ReadBytes(this.Size);
+            this.Annotation = Utilities.ConvertByteArrayToString(this.bytes);
+        }
+
+        public void SetAnnotation(string annotation) { this.Annotation = annotation; }
     }
 
     /// <summary>
