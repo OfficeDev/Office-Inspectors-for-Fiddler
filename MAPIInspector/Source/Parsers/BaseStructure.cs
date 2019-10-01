@@ -1,12 +1,12 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using MapiInspector;
     using System;
     using System.IO;
     using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Text;
     using System.Windows.Forms;
-    using System.Xml;
 
     /// <summary>
     /// String encoding enum
@@ -279,6 +279,22 @@
 
                 return res;
             }
+            else if (t.Name == "AnnotatedBytes")
+            {
+                var infoString = t.GetFields();
+                var bytes = (byte[])infoString[0].GetValue(obj);
+                var bytesString = Utilities.ConvertByteArrayToHexString(bytes);
+                var annotation = (string)infoString[1].GetValue(obj);
+                var node = new TreeNode($"{infoString[0].Name}:{bytesString}");
+
+                offset = bytes.Length;
+                node.Tag = new Position(current, offset);
+                res.Nodes.Add(node);
+                var annotationNode = new TreeNode($"annotation:{annotation}");
+                annotationNode.Tag = new Position(current, offset);
+                res.Nodes.Add(annotationNode);
+                return res;
+            }
 
             // Check whether the data type is simple type
             if (Enum.IsDefined(typeof(DataType), t.Name))
@@ -419,7 +435,7 @@
                     else if (type.IsArray)
                     {
                         // If the field type is array, there are two properties need to know: optional or required, array element data type is simple or complex
-                        // Field value considered: empty, null or value type displaying when not null/empty      
+                        // Field value considered: empty, null or value type displaying when not null/empty
                         // Getting the element type for required and optional array value
                         Type elementType = type.GetElementType();
                         if (!type.IsValueType && type.GetGenericArguments().Length > 0)
@@ -449,25 +465,7 @@
                                 }
                                 else
                                 {
-                                    // Array type just display the first 30 values if the array length is more than 30.
-                                    int displayLength = 30;
-                                    result.Append("[");
-
-                                    foreach (var ar in arr)
-                                    {
-                                        result.Append(ar.ToString() + ",");
-
-                                        if (displayLength <= 1)
-                                        {
-                                            result.Insert(result.Length - 1, "...");
-                                            break;
-                                        }
-
-                                        displayLength--;
-                                    }
-
-                                    result.Remove(result.Length - 1, 1);
-                                    result.Append("]");
+                                    result.Append(Utilities.ConvertByteArrayToHexString((byte[])arr));
                                 }
 
                                 TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
@@ -567,7 +565,7 @@
                     }
                     else
                     {
-                        // If the field type is complex type, loop call the function until finding its data type.  
+                        // If the field type is complex type, loop call the function until finding its data type.
                         if (info[i].GetValue(obj) != null)
                         {
                             string fieldName = info[i].Name;
@@ -592,10 +590,10 @@
                             {
                                 RPC_HEADER_EXT header = (RPC_HEADER_EXT)info[0].GetValue(obj);
                                 node = AddNodesForTree(info[i].GetValue(obj), current, out os);
-                                Position postion = (Position)node.Tag;
-                                postion.Offset = header.Size;
-                                os = postion.Offset;
-                                node.Tag = postion;
+                                Position nodePosition = (Position)node.Tag;
+                                nodePosition.Offset = header.Size;
+                                os = nodePosition.Offset;
+                                node.Tag = nodePosition;
                                 fieldName = "Payload(CompressedOrObfuscated)";
                                 node.Text = fieldName;
                                 node = TreeNodeForCompressed(node, current, compressBufferindex - 1);
@@ -609,6 +607,8 @@
                                 }
 
                                 node = AddNodesForTree(info[i].GetValue(obj), current, out os);
+                                Position nodePosition = new Position(current, os);
+                                node.Tag = nodePosition;
                             }
 
                             // Add the specific type(FastTransfer stream type) for TransferBuffer and TransferData fields.
