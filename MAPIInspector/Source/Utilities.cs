@@ -61,10 +61,10 @@
         }
 
         // Array type just display the first 30 values if the array length is more than 30.
-        public static string ConvertByteArrayToHexString(byte[] bin, int? limit = 30)
+        public static string ConvertArrayToHexString<T>(T[] bin, int? limit = 30)
         {
             var result = new StringBuilder();
-            int displayLength = limit.HasValue?limit.Value:bin.Length;
+            int displayLength = limit.HasValue ? limit.Value : bin.Length;
             result.Append("[");
 
             foreach (var b in bin)

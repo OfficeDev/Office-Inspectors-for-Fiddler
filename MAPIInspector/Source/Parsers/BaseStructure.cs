@@ -283,7 +283,7 @@
             {
                 var infoString = t.GetFields();
                 var bytes = (byte[])infoString[0].GetValue(obj);
-                var bytesString = Utilities.ConvertByteArrayToHexString(bytes);
+                var bytesString = Utilities.ConvertArrayToHexString(bytes);
                 var annotation = (string)infoString[1].GetValue(obj);
                 var node = new TreeNode($"{infoString[0].Name}:{bytesString}");
 
@@ -463,9 +463,13 @@
                                         result.Append(tempbye.ToString("X2"));
                                     }
                                 }
-                                else
+                                else if (arr.GetType().ToString() == "System.Byte[]")
                                 {
-                                    result.Append(Utilities.ConvertByteArrayToHexString((byte[])arr));
+                                    result.Append(Utilities.ConvertArrayToHexString((byte[])arr));
+                                }
+                                else if (arr.GetType().ToString() == "System.Uint[]")
+                                {
+                                    result.Append(Utilities.ConvertArrayToHexString((uint[])arr));
                                 }
 
                                 TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
@@ -575,7 +579,7 @@
                             if (fieldName == "RPCHEADEREXT")
                             {
                                 if (((ushort)((RPC_HEADER_EXT)info[i].GetValue(obj)).Flags & 0x0002) == (ushort)RpcHeaderFlags.XorMagic
-                                   || ((ushort)((RPC_HEADER_EXT)info[i].GetValue(obj)).Flags & 0x0001) == (ushort)RpcHeaderFlags.Compressed)
+                                    || ((ushort)((RPC_HEADER_EXT)info[i].GetValue(obj)).Flags & 0x0001) == (ushort)RpcHeaderFlags.Compressed)
                                 {
                                     IsCompressedXOR = true;
                                 }
