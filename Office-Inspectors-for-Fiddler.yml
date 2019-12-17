@@ -1,9 +1,10 @@
 ### YamlMime:Sample
-page_type: tool
+page_type: sample
 products:
 - office-365
 languages:
 - csharp
 extensions:
+  contentType: tools
   createdDate: 8/24/2015 1:17:47 PM
  
