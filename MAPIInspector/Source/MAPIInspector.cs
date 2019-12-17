@@ -2405,6 +2405,10 @@
                     topNode.ExpandAll();
                     this.MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesForHexview);
                     this.MAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
+                    if (this.MAPIViewControl.Nodes.Count != 0)
+                    {
+                        this.MAPIViewControl.Nodes[0].EnsureVisible();
+                    }
                 }
                 catch (Exception e)
                 {
