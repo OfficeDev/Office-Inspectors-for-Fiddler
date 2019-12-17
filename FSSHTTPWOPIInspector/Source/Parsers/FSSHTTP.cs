@@ -431,7 +431,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         [XmlAttribute()]
         public string ResourceID { get; set; }
 
-        [XmlAttribute()]
+        [XmlAttribute(DataType = "nonNegativeInteger")]
         public string IntervalOverride { get; set; }
     }
 
