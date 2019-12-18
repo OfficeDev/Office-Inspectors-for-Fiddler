@@ -1,13 +1,3 @@
----
-topic: sample
-products:
-- office-365
-languages:
-- csharp
-extensions:
-  contentType: tools
-  createdDate: 8/24/2015 1:17:47 PM
----
 ﻿# Microsoft Office Inspectors for Fiddler
 This README document provides the instruction on installing Microsoft Office Inspectors for Fiddler. 
 
