@@ -3868,6 +3868,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
         [BitAttribute(7)]
         public byte Reserved;
         public Knowledge Knowledge;
+        public bit32StreamObjectHeaderStart FileHash;
+        public ulong Type;
+        public BinaryItem DataHash;
 
         /// <summary>
         /// Parse the QueryChangesResponse structure.
@@ -3885,6 +3888,14 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.Reserved = GetBits(tempbyte, 1, 7);
             this.Knowledge = new Knowledge();
             this.Knowledge.Parse(s);
+            if (ContainsStreamObjectStart32BitHeader(0x8E))
+            {
+                this.FileHash = new bit32StreamObjectHeaderStart();
+                this.FileHash.Parse(s);
+                this.Type = ReadUlong();
+                this.DataHash = new BinaryItem();
+                this.DataHash.Parse(s);
+            }
         }
     }
 
