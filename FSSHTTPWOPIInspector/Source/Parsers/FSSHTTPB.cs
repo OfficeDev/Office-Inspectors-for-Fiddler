@@ -3869,7 +3869,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public byte Reserved;
         public Knowledge Knowledge;
         public bit32StreamObjectHeaderStart FileHash;
-        public ulong Type;
+        public CompactUnsigned64bitInteger Type;
         public BinaryItem DataHash;
 
         /// <summary>
@@ -3892,7 +3892,8 @@ namespace FSSHTTPandWOPIInspector.Parsers
             {
                 this.FileHash = new bit32StreamObjectHeaderStart();
                 this.FileHash.Parse(s);
-                this.Type = ReadUlong();
+                this.Type = new CompactUnsigned64bitInteger();
+                this.Type.TryParse(s);
                 this.DataHash = new BinaryItem();
                 this.DataHash.Parse(s);
             }
