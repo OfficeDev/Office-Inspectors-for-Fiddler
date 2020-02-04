@@ -37,6 +37,10 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
   </PropertyGroup>
+  <PropertyGroup>
+    <FiddlerPath Condition="$(FiddlerPath) == '' AND Exists('$(LocalAppData)\Programs\Fiddler\Fiddler.exe')">$(LocalAppData)\Programs\Fiddler</FiddlerPath>
+    <FiddlerPath Condition="$(FiddlerPath) == '' AND Exists('$(ProgramFiles)\Fiddler2\Fiddler.exe')">$(ProgramFiles)\Fiddler2</FiddlerPath>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -77,10 +81,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Be.Windows.Forms.HexBox">
-      <HintPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Be.Windows.Forms.HexBox.dll</HintPath>
+      <HintPath>$(FiddlerPath)\Be.Windows.Forms.HexBox.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Fiddler">
-      <HintPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Fiddler.exe</HintPath>
+      <HintPath>$(FiddlerPath)\Fiddler.exe</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -155,16 +161,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>start "CopyDLLs" /B /wait start xcopy "$(SolutionDir)$(OutDir)*.*" "C:\Program Files (x86)\Fiddler2\Inspectors" /Q /Y</PostBuildEvent>
+    <PostBuildEvent>start "CopyDLLs" /B /wait start xcopy "$(SolutionDir)$(OutDir)*.*" "$(FiddlerPath)\Inspectors" /Q /Y
+  </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>taskkill /im fiddler.exe /t /f 2&gt;&amp;1 | exit /B 0</PreBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
+    <Error Text="Unable to find Fiddler installation" Condition="$(FiddlerPath) == ''" />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
