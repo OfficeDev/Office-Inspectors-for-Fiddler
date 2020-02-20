@@ -2934,8 +2934,10 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public bit32StreamObjectHeaderStart CellRoundtrioOptions;
         [BitAttribute(1)]
         public byte? F;
-        [BitAttribute(7)]
+        [BitAttribute(1)]
         public byte? G;
+        [BitAttribute(6)]
+        public byte? H;
         public FsshttpbSubRequest[] SubRequest;
         public DataElementPackage DataElementPackage;
         public bit16StreamObjectHeaderEnd RequestEnd;
@@ -3003,7 +3005,8 @@ namespace FSSHTTPandWOPIInspector.Parsers
                 this.CellRoundtrioOptions.Parse(s);
                 byte tempByte = ReadByte();
                 this.F = GetBits(tempByte, 0, 1);
-                this.G = GetBits(tempByte, 1, 7);
+                this.G = GetBits(tempByte, 1, 1);
+                this.H = GetBits(tempByte, 2, 6);
             }
 
             if (ContainsStreamObjectStart32BitHeader(0x042))
@@ -3865,6 +3868,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
         [BitAttribute(7)]
         public byte Reserved;
         public Knowledge Knowledge;
+        public bit32StreamObjectHeaderStart FileHash;
+        public CompactUnsigned64bitInteger Type;
+        public BinaryItem DataHash;
 
         /// <summary>
         /// Parse the QueryChangesResponse structure.
@@ -3882,6 +3888,15 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.Reserved = GetBits(tempbyte, 1, 7);
             this.Knowledge = new Knowledge();
             this.Knowledge.Parse(s);
+            if (ContainsStreamObjectStart32BitHeader(0x8E))
+            {
+                this.FileHash = new bit32StreamObjectHeaderStart();
+                this.FileHash.Parse(s);
+                this.Type = new CompactUnsigned64bitInteger();
+                this.Type.TryParse(s);
+                this.DataHash = new BinaryItem();
+                this.DataHash.Parse(s);
+            }
         }
     }
 
