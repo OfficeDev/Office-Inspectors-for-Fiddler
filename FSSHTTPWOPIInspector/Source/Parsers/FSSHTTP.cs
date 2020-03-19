@@ -596,31 +596,13 @@ namespace FSSHTTPandWOPIInspector.Parsers
     public class VersioningUserTableType
     {
         [XmlElementAttribute()]
-        public UserTableType UserTable { get; set; }
-    }
-
-    /// <summary>
-    /// UserTableType subelement type defined in section 2.3.1.40
-    /// </summary>
-    public class UserTableType
-    {
-        [XmlElementAttribute()]
         public UserDataType[] User { get; set; }
-    }
+    }    
 
     /// <summary>
     /// VersioningVersionListType 2.3.1.41
     /// </summary>
     public class VersioningVersionListType
-    {
-        [XmlElementAttribute()]
-        public VersionsType Versions { get; set; }
-    }
-
-    /// <summary>
-    /// VersionsType: subelement type defined in 2.3.1.41
-    /// </summary>
-    public class VersionsType
     {
         [XmlElementAttribute()]
         public FileVersionDataType[] Version { get; set; }
