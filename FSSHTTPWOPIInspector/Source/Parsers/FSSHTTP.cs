@@ -491,6 +491,11 @@ namespace FSSHTTPandWOPIInspector.Parsers
         [XmlElementAttribute()]
         public VersioningVersionListType Versions { get; set; }
 
+        //PropertyId
+
+        //PropertyValues
+
+
         [XmlTextAttribute()]
         public string[] Text { get; set; }
 
@@ -565,6 +570,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
         [XmlIgnore()]
         public bool ExclusiveLockReturnReasonSpecified { get; set; }
+
+        [XmlAttribute()]
+        public string AmIAlone{ get; set; }
     }
 
     /// <summary>
