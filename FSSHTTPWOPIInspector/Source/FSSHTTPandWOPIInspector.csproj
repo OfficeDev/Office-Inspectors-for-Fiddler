@@ -41,7 +41,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Inspectors\</OutputPath>
+    <OutputPath>..\..\..\..\Users\plugdevuser19\AppData\Local\Programs\Fiddler\Inspectors\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -83,10 +83,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Be.Windows.Forms.HexBox">
-      <HintPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Be.Windows.Forms.HexBox.dll</HintPath>
+      <HintPath>..\..\..\..\Users\wopiuser\AppData\Local\Programs\Fiddler\Be.Windows.Forms.HexBox.dll</HintPath>
     </Reference>
     <Reference Include="Fiddler">
-      <HintPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Fiddler.exe</HintPath>
+      <HintPath>..\..\..\..\Users\wopiuser\AppData\Local\Programs\Fiddler\Fiddler.exe</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -105,7 +108,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Xceed.Compression.Formats.v5.4">
-      <HintPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Xceed.Compression.Formats.v5.4.dll</HintPath>
+      <HintPath>..\..\..\..\Users\wopiuser\AppData\Local\Programs\Fiddler\Xceed.Compression.Formats.v5.4.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +150,7 @@
   <ItemGroup>
     <EmbeddedResource Include="FSSHTTPAndWOPIControl.resx">
       <DependentUpon>FSSHTTPAndWOPIControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -290,6 +290,40 @@ namespace WOPIautomation
         }
 
         /// <summary>
+        /// Wait for Excel document opening with Excel Desktop App.
+        /// </summary>
+        /// <param name="docName">Excel name</param>
+        /// <param name="isreadonly">A bool value indicate if the document is readonly</param>
+        /// <param name="popWindowsSecurity">A bool value indicate if pop Windows Security</param>
+        public static bool WaitForExcelDocumentOpenning(string docName, bool isreadonly = false, bool popWindowsSecurity = false)
+        {
+            var desktop = AutomationElement.RootElement;
+            AutomationElement document = null;
+            if (isreadonly)
+            {
+                Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + "Excel.xlsx - Read-Only"), new PropertyCondition(AutomationElement.NameProperty, docName + ".xlsx  -  Read-Only - Excel"), new PropertyCondition(AutomationElement.NameProperty, docName + ".xlsx [Read-Only] - Excel"), new PropertyCondition(AutomationElement.NameProperty, docName + " [Read-Only] - Excel"), new PropertyCondition(AutomationElement.NameProperty, "Excel"), new PropertyCondition(AutomationElement.NameProperty, docName + " - Excel"), new PropertyCondition(AutomationElement.NameProperty, docName + ".xlsx - Excel"));
+                document = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
+            }
+            else
+            {
+                Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + " - Excel"), new PropertyCondition(AutomationElement.NameProperty, docName + ".xlsx - Excel"), new PropertyCondition(AutomationElement.NameProperty, "Excel"));
+                document = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
+            }
+
+            if (popWindowsSecurity)
+            {
+                Condition windowsSecurity = new PropertyCondition(AutomationElement.NameProperty, "Windows Security");
+                AutomationElement securityWindow = WaitForElement(document, windowsSecurity, TreeScope.Children);
+                if (securityWindow != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Wait for document opening with word
         /// </summary>
         /// <param name="docName">Wait for document opening with Office</param>
@@ -428,6 +462,22 @@ namespace WOPIautomation
         /// Close fileInUse window
         /// </summary>
         /// <param name="docName">Document name</param>
+        public static void CloseExcelFileInUsePane(string docName)
+        {
+            var desktop = AutomationElement.RootElement;
+            Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + " - Excel"), new PropertyCondition(AutomationElement.NameProperty, docName + ".xlsx - Excel"), new PropertyCondition(AutomationElement.NameProperty, "Excel"), new PropertyCondition(AutomationElement.NameProperty, docName + ".xlsx  -  Read-Only - Excel"));
+            AutomationElement documentFormat = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
+            AutomationElement FileInUseDialog = WaitForElement(documentFormat, new PropertyCondition(AutomationElement.NameProperty, "File In Use"), TreeScope.Children, true);
+            Condition OK_button = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "OK"));
+            AutomationElement item_OK = FileInUseDialog.FindFirst(TreeScope.Descendants, OK_button);
+            InvokePattern Pattern_OK = (InvokePattern)item_OK.GetCurrentPattern(InvokePattern.Pattern);
+            Pattern_OK.Invoke();
+        }
+
+        /// <summary>
+        /// Close fileInUse window
+        /// </summary>
+        /// <param name="docName">Document name</param>
         public static void CloseFileInUsePane(string docName)
         {
             var desktop = AutomationElement.RootElement;
@@ -440,6 +490,27 @@ namespace WOPIautomation
             Pattern_OK.Invoke();
         }
 
+
+        /// <summary>
+        /// Close FileNowAvailable window
+        /// </summary>
+        /// <param name="docName">Document name</param>
+        public static void CloseExcelFileNowAvailable(string docName)
+        {
+            var desktop = AutomationElement.RootElement;
+            Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + "Excel.xlsx  -  Read-Only - Excel"),
+                new PropertyCondition(AutomationElement.NameProperty, docName + @".xlsx  -  Read-Only - Excel"));
+            AutomationElement document = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
+            AutomationElement FileNowAvailableDialog = WaitForElement(document, new PropertyCondition(AutomationElement.NameProperty, "File Now Available"), TreeScope.Children, true);
+            if (FileNowAvailableDialog == null)
+            {
+                return;
+            }
+            Condition Cancel_button = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Cancel"));
+            AutomationElement item_Cancel = FileNowAvailableDialog.FindFirst(TreeScope.Descendants, Cancel_button);
+            InvokePattern Pattern_Cancel = (InvokePattern)item_Cancel.GetCurrentPattern(InvokePattern.Pattern);
+            Pattern_Cancel.Invoke();
+        }
 
         /// <summary>
         /// Close FileNowAvailable window
@@ -499,22 +570,25 @@ namespace WOPIautomation
             AutomationElement item_File = docOnline.FindFirst(TreeScope.Descendants, File_Tab);
             InvokePattern Pattern_File = (InvokePattern)item_File.GetCurrentPattern(InvokePattern.Pattern);
             Pattern_File.Invoke();
+            /*
+                        Condition Group_Info = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Group), new PropertyCondition(AutomationElement.NameProperty, "Info"));
+                        AutomationElement item_Info = docOnline.FindFirst(TreeScope.Descendants, Group_Info);
 
-            Condition Group_Info = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Group), new PropertyCondition(AutomationElement.NameProperty, "Info"));
-            AutomationElement item_Info = docOnline.FindFirst(TreeScope.Descendants, Group_Info);
 
-            Condition Con_ManageVersions = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem), new PropertyCondition(AutomationElement.NameProperty, "Manage Document"));
-            AutomationElement item_ManageVersions = item_Info.FindFirst(TreeScope.Descendants, Con_ManageVersions);
+                        Condition Con_ManageVersions = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem), new PropertyCondition(AutomationElement.NameProperty, "Manage Document"));
+                        AutomationElement item_ManageVersions = item_Info.FindFirst(TreeScope.Descendants, Con_ManageVersions);           
 
-            ExpandCollapsePattern Pattern_ManageVersions = (ExpandCollapsePattern)item_ManageVersions.GetCurrentPattern(ExpandCollapsePatternIdentifiers.Pattern);
-            Pattern_ManageVersions.Expand();
+                        ExpandCollapsePattern Pattern_ManageVersions = (ExpandCollapsePattern)item_ManageVersions.GetCurrentPattern(ExpandCollapsePatternIdentifiers.Pattern);
+                        Pattern_ManageVersions.Expand();
 
-            Condition Con_CheckOut = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem), new PropertyCondition(AutomationElement.NameProperty, "Check Out"));
-            AutomationElement item_CheckOut = item_Info.FindFirst(TreeScope.Descendants, Con_CheckOut);
+                        Condition Con_CheckOut = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem), new PropertyCondition(AutomationElement.NameProperty, "Check Out"));
+                        AutomationElement item_CheckOut = item_Info.FindFirst(TreeScope.Descendants, Con_CheckOut);
 
-            InvokePattern Pattern_CheckOut = (InvokePattern)item_CheckOut.GetCurrentPattern(InvokePattern.Pattern);
-            Pattern_CheckOut.Invoke();
-            Thread.Sleep(8000);
+                        InvokePattern Pattern_CheckOut = (InvokePattern)item_CheckOut.GetCurrentPattern(InvokePattern.Pattern);
+                        Pattern_CheckOut.Invoke();
+             */
+
+            Thread.Sleep(3000);
             Condition File_Save = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Save"));
             AutomationElement item_Save = docOnline.FindFirst(TreeScope.Descendants, File_Save);
             InvokePattern Pattern_Save = (InvokePattern)item_Save.GetCurrentPattern(InvokePattern.Pattern);
@@ -575,6 +649,26 @@ namespace WOPIautomation
             }
         }
 
+        public static void DeleteDefaultExcelFormat()
+        {
+            Process[] pro = Process.GetProcessesByName("EXCEL");
+            string title = "";
+            foreach (Process p in pro)
+            {
+                title = p.MainWindowTitle;
+                if (title == "Excel")
+                {
+                    var desktop = AutomationElement.RootElement;
+                    AutomationElement wordFormat = desktop.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.NameProperty, "Excel"));
+                    Condition Close_button = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Close"));
+                    AutomationElement item_Close = wordFormat.FindFirst(TreeScope.Descendants, Close_button);
+                    InvokePattern Pattern_Close = (InvokePattern)item_Close.GetCurrentPattern(InvokePattern.Pattern);
+                    Pattern_Close.Invoke();
+                    break;
+                }
+            }
+        }
+
         /// <summary>
         /// Close Internet explorer dialog
         /// </summary>
@@ -620,7 +714,7 @@ namespace WOPIautomation
         public static void CloseMicrosoftWordDialog(string filename, string Accept)
         {
             var desktop = AutomationElement.RootElement;
-            Condition orCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, filename + " - Word"), new PropertyCondition(AutomationElement.NameProperty, filename + ".docx - Word"));
+            Condition orCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, filename + " - Word"), new PropertyCondition(AutomationElement.NameProperty, filename + ".docx - Word"), new PropertyCondition(AutomationElement.NameProperty, filename + " - Upload Failed"));
             Condition Con_Document = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window), orCondition);
             //AutomationElement item_Document = WaitForWindow(desktop, Con_Document, TreeScope.Children);
             AutomationElement item_Document = desktop.FindFirst(TreeScope.Children, Con_Document);
@@ -700,10 +794,53 @@ namespace WOPIautomation
         /// <param name="filename">file name</param>
         public static void WordConflictMerge(string filename)
         {
+            
             var desktop = AutomationElement.RootElement;
 
             //Microsoft.Office.Interop.Word.Application wordToOpen = (Microsoft.Office.Interop.Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
             //Microsoft.Office.Interop.Word.Document oDocument = (Microsoft.Office.Interop.Word.Document)wordToOpen.ActiveDocument;
+
+            Condition Con_Document = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window),
+                new OrCondition(new PropertyCondition(AutomationElement.NameProperty, filename + ".docx - Word"), new PropertyCondition(AutomationElement.NameProperty, filename + " - Word")));
+            AutomationElement item_Document = desktop.FindFirst(TreeScope.Children, Con_Document);
+            Condition Con_Resolve = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "UPLOAD FAILED"));
+            AutomationElement item_Resolve = WaitForElement(item_Document, Con_Resolve, TreeScope.Descendants, false);
+            /*
+           item_Resolve = item_Document.FindFirst(TreeScope.Descendants, new PropertyCondition(AutomationElement.NameProperty, "Resolve"));
+
+           InvokePattern Pattern_Resolve = (InvokePattern)item_Resolve.GetCurrentPattern(InvokePattern.Pattern);
+           Pattern_Resolve.Invoke();
+
+           Condition Con_AcceptMyChange = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.SplitButton), new PropertyCondition(AutomationElement.NameProperty, "Accept My Change"));
+           AutomationElement item_AcceptMyChange = WaitForElement(item_Document, Con_AcceptMyChange, TreeScope.Descendants, false);
+
+           ExpandCollapsePattern Pattern_AcceptMyChange = (ExpandCollapsePattern)item_AcceptMyChange.GetCurrentPattern(ExpandCollapsePatternIdentifiers.Pattern);
+           Pattern_AcceptMyChange.Expand();            
+           Condition Con_AcceptAll = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem), new PropertyCondition(AutomationElement.NameProperty, "Accept All Conflicting Changes in Document"));
+           Con_AcceptAll = new AndCondition(new PropertyCondition(AutomationElement.NameProperty, "Accept All Conflicting Changes in Document"));
+           AutomationElement item_AcceptAll = WaitForElement(item_Document, Con_AcceptAll, TreeScope.Descendants, false);
+           InvokePattern Pattern_AcceptAll = (InvokePattern)item_AcceptAll.GetCurrentPattern(InvokePattern.Pattern);
+           Pattern_AcceptAll.Invoke();
+           */
+            SendKeys.SendWait("{F10}");
+            Thread.Sleep(1000);
+            SendKeys.SendWait("c");
+            Thread.Sleep(1000);
+            SendKeys.SendWait("a");
+            Thread.Sleep(1000);
+            SendKeys.SendWait("d");
+            Thread.Sleep(4000);
+            Condition Con_SaveCloseView = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Save and Close View"));
+            AutomationElement item_SaveCloseView = WaitForElement(item_Document, Con_SaveCloseView, TreeScope.Descendants, false);
+            InvokePattern Pattern_SaveCloseView = (InvokePattern)item_SaveCloseView.GetCurrentPattern(InvokePattern.Pattern);
+            Pattern_SaveCloseView.Invoke();
+
+        }
+
+
+        public static void WordConflictMerge_Yanfei(string filename)
+        {
+            var desktop = AutomationElement.RootElement;
 
             Condition Con_Document = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window),
                 new OrCondition(new PropertyCondition(AutomationElement.NameProperty, filename + ".docx - Word"), new PropertyCondition(AutomationElement.NameProperty, filename + " - Word")));
@@ -714,12 +851,13 @@ namespace WOPIautomation
             InvokePattern Pattern_Resolve = (InvokePattern)item_Resolve.GetCurrentPattern(InvokePattern.Pattern);
             Pattern_Resolve.Invoke();
 
+
             Condition Con_AcceptMyChange = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.SplitButton), new PropertyCondition(AutomationElement.NameProperty, "Accept My Change"));
             AutomationElement item_AcceptMyChange = WaitForElement(item_Document, Con_AcceptMyChange, TreeScope.Descendants, false);
             ExpandCollapsePattern Pattern_AcceptMyChange = (ExpandCollapsePattern)item_AcceptMyChange.GetCurrentPattern(ExpandCollapsePatternIdentifiers.Pattern);
             Pattern_AcceptMyChange.Expand();
             Condition Con_AcceptAll = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem), new PropertyCondition(AutomationElement.NameProperty, "Accept All Conflicting Changes in Document"));
-            AutomationElement item_AcceptAll = WaitForElement(item_Document, Con_AcceptAll, TreeScope.Descendants, false);
+            AutomationElement item_AcceptAll = item_AcceptMyChange.FindFirst(TreeScope.Descendants, Con_AcceptAll);
             InvokePattern Pattern_AcceptAll = (InvokePattern)item_AcceptAll.GetCurrentPattern(InvokePattern.Pattern);
             Pattern_AcceptAll.Invoke();
             Thread.Sleep(4000);
@@ -727,7 +865,20 @@ namespace WOPIautomation
             AutomationElement item_SaveCloseView = WaitForElement(item_Document, Con_SaveCloseView, TreeScope.Descendants, false);
             InvokePattern Pattern_SaveCloseView = (InvokePattern)item_SaveCloseView.GetCurrentPattern(InvokePattern.Pattern);
             Pattern_SaveCloseView.Invoke();
+        }
 
+        public static void EditWorkbook(string filename)
+        {
+            var desktop = AutomationElement.RootElement;
+
+            Condition Con_Document = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window),
+                new OrCondition(new PropertyCondition(AutomationElement.NameProperty, filename + ".xlsx - Excel"), new PropertyCondition(AutomationElement.NameProperty, filename + " - Excel"), new PropertyCondition(AutomationElement.NameProperty, filename + @".xlsx  -  Read-Only - Excel")));
+            AutomationElement item_Document = desktop.FindFirst(TreeScope.Children, Con_Document);
+            Condition Con_Resolve = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Edit Workbook"));
+            AutomationElement item_EditWorkbook = WaitForElement(item_Document, Con_Resolve, TreeScope.Descendants, false);
+            item_EditWorkbook = item_Document.FindFirst(TreeScope.Descendants, new PropertyCondition(AutomationElement.NameProperty, "Edit Workbook"));
+            InvokePattern Pattern_EditWorkbook = (InvokePattern)item_EditWorkbook.GetCurrentPattern(InvokePattern.Pattern);
+            Pattern_EditWorkbook.Invoke();
         }
 
         /// <summary>
@@ -745,6 +896,7 @@ namespace WOPIautomation
             while (window == null)
             {
                 window = parent.FindFirst(scop, condition);
+                
                 Thread.Sleep(500);
                 Count += 1;
                 if (isWindowElement)
@@ -774,7 +926,7 @@ namespace WOPIautomation
         public static void ExecuteScript(string scriptPath, bool isStart = true)
         {
             string powershellPath = ConfigurationManager.AppSettings["Powershell_Path"];
-            string userName = ConfigurationManager.AppSettings["UserName"];
+            string userName = ConfigurationManager.AppSettings["defaultUserNameForFiddler"];
             string password = ConfigurationManager.AppSettings["Password"];
             password = GetExecuteScripPassword(password);
             string path = ConfigurationManager.AppSettings["Path"];
@@ -796,12 +948,13 @@ namespace WOPIautomation
 
             if (isStart)
             {
-                startInfo.Arguments = "/user:Administrator cmd /c " + "powershell " + scriptPath + " " + userName + " " + password;
+                startInfo.Arguments = "/user:Administrator cmd /k " + "powershell " + scriptPath + " " + userName + " " + password;
             }
             else
             {
-                startInfo.Arguments = $@"/user:Administrator cmd /c powershell -command {scriptPath} -username {userName} -password {password} -RemoteCapturePath {path} -NewName {WOPIautomation.TestBase.testName} -LocalCapturePath '{TestBase.testResultPath}'";
+                startInfo.Arguments = $@"/user:Administrator cmd /k powershell -command {scriptPath} -username {userName} -password {password} -RemoteCapturePath {path} -NewName {WOPIautomation.TestBase.testName} -LocalCapturePath '{TestBase.testResultPath}'";
             }
+            
             System.Diagnostics.Process.Start(startInfo);
 
             if (!isStart)

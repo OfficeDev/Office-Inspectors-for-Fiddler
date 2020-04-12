@@ -12,9 +12,11 @@ using System.Windows.Forms;
 using System.Configuration;
 using OpenQA.Selenium.Support.Events;
 using OpenQA.Selenium.Interactions;
+using System.Windows.Automation;
 
 namespace WOPIautomation
 {
+    
     public static class Browser
     {
         internal static IWebDriver webDriver;
@@ -74,12 +76,14 @@ namespace WOPIautomation
             defaultHandle = webDriver.CurrentWindowHandle;
             SetWaitTime(TimeSpan.FromSeconds(defaultWaitTime));
             string address = BaseAddress;
+
             if (postfix != "")
             {
                 address = BaseAddress + "/" + postfix;
             }
             webDriver.Manage().Window.Maximize();
             webDriver.Navigate().GoToUrl(address);
+            // Sign in IE
             SignIncheckAlert();
             SwitchToClassicMode();
         }
@@ -152,8 +156,8 @@ namespace WOPIautomation
             get { return webDriver.Url; }
         }
         /// <summary>
-        /// Close webdriver
         /// </summary>
+        /// Close webdriver
         public static void Close()
         {
             webDriver.Quit();
@@ -347,20 +351,31 @@ namespace WOPIautomation
        
 
         /// <summary>
-        /// Check a Alert with sign in
+        /// Sign in to the Security Window in Browser.
         /// </summary>
         public static void SignIncheckAlert()
         {
-            try
+            var desktop = AutomationElement.RootElement;
+            AutomationElement ieWindow = null;
+            AutomationElement securityWindow = null;
+            Condition ieWindowCon = new PropertyCondition(AutomationElement.NameProperty, "WebDriver - Internet Explorer");
+            Condition securityWindowCon = new PropertyCondition(AutomationElement.NameProperty, "Windows Security");
+            ieWindow = Utility.WaitForElement(desktop, ieWindowCon, TreeScope.Children);
+            securityWindow = Utility.WaitForElement(ieWindow, securityWindowCon, TreeScope.Descendants);
+            if (securityWindow != null)
             {
-                string username = ConfigurationManager.AppSettings["UserName"];
-                string password = ConfigurationManager.AppSettings["Password"];
-                Utility.SigninWindowsSecurity(username, password);
+                try
+                {
+                    string username = ConfigurationManager.AppSettings["UserName"];
+                    string password = ConfigurationManager.AppSettings["Password"];
+                    Utility.SigninWindowsSecurity(username, password);
+                    Thread.Sleep(1500);
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
-            catch (Exception e)
-            {
-                throw e;
-            }            
         }
     }
 }

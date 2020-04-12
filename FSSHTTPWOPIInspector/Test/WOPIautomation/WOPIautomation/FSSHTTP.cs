@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using OpenQA.Selenium.Support.Events;
 using System.Windows.Forms;
+using System.Windows.Automation;
 
 namespace WOPIautomation
 {
@@ -22,8 +23,10 @@ namespace WOPIautomation
     public class FSSHTTP:TestBase
     {
         private static string Word = ConfigurationManager.AppSettings["Word"];
-        private static string filename = Word.Split('\\').Last().Split('.').First();
-		private string file = "";
+        private static string wordFilename = Word.Split('\\').Last().Split('.').First();
+        private static string excel = ConfigurationManager.AppSettings["Excel"];
+        private static string excelFilename = excel.Split('\\').Last().Split('.').First();
+        private string file = "";
         
      
         [TestMethod, TestCategory("FSSHTTP")]
@@ -34,25 +37,27 @@ namespace WOPIautomation
             // Refresh web address
             Browser.Goto(Browser.DocumentAddress);
             // Find document on site
-            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
+            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));
             // Open document by office word
             Browser.RClick(document);
             Browser.Wait(By.LinkText("Open in Word"));
             var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
-            // Close Microsoft office dialog and access using expected account
-            Utility.CloseMicrosoftOfficeDialog();
-            Utility.WaitForDocumentOpenning(filename, false, true);
+            
+            // Close Microsoft office dialog and access using expected account            
+            Utility.WaitForDocumentOpenning(wordFilename, false, true);
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
-            Utility.OfficeSignIn(username, password);
-            bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(filename, false, true);
+            bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
             if (isWindowsSecurityPop)
             {
                 Utility.OfficeSignIn(username, password);
+                Thread.Sleep(1000);
+                Utility.OfficeSignIn(username, password);
             }
+
             // Wait for document is opened
-            Utility.WaitForDocumentOpenning(filename);
+            Utility.WaitForDocumentOpenning(wordFilename);
             // Get the opened word process, and edit it
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
             Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
@@ -61,7 +66,7 @@ namespace WOPIautomation
             Browser.Click(document);
             Browser.Wait(By.Id("WebApplicationFrame"));
             Browser.webDriver.SwitchTo().Frame("WebApplicationFrame");
-            Thread.Sleep(10000);
+            Thread.Sleep(3000);
             // Find and click "Edit Document" tab
             var editWord = Browser.FindElement(By.XPath("//a[@id='flyoutWordViewerEdit-Medium20']"), false);
             editWord.Click();
@@ -79,9 +84,83 @@ namespace WOPIautomation
             // Refresh web address
             Browser.Goto(Browser.BaseAddress);
             // Delete the new upload document
-            SharepointClient.DeleteFile(filename + ".docx");
+            SharepointClient.DeleteFile(wordFilename + ".docx");
 
             bool result = FormatConvert.SaveSAZ(testResultPath, testName, out file);
+            Assert.IsTrue(result, "The saz file should be saved successfully.");
+            bool parsingResult = MessageParser.ParseMessageUsingWOPIInspector(file);
+            Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
+        }
+
+        [TestMethod, TestCategory("FSSHTTP")]
+        public void Excel___ExclusivelockCheck()
+        {
+            // Upload a document
+            SharepointClient.UploadFile(excel);
+            // Refresh web address
+            Browser.Goto(Browser.DocumentAddress);
+            // Find document on site
+            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + excelFilename + ".xlsx']"));
+            // Open it by word
+            Browser.RClick(document);
+            Browser.Wait(By.LinkText("Open in Excel"));
+            var elementOpenInExcel = Browser.webDriver.FindElement(By.LinkText("Open in Excel"));
+            Browser.Click(elementOpenInExcel);
+
+
+            // Sign in Excel Desktop App.
+            Utility.WaitForExcelDocumentOpenning(excelFilename, false, true);
+            string username = ConfigurationManager.AppSettings["UserName"];
+            string password = ConfigurationManager.AppSettings["Password"];
+            bool isWindowsSecurityPop = Utility.WaitForExcelDocumentOpenning(excelFilename, false, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+                Thread.Sleep(1500);                
+            }
+            //Waiting for WindowsSecurity Pop up
+            //Thread.Sleep(1000);
+            isWindowsSecurityPop = Utility.WaitForExcelDocumentOpenning(excelFilename, true, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+                Thread.Sleep(1500);
+                //Utility.OfficeSignIn(username, password);
+            }
+
+            // Wait for excel is opened
+            // Sign in Excel Desktop App.
+            Utility.WaitForExcelDocumentOpenning(excelFilename, true, true);
+
+            // Go back to base address
+            Browser.Goto(Browser.DocumentAddress);
+            // Reopen the document in word
+            document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + excelFilename + ".xlsx']"));
+            Browser.RClick(document);
+            Browser.Wait(By.LinkText("Open in Excel Online"));
+            elementOpenInExcel = Browser.webDriver.FindElement(By.LinkText("Open in Excel Online"));
+            Browser.Click(elementOpenInExcel);
+            // Sign in Excel Desktop App use OtherUserName.
+            Thread.Sleep(1000);
+            Excel.Application excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+            Excel.Workbook excelWorkbook = (Excel.Workbook)excelToOpen.ActiveWorkbook;
+
+            //Click 'Edit Workbook'
+            Utility.EditWorkbook(excelFilename);
+            //Close FileInUsePane in Desktop Excel
+            Utility.CloseExcelFileInUsePane(excelFilename);
+            // Wait for CheckLockAvailability reqest show up.
+            Thread.Sleep(80000);
+            // Close and release word process
+            //Utility.CloseExcelFileNowAvailable(excelFilename);
+            excelWorkbook.Close();
+            Utility.DeleteDefaultExcelFormat();
+            Marshal.ReleaseComObject(excelWorkbook);
+            Marshal.ReleaseComObject(excelToOpen);          
+            // Delete the new upload document
+            SharepointClient.DeleteFile(excelFilename + ".xlsx");
+            SharepointClient.DeleteFile(excelFilename);
+            bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
             Assert.IsTrue(result, "The saz file should be saved successfully.");
             bool parsingResult = MessageParser.ParseMessageUsingWOPIInspector(file);
             Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
@@ -95,35 +174,37 @@ namespace WOPIautomation
             // Refresh web address
             Browser.Goto(Browser.DocumentAddress);
             // Find document on site
-            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));            
+            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));            
             // Open document by office word
             Browser.RClick(document);
             Browser.Wait(By.LinkText("Open in Word"));
             var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
-            // Close Microsoft office dialog and access using expected account
-            Utility.CloseMicrosoftOfficeDialog();
-            Utility.WaitForDocumentOpenning(filename, false, true);
+
+            // Close Microsoft office dialog and access using expected account            
+            Utility.WaitForDocumentOpenning(wordFilename, false, true);
             string username = ConfigurationManager.AppSettings["UserName"];
-            string password = ConfigurationManager.AppSettings["Password"];
-            Utility.OfficeSignIn(username, password);
-            bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(filename, false, true);
+            string password = ConfigurationManager.AppSettings["Password"];            
+            bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
             if (isWindowsSecurityPop)
             {
                 Utility.OfficeSignIn(username, password);
+                Thread.Sleep(1000);
+                Utility.OfficeSignIn(username, password);
             }
+
             // Wait for document is opened
-            Utility.WaitForDocumentOpenning(filename);
+            Utility.WaitForDocumentOpenning(wordFilename);
             // Get the opened word process, and edit it
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
             Thread.Sleep(1000);
-            Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
+            Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;            
             oDocument.Content.InsertBefore("HelloWordConfilict");
             // Click the document in root site 
             Browser.Click(document);
             Browser.Wait(By.Id("WebApplicationFrame"));
             Browser.webDriver.SwitchTo().Frame("WebApplicationFrame");
-            Thread.Sleep(20000);
+            Thread.Sleep(2000);
             // Find and click "Edit Document" tab
             Browser.Wait(By.Id("flyoutWordViewerEdit-Medium20"));
             var editWord = Browser.FindElement(By.XPath("//a[@id='flyoutWordViewerEdit-Medium20']"), false);
@@ -132,29 +213,30 @@ namespace WOPIautomation
             var editInbrowser = Browser.webDriver.FindElement(By.XPath("//a[@id ='btnFlyoutEditOnWeb-Menu32']"));
             editInbrowser.Click();
             // Wait for document is opened
-            Thread.Sleep(2000);
+            Thread.Sleep(4000);
             Browser.Wait(By.XPath("//span[@id='BreadcrumbSaveStatus'][text()='Saved']"));
+            Thread.Sleep(2000);
             // Edit it in online
             SendKeys.SendWait("HelloOfficeOnlineConflict");
             // Wait for online edit saved
-            Thread.Sleep(2000);
+            Thread.Sleep(3000);
             Browser.Wait(By.XPath("//span[@id='BreadcrumbSaveStatus'][text()='Saved']"));
             //saved = Browser.FindElement(By.XPath("//span[@id='BreadcrumbSaveStatus']"), false);
-            Thread.Sleep(60000);
+            //Thread.Sleep(6000);
             // Refresh web address
             Browser.Goto(Browser.DocumentAddress);
-            Thread.Sleep(50000);
+            Thread.Sleep(2000);
             // Save it in office word and close and release word process
-            Utility.WordEditSave(filename);
-            Thread.Sleep(10000);
-            Utility.CloseMicrosoftWordDialog(filename, "OK");
-            Utility.WordConflictMerge(filename);
+            Utility.WordEditSave(wordFilename);
+            Thread.Sleep(3000);
+            Utility.CloseMicrosoftWordDialog(wordFilename, "OK");
+            //Utility.WordConflictMerge(filename);
             oDocument.Close();
             Utility.DeleteDefaultWordFormat();
             Marshal.ReleaseComObject(oDocument);
             Marshal.ReleaseComObject(wordToOpen);
             // Delete the new upload document
-            SharepointClient.DeleteFile(filename + ".docx");
+            SharepointClient.DeleteFile(wordFilename + ".docx");
 
             bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
             Assert.IsTrue(result, "The saz file should be saved successfully.");
@@ -171,19 +253,26 @@ namespace WOPIautomation
             // Refresh web address
             Browser.Goto(Browser.DocumentAddress);
             // Find document on site
-            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
+            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));
             Browser.RClick(document);
             // Open document in Edit Word mode
             Browser.Wait(By.LinkText("Open in Word"));
             var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
-            Browser.Click(elementOpenInWord);
-            Utility.CloseMicrosoftOfficeDialog();
-            Utility.WaitForDocumentOpenning(filename);
+            Browser.Click(elementOpenInWord);           
+
+            // Sign in Word App.
+            Utility.WaitForDocumentOpenning(wordFilename, false, true);
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
-            Utility.OfficeSignIn(username, password);
-            Utility.OfficeSignIn(username, password);
-            Utility.WaitForDocumentOpenning(filename);
+            bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+                Thread.Sleep(1000);
+                Utility.OfficeSignIn(username, password);
+            }
+            Utility.WaitForDocumentOpenning(wordFilename);
+
             // Update the document content
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
             Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
@@ -195,7 +284,7 @@ namespace WOPIautomation
             Marshal.ReleaseComObject(oDocument);
             Marshal.ReleaseComObject(wordToOpen);
             // Delete the new upload document
-            SharepointClient.DeleteFile(filename + ".docx");
+            SharepointClient.DeleteFile(wordFilename + ".docx");
 
             bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
             Assert.IsTrue(result, "The saz file should be saved successfully.");
@@ -211,23 +300,29 @@ namespace WOPIautomation
             // Refresh web address
             Browser.Goto(Browser.DocumentAddress);
             // Find document on site
-            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
+            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));
             // Checkout the document
-            SharepointClient.LockItem(filename + ".docx");
+            SharepointClient.LockItem(wordFilename + ".docx");
             // Open it in office word
             Browser.RClick(document);
             Browser.Wait(By.LinkText("Open in Word"));
             var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
-            // Close Microsoft office dialog and access using expected account
-            Utility.CloseMicrosoftOfficeDialog();
-            Utility.WaitForDocumentOpenning(filename);
+            
+            // Sign in Word App.
+            Utility.WaitForDocumentOpenning(wordFilename, false, true);
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
-            Utility.OfficeSignIn(username, password);
-            Utility.OfficeSignIn(username, password);
+            bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+                Thread.Sleep(2000);
+                Utility.OfficeSignIn(username, password);
+            }
+
             // Wait for document is opened
-            Utility.WaitForDocumentOpenning(filename);
+            Utility.WaitForDocumentOpenning(wordFilename);
             // Update the document content
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
             Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
@@ -238,9 +333,9 @@ namespace WOPIautomation
             Utility.DeleteDefaultWordFormat();
             Marshal.ReleaseComObject(oDocument);
             Marshal.ReleaseComObject(wordToOpen);
-            SharepointClient.UnLockItem(filename + ".docx");
+            SharepointClient.UnLockItem(wordFilename + ".docx");
             // Delete the new upload document
-            SharepointClient.DeleteFile(filename + ".docx");
+            SharepointClient.DeleteFile(wordFilename + ".docx");
 
             bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
             Assert.IsTrue(result, "The saz file should be saved successfully.");
@@ -256,34 +351,40 @@ namespace WOPIautomation
             // Refresh web address
             Browser.Goto(Browser.DocumentAddress);
             // Find document on site
-            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
+            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));
             // Open it in office word
             Browser.RClick(document);
             Browser.Wait(By.LinkText("Open in Word"));
             var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
-            Utility.CloseMicrosoftOfficeDialog();
-            Utility.WaitForDocumentOpenning(filename);
-            // Sign in office word and wait for it opening
+
+            // Sign in Microsoft office dialog and access using expected account            
+            Utility.WaitForDocumentOpenning(wordFilename, false, true);
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
-            Utility.OfficeSignIn(username, password);
-            Utility.OfficeSignIn(username, password);
-            Utility.WaitForDocumentOpenning(filename);
+            bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+                Thread.Sleep(1000);
+                Utility.OfficeSignIn(username, password);
+            }
+
             // Update the document content
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
             Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
             oDocument.Content.InsertBefore("SchemalockToExclusivelock");
             // Save and close and release word process
             oDocument.Save();
-            Utility.CheckOutOnOpeningWord(filename);
+            // CheckOutOnOpeningWord
+            //Utility.CheckOutOnOpeningWord(filename);
             oDocument.Close();
             Utility.DeleteDefaultWordFormat();
             Marshal.ReleaseComObject(oDocument);
             Marshal.ReleaseComObject(wordToOpen);
-            SharepointClient.UnLockItem(filename + ".docx");
+            SharepointClient.UnLockItem(wordFilename + ".docx");
             // Delete the new upload document
-            SharepointClient.DeleteFile(filename + ".docx");
+            SharepointClient.DeleteFile(wordFilename + ".docx");
 
             bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
             Assert.IsTrue(result, "The saz file should be saved successfully.");
@@ -299,47 +400,60 @@ namespace WOPIautomation
             // Refresh web address
             Browser.Goto(Browser.DocumentAddress);
             // Find document on site
-            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
+            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));
             // Open it in office word
             Browser.RClick(document);
             Browser.Wait(By.LinkText("Open in Word"));
             var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
-            // Close Microsoft office dialog and access using expected account
-            Utility.CloseMicrosoftOfficeDialog();
-            Utility.WaitForDocumentOpenning(filename);
+
+            // Sign in Microsoft office dialog and access using expected account            
+            Utility.WaitForDocumentOpenning(wordFilename, false, true);
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
-            Utility.OfficeSignIn(username, password);
-            Utility.OfficeSignIn(username, password);
-            Utility.WaitForDocumentOpenning(filename);
-            // Check Out it from the info pag
-            Utility.CheckOutOnOpeningWord(filename);
+            bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+                Thread.Sleep(1000);
+                Utility.OfficeSignIn(username, password);
+            }
+
+            Utility.WaitForDocumentOpenning(wordFilename, false, true);
+            // Check Out it from the info page
+            // Manual check out.Utility.CheckOutOnOpeningWord function need to be upated,
+            //Utility.CheckOutOnOpeningWord(filename);
+
             // Update the document content
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
             Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
             oDocument.Content.InsertBefore("Exclusivelock");
             oDocument.Save();
             // Close the document
-            Utility.CloseDocumentByUI(filename);
-            Utility.CloseMicrosoftWordDialog(filename,"Yes");
-            Utility.CloseCheckInPane(filename,true);
+            Utility.CloseDocumentByUI(wordFilename);
+            Utility.CloseMicrosoftWordDialog(wordFilename, "Yes");
+            Utility.CloseCheckInPane(wordFilename, true);
             // Go back to base address
             Browser.Goto(Browser.DocumentAddress);
             // Reopen document in office word
-            document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
+            document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));
             Browser.RClick(document);
             Browser.Wait(By.LinkText("Open in Word"));
             var elementToOpen = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementToOpen);
-            // Close Microsoft office dialog and access using expected account
-            Utility.CloseMicrosoftOfficeDialog();
-            Utility.WaitForDocumentOpenning(filename);
-            username = ConfigurationManager.AppSettings["UserName"];
-            password = ConfigurationManager.AppSettings["Password"];
-            Utility.OfficeSignIn(username, password);
-            Utility.OfficeSignIn(username, password);
-            Utility.WaitForDocumentOpenning(filename);
+
+            // Close Microsoft office dialog and access using expected account            
+            Utility.WaitForDocumentOpenning(wordFilename, false, true);
+            isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+                Thread.Sleep(2000);
+                Utility.OfficeSignIn(username, password);
+            }
+
+            // Wait for document is opened
+            Utility.WaitForDocumentOpenning(wordFilename);
             // Edit it 
             wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
             oDocument = (Word.Document)wordToOpen.ActiveDocument;
@@ -350,9 +464,9 @@ namespace WOPIautomation
             Utility.DeleteDefaultWordFormat();
             Marshal.ReleaseComObject(oDocument);
             Marshal.ReleaseComObject(wordToOpen);
-            SharepointClient.UnLockItem(filename + ".docx");
+            SharepointClient.UnLockItem(wordFilename + ".docx");
             // Delete the new upload document
-            SharepointClient.DeleteFile(filename + ".docx");
+            SharepointClient.DeleteFile(wordFilename + ".docx");
 
             bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
             Assert.IsTrue(result, "The saz file should be saved successfully.");
@@ -368,36 +482,42 @@ namespace WOPIautomation
             // Refresh web address
             Browser.Goto(Browser.DocumentAddress);
             // Find document on site
-            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
+            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));
             // Checked out it
-            SharepointClient.LockItem(filename + ".docx");
+            SharepointClient.LockItem(wordFilename + ".docx");
             // Open it by word
             Browser.RClick(document);
             Browser.Wait(By.LinkText("Open in Word"));
             var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
-            Utility.CloseMicrosoftOfficeDialog();
-            Utility.WaitForDocumentOpenning(filename);
+            //Utility.CloseMicrosoftOfficeDialog();
+            Utility.WaitForDocumentOpenning(wordFilename);
             // Sign in office word with another account and wait for it opening in readonly mode
+            Utility.WaitForDocumentOpenning(wordFilename, false, true);
             string username = ConfigurationManager.AppSettings["OtherUserName"];
             string password = ConfigurationManager.AppSettings["OtherPassword"];
-            Utility.OfficeSignIn(username, password);
-            Utility.OfficeSignIn(username, password);
-            Utility.CloseFileInUsePane(filename);
-            Utility.WaitForDocumentOpenning(filename, true);
+            bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+                Thread.Sleep(1000);
+            
+            }
+          
+            Utility.CloseFileInUsePane(wordFilename);            
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
             Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
             // Wait for CheckLockAvailability
-            Thread.Sleep(60000);
-            Utility.CloseFileNowAvailable(filename);
+            Thread.Sleep(3000);
+            Utility.CloseFileNowAvailable(wordFilename);
             // Close and release word process
             oDocument.Close();
             Utility.DeleteDefaultWordFormat();
             Marshal.ReleaseComObject(oDocument);
             Marshal.ReleaseComObject(wordToOpen);
-            SharepointClient.UnLockItem(filename + ".docx");
+            SharepointClient.UnLockItem(wordFilename + ".docx");
             // Delete the new upload document
-            SharepointClient.DeleteFile(filename + ".docx");
+            SharepointClient.DeleteFile(wordFilename + ".docx");
 
             bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
             Assert.IsTrue(result, "The saz file should be saved successfully.");
@@ -411,60 +531,76 @@ namespace WOPIautomation
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
-            Browser.Goto(Browser.DocumentAddress);
+            Browser.Goto(Browser.DocumentAddress);            
             // Find document on site
-            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" +filename+ ".docx']"));
+            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));
             // Open it by word
             Browser.RClick(document);
             Browser.Wait(By.LinkText("Open in Word"));
             var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
-            // Close Microsoft office dialog and access using expected account
-            Utility.CloseMicrosoftOfficeDialog();
-            Utility.WaitForDocumentOpenning(filename);
+
+
+            // Sign in Word App.
+            Utility.WaitForDocumentOpenning(wordFilename, false, true);
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
-            Utility.OfficeSignIn(username, password);
-            Utility.OfficeSignIn(username, password);
-            Utility.WaitForDocumentOpenning(filename);
+            bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+                Thread.Sleep(1000);
+                Utility.OfficeSignIn(username, password);
+            }
+
+            // Wait for document is opened
+            // Sign in Word App.
+            Utility.WaitForDocumentOpenning(wordFilename);            
+              
             // Check it out in info page
-            Utility.CheckOutOnOpeningWord(filename);
+            //Utility.CheckOutOnOpeningWord(filename);
             // Close word process
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
             Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
             oDocument.Close();
             Utility.DeleteDefaultWordFormat();
+
             // Go back to base address
             Browser.Goto(Browser.DocumentAddress);
             // Reopen the document in word
-            document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + filename + ".docx']"));
+            document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));
             Browser.RClick(document);
             Browser.Wait(By.LinkText("Open in Word"));
             elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
-            // Close Microsoft office dialog and access using expected account
-            Utility.CloseMicrosoftOfficeDialog();
-            Utility.WaitForDocumentOpenning(filename);
-            username = ConfigurationManager.AppSettings["OtherUserName"];
+
+            // Sign in Word App use OtherUserName.
+            Utility.WaitForDocumentOpenning(wordFilename, false, true);
+            /*username = ConfigurationManager.AppSettings["OtherUserName"];
             password = ConfigurationManager.AppSettings["OtherPassword"];
-            Utility.OfficeSignIn(username, password);
-            Utility.CloseFileInUsePane(filename);
-            Utility.OfficeSignIn(username, password);
-            Utility.WaitForDocumentOpenning(filename, true);
+            isWindowsSecurityPop = Utility.WaitForDocumentOpenning(filename, false, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+                Thread.Sleep(2000);
+                Utility.OfficeSignIn(username, password);
+            }*/
+
+            Utility.CloseFileInUsePane(wordFilename);
+         
             
             wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
-            oDocument = (Word.Document)wordToOpen.ActiveDocument;
-            // CheckLockAvailability
-            Thread.Sleep(60000);
+            oDocument = (Word.Document)wordToOpen.ActiveDocument;            // CheckLockAvailability
+            Thread.Sleep(6000);
             // Close and release word process
-            Utility.CloseFileNowAvailable(filename);
+            Utility.CloseFileNowAvailable(wordFilename);
             oDocument.Close();
             Utility.DeleteDefaultWordFormat();
             Marshal.ReleaseComObject(oDocument);
             Marshal.ReleaseComObject(wordToOpen);
-            SharepointClient.UnLockItem(filename + ".docx");
+            SharepointClient.UnLockItem(wordFilename + ".docx");
             // Delete the new upload document
-            SharepointClient.DeleteFile(filename + ".docx");
+            SharepointClient.DeleteFile(wordFilename + ".docx");
 
             bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
             Assert.IsTrue(result, "The saz file should be saved successfully.");
