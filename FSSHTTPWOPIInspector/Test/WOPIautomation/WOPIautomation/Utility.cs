@@ -624,6 +624,26 @@ namespace WOPIautomation
             return ele;
         }
 
+        public static AutomationElement GetExcelRestoreWindow(string name)
+        {
+            Process[] pro = Process.GetProcessesByName("EXCEL");
+            string title = "";
+            AutomationElement ele = null;
+            WaitForElement(AutomationElement.RootElement, new PropertyCondition(AutomationElement.NameProperty, name + ".xlsx  -  Read-Only - Excel"), TreeScope.Children);
+
+            foreach (Process p in pro)
+            {
+                title = p.MainWindowTitle;
+                if (title != (name + ".xlsx  -  Read-Only - Excel"))
+                {
+                    var desktop = AutomationElement.RootElement;
+                    ele = desktop.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.NameProperty, title));
+                    break;
+                }
+            }
+            return ele;
+        }
+
         /// <summary>
         /// Check out a document on opening word
         /// </summary>
@@ -706,38 +726,56 @@ namespace WOPIautomation
             Thread.Sleep(2000);
         }
 
-        public static void VersionHistroy(string name)
+        public static void VersionHistroyRestore(string name)
         {
-            AutomationElement docOnline = GetWordOnlineWindow(name);
+            // Get EXCEL Process
+            AutomationElement docOnline = GetExcelOnlineWindow(name);
+
+            // Click 'Edit Workbook' button.
+            Condition Con_EditWorkbook = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Edit Workbook"));
+            AutomationElement item_EditWorkbook = docOnline.FindFirst(TreeScope.Descendants, Con_EditWorkbook);
+            InvokePattern Pattern_EditWorkbook = (InvokePattern)item_EditWorkbook.GetCurrentPattern(InvokePattern.Pattern);
+            Pattern_EditWorkbook.Invoke();
+
+            // Click 'File' on Menu Bar.
             Condition File_Tab = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "File Tab"));
             WaitForElement(docOnline, File_Tab, TreeScope.Descendants);
             AutomationElement item_File = docOnline.FindFirst(TreeScope.Descendants, File_Tab);
             InvokePattern Pattern_File = (InvokePattern)item_File.GetCurrentPattern(InvokePattern.Pattern);
             Pattern_File.Invoke();
-            
-            Condition Group_Info = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Group), new PropertyCondition(AutomationElement.NameProperty, "Info"));
-            AutomationElement item_Info = docOnline.FindFirst(TreeScope.Descendants, Group_Info);
 
+            // Select 'Info' under 'File'.
+            Condition Group_Info = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.ListItem), new PropertyCondition(AutomationElement.NameProperty, "Info"));
+            Condition Con_Info = new PropertyCondition(AutomationElement.NameProperty, "Info");
+            AutomationElement item_Info = docOnline.FindFirst(TreeScope.Children, Con_Info);
+            item_Info = docOnline.FindFirst(TreeScope.Descendants, Group_Info);
+            SelectionItemPattern selectionItemPattern = item_Info.GetCurrentPattern(SelectionItemPattern.Pattern) as SelectionItemPattern;
+            selectionItemPattern.Select();
 
-            Condition Con_ManageVersions = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem), new PropertyCondition(AutomationElement.NameProperty, "Manage Document"));
-            AutomationElement item_ManageVersions = item_Info.FindFirst(TreeScope.Descendants, Con_ManageVersions);           
+            // Click 'Version Histroy' button on 'Info'.            
+            Condition Con_VersionHistroy = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Version History"));
+            Condition Con_VersionHistroyName = new PropertyCondition(AutomationElement.NameProperty, "Version History");
+            AutomationElement item_VersionHistroy = docOnline.FindFirst(TreeScope.Descendants, Con_VersionHistroy);
+            TogglePattern pattern_VersionHistroy;
+            pattern_VersionHistroy = item_VersionHistroy.GetCurrentPattern(TogglePattern.Pattern) as TogglePattern; 
+            pattern_VersionHistroy.Toggle();
 
-            ExpandCollapsePattern Pattern_ManageVersions = (ExpandCollapsePattern)item_ManageVersions.GetCurrentPattern(ExpandCollapsePatternIdentifiers.Pattern);
-            Pattern_ManageVersions.Expand();
-
-            Condition Con_CheckOut = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem), new PropertyCondition(AutomationElement.NameProperty, "Check Out"));
-            AutomationElement item_CheckOut = item_Info.FindFirst(TreeScope.Descendants, Con_CheckOut);
-
-            InvokePattern Pattern_CheckOut = (InvokePattern)item_CheckOut.GetCurrentPattern(InvokePattern.Pattern);
-            Pattern_CheckOut.Invoke();
-             
-
-            Thread.Sleep(3000);
-            Condition File_Save = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Save"));
-            AutomationElement item_Save = docOnline.FindFirst(TreeScope.Descendants, File_Save);
-            InvokePattern Pattern_Save = (InvokePattern)item_Save.GetCurrentPattern(InvokePattern.Pattern);
-            Pattern_Save.Invoke();
-            Thread.Sleep(2000);
+            // Find 'Version Histroy' on the left.            
+            Condition Con_VersionHistroyBar = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.ToolBar), new PropertyCondition(AutomationElement.NameProperty, "Version History"));
+            AutomationElement item_VersionHistroyBar = docOnline.FindFirst(TreeScope.Descendants, Con_VersionHistroyBar);
+            if (item_VersionHistroyBar!=null)
+            {
+                SendKeys.SendWait("{DOWN}");
+                
+                SendKeys.SendWait("{ENTER}");
+            }
+            Thread.Sleep(1000);
+            AutomationElement excelRestore = GetExcelRestoreWindow(name); 
+            Condition Con_Restore = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Restore"));
+            Condition Con_RestoreName =new PropertyCondition(AutomationElement.NameProperty, "Restore");
+            AutomationElement item_Restore = excelRestore.FindFirst(TreeScope.Descendants, Con_RestoreName);
+            InvokePattern Pattern_Restore = (InvokePattern)item_Restore.GetCurrentPattern(InvokePattern.Pattern);
+            Pattern_Restore.Invoke();
         }
 
         /// <summary>

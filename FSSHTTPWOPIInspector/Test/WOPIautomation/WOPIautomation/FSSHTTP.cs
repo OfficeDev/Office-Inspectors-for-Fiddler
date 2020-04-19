@@ -168,94 +168,7 @@ namespace WOPIautomation
         }
 
         [TestMethod, TestCategory("FSSHTTP")]
-        public void Excel___Versioning()
-        {
-            // Upload a document
-            SharepointClient.UploadFile(excel);
-            // Refresh web address
-            Browser.Goto(Browser.DocumentAddress);
-            // Find document on site
-            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + excelFilename + ".xlsx']"));
-            // Open it by word
-            Browser.RClick(document);
-            Browser.Wait(By.LinkText("Open in Excel"));
-            var elementOpenInExcel = Browser.webDriver.FindElement(By.LinkText("Open in Excel"));
-            Browser.Click(elementOpenInExcel);
-
-
-            // Sign in Excel Desktop App.
-            Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
-            string username = ConfigurationManager.AppSettings["UserName"];
-            string password = ConfigurationManager.AppSettings["Password"];
-            bool isWindowsSecurityPop = Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
-            if (isWindowsSecurityPop)
-            {
-                Utility.OfficeSignIn(username, password);
-                Thread.Sleep(1500);
-            }
-            //Waiting for WindowsSecurity Pop up
-            //Thread.Sleep(1000);
-            isWindowsSecurityPop = Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
-            if (isWindowsSecurityPop)
-            {
-                Utility.OfficeSignIn(username, password);
-                Thread.Sleep(1500);
-                //Utility.OfficeSignIn(username, password);
-            }
-
-            // Wait for excel is opened
-            // Sign in Excel Desktop App.
-            Utility.WaitForExcelDocumentOpenning2(excelFilename, false);
-
-            // Go back to base address
-            Browser.Goto(Browser.DocumentAddress);
-            // Reopen the document in word
-            document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + excelFilename + ".xlsx']"));
-            Browser.RClick(document);
-            Browser.Wait(By.LinkText("Open in Excel Online"));
-            elementOpenInExcel = Browser.webDriver.FindElement(By.LinkText("Open in Excel Online"));
-            Browser.Click(elementOpenInExcel);
-            // Sign in Excel Desktop App use UserName.
-            Thread.Sleep(1000);
-            Excel.Application excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
-            Excel.Workbook excelWorkbook = (Excel.Workbook)excelToOpen.ActiveWorkbook;
-            //Click 'Edit Workbook'
-            Utility.EditWorkbook(excelFilename);
-            //Close FileInUsePane in Desktop Excel
-            Utility.CloseExcelFileInUsePane(excelFilename);
-            // Wait for CheckLockAvailability reqest show up.
-            Thread.Sleep(100000);
-            // Close and release word process
-            excelWorkbook.Close();
-            Utility.DeleteDefaultExcelFormat();
-            Marshal.ReleaseComObject(excelWorkbook);
-            Marshal.ReleaseComObject(excelToOpen);
-
-            // Delete the new upload document
-            SharepointClient.DeleteFile(wordFilename + ".docx");
-            SharepointClient.DeleteFile(excelFilename + ".xlsx");
-            Browser.Goto(Browser.DocumentAddress);
-
-            bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
-            Assert.IsTrue(result, "The saz file should be saved successfully.");
-            bool parsingResult = MessageParser.ParseMessageUsingWOPIInspector(file);
-            Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
-        }
-
-        [TestMethod, TestCategory("FSSHTTP")]
-        public void VersioningHistroyTest()
-        {
-            Excel.Application excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
-            Excel.Workbook excelWorkbook = (Excel.Workbook)excelToOpen.ActiveWorkbook;
-            Utility.VersionHistroy(excelFilename);
-            bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
-            Assert.IsTrue(result, "The saz file should be saved successfully.");
-            bool parsingResult = MessageParser.ParseMessageUsingWOPIInspector(file);
-            Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
-        }
-
-        [TestMethod, TestCategory("FSSHTTP")]
-        public void CheckOutOnOpeningExcelTest()
+        public void Excel___CheckOutOnOpeningExcelTest()
         {
             // Upload a document
             SharepointClient.UploadFile(excel);
@@ -291,6 +204,43 @@ namespace WOPIautomation
             Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
         }
         
+        [TestMethod, TestCategory("FSSHTTP")]
+        public void Excel___VersioningHistroyExcelTest()
+        {
+            // Upload a document
+            SharepointClient.UploadFile(excel);
+            // Refresh web address
+            Browser.Goto(Browser.DocumentAddress);
+            // Find document on site
+            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + excelFilename + ".xlsx']"));
+            // Open it by word
+            Browser.RClick(document);
+            Browser.Wait(By.LinkText("Open in Excel"));
+            var elementOpenInExcel = Browser.webDriver.FindElement(By.LinkText("Open in Excel"));
+            Browser.Click(elementOpenInExcel);
+
+            // Sign in Excel Desktop App.
+            Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
+            Utility.VersionHistroyRestore(excelFilename);
+            Excel.Application excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+            excelToOpen.ActiveWorkbook.Close();            
+            excelToOpen.ActiveWindow.Close();
+
+            // Close and release word process
+            //excelWorkbook.Close();
+            //Utility.CloseMicrosoftOfficeDialog();
+            Utility.DeleteDefaultExcelFormat();            
+            Marshal.ReleaseComObject(excelToOpen);
+
+            // Delete the new upload document            
+            SharepointClient.DeleteFile(excelFilename + ".xlsx");
+
+            bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
+            Assert.IsTrue(result, "The saz file should be saved successfully.");
+            bool parsingResult = MessageParser.ParseMessageUsingWOPIInspector(file);
+            Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
+        }
+
 
         [TestMethod, TestCategory("FSSHTTP")]
 
