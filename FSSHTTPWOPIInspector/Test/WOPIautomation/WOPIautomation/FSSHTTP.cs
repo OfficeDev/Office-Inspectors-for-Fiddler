@@ -213,7 +213,7 @@ namespace WOPIautomation
             Browser.Goto(Browser.DocumentAddress);
             // Find document on site
             IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + excelFilename + ".xlsx']"));
-            // Open it by word
+            // Open it by Excel.
             Browser.RClick(document);
             Browser.Wait(By.LinkText("Open in Excel"));
             var elementOpenInExcel = Browser.webDriver.FindElement(By.LinkText("Open in Excel"));
@@ -221,10 +221,34 @@ namespace WOPIautomation
 
             // Sign in Excel Desktop App.
             Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
-            Utility.VersionHistroyRestore(excelFilename);
+            Utility.EditExcelWorkbook(excelFilename);
+
+            // Edit Excel Cell Content.
+            if (Utility.FindCondition(excelFilename, "We opened this workbook read-only from the server."))
+            {
+                Utility.EditExcelWorkbook(excelFilename);
+            }
             Excel.Application excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
-            excelToOpen.ActiveWorkbook.Close();            
-            excelToOpen.ActiveWindow.Close();
+            Excel.Workbook excelWorkbook = (Excel.Workbook)excelToOpen.ActiveWorkbook;
+            Excel.Worksheet excelWorkSheet= (Excel.Worksheet)excelWorkbook.ActiveSheet;
+            for (int i = 1; i < 2; i++)
+                excelWorkSheet.Cells[i, 1] =DateTime.Now.ToString();
+            excelWorkbook.Save();
+            excelWorkbook.Close();
+            excelToOpen.Quit();
+
+            // Open Excel File on Sharepoint Server again. Open it by Desktop Excel.
+            
+            Browser.RClick(document);
+            Browser.Wait(By.LinkText("Open in Excel"));
+            elementOpenInExcel = Browser.webDriver.FindElement(By.LinkText("Open in Excel"));
+            Browser.Click(elementOpenInExcel);
+
+            // Resolve 'UPLOAD FAILED'  
+            Utility.ResloveUploadFailed(excelFilename,false);
+            //Version History Restore
+            Utility.VersionHistroyRestore(excelFilename);
+
 
             // Close and release word process
             //excelWorkbook.Close();
@@ -241,9 +265,18 @@ namespace WOPIautomation
             Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
         }
 
+        [TestMethod, TestCategory("FSSHTTP")]
+        public void Excel___FlagExcelTest()
+        {
+            // Get EXCEL Process
+            AutomationElement excel = Utility.GetExcelOnlineWindow("Excel");
+            // Find 'READ-ONLY' button.
+            Condition Con_ReadOnly = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Hyperlink), new PropertyCondition(AutomationElement.NameProperty, "We opened this workbook read-only from the server."));
+            AutomationElement item_Con_ReadOnly = excel.FindFirst(TreeScope.Descendants, Con_ReadOnly);
+            bool con=Utility.FindCondition(excelFilename, "We opened this workbook read-only from the server.");
+        }
 
         [TestMethod, TestCategory("FSSHTTP")]
-
         public void Excel___SharepointDelete()
         {   
             // Upload a document

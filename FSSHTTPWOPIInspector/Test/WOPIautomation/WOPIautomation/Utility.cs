@@ -59,12 +59,12 @@ namespace WOPIautomation
             Thread.Sleep(2000);
 
             // Click OneNote file on Sharepoint Web Server
-            Browser.Click(document);                  
+            Browser.Click(document);
             Thread.Sleep(3000);
             Browser.Wait(By.Id("WebApplicationFrame"));
             Browser.webDriver.SwitchTo().Frame("WebApplicationFrame");
             // Wait for online edit saved
-            Thread.Sleep(3000);            
+            Thread.Sleep(3000);
             Browser.Wait(By.XPath("//a[@id='lblSyncStatus-Medium']/span[2][text()='Saved']"));
             Thread.Sleep(3000);
             SendKeys.SendWait("Online");
@@ -110,12 +110,12 @@ namespace WOPIautomation
             }
             ///////////////////////////////////////////////////////////////////////////////////
             // Closed OneNote App.  
-            
+
 
             oneNoteApp.Windows.CurrentWindow.Active = true;
             SendKeys.SendWait("%{F4}");
             // Delete the new upload document
-            SharepointClient.DeleteFile(filename + ".one");            
+            SharepointClient.DeleteFile(filename + ".one");
         }
 
         /// <summary>
@@ -171,9 +171,9 @@ namespace WOPIautomation
             Browser.RClick(onenote);
             Browser.Wait(By.LinkText("Open in OneNote Online"));
             elementOpenOnline = Browser.webDriver.FindElement(By.LinkText("Open in OneNote Online"));
-            Browser.Click(elementOpenOnline);        
+            Browser.Click(elementOpenOnline);
             Thread.Sleep(40000);
-            
+
             //var merge = Browser.webDriver.FindElement(By.XPath("//span[@class='WACBusinessBarBody'][text()='This page contains conflicting changes. Click here to show versions of the page with unmerged changes.']"));
             Browser.RClick(onenote);
             Browser.Wait(By.LinkText("Open in OneNote"));
@@ -187,12 +187,12 @@ namespace WOPIautomation
             SendKeys.SendWait("+(^w)");
             Thread.Sleep(2000);
             SendKeys.SendWait("{ENTER}");
-            Thread.Sleep(2000);     
+            Thread.Sleep(2000);
 
 
             // Get the opened OneNote process, and edit it
             OneNote.Application oneNoteApp = new OneNote.Application();
-            var oneNoteWindow = oneNoteApp.Windows.CurrentWindow;           
+            var oneNoteWindow = oneNoteApp.Windows.CurrentWindow;
 
             // Closed OneNote App.
             oneNoteApp.CloseNotebook(oneNoteWindow.CurrentNotebookId);
@@ -327,14 +327,14 @@ namespace WOPIautomation
         public static bool WaitForExcelDocumentOpenning2(string docName, bool popWindowsSecurity = false)
         {
             var desktop = AutomationElement.RootElement;
-            AutomationElement document = null; 
+            AutomationElement document = null;
             Condition multiCondition = new OrCondition(
-                new PropertyCondition(AutomationElement.NameProperty, docName + "Excel.xlsx - Read-Only"), 
-                new PropertyCondition(AutomationElement.NameProperty, docName + ".xlsx  -  Read-Only - Excel"), 
+                new PropertyCondition(AutomationElement.NameProperty, docName + "Excel.xlsx - Read-Only"),
+                new PropertyCondition(AutomationElement.NameProperty, docName + ".xlsx  -  Read-Only - Excel"),
                 new PropertyCondition(AutomationElement.NameProperty, docName + ".xlsx [Read-Only] - Excel"),
-                new PropertyCondition(AutomationElement.NameProperty, docName + " [Read-Only] - Excel"), 
-                new PropertyCondition(AutomationElement.NameProperty, "Excel"), 
-                new PropertyCondition(AutomationElement.NameProperty, docName + " - Excel"), 
+                new PropertyCondition(AutomationElement.NameProperty, docName + " [Read-Only] - Excel"),
+                new PropertyCondition(AutomationElement.NameProperty, "Excel"),
+                new PropertyCondition(AutomationElement.NameProperty, docName + " - Excel"),
                 new PropertyCondition(AutomationElement.NameProperty, docName + ".xlsx - Excel"),
                 new PropertyCondition(AutomationElement.NameProperty, docName + " - Excel"),
                 new PropertyCondition(AutomationElement.NameProperty, docName + ".xlsx - Excel"));
@@ -362,7 +362,7 @@ namespace WOPIautomation
         /// <param name="isreadonly">A bool value indicate if the document is readonly</param>
         /// <param name="popWindowsSecurity">A bool value indicate if pop Windows Security</param>
         /// <returns>A bool value indicate if the document is opening.</returns>
-        public static bool WaitForDocumentOpenning(string docName, string docType,bool isreadonly = false, bool popWindowsSecurity = false)
+        public static bool WaitForDocumentOpenning(string docName, string docType, bool isreadonly = false, bool popWindowsSecurity = false)
         {
             var desktop = AutomationElement.RootElement;
             AutomationElement document = null;
@@ -388,7 +388,7 @@ namespace WOPIautomation
                         {
                             return true;
                         }
-                    }                    
+                    }
                     break;
                 case "OneNote":
                     if (isreadonly)
@@ -450,10 +450,10 @@ namespace WOPIautomation
                     return true;
                 }
             }
-   
+
             return false;
         }
-        
+
         /// <summary>
         /// Wait for document opening online
         /// </summary>
@@ -510,7 +510,7 @@ namespace WOPIautomation
             {
 
                 throw e;
-            }                  
+            }
         }
 
         /// <summary>
@@ -606,7 +606,7 @@ namespace WOPIautomation
 
         public static AutomationElement GetExcelOnlineWindow(string name)
         {
-            Process[] pro = Process.GetProcessesByName("EXCEL");            
+            Process[] pro = Process.GetProcessesByName("EXCEL");
             string title = "";
             AutomationElement ele = null;
             WaitForElement(AutomationElement.RootElement, new PropertyCondition(AutomationElement.NameProperty, name + ".xlsx  -  Read-Only - Excel"), TreeScope.Children);
@@ -693,7 +693,7 @@ namespace WOPIautomation
             AutomationElement item_File = docOnline.FindFirst(TreeScope.Descendants, File_Tab);
             InvokePattern Pattern_File = (InvokePattern)item_File.GetCurrentPattern(InvokePattern.Pattern);
             Pattern_File.Invoke();
-            
+
             // Select 'Info' under 'File'.
             Condition Group_Info = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.ListItem), new PropertyCondition(AutomationElement.NameProperty, "Info"));
             Condition Con_Info = new PropertyCondition(AutomationElement.NameProperty, "Info");
@@ -724,6 +724,83 @@ namespace WOPIautomation
             InvokePattern Pattern_Save = (InvokePattern)item_Save.GetCurrentPattern(InvokePattern.Pattern);
             Pattern_Save.Invoke();
             Thread.Sleep(2000);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="propertyname"></param>
+        /// <returns></returns>
+        public static bool FindCondition(string filename,string propertyname)
+        {
+            // Get EXCEL Process
+            AutomationElement excel = Utility.GetExcelOnlineWindow(filename);
+            // Find 'READ-ONLY' button.
+            //Condition Con_Find= new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Hyperlink), new PropertyCondition(AutomationElement.NameProperty, propertyname));
+            Condition Con_Find = new PropertyCondition(AutomationElement.NameProperty, propertyname);
+            AutomationElement item_ConFind = excel.FindFirst(TreeScope.Descendants, Con_Find);
+            if (item_ConFind == null)
+                return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Reslove the 'UPLOAD FAILED' Pop up 
+        /// </summary>
+        /// <param name="name">The Excel file name.</param>
+        /// <param name="KeepServerVersion">True means choose 'Keep Server Version'; False means choose 'Keep My Version'</param>
+        /// <returns>True when Upload Failed Resolved; False when there is no 'Upload Failed' exsits.</returns>
+        public static bool ResloveUploadFailed(string name,bool KeepServerVersion)
+        {
+            // Get EXCEL Process
+            AutomationElement excelOnline = GetExcelOnlineWindow(name);
+            if (KeepServerVersion)
+            {
+                // Click 'Keep Server Version' button.
+                Condition Con_KeepServerVersion = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Keep Server Version"));
+                AutomationElement item_KeepServerVersion = excelOnline.FindFirst(TreeScope.Descendants, Con_KeepServerVersion);
+                if (item_KeepServerVersion != null)
+                {
+                    InvokePattern Pattern_KeepServerVersion = (InvokePattern)item_KeepServerVersion.GetCurrentPattern(InvokePattern.Pattern);
+                    Pattern_KeepServerVersion.Invoke();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                // Click 'Keep My Version' button.
+                Condition Con_KeepMyVersion = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Keep My Version"));
+                AutomationElement item_KeepMyVersion = excelOnline.FindFirst(TreeScope.Descendants, Con_KeepMyVersion);
+                if (item_KeepMyVersion != null)
+                {
+                    InvokePattern Pattern_KeepServerVersion = (InvokePattern)item_KeepMyVersion.GetCurrentPattern(InvokePattern.Pattern);
+                    Pattern_KeepServerVersion.Invoke();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        public static void EditExcelWorkbook(string name)
+        {
+            // Get EXCEL Process
+            AutomationElement docOnline = GetExcelOnlineWindow(name);
+            // Click 'Edit Workbook' button.
+            Condition Con_EditWorkbook = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Edit Workbook"));
+            AutomationElement item_EditWorkbook = docOnline.FindFirst(TreeScope.Descendants, Con_EditWorkbook);
+            if (item_EditWorkbook!=null)
+            {
+                InvokePattern Pattern_EditWorkbook = (InvokePattern)item_EditWorkbook.GetCurrentPattern(InvokePattern.Pattern);
+                Pattern_EditWorkbook.Invoke();
+            }               
         }
 
         public static void VersionHistroyRestore(string name)
