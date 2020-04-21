@@ -629,12 +629,12 @@ namespace WOPIautomation
             Process[] pro = Process.GetProcessesByName("EXCEL");
             string title = "";
             AutomationElement ele = null;
-            WaitForElement(AutomationElement.RootElement, new PropertyCondition(AutomationElement.NameProperty, name + ".xlsx  -  Read-Only - Excel"), TreeScope.Children);
+            WaitForElement(AutomationElement.RootElement, new PropertyCondition(AutomationElement.NameProperty, name + ".xlsx - Excel"), TreeScope.Children);
 
             foreach (Process p in pro)
             {
                 title = p.MainWindowTitle;
-                if (title != (name + ".xlsx  -  Read-Only - Excel"))
+                if (title != (name + ".xlsx - Excel"))
                 {
                     var desktop = AutomationElement.RootElement;
                     ele = desktop.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.NameProperty, title));
@@ -727,11 +727,11 @@ namespace WOPIautomation
         }
 
         /// <summary>
-        /// 
+        /// Find the popped up banner with condition.
         /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="propertyname"></param>
-        /// <returns></returns>
+        /// <param name="filename">The opening file name</param>
+        /// <param name="propertyname">The propertry name of condition.</param>
+        /// <returns>True if the banner with condition was found; False if the banner with condition was not found</returns>
         public static bool FindCondition(string filename,string propertyname)
         {
             // Get EXCEL Process
@@ -789,6 +789,10 @@ namespace WOPIautomation
             }
         }
 
+        /// <summary>
+        /// Click 'Edit Workbook' button on the 'READ-ONLY' banner.
+        /// </summary>
+        /// <param name="name">The name of opening file.</param>
         public static void EditExcelWorkbook(string name)
         {
             // Get EXCEL Process
@@ -883,6 +887,39 @@ namespace WOPIautomation
             InvokePattern Pattern_Save = (InvokePattern)item_Save.GetCurrentPattern(InvokePattern.Pattern);
             Pattern_Save.Invoke();
             Thread.Sleep(2000);
+        }
+
+        /// <summary>
+        /// Discard check out on opening excel if a newer version of this file is available on the server.
+        /// </summary>
+        /// <param name="name">The opening check out excel file name.</param>
+        public static void DiscardCheckOutOnOpeningExcel(string name)
+        {
+            // Get EXCEL Process
+            AutomationElement excelOnline = GetExcelOnlineWindow(name);
+
+            // Click 'Discard Changes' button.
+            Condition Con_DiscardChanges = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Discard Changes"));
+            AutomationElement item_DiscardChanges = excelOnline.FindFirst(TreeScope.Descendants, Con_DiscardChanges);
+            if (item_DiscardChanges!=null)
+            {
+                InvokePattern Pattern_DiscardChanges = (InvokePattern)item_DiscardChanges.GetCurrentPattern(InvokePattern.Pattern);
+                Pattern_DiscardChanges.Invoke();
+                // Find Click 'Microsoft Excel' window.
+                Condition Con_MicrosoftExcel = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window), new PropertyCondition(AutomationElement.NameProperty, "Microsoft Excel"));
+                AutomationElement item_MicrosoftExcel = excelOnline.FindFirst(TreeScope.Descendants, Con_MicrosoftExcel);
+                if (item_MicrosoftExcel!=null)
+                {
+                    Condition Con_MicrosoftExcelText = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Text), new PropertyCondition(AutomationElement.NameProperty, "Are you sure you want to discard your changes? You won't be able to access this file while you are offline. You can reopen it the next time you're online."));
+                    AutomationElement item_MicrosoftExcelText = excelOnline.FindFirst(TreeScope.Descendants, Con_MicrosoftExcelText);
+                    if (item_MicrosoftExcelText != null)
+                    {
+                        AutomationElement item_MicrosoftExcelYes = excelOnline.FindFirst(TreeScope.Descendants, new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Yes")));
+                        InvokePattern Pattern_Yes = (InvokePattern)item_MicrosoftExcelYes.GetCurrentPattern(InvokePattern.Pattern);
+                        Pattern_Yes.Invoke();
+                    }
+                }
+            }
         }
 
         /// <summary>

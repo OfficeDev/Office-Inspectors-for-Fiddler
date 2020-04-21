@@ -20,15 +20,15 @@ using System.Windows.Automation;
 namespace WOPIautomation
 {
     [TestClass]
-    public class FSSHTTP:TestBase
+    public class FSSHTTP : TestBase
     {
         private static string Word = ConfigurationManager.AppSettings["Word"];
         private static string wordFilename = Word.Split('\\').Last().Split('.').First();
         private static string excel = ConfigurationManager.AppSettings["Excel"];
         private static string excelFilename = excel.Split('\\').Last().Split('.').First();
         private string file = "";
-        
-     
+
+
         [TestMethod, TestCategory("FSSHTTP")]
         public void CoautherWithoutConflict()
         {
@@ -43,7 +43,7 @@ namespace WOPIautomation
             Browser.Wait(By.LinkText("Open in Word"));
             var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
-            
+
             // Close Microsoft office dialog and access using expected account            
             Utility.WaitForDocumentOpenning(wordFilename, false, true);
             string username = ConfigurationManager.AppSettings["UserName"];
@@ -107,7 +107,6 @@ namespace WOPIautomation
             var elementOpenInExcel = Browser.webDriver.FindElement(By.LinkText("Open in Excel"));
             Browser.Click(elementOpenInExcel);
 
-
             // Sign in Excel Desktop App.
             Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
             string username = ConfigurationManager.AppSettings["UserName"];
@@ -116,7 +115,7 @@ namespace WOPIautomation
             if (isWindowsSecurityPop)
             {
                 Utility.OfficeSignIn(username, password);
-                Thread.Sleep(1500);                
+                Thread.Sleep(1500);
             }
             //Waiting for WindowsSecurity Pop up
             //Thread.Sleep(1000);
@@ -155,7 +154,7 @@ namespace WOPIautomation
             Utility.DeleteDefaultExcelFormat();
             Marshal.ReleaseComObject(excelWorkbook);
             Marshal.ReleaseComObject(excelToOpen);
-            
+
             // Delete the new upload document
             SharepointClient.DeleteFile(wordFilename + ".docx");
             SharepointClient.DeleteFile(excelFilename + ".xlsx");
@@ -203,57 +202,104 @@ namespace WOPIautomation
             bool parsingResult = MessageParser.ParseMessageUsingWOPIInspector(file);
             Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
         }
-        
+
         [TestMethod, TestCategory("FSSHTTP")]
         public void Excel___VersioningHistroyExcelTest()
         {
-            // Upload a document
+            // Upload a excel document.
             SharepointClient.UploadFile(excel);
             // Refresh web address
             Browser.Goto(Browser.DocumentAddress);
             // Find document on site
             IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + excelFilename + ".xlsx']"));
-            // Open it by Excel.
+            // Open it by desktop Excel.
             Browser.RClick(document);
             Browser.Wait(By.LinkText("Open in Excel"));
             var elementOpenInExcel = Browser.webDriver.FindElement(By.LinkText("Open in Excel"));
             Browser.Click(elementOpenInExcel);
 
+            /*
             // Sign in Excel Desktop App.
             Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
-            Utility.EditExcelWorkbook(excelFilename);
+            string username = ConfigurationManager.AppSettings["UserName"];
+            string password = ConfigurationManager.AppSettings["Password"];
+            bool isWindowsSecurityPop = Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+                Thread.Sleep(1500);
+            }
+            //Waiting for WindowsSecurity Pop up
+            //Thread.Sleep(1000);
+            isWindowsSecurityPop = Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+                Thread.Sleep(1500);
+                //Utility.OfficeSignIn(username, password);
+            }
+            */
 
-            // Edit Excel Cell Content.
+            // Wait for excel is opened
+            // Sign in Excel Desktop App.
+            Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
+
+            Excel.Application excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+            Excel.Workbook excelWorkbook = (Excel.Workbook)excelToOpen.ActiveWorkbook;
+            Excel.Worksheet excelWorkSheet = (Excel.Worksheet)excelWorkbook.ActiveSheet;
+
+            // Discard check out on opening excel if a newer version of this file is available on the server.
+            if (Utility.FindCondition(excelFilename, "A newer version of this file is available on the server."))
+            {
+                Utility.DiscardCheckOutOnOpeningExcel(excelFilename);
+            }
+
+            // Click 'Edit Workbook' button if we opened this workbook read-only from the server.
             if (Utility.FindCondition(excelFilename, "We opened this workbook read-only from the server."))
             {
                 Utility.EditExcelWorkbook(excelFilename);
             }
-            Excel.Application excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
-            Excel.Workbook excelWorkbook = (Excel.Workbook)excelToOpen.ActiveWorkbook;
-            Excel.Worksheet excelWorkSheet= (Excel.Worksheet)excelWorkbook.ActiveSheet;
+
+            // Edit Excel Cell Content.
             for (int i = 1; i < 2; i++)
-                excelWorkSheet.Cells[i, 1] =DateTime.Now.ToString();
+                excelWorkSheet.Cells[i, 1] = DateTime.Now.ToString();
+
+            // Close excel file.
             excelWorkbook.Save();
             excelWorkbook.Close();
             excelToOpen.Quit();
 
             // Open Excel File on Sharepoint Server again. Open it by Desktop Excel.
-            
+
             Browser.RClick(document);
             Browser.Wait(By.LinkText("Open in Excel"));
             elementOpenInExcel = Browser.webDriver.FindElement(By.LinkText("Open in Excel"));
             Browser.Click(elementOpenInExcel);
 
+            excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+            excelWorkbook = (Excel.Workbook)excelToOpen.ActiveWorkbook;
+            //Excel.Worksheet excelWorkSheet = (Excel.Worksheet)excelWorkbook.ActiveSheet;
+            Thread.Sleep(6000);
             // Resolve 'UPLOAD FAILED'  
-            Utility.ResloveUploadFailed(excelFilename,false);
+            if (Utility.FindCondition(excelFilename, "We're sorry, someone updated the server copy and it's not possible to upload your changes now."))
+            {
+                Utility.ResloveUploadFailed(excelFilename, false);
+            }
+
+            // Click 'Edit Workbook' button if we opened this workbook read-only from the server.
+            if (Utility.FindCondition(excelFilename, "We opened this workbook read-only from the server."))
+            {
+                Utility.EditExcelWorkbook(excelFilename);
+            }
+
             //Version History Restore
             Utility.VersionHistroyRestore(excelFilename);
-
-
+            
             // Close and release word process
-            //excelWorkbook.Close();
-            //Utility.CloseMicrosoftOfficeDialog();
-            Utility.DeleteDefaultExcelFormat();            
+            // Close excel file.            
+            excelWorkbook.Close();
+            Utility.DeleteDefaultExcelFormat();
+            excelToOpen.Quit();
             Marshal.ReleaseComObject(excelToOpen);
 
             // Delete the new upload document            
@@ -273,7 +319,18 @@ namespace WOPIautomation
             // Find 'READ-ONLY' button.
             Condition Con_ReadOnly = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Hyperlink), new PropertyCondition(AutomationElement.NameProperty, "We opened this workbook read-only from the server."));
             AutomationElement item_Con_ReadOnly = excel.FindFirst(TreeScope.Descendants, Con_ReadOnly);
-            bool con=Utility.FindCondition(excelFilename, "We opened this workbook read-only from the server.");
+            bool con = Utility.FindCondition(excelFilename, "We opened this workbook read-only from the server.");
+        }
+
+        [TestMethod, TestCategory("FSSHTTP")]
+        public void Excel___TwoExcelWindowTest()
+        {
+            AutomationElement excelRestore =Utility.GetExcelRestoreWindow("Excel");
+            Condition Con_Restore = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Restore"));
+            Condition Con_RestoreName = new PropertyCondition(AutomationElement.NameProperty, "Restore");
+            AutomationElement item_Restore = excelRestore.FindFirst(TreeScope.Descendants, Con_RestoreName);
+            InvokePattern Pattern_Restore = (InvokePattern)item_Restore.GetCurrentPattern(InvokePattern.Pattern);
+            Pattern_Restore.Invoke();
         }
 
         [TestMethod, TestCategory("FSSHTTP")]
