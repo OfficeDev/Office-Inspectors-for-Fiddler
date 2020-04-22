@@ -614,7 +614,7 @@ namespace WOPIautomation
             foreach (Process p in pro)
             {
                 title = p.MainWindowTitle;
-                if (title == (name + ".xlsx  -  Read-Only - Excel"))
+                if (title == (name + ".xlsx  -  Read-Only - Excel")|| title == (name + ".xlsx - Excel"))
                 {
                     var desktop = AutomationElement.RootElement;
                     ele = desktop.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.NameProperty, title));
@@ -629,17 +629,31 @@ namespace WOPIautomation
             Process[] pro = Process.GetProcessesByName("EXCEL");
             string title = "";
             AutomationElement ele = null;
-            WaitForElement(AutomationElement.RootElement, new PropertyCondition(AutomationElement.NameProperty, name + ".xlsx - Excel"), TreeScope.Children);
+            var desktop = AutomationElement.RootElement;
+            Condition Con_ExcelWinTitle =new  OrCondition(new PropertyCondition(AutomationElement.NameProperty, name + ".xlsx - Excel"), new PropertyCondition(AutomationElement.NameProperty, name + ".xlsx  -  Read-Only - Excel"));
+            WaitForElement(AutomationElement.RootElement, Con_ExcelWinTitle, TreeScope.Children);
 
             foreach (Process p in pro)
             {
                 title = p.MainWindowTitle;
-                if (title != (name + ".xlsx - Excel"))
+                while (title == (name + ".xlsx - Excel") || title == (name + ".xlsx  -  Read-Only - Excel"))
                 {
-                    var desktop = AutomationElement.RootElement;
-                    ele = desktop.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.NameProperty, title));
-                    break;
+                    Thread.Sleep(2000);
+                    pro = Process.GetProcessesByName("EXCEL");
+                    foreach (Process process in pro)
+                    {
+                        title = process.MainWindowTitle;
+                        if (title != (name + ".xlsx - Excel")&& title!= (name + ".xlsx  -  Read-Only - Excel"))
+                        {
+                            desktop = AutomationElement.RootElement;
+                            ele = desktop.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.NameProperty, title));
+                            return ele;
+                        }
+                    }
                 }
+                
+                ele = desktop.FindFirst(TreeScope.Children, new PropertyCondition(AutomationElement.NameProperty, title));
+                return ele;
             }
             return ele;
         }
@@ -811,12 +825,15 @@ namespace WOPIautomation
         {
             // Get EXCEL Process
             AutomationElement docOnline = GetExcelOnlineWindow(name);
-
+            
             // Click 'Edit Workbook' button.
             Condition Con_EditWorkbook = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Edit Workbook"));
             AutomationElement item_EditWorkbook = docOnline.FindFirst(TreeScope.Descendants, Con_EditWorkbook);
-            InvokePattern Pattern_EditWorkbook = (InvokePattern)item_EditWorkbook.GetCurrentPattern(InvokePattern.Pattern);
-            Pattern_EditWorkbook.Invoke();
+            if (item_EditWorkbook!=null)
+            {
+                InvokePattern Pattern_EditWorkbook = (InvokePattern)item_EditWorkbook.GetCurrentPattern(InvokePattern.Pattern);
+                Pattern_EditWorkbook.Invoke();
+            }
 
             // Click 'File' on Menu Bar.
             Condition File_Tab = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "File Tab"));
@@ -828,7 +845,7 @@ namespace WOPIautomation
             // Select 'Info' under 'File'.
             Condition Group_Info = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.ListItem), new PropertyCondition(AutomationElement.NameProperty, "Info"));
             Condition Con_Info = new PropertyCondition(AutomationElement.NameProperty, "Info");
-            AutomationElement item_Info = docOnline.FindFirst(TreeScope.Children, Con_Info);
+            AutomationElement item_Info = docOnline.FindFirst(TreeScope.Descendants, Con_Info);
             item_Info = docOnline.FindFirst(TreeScope.Descendants, Group_Info);
             SelectionItemPattern selectionItemPattern = item_Info.GetCurrentPattern(SelectionItemPattern.Pattern) as SelectionItemPattern;
             selectionItemPattern.Select();
@@ -840,6 +857,12 @@ namespace WOPIautomation
             TogglePattern pattern_VersionHistroy;
             pattern_VersionHistroy = item_VersionHistroy.GetCurrentPattern(TogglePattern.Pattern) as TogglePattern; 
             pattern_VersionHistroy.Toggle();
+
+            // Click 'Edit Workbook' button if we opened this workbook read-only from the server.
+            if (Utility.FindCondition(name, "We opened this workbook read-only from the server."))
+            {
+                Utility.EditExcelWorkbook(name);
+            }
 
             // Find 'Version Histroy' on the left.            
             Condition Con_VersionHistroyBar = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.ToolBar), new PropertyCondition(AutomationElement.NameProperty, "Version History"));
@@ -945,6 +968,9 @@ namespace WOPIautomation
             }
         }
 
+        /// <summary>
+        /// Delete the defaut excel empty format
+        /// </summary>
         public static void DeleteDefaultExcelFormat()
         {
             Process[] pro = Process.GetProcessesByName("EXCEL");

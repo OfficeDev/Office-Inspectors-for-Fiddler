@@ -204,7 +204,7 @@ namespace WOPIautomation
         }
 
         [TestMethod, TestCategory("FSSHTTP")]
-        public void Excel___VersioningHistroyExcelTest()
+        public void VersioningHistroy()
         {
             // Upload a excel document.
             SharepointClient.UploadFile(excel);
@@ -217,8 +217,7 @@ namespace WOPIautomation
             Browser.Wait(By.LinkText("Open in Excel"));
             var elementOpenInExcel = Browser.webDriver.FindElement(By.LinkText("Open in Excel"));
             Browser.Click(elementOpenInExcel);
-
-            /*
+            
             // Sign in Excel Desktop App.
             Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
             string username = ConfigurationManager.AppSettings["UserName"];
@@ -238,10 +237,8 @@ namespace WOPIautomation
                 Thread.Sleep(1500);
                 //Utility.OfficeSignIn(username, password);
             }
-            */
-
-            // Wait for excel is opened
-            // Sign in Excel Desktop App.
+    
+            // Wait for excel is opened            
             Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
 
             Excel.Application excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
@@ -259,6 +256,8 @@ namespace WOPIautomation
             {
                 Utility.EditExcelWorkbook(excelFilename);
             }
+
+            Thread.Sleep(3000);
 
             // Edit Excel Cell Content.
             for (int i = 1; i < 2; i++)
@@ -278,13 +277,16 @@ namespace WOPIautomation
 
             excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
             excelWorkbook = (Excel.Workbook)excelToOpen.ActiveWorkbook;
-            //Excel.Worksheet excelWorkSheet = (Excel.Worksheet)excelWorkbook.ActiveSheet;
+            
             Thread.Sleep(6000);
             // Resolve 'UPLOAD FAILED'  
             if (Utility.FindCondition(excelFilename, "We're sorry, someone updated the server copy and it's not possible to upload your changes now."))
             {
                 Utility.ResloveUploadFailed(excelFilename, false);
-            }
+            }            
+
+            //Version History Restore
+            Utility.VersionHistroyRestore(excelFilename);
 
             // Click 'Edit Workbook' button if we opened this workbook read-only from the server.
             if (Utility.FindCondition(excelFilename, "We opened this workbook read-only from the server."))
@@ -292,14 +294,13 @@ namespace WOPIautomation
                 Utility.EditExcelWorkbook(excelFilename);
             }
 
-            //Version History Restore
-            Utility.VersionHistroyRestore(excelFilename);
-            
-            // Close and release word process
-            // Close excel file.            
-            excelWorkbook.Close();
+            // Close and release excel process      
+            excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+            excelWorkbook = (Excel.Workbook)excelToOpen.ActiveWorkbook;
             Utility.DeleteDefaultExcelFormat();
+            excelWorkbook.Close();
             excelToOpen.Quit();
+            Marshal.ReleaseComObject(excelWorkbook);
             Marshal.ReleaseComObject(excelToOpen);
 
             // Delete the new upload document            
@@ -308,6 +309,15 @@ namespace WOPIautomation
             bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
             Assert.IsTrue(result, "The saz file should be saved successfully.");
             bool parsingResult = MessageParser.ParseMessageUsingWOPIInspector(file);
+            Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
+        }
+
+        [TestMethod, TestCategory("FSSHTTP")]
+        public void TestParserFile()
+        {
+            //bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
+            //Assert.IsTrue(result, "The saz file should be saved successfully.");
+            bool parsingResult = MessageParser.ParseMessageUsingWOPIInspector(@"C:\Users\plugdevuser19\Documents\Fiddler2\Captures\dump.saz");
             Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
         }
 
