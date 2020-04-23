@@ -275,18 +275,20 @@ namespace WOPIautomation
             elementOpenInExcel = Browser.webDriver.FindElement(By.LinkText("Open in Excel"));
             Browser.Click(elementOpenInExcel);
 
+            Thread.Sleep(6000);
             excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
             excelWorkbook = (Excel.Workbook)excelToOpen.ActiveWorkbook;
-            
+            excelWorkSheet = (Excel.Worksheet)excelWorkbook.ActiveSheet;
+
             Thread.Sleep(6000);
             // Resolve 'UPLOAD FAILED'  
             if (Utility.FindCondition(excelFilename, "We're sorry, someone updated the server copy and it's not possible to upload your changes now."))
             {
                 Utility.ResloveUploadFailed(excelFilename, false);
-            }            
+            }
 
             //Version History Restore
-            Utility.VersionHistroyRestore(excelFilename);
+            Utility.VersionHistroyRestore(excelFilename);            
 
             // Click 'Edit Workbook' button if we opened this workbook read-only from the server.
             if (Utility.FindCondition(excelFilename, "We opened this workbook read-only from the server."))
