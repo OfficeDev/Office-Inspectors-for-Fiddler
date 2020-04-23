@@ -235,7 +235,6 @@ namespace WOPIautomation
             {
                 Utility.OfficeSignIn(username, password);
                 Thread.Sleep(1500);
-                //Utility.OfficeSignIn(username, password);
             }
     
             // Wait for excel is opened            
