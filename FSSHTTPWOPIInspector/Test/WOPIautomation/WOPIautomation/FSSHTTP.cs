@@ -19,6 +19,8 @@ using System.Windows.Automation;
 
 namespace WOPIautomation
 {
+    public enum DocType { WORD, EXCEl };
+
     [TestClass]
     public class FSSHTTP : TestBase
     {
@@ -27,6 +29,7 @@ namespace WOPIautomation
         private static string excel = ConfigurationManager.AppSettings["Excel"];
         private static string excelFilename = excel.Split('\\').Last().Split('.').First();
         private string file = "";
+        
 
 
         [TestMethod, TestCategory("FSSHTTP")]
@@ -117,8 +120,7 @@ namespace WOPIautomation
                 Utility.OfficeSignIn(username, password);
                 Thread.Sleep(1500);
             }
-            //Waiting for WindowsSecurity Pop up
-            //Thread.Sleep(1000);
+            //Waiting for WindowsSecurity Pop up            
             isWindowsSecurityPop = Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
             if (isWindowsSecurityPop)
             {
@@ -130,6 +132,19 @@ namespace WOPIautomation
             // Wait for excel is opened
             // Sign in Excel Desktop App.
             Utility.WaitForExcelDocumentOpenning2(excelFilename, false);
+
+            // Discard check out on opening excel if a newer version of this file is available on the server.
+            if (Utility.FindCondition(DocType.EXCEl,excelFilename, "A newer version of this file is available on the server."))
+            {
+                Utility.DiscardCheckOutOnOpeningExcel(DocType.EXCEl, excelFilename);
+            }
+
+            Thread.Sleep(1000);
+            // Resolve 'UPLOAD FAILED'  
+            if (Utility.FindCondition(DocType.EXCEl, excelFilename, "We're sorry, someone updated the server copy and it's not possible to upload your changes now."))
+            {
+                Utility.ResloveUploadFailed(excelFilename, false);
+            }
 
             // Go back to base address
             Browser.Goto(Browser.DocumentAddress);
@@ -143,20 +158,34 @@ namespace WOPIautomation
             Thread.Sleep(1000);
             Excel.Application excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
             Excel.Workbook excelWorkbook = (Excel.Workbook)excelToOpen.ActiveWorkbook;
-            //Click 'Edit Workbook'
-            Utility.EditWorkbook(excelFilename);
+            // Click 'Edit Workbook' button if we opened this workbook read-only from the server.
+            if (Utility.FindCondition(DocType.EXCEl, excelFilename, "We opened this workbook read-only from the server."))
+            {
+                Utility.EditExcelWorkbook(excelFilename);
+            }
             //Close FileInUsePane in Desktop Excel
             Utility.CloseExcelFileInUsePane(excelFilename);
             // Wait for CheckLockAvailability reqest show up.
             Thread.Sleep(100000);
+
+            if (Utility.FindCondition(DocType.EXCEl, excelFilename, "File Now Available"))
+            {
+                Utility.CloseExcelFileNowAvailable(excelFilename);
+            }
+
+            // Find 'READ-ONLY' close button.
+            if (Utility.FindCondition(DocType.EXCEl, excelFilename, "This workbook is locked for editing by another user."))
+            {
+                Utility.CloseThisMessage();
+            }
+
             // Close and release word process
             excelWorkbook.Close();
-            Utility.DeleteDefaultExcelFormat();
+            excelToOpen.Quit();
             Marshal.ReleaseComObject(excelWorkbook);
             Marshal.ReleaseComObject(excelToOpen);
 
             // Delete the new upload document
-            SharepointClient.DeleteFile(wordFilename + ".docx");
             SharepointClient.DeleteFile(excelFilename + ".xlsx");
             Browser.Goto(Browser.DocumentAddress);
 
@@ -245,13 +274,13 @@ namespace WOPIautomation
             Excel.Worksheet excelWorkSheet = (Excel.Worksheet)excelWorkbook.ActiveSheet;
 
             // Discard check out on opening excel if a newer version of this file is available on the server.
-            if (Utility.FindCondition(excelFilename, "A newer version of this file is available on the server."))
+            if (Utility.FindCondition(DocType.EXCEl, excelFilename, "A newer version of this file is available on the server."))
             {
-                Utility.DiscardCheckOutOnOpeningExcel(excelFilename);
+                Utility.DiscardCheckOutOnOpeningExcel(DocType.EXCEl,excelFilename);
             }
 
             // Click 'Edit Workbook' button if we opened this workbook read-only from the server.
-            if (Utility.FindCondition(excelFilename, "We opened this workbook read-only from the server."))
+            if (Utility.FindCondition(DocType.EXCEl, excelFilename, "We opened this workbook read-only from the server."))
             {
                 Utility.EditExcelWorkbook(excelFilename);
             }
@@ -281,7 +310,7 @@ namespace WOPIautomation
 
             Thread.Sleep(6000);
             // Resolve 'UPLOAD FAILED'  
-            if (Utility.FindCondition(excelFilename, "We're sorry, someone updated the server copy and it's not possible to upload your changes now."))
+            if (Utility.FindCondition(DocType.EXCEl, excelFilename, "We're sorry, someone updated the server copy and it's not possible to upload your changes now."))
             {
                 Utility.ResloveUploadFailed(excelFilename, false);
             }
@@ -290,7 +319,7 @@ namespace WOPIautomation
             Utility.VersionHistroyRestore(excelFilename);            
 
             // Click 'Edit Workbook' button if we opened this workbook read-only from the server.
-            if (Utility.FindCondition(excelFilename, "We opened this workbook read-only from the server."))
+            if (Utility.FindCondition(DocType.EXCEl, excelFilename, "We opened this workbook read-only from the server."))
             {
                 Utility.EditExcelWorkbook(excelFilename);
             }
@@ -327,10 +356,44 @@ namespace WOPIautomation
         {
             // Get EXCEL Process
             AutomationElement excel = Utility.GetExcelOnlineWindow("Excel");
-            // Find 'READ-ONLY' button.
-            Condition Con_ReadOnly = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Hyperlink), new PropertyCondition(AutomationElement.NameProperty, "We opened this workbook read-only from the server."));
-            AutomationElement item_Con_ReadOnly = excel.FindFirst(TreeScope.Descendants, Con_ReadOnly);
-            bool con = Utility.FindCondition(excelFilename, "We opened this workbook read-only from the server.");
+            // Find 'File Now Available' window
+            Condition Con_FileNowAvaiable= new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window), new PropertyCondition(AutomationElement.NameProperty, "File Now Available"));
+            AutomationElement item_Con_ReadOnlyFileNowAvaiable = excel.FindFirst(TreeScope.Descendants, Con_FileNowAvaiable);
+           
+            // Click 'Cancel' in 'File Now Available' window
+            if (item_Con_ReadOnlyFileNowAvaiable!=null)
+            {
+                Condition Con_Cancel = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Cancel"));
+                AutomationElement item_Cancel = excel.FindFirst(TreeScope.Descendants, Con_Cancel);
+                InvokePattern Pattern_Cancel = (InvokePattern)item_Cancel.GetCurrentPattern(InvokePattern.Pattern);
+                Pattern_Cancel.Invoke();
+            }
+
+            // Find 'READ-ONLY' close button.
+            if (Utility.FindCondition(DocType.EXCEl, excelFilename, "This workbook is locked for editing by another user."))
+            {
+                // Click 'Close this message' button.
+                Condition Con_CloseThisMessage = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Close this message"));
+                AutomationElement item_CloseThisMessage = excel.FindFirst(TreeScope.Descendants, Con_CloseThisMessage);
+                if (item_CloseThisMessage != null)
+                {
+                    InvokePattern Pattern_CloseThisMessage = (InvokePattern)item_CloseThisMessage.GetCurrentPattern(InvokePattern.Pattern);
+                    Pattern_CloseThisMessage.Invoke();
+                }
+            }
+            Excel.Application excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
+            Excel.Workbook excelWorkbook = (Excel.Workbook)excelToOpen.ActiveWorkbook;
+            Excel.Worksheet excelWorkSheet = (Excel.Worksheet)excelWorkbook.ActiveSheet;
+            
+            excelWorkbook.Close();
+            excelToOpen.Quit();
+        }
+
+        [TestMethod, TestCategory("FSSHTTP")]
+        public void Word___FlagTest()
+        {
+            Assert.IsTrue(Utility.FindCondition(DocType.WORD, wordFilename, "Some of your changes conflict with other updates made to the file."));
+            Utility.WordConflictMerge_Yanfei(wordFilename);
         }
 
         [TestMethod, TestCategory("FSSHTTP")]
@@ -383,9 +446,21 @@ namespace WOPIautomation
                 Thread.Sleep(1000);
                 Utility.OfficeSignIn(username, password);
             }
+            Thread.Sleep(3000);
+            isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+                Thread.Sleep(1500);
+            }
 
             // Wait for document is opened
             Utility.WaitForDocumentOpenning(wordFilename);
+            // Discard check out on opening excel if a newer version of this file is available on the server.
+            if (Utility.FindCondition(DocType.WORD, wordFilename, "A newer version of this file is available on the server."))
+            {
+                Utility.DiscardCheckOutOnOpeningExcel(DocType.WORD, wordFilename);
+            }
             // Get the opened word process, and edit it
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
             Thread.Sleep(1000);
@@ -420,8 +495,14 @@ namespace WOPIautomation
             // Save it in office word and close and release word process
             Utility.WordEditSave(wordFilename);
             Thread.Sleep(3000);
-            Utility.CloseMicrosoftWordDialog(wordFilename, "OK");
-            //Utility.WordConflictMerge(filename);
+            /*
+            if (Utility.FindCondition(DocType.WORD, wordFilename, "Microsoft Word"))
+            {
+                Utility.CloseMicrosoftWordDialog(wordFilename, "OK");
+            }
+            Assert.IsTrue(Utility.FindCondition(DocType.WORD, wordFilename, "Some of your changes conflict with other updates made to the file."));
+            */
+            Utility.WordConflictMerge_Yanfei(wordFilename);
             oDocument.Close();
             Utility.DeleteDefaultWordFormat();
             Marshal.ReleaseComObject(oDocument);
