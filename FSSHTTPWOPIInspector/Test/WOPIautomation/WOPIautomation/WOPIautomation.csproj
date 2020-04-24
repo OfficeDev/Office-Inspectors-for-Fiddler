@@ -40,8 +40,9 @@
     <Reference Include="EQATEC.Analytics.Monitor">
       <HintPath>..\ExternalReference\EQATEC.Analytics.Monitor.dll</HintPath>
     </Reference>
-    <Reference Include="Fiddler">
-      <HintPath>..\..\..\..\..\..\..\AppData\Local\Programs\Fiddler\Fiddler.exe</HintPath>
+    <Reference Include="Fiddler, Version=5.0.20194.41348, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Users\plugdevuser19\AppData\Local\Programs\Fiddler\Fiddler.exe</HintPath>
       <Aliases>FiddlerExe</Aliases>
     </Reference>
     <Reference Include="FiddlerCore">
@@ -83,6 +84,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\System.Management.Automation\v4.0_3.0.0.0__31bf3856ad364e35\System.Management.Automation.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />

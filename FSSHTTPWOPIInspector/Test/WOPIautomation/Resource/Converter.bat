@@ -15,6 +15,9 @@ if not exist C:\Users\%arg2%\Documents\Fiddler2\Captures\dump.saz timeout /t 10
 if not exist %arg3% mkdir %arg3%
 if exist %arg3%\%arg4%.saz del %arg3%\%arg4%.saz
 copy C:\Users\%arg2%\Documents\Fiddler2\Captures\dump.saz %arg3%
+
+Start-Sleep -s 15
+
 set target=%arg3%\dump.saz
 call:checkFile
 ren %arg3%\dump.saz %arg4%.saz
@@ -36,4 +39,3 @@ echo found %target%
 goto:eof
 
 pause
-

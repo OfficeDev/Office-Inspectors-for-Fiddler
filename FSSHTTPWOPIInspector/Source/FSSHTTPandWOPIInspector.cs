@@ -616,7 +616,7 @@ namespace FSSHTTPandWOPIInspector
             foreach (Response res in Responses)
             {
                 // If response is for ONESTORE,set FSSHTTPandWOPIInspector.IsOneStore ture.
-                if (res.Url != null)
+                if (res.Url!=null)
                 {
                     if (res.Url.EndsWith(".one") || res.Url.EndsWith(".onetoc2"))
                     {
