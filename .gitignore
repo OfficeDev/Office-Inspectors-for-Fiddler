@@ -350,3 +350,5 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+/FSSHTTPWOPIInspector/Test/WOPIautomation/Resource/Doc1.docx
+/FSSHTTPWOPIInspector/Test/WOPIautomation/Resource/Doc2.docx

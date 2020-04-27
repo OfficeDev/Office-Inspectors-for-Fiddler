@@ -29,8 +29,86 @@ namespace WOPIautomation
         private static string excel = ConfigurationManager.AppSettings["Excel"];
         private static string excelFilename = excel.Split('\\').Last().Split('.').First();
         private string file = "";
-        
 
+
+        [TestMethod, TestCategory("FSSHTTP")]
+        public void CoautherWithConflict()
+        {
+            // Upload a document
+            SharepointClient.UploadFile(Word);
+            // Refresh web address
+            Browser.Goto(Browser.DocumentAddress);
+            // Find document on site
+            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));
+            // Open document by office word
+            Browser.RClick(document);
+            Browser.Wait(By.LinkText("Open in Word"));
+            var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
+            Browser.Click(elementOpenInWord);
+
+            // Close Microsoft office dialog and access using expected account            
+            Utility.WaitForDocumentOpenning(wordFilename, false, true);
+            string username = ConfigurationManager.AppSettings["UserName"];
+            string password = ConfigurationManager.AppSettings["Password"];
+            bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
+            if (isWindowsSecurityPop)
+            {
+                Utility.OfficeSignIn(username, password);
+                Thread.Sleep(1000);
+                Utility.OfficeSignIn(username, password);
+            }
+
+            // Wait for document is opened
+            Utility.WaitForDocumentOpenning(wordFilename);
+            // Get the opened word process, and edit it
+            Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
+            Thread.Sleep(1000);
+            Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
+            oDocument.Content.InsertBefore("HelloWordConfilict");
+            // Click the document in root site 
+            Browser.Click(document);
+            Browser.Wait(By.Id("WebApplicationFrame"));
+            Browser.webDriver.SwitchTo().Frame("WebApplicationFrame");
+            Thread.Sleep(2000);
+            // Find and click "Edit Document" tab
+            Browser.Wait(By.Id("flyoutWordViewerEdit-Medium20"));
+            var editWord = Browser.FindElement(By.XPath("//a[@id='flyoutWordViewerEdit-Medium20']"), false);
+            editWord.Click();
+            // Find and click "Edit in Browser" tab
+            var editInbrowser = Browser.webDriver.FindElement(By.XPath("//a[@id ='btnFlyoutEditOnWeb-Menu32']"));
+            editInbrowser.Click();
+            // Wait for document is opened
+            Thread.Sleep(4000);
+            Browser.Wait(By.XPath("//span[@id='BreadcrumbSaveStatus'][text()='Saved']"));
+            Thread.Sleep(2000);
+            // Edit it in online
+            SendKeys.SendWait("HelloOfficeOnlineConflict");
+            // Wait for online edit saved
+            Thread.Sleep(3000);
+            Browser.Wait(By.XPath("//span[@id='BreadcrumbSaveStatus'][text()='Saved']"));
+            //saved = Browser.FindElement(By.XPath("//span[@id='BreadcrumbSaveStatus']"), false);
+            //Thread.Sleep(6000);
+            // Refresh web address
+            Browser.Goto(Browser.DocumentAddress);
+            Thread.Sleep(2000);
+            // Save it in office word and close and release word process
+            Utility.WordEditSave(wordFilename);
+            Thread.Sleep(3000);
+            Utility.CloseMicrosoftWordDialog(wordFilename, "OK");
+            Utility.WordConflictMerge(wordFilename);
+            oDocument.Close();
+            Utility.DeleteDefaultWordFormat();
+            Marshal.ReleaseComObject(oDocument);
+            Marshal.ReleaseComObject(wordToOpen);
+            // Delete the new upload document
+            SharepointClient.DeleteFile(wordFilename + ".docx");
+
+            bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
+            Assert.IsTrue(result, "The saz file should be saved successfully.");
+            bool parsingResult = MessageParser.ParseMessageUsingWOPIInspector(file);
+            Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
+
+        }
 
         [TestMethod, TestCategory("FSSHTTP")]
         public void CoautherWithoutConflict()
@@ -390,10 +468,23 @@ namespace WOPIautomation
         }
 
         [TestMethod, TestCategory("FSSHTTP")]
+        public void Word___CheckOutFileTest()
+        {
+            // Get EXCEL Process
+            Utility.CheckOutOnOpeningWord(wordFilename);
+        }
+
+        [TestMethod, TestCategory("FSSHTTP")]
         public void Word___FlagTest()
         {
-            Assert.IsTrue(Utility.FindCondition(DocType.WORD, wordFilename, "Some of your changes conflict with other updates made to the file."));
-            Utility.WordConflictMerge_Yanfei(wordFilename);
+            //Assert.IsTrue(Utility.FindCondition(DocType.WORD, wordFilename, "Some of your changes conflict with other updates made to the file."));
+            //Utility.WordConflictMerge_Yanfei(wordFilename);
+            //Utility.WordSignInBanner(wordFilename);
+            // Discard check out on opening word if a newer version of this file is available on the server.
+            if (Utility.FindCondition(DocType.WORD, wordFilename, "A newer version of this file is available on the server."))
+            {
+                Utility.DiscardCheckOutOnOpeningExcel(DocType.WORD, wordFilename);
+            }
         }
 
         [TestMethod, TestCategory("FSSHTTP")]
@@ -421,50 +512,68 @@ namespace WOPIautomation
         }
 
         [TestMethod, TestCategory("FSSHTTP")]
-        public void CoautherWithConflict()
+        public void SuccessCoautherWithConflict()
         {
             // Upload a document
             SharepointClient.UploadFile(Word);
             // Refresh web address
             Browser.Goto(Browser.DocumentAddress);
             // Find document on site
-            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));            
+            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));
             // Open document by office word
             Browser.RClick(document);
             Browser.Wait(By.LinkText("Open in Word"));
             var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
             Browser.Click(elementOpenInWord);
 
-            // Close Microsoft office dialog and access using expected account            
+            // Access the opening document using expected account            
             Utility.WaitForDocumentOpenning(wordFilename, false, true);
             string username = ConfigurationManager.AppSettings["UserName"];
-            string password = ConfigurationManager.AppSettings["Password"];            
+            string password = ConfigurationManager.AppSettings["Password"];
             bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
             if (isWindowsSecurityPop)
             {
                 Utility.OfficeSignIn(username, password);
-                Thread.Sleep(1000);
-                Utility.OfficeSignIn(username, password);
+                Thread.Sleep(1000);              
             }
-            Thread.Sleep(3000);
+            Thread.Sleep(2000);
             isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
             if (isWindowsSecurityPop)
             {
                 Utility.OfficeSignIn(username, password);
                 Thread.Sleep(1500);
             }
+            // Sign in if cached credentials have expired.
+            if (Utility.FindCondition(DocType.WORD, wordFilename, "We can't upload or download your changes because your cached credentials have expired."))
+            {
+                Utility.WordSignInBanner(wordFilename);
+                // Sign in if Windows Security pop up.
+                isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
+                if (isWindowsSecurityPop)
+                {
+                    Utility.OfficeSignIn(username, password);
+                    Thread.Sleep(1500);
+                }
 
-            // Wait for document is opened
-            Utility.WaitForDocumentOpenning(wordFilename);
-            // Discard check out on opening excel if a newer version of this file is available on the server.
+                // Discard check out on opening word if a newer version of this file is available on the server.
+                if (Utility.FindCondition(DocType.WORD, wordFilename, "A newer version of this file is available on the server."))
+                {
+                    Utility.DiscardCheckOutOnOpeningExcel(DocType.WORD, wordFilename);
+                } 
+            }
+
+            // Discard check out on opening word if a newer version of this file is available on the server.
             if (Utility.FindCondition(DocType.WORD, wordFilename, "A newer version of this file is available on the server."))
             {
                 Utility.DiscardCheckOutOnOpeningExcel(DocType.WORD, wordFilename);
             }
+
+            // Wait for document is opened
+            Utility.WaitForDocumentOpenning(wordFilename);
             // Get the opened word process, and edit it
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
             Thread.Sleep(1000);
-            Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;            
+            Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
             oDocument.Content.InsertBefore("HelloWordConfilict");
             // Click the document in root site 
             Browser.Click(document);
@@ -495,15 +604,10 @@ namespace WOPIautomation
             // Save it in office word and close and release word process
             Utility.WordEditSave(wordFilename);
             Thread.Sleep(3000);
-            /*
-            if (Utility.FindCondition(DocType.WORD, wordFilename, "Microsoft Word"))
-            {
-                Utility.CloseMicrosoftWordDialog(wordFilename, "OK");
-            }
-            Assert.IsTrue(Utility.FindCondition(DocType.WORD, wordFilename, "Some of your changes conflict with other updates made to the file."));
-            */
-            Utility.WordConflictMerge_Yanfei(wordFilename);
+            
+            Utility.WordConflictMerge(wordFilename);
             oDocument.Close();
+            // Delete the defaut word empty format
             Utility.DeleteDefaultWordFormat();
             Marshal.ReleaseComObject(oDocument);
             Marshal.ReleaseComObject(wordToOpen);
@@ -649,7 +753,7 @@ namespace WOPIautomation
             // Save and close and release word process
             oDocument.Save();
             // CheckOutOnOpeningWord
-            //Utility.CheckOutOnOpeningWord(filename);
+            Utility.CheckOutOnOpeningWord(wordFilename);
             oDocument.Close();
             Utility.DeleteDefaultWordFormat();
             Marshal.ReleaseComObject(oDocument);
@@ -694,7 +798,7 @@ namespace WOPIautomation
             Utility.WaitForDocumentOpenning(wordFilename, false, true);
             // Check Out it from the info page
             // Manual check out.Utility.CheckOutOnOpeningWord function need to be upated,
-            //Utility.CheckOutOnOpeningWord(filename);
+            Utility.CheckOutOnOpeningWord(wordFilename);
 
             // Update the document content
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
@@ -830,7 +934,7 @@ namespace WOPIautomation
             Utility.WaitForDocumentOpenning(wordFilename);            
               
             // Check it out in info page
-            //Utility.CheckOutOnOpeningWord(filename);
+            Utility.CheckOutOnOpeningWord(wordFilename);
             // Close word process
             Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
             Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;

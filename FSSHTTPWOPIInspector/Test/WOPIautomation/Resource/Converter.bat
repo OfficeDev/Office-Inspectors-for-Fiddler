@@ -16,7 +16,8 @@ if not exist %arg3% mkdir %arg3%
 if exist %arg3%\%arg4%.saz del %arg3%\%arg4%.saz
 copy C:\Users\%arg2%\Documents\Fiddler2\Captures\dump.saz %arg3%
 
-Start-Sleep -s 15
+echo wait for file copy completed
+timeout /t 60
 
 set target=%arg3%\dump.saz
 call:checkFile
