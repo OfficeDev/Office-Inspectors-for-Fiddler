@@ -84,7 +84,7 @@ namespace WOPIautomation
             webDriver.Manage().Window.Maximize();
             webDriver.Navigate().GoToUrl(address);
             // Sign in IE
-            //SignIncheckAlert();
+            SignIncheckAlert();
             SwitchToClassicMode();
         }
 

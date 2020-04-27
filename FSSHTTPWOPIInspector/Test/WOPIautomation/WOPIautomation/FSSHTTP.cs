@@ -86,8 +86,6 @@ namespace WOPIautomation
             // Wait for online edit saved
             Thread.Sleep(3000);
             Browser.Wait(By.XPath("//span[@id='BreadcrumbSaveStatus'][text()='Saved']"));
-            //saved = Browser.FindElement(By.XPath("//span[@id='BreadcrumbSaveStatus']"), false);
-            //Thread.Sleep(6000);
             // Refresh web address
             Browser.Goto(Browser.DocumentAddress);
             Thread.Sleep(2000);
@@ -95,6 +93,7 @@ namespace WOPIautomation
             Utility.WordEditSave(wordFilename);
             Thread.Sleep(3000);
             Utility.CloseMicrosoftWordDialog(wordFilename, "OK");
+            // Reslove conflict
             Utility.WordConflictMerge(wordFilename);
             oDocument.Close();
             Utility.DeleteDefaultWordFormat();
@@ -174,7 +173,7 @@ namespace WOPIautomation
         }
 
         [TestMethod, TestCategory("FSSHTTP")]
-        public void Excel___ExclusivelockCheck()
+        public void ExclusivelockCheck()
         {
             // Upload a document
             SharepointClient.UploadFile(excel);
@@ -189,27 +188,26 @@ namespace WOPIautomation
             Browser.Click(elementOpenInExcel);
 
             // Sign in Excel Desktop App.
-            Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
+            Utility.WaitForExcelDocumentOpenning(excelFilename, true);
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
-            bool isWindowsSecurityPop = Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
+            bool isWindowsSecurityPop = Utility.WaitForExcelDocumentOpenning(excelFilename, true);
             if (isWindowsSecurityPop)
             {
                 Utility.OfficeSignIn(username, password);
                 Thread.Sleep(1500);
             }
             //Waiting for WindowsSecurity Pop up            
-            isWindowsSecurityPop = Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
+            isWindowsSecurityPop = Utility.WaitForExcelDocumentOpenning(excelFilename, true);
             if (isWindowsSecurityPop)
             {
                 Utility.OfficeSignIn(username, password);
-                Thread.Sleep(1500);
-                //Utility.OfficeSignIn(username, password);
+                Thread.Sleep(1500);            
             }
 
             // Wait for excel is opened
             // Sign in Excel Desktop App.
-            Utility.WaitForExcelDocumentOpenning2(excelFilename, false);
+            Utility.WaitForExcelDocumentOpenning(excelFilename, false);
 
             // Discard check out on opening excel if a newer version of this file is available on the server.
             if (Utility.FindCondition(DocType.EXCEl,excelFilename, "A newer version of this file is available on the server."))
@@ -274,43 +272,6 @@ namespace WOPIautomation
         }
 
         [TestMethod, TestCategory("FSSHTTP")]
-        public void Excel___CheckOutOnOpeningExcelTest()
-        {
-            // Upload a document
-            SharepointClient.UploadFile(excel);
-            // Refresh web address
-            Browser.Goto(Browser.DocumentAddress);
-            // Find document on site
-            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + excelFilename + ".xlsx']"));
-            // Open it by word
-            Browser.RClick(document);
-            Browser.Wait(By.LinkText("Open in Excel"));
-            var elementOpenInExcel = Browser.webDriver.FindElement(By.LinkText("Open in Excel"));
-            Browser.Click(elementOpenInExcel);
-
-            // Sign in Excel Desktop App.
-            Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
-            Excel.Application excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
-            Excel.Workbook excelWorkbook = (Excel.Workbook)excelToOpen.ActiveWorkbook;
-            Utility.CheckOutOnOpeningExcel(excelFilename);
-
-            // Close and release word process
-            excelWorkbook.Close();
-            Utility.CloseMicrosoftOfficeDialog();
-            Utility.DeleteDefaultExcelFormat();
-            Marshal.ReleaseComObject(excelWorkbook);
-            Marshal.ReleaseComObject(excelToOpen);
-
-            // Delete the new upload document            
-            SharepointClient.DeleteFile(excelFilename + ".xlsx");
-
-            bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
-            Assert.IsTrue(result, "The saz file should be saved successfully.");
-            bool parsingResult = MessageParser.ParseMessageUsingWOPIInspector(file);
-            Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
-        }
-
-        [TestMethod, TestCategory("FSSHTTP")]
         public void VersioningHistroy()
         {
             // Upload a excel document.
@@ -326,10 +287,10 @@ namespace WOPIautomation
             Browser.Click(elementOpenInExcel);
             
             // Sign in Excel Desktop App.
-            Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
+            Utility.WaitForExcelDocumentOpenning(excelFilename, true);
             string username = ConfigurationManager.AppSettings["UserName"];
             string password = ConfigurationManager.AppSettings["Password"];
-            bool isWindowsSecurityPop = Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
+            bool isWindowsSecurityPop = Utility.WaitForExcelDocumentOpenning(excelFilename, true);
             if (isWindowsSecurityPop)
             {
                 Utility.OfficeSignIn(username, password);
@@ -337,7 +298,7 @@ namespace WOPIautomation
             }
             //Waiting for WindowsSecurity Pop up
             //Thread.Sleep(1000);
-            isWindowsSecurityPop = Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
+            isWindowsSecurityPop = Utility.WaitForExcelDocumentOpenning(excelFilename, true);
             if (isWindowsSecurityPop)
             {
                 Utility.OfficeSignIn(username, password);
@@ -345,7 +306,7 @@ namespace WOPIautomation
             }
     
             // Wait for excel is opened            
-            Utility.WaitForExcelDocumentOpenning2(excelFilename, true);
+            Utility.WaitForExcelDocumentOpenning(excelFilename, true);
 
             Excel.Application excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
             Excel.Workbook excelWorkbook = (Excel.Workbook)excelToOpen.ActiveWorkbook;
@@ -418,207 +379,6 @@ namespace WOPIautomation
             Assert.IsTrue(result, "The saz file should be saved successfully.");
             bool parsingResult = MessageParser.ParseMessageUsingWOPIInspector(file);
             Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
-        }
-
-        [TestMethod, TestCategory("FSSHTTP")]
-        public void TestParserFile()
-        {
-            //bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
-            //Assert.IsTrue(result, "The saz file should be saved successfully.");
-            bool parsingResult = MessageParser.ParseMessageUsingWOPIInspector(@"C:\Users\plugdevuser19\Documents\Fiddler2\Captures\dump.saz");
-            Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
-        }
-
-        [TestMethod, TestCategory("FSSHTTP")]
-        public void Excel___FlagExcelTest()
-        {
-            // Get EXCEL Process
-            AutomationElement excel = Utility.GetExcelOnlineWindow("Excel");
-            // Find 'File Now Available' window
-            Condition Con_FileNowAvaiable= new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Window), new PropertyCondition(AutomationElement.NameProperty, "File Now Available"));
-            AutomationElement item_Con_ReadOnlyFileNowAvaiable = excel.FindFirst(TreeScope.Descendants, Con_FileNowAvaiable);
-           
-            // Click 'Cancel' in 'File Now Available' window
-            if (item_Con_ReadOnlyFileNowAvaiable!=null)
-            {
-                Condition Con_Cancel = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Cancel"));
-                AutomationElement item_Cancel = excel.FindFirst(TreeScope.Descendants, Con_Cancel);
-                InvokePattern Pattern_Cancel = (InvokePattern)item_Cancel.GetCurrentPattern(InvokePattern.Pattern);
-                Pattern_Cancel.Invoke();
-            }
-
-            // Find 'READ-ONLY' close button.
-            if (Utility.FindCondition(DocType.EXCEl, excelFilename, "This workbook is locked for editing by another user."))
-            {
-                // Click 'Close this message' button.
-                Condition Con_CloseThisMessage = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Close this message"));
-                AutomationElement item_CloseThisMessage = excel.FindFirst(TreeScope.Descendants, Con_CloseThisMessage);
-                if (item_CloseThisMessage != null)
-                {
-                    InvokePattern Pattern_CloseThisMessage = (InvokePattern)item_CloseThisMessage.GetCurrentPattern(InvokePattern.Pattern);
-                    Pattern_CloseThisMessage.Invoke();
-                }
-            }
-            Excel.Application excelToOpen = (Excel.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Excel.Application");
-            Excel.Workbook excelWorkbook = (Excel.Workbook)excelToOpen.ActiveWorkbook;
-            Excel.Worksheet excelWorkSheet = (Excel.Worksheet)excelWorkbook.ActiveSheet;
-            
-            excelWorkbook.Close();
-            excelToOpen.Quit();
-        }
-
-        [TestMethod, TestCategory("FSSHTTP")]
-        public void Word___CheckOutFileTest()
-        {
-            // Get EXCEL Process
-            Utility.CheckOutOnOpeningWord(wordFilename);
-        }
-
-        [TestMethod, TestCategory("FSSHTTP")]
-        public void Word___FlagTest()
-        {
-            //Assert.IsTrue(Utility.FindCondition(DocType.WORD, wordFilename, "Some of your changes conflict with other updates made to the file."));
-            //Utility.WordConflictMerge_Yanfei(wordFilename);
-            //Utility.WordSignInBanner(wordFilename);
-            // Discard check out on opening word if a newer version of this file is available on the server.
-            if (Utility.FindCondition(DocType.WORD, wordFilename, "A newer version of this file is available on the server."))
-            {
-                Utility.DiscardCheckOutOnOpeningExcel(DocType.WORD, wordFilename);
-            }
-        }
-
-        [TestMethod, TestCategory("FSSHTTP")]
-        public void Excel___TwoExcelWindowTest()
-        {
-            AutomationElement excelRestore =Utility.GetExcelRestoreWindow("Excel");
-            Condition Con_Restore = new AndCondition(new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button), new PropertyCondition(AutomationElement.NameProperty, "Restore"));
-            Condition Con_RestoreName = new PropertyCondition(AutomationElement.NameProperty, "Restore");
-            AutomationElement item_Restore = excelRestore.FindFirst(TreeScope.Descendants, Con_RestoreName);
-            InvokePattern Pattern_Restore = (InvokePattern)item_Restore.GetCurrentPattern(InvokePattern.Pattern);
-            Pattern_Restore.Invoke();
-        }
-
-        [TestMethod, TestCategory("FSSHTTP")]
-        public void Excel___SharepointDelete()
-        {   
-            // Upload a document
-            SharepointClient.UploadFile(Word);            // Upload a document
-            SharepointClient.UploadFile(excel);            // Refresh web address
-            Browser.Goto(Browser.DocumentAddress);
-            SharepointClient.DeleteFile(wordFilename + ".docx");
-            Browser.Goto(Browser.DocumentAddress);
-            SharepointClient.DeleteFile(excelFilename + ".xlsx");
-            Browser.Goto(Browser.DocumentAddress);
-        }
-
-        [TestMethod, TestCategory("FSSHTTP")]
-        public void SuccessCoautherWithConflict()
-        {
-            // Upload a document
-            SharepointClient.UploadFile(Word);
-            // Refresh web address
-            Browser.Goto(Browser.DocumentAddress);
-            // Find document on site
-            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));
-            // Open document by office word
-            Browser.RClick(document);
-            Browser.Wait(By.LinkText("Open in Word"));
-            var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
-            Browser.Click(elementOpenInWord);
-
-            // Access the opening document using expected account            
-            Utility.WaitForDocumentOpenning(wordFilename, false, true);
-            string username = ConfigurationManager.AppSettings["UserName"];
-            string password = ConfigurationManager.AppSettings["Password"];
-            bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
-            if (isWindowsSecurityPop)
-            {
-                Utility.OfficeSignIn(username, password);
-                Thread.Sleep(1000);              
-            }
-            Thread.Sleep(2000);
-            isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
-            if (isWindowsSecurityPop)
-            {
-                Utility.OfficeSignIn(username, password);
-                Thread.Sleep(1500);
-            }
-            // Sign in if cached credentials have expired.
-            if (Utility.FindCondition(DocType.WORD, wordFilename, "We can't upload or download your changes because your cached credentials have expired."))
-            {
-                Utility.WordSignInBanner(wordFilename);
-                // Sign in if Windows Security pop up.
-                isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
-                if (isWindowsSecurityPop)
-                {
-                    Utility.OfficeSignIn(username, password);
-                    Thread.Sleep(1500);
-                }
-
-                // Discard check out on opening word if a newer version of this file is available on the server.
-                if (Utility.FindCondition(DocType.WORD, wordFilename, "A newer version of this file is available on the server."))
-                {
-                    Utility.DiscardCheckOutOnOpeningExcel(DocType.WORD, wordFilename);
-                } 
-            }
-
-            // Discard check out on opening word if a newer version of this file is available on the server.
-            if (Utility.FindCondition(DocType.WORD, wordFilename, "A newer version of this file is available on the server."))
-            {
-                Utility.DiscardCheckOutOnOpeningExcel(DocType.WORD, wordFilename);
-            }
-
-            // Wait for document is opened
-            Utility.WaitForDocumentOpenning(wordFilename);
-            // Get the opened word process, and edit it
-            Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
-            Thread.Sleep(1000);
-            Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
-            oDocument.Content.InsertBefore("HelloWordConfilict");
-            // Click the document in root site 
-            Browser.Click(document);
-            Browser.Wait(By.Id("WebApplicationFrame"));
-            Browser.webDriver.SwitchTo().Frame("WebApplicationFrame");
-            Thread.Sleep(2000);
-            // Find and click "Edit Document" tab
-            Browser.Wait(By.Id("flyoutWordViewerEdit-Medium20"));
-            var editWord = Browser.FindElement(By.XPath("//a[@id='flyoutWordViewerEdit-Medium20']"), false);
-            editWord.Click();
-            // Find and click "Edit in Browser" tab
-            var editInbrowser = Browser.webDriver.FindElement(By.XPath("//a[@id ='btnFlyoutEditOnWeb-Menu32']"));
-            editInbrowser.Click();
-            // Wait for document is opened
-            Thread.Sleep(4000);
-            Browser.Wait(By.XPath("//span[@id='BreadcrumbSaveStatus'][text()='Saved']"));
-            Thread.Sleep(2000);
-            // Edit it in online
-            SendKeys.SendWait("HelloOfficeOnlineConflict");
-            // Wait for online edit saved
-            Thread.Sleep(3000);
-            Browser.Wait(By.XPath("//span[@id='BreadcrumbSaveStatus'][text()='Saved']"));
-            //saved = Browser.FindElement(By.XPath("//span[@id='BreadcrumbSaveStatus']"), false);
-            //Thread.Sleep(6000);
-            // Refresh web address
-            Browser.Goto(Browser.DocumentAddress);
-            Thread.Sleep(2000);
-            // Save it in office word and close and release word process
-            Utility.WordEditSave(wordFilename);
-            Thread.Sleep(3000);
-            
-            Utility.WordConflictMerge(wordFilename);
-            oDocument.Close();
-            // Delete the defaut word empty format
-            Utility.DeleteDefaultWordFormat();
-            Marshal.ReleaseComObject(oDocument);
-            Marshal.ReleaseComObject(wordToOpen);
-            // Delete the new upload document
-            SharepointClient.DeleteFile(wordFilename + ".docx");
-
-            bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
-            Assert.IsTrue(result, "The saz file should be saved successfully.");
-            bool parsingResult = MessageParser.ParseMessageUsingWOPIInspector(file);
-            Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
-
         }
 
         [TestMethod, TestCategory("FSSHTTP")]
@@ -796,8 +556,7 @@ namespace WOPIautomation
             }
 
             Utility.WaitForDocumentOpenning(wordFilename, false, true);
-            // Check Out it from the info page
-            // Manual check out.Utility.CheckOutOnOpeningWord function need to be upated,
+            // Check Out it from the info page           
             Utility.CheckOutOnOpeningWord(wordFilename);
 
             // Update the document content
@@ -901,87 +660,5 @@ namespace WOPIautomation
             Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
         }
 
-        [TestMethod, TestCategory("FSSHTTP")]
-        public void ExclusivelockCheck()
-        {
-            // Upload a document
-            SharepointClient.UploadFile(Word);
-            // Refresh web address
-            Browser.Goto(Browser.DocumentAddress);            
-            // Find document on site
-            IWebElement document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));
-            // Open it by word
-            Browser.RClick(document);
-            Browser.Wait(By.LinkText("Open in Word"));
-            var elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
-            Browser.Click(elementOpenInWord);
-
-
-            // Sign in Word App.
-            Utility.WaitForDocumentOpenning(wordFilename, false, true);
-            string username = ConfigurationManager.AppSettings["UserName"];
-            string password = ConfigurationManager.AppSettings["Password"];
-            bool isWindowsSecurityPop = Utility.WaitForDocumentOpenning(wordFilename, false, true);
-            if (isWindowsSecurityPop)
-            {
-                Utility.OfficeSignIn(username, password);
-                Thread.Sleep(1000);
-                Utility.OfficeSignIn(username, password);
-            }
-
-            // Wait for document is opened
-            // Sign in Word App.
-            Utility.WaitForDocumentOpenning(wordFilename);            
-              
-            // Check it out in info page
-            Utility.CheckOutOnOpeningWord(wordFilename);
-            // Close word process
-            Word.Application wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
-            Word.Document oDocument = (Word.Document)wordToOpen.ActiveDocument;
-            oDocument.Close();
-            Utility.DeleteDefaultWordFormat();
-
-            // Go back to base address
-            Browser.Goto(Browser.DocumentAddress);
-            // Reopen the document in word
-            document = Browser.webDriver.FindElement(By.CssSelector("a[href*='" + wordFilename + ".docx']"));
-            Browser.RClick(document);
-            Browser.Wait(By.LinkText("Open in Word"));
-            elementOpenInWord = Browser.webDriver.FindElement(By.LinkText("Open in Word"));
-            Browser.Click(elementOpenInWord);
-
-            // Sign in Word App use OtherUserName.
-            Utility.WaitForDocumentOpenning(wordFilename, false, true);
-            /*username = ConfigurationManager.AppSettings["OtherUserName"];
-            password = ConfigurationManager.AppSettings["OtherPassword"];
-            isWindowsSecurityPop = Utility.WaitForDocumentOpenning(filename, false, true);
-            if (isWindowsSecurityPop)
-            {
-                Utility.OfficeSignIn(username, password);
-                Thread.Sleep(2000);
-                Utility.OfficeSignIn(username, password);
-            }*/
-
-            Utility.CloseFileInUsePane(wordFilename);
-         
-            
-            wordToOpen = (Word.Application)System.Runtime.InteropServices.Marshal.GetActiveObject("Word.Application");
-            oDocument = (Word.Document)wordToOpen.ActiveDocument;            // CheckLockAvailability
-            Thread.Sleep(6000);
-            // Close and release word process
-            Utility.CloseFileNowAvailable(wordFilename);
-            oDocument.Close();
-            Utility.DeleteDefaultWordFormat();
-            Marshal.ReleaseComObject(oDocument);
-            Marshal.ReleaseComObject(wordToOpen);
-            SharepointClient.UnLockItem(wordFilename + ".docx");
-            // Delete the new upload document
-            SharepointClient.DeleteFile(wordFilename + ".docx");
-
-            bool result = FormatConvert.SaveSAZ(TestBase.testResultPath, testName, out file);
-            Assert.IsTrue(result, "The saz file should be saved successfully.");
-            bool parsingResult = MessageParser.ParseMessageUsingWOPIInspector(file);
-            Assert.IsTrue(parsingResult, "Case failed, check the details information in error.txt file.");
-        }
     }
 }

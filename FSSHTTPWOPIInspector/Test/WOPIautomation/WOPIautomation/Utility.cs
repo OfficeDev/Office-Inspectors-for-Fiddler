@@ -291,46 +291,12 @@ namespace WOPIautomation
         }
 
         /// <summary>
-        /// Wait for Excel document opening with Excel Desktop App.
-        /// </summary>
-        /// <param name="docName">Excel name</param>
-        /// <param name="isreadonly">A bool value indicate if the document is readonly</param>
-        /// <param name="popWindowsSecurity">A bool value indicate if pop Windows Security</param>
-        public static bool WaitForExcelDocumentOpenning(string docName, bool isreadonly = false, bool popWindowsSecurity = false)
-        {
-            var desktop = AutomationElement.RootElement;
-            AutomationElement document = null;
-            if (isreadonly)
-            {
-                Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + "Excel.xlsx - Read-Only"), new PropertyCondition(AutomationElement.NameProperty, docName + ".xlsx  -  Read-Only - Excel"), new PropertyCondition(AutomationElement.NameProperty, docName + ".xlsx [Read-Only] - Excel"), new PropertyCondition(AutomationElement.NameProperty, docName + " [Read-Only] - Excel"), new PropertyCondition(AutomationElement.NameProperty, "Excel"), new PropertyCondition(AutomationElement.NameProperty, docName + " - Excel"), new PropertyCondition(AutomationElement.NameProperty, docName + ".xlsx - Excel"));
-                document = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
-            }
-            else
-            {
-                Condition multiCondition = new OrCondition(new PropertyCondition(AutomationElement.NameProperty, docName + " - Excel"), new PropertyCondition(AutomationElement.NameProperty, docName + ".xlsx - Excel"), new PropertyCondition(AutomationElement.NameProperty, "Excel"));
-                document = WaitForElement(desktop, multiCondition, TreeScope.Children, true);
-            }
-
-            if (popWindowsSecurity)
-            {
-                Condition windowsSecurity = new PropertyCondition(AutomationElement.NameProperty, "Windows Security");
-                AutomationElement securityWindow = WaitForElement(document, windowsSecurity, TreeScope.Children);
-                if (securityWindow != null)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
         ///  Wait for Excel document opening with Excel Desktop App.
         /// </summary>
         /// <param name="docName">Excel name</param>
         /// <param name="popWindowsSecurity">A bool value indicate if pop Windows Security</param>
         /// <returns>A bool value indicate if pop Windows Security</returns>
-        public static bool WaitForExcelDocumentOpenning2(string docName, bool popWindowsSecurity = false)
+        public static bool WaitForExcelDocumentOpenning(string docName, bool popWindowsSecurity = false)
         {
             var desktop = AutomationElement.RootElement;
             AutomationElement document = null;
@@ -633,6 +599,11 @@ namespace WOPIautomation
             return ele;
         }
 
+        /// <summary>
+        /// Get Exce lRestore Window
+        /// </summary>
+        /// <param name="name">The excel file name</param>
+        /// <returns></returns>
         public static AutomationElement GetExcelRestoreWindow(string name)
         {
             Process[] pro = Process.GetProcessesByName("EXCEL");
