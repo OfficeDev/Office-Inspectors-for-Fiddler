@@ -42,7 +42,7 @@
     </Reference>
     <Reference Include="Fiddler, Version=5.0.20194.41348, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Users\plugdevuser19\AppData\Local\Programs\Fiddler\Fiddler.exe</HintPath>
+      <HintPath>..\..\..\..\..\..\..\AppData\Local\Programs\Fiddler\Fiddler.exe</HintPath>
       <Aliases>FiddlerExe</Aliases>
     </Reference>
     <Reference Include="FiddlerCore">
