@@ -1,8 +1,8 @@
 The Open Specifications are used to develop the fiddler WOPI&FSSHTTP inspector. There are 4 protocols included in the WOPI&FSSHTTP package. Below is their version information:
 
-- [MS-WOPI][MS-FSSHTTP][MS-FSSHTTPB] version information is V20170328 
-- Release date, 3/28/2017
-- [MS-FSSHTTPD] version information is V20160914   
-- Release date, 9/14/2016
-- [MS-WOPI][MS-FSSHTTP][MS-FSSHTTPB] version information is V20171212
-- Release date, 12/12/2017
+- [MS-WOPI] version information is V20190618
+- Release date, 06/18/2019
+- [MS-FSSHTTP][MS-FSSHTTPB] version information is V20200219
+- Release date, 02/19/2020
+- [MS-FSSHTTPD] version information is V20181211
+- Release date, 12/11/2018
