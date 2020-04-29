@@ -13,8 +13,9 @@ param ([string]$username, [string]$password, [string]$RemoteCapturePath, [string
 	{
 		new-item -ItemType directory -force -path $LocalCapturePath
 	}
+	echo "Start to copy file from" $RemoteCapturePath "to" $LocalCapturePath
 	copy-item $RemoteCapturePath $LocalCapturePath -Force
-        
+    echo "Copy Done!"
 	$LocalCapturePath = $LocalCapturePath + "\" + "aa.cap"
 	$NewName = $NewName + ".cap"
         rename-item $LocalCapturePath $NewName
