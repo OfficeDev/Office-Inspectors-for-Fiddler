@@ -290,6 +290,7 @@ namespace WOPIautomation
 
             
             string errorPath = TestBase.testingfolderPath;
+
             result = ParseCaptureFile(allSessions.ToArray(), TestBase.testResultPath);
             
             return result;

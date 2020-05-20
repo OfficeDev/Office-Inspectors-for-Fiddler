@@ -616,9 +616,16 @@ namespace FSSHTTPandWOPIInspector
             foreach (Response res in Responses)
             {
                 // If response is for ONESTORE,set FSSHTTPandWOPIInspector.IsOneStore ture.
-                if (res.Url.EndsWith(".one") || res.Url.EndsWith(".onetoc2"))
+                if (res.Url!=null)
                 {
-                    FSSHTTPandWOPIInspector.IsOneStore = true;
+                    if (res.Url.EndsWith(".one") || res.Url.EndsWith(".onetoc2"))
+                    {
+                        FSSHTTPandWOPIInspector.IsOneStore = true;
+                    }
+                    else
+                    {
+                        FSSHTTPandWOPIInspector.IsOneStore = false;
+                    }
                 }
 
                 if (res.SubResponse != null && res.SubResponse.Length > 0)

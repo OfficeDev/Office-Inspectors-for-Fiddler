@@ -127,11 +127,16 @@ namespace FSSHTTPandWOPIInspector.Parsers
     /// </summary>
     public class SubRequestDataGenericType
     {
+        #region 2.3.1.1	CellSubRequestDataType
         [XmlElement(Namespace = "http://www.w3.org/2004/08/xop/include")]
         public Include Include { get; set; }
 
         [XmlElementAttribute()]
         public object IncludeObject { get; set; }
+        #endregion
+
+        [XmlElementAttribute()]
+        public PropertyIdsType PropertyIds { get; set; }
 
         [XmlTextAttribute()]
         public string[] Text { get; set; }
@@ -139,6 +144,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         [XmlElementAttribute()]
         public object TextObject { get; set; }
 
+        #region 2.2.8.1	SubRequestDataOptionalAttributes
         [XmlAttribute()]
         public string ClientID { get; set; }
 
@@ -183,7 +189,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
         [XmlAttribute()]
         public string Version { get; set; } //FileVersionNumberType 
+        #endregion
 
+        #region 2.3.3.1	CellSubRequestDataOptionalAttributes
         [XmlAttribute]
         public bool Coalesce { get; set; }
 
@@ -225,43 +233,68 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
         [XmlAttribute(DataType = "integer")]
         public string LastModifiedTime { get; set; }
+        #endregion
 
+        #region 2.3.3.3	CoauthSubRequestDataOptionalAttributes
         [XmlAttribute()]
         public CoauthRequestTypes CoauthRequestType { get; set; }
 
         [XmlIgnoreAttribute()]
         public bool CoauthRequestTypeSpecified { get; set; }
+        #endregion
 
+        #region 2.3.3.5	SchemaLockSubRequestDataOptionalAttributes
         [XmlAttribute()]
         public SchemaLockRequestTypes SchemaLockRequestType { get; set; }
 
         [XmlIgnoreAttribute()]
         public bool SchemaLockRequestTypeSpecified { get; set; }
+        #endregion
 
+        #region 2.3.3.4	ExclusiveLockSubRequestDataOptionalAttributes
         [XmlAttribute()]
         public ExclusiveLockRequestTypes ExclusiveLockRequestType { get; set; }
 
         [XmlIgnoreAttribute()]
         public bool ExclusiveLockRequestTypeSpecified { get; set; }
+        #endregion
 
+        #region 2.3.3.7	EditorsTableSubRequestDataOptionalAttributes
         [XmlAttribute()]
         public EditorsTableRequestTypes EditorsTableRequestType { get; set; }
 
         [XmlIgnoreAttribute()]
         public bool EditorsTableRequestTypeSpecified { get; set; }
+        #endregion
 
+        #region 2.3.3.8	FileOperationSubRequestDataOptionalAttributes
         [XmlAttribute()]
         public FileOperationRequestTypes FileOperation { get; set; }
 
         [XmlIgnoreAttribute()]
         public bool FileOperationSpecified { get; set; }
+        #endregion
 
-        [XmlAttribute()]
+        #region 2.3.3.9	VersioningSubRequestDataOptionalAttributes
+        [XmlAttribute()] 
         public VersioningRequestTypes VersioningRequestType { get; set; }
 
         [XmlIgnoreAttribute()]
         public bool VersioningRequestTypeSpecified { get; set; }
+        #endregion
 
+        #region 2.3.3.10	PropertiesSubRequestDataOptionalAttributes
+        [XmlAttribute()]
+        public PropertiesRequestTypes Properties { get; set; }        
+
+        [XmlIgnoreAttribute()]
+        public bool PropertiesSpecified { get; set; }
+        #endregion
+
+        #region 2.3.1.45	AmIAloneSubRequestDataType
+        [XmlAttribute()]
+        public string TransitionID { get; set; }
+        #endregion
     }
 
 
@@ -431,7 +464,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         [XmlAttribute()]
         public string ResourceID { get; set; }
 
-        [XmlAttribute()]
+        [XmlAttribute(DataType = "nonNegativeInteger")]
         public string IntervalOverride { get; set; }
     }
 
@@ -473,17 +506,13 @@ namespace FSSHTTPandWOPIInspector.Parsers
     /// </summary>
     public class SubResponseDataGenericType
     {
-        [XmlElement(Namespace = "http://www.w3.org/2004/08/xop/include")]
-        public Include Include { get; set; }
-
-        [XmlElementAttribute()]
-        public object IncludeObject { get; set; }
-
+        #region 2.3.1.27	GetDocMetaInfoSubResponseDataType
         [XmlElementAttribute()]
         public GetDocMetaInfoPropertySetType DocProps { get; set; }
 
         [XmlElementAttribute()]
         public GetDocMetaInfoPropertySetType FolderProps { get; set; }
+        #endregion
 
         [XmlElementAttribute()]
         public VersioningUserTableType UserTable { get; set; }
@@ -491,15 +520,26 @@ namespace FSSHTTPandWOPIInspector.Parsers
         [XmlElementAttribute()]
         public VersioningVersionListType Versions { get; set; }
 
+        [XmlElementAttribute()]
+        public PropertyIdsType PropertyIds { get; set; }
+
+        [XmlElementAttribute()]
+        public PropertyValuesType PropertyValues {get;set;}
+
         [XmlTextAttribute()]
         public string[] Text { get; set; }
 
         [XmlElementAttribute()]
         public object TextObject { get; set; }
 
+        #region 2.3.1.3	CellSubResponseDataType
+        [XmlElement(Namespace = "http://www.w3.org/2004/08/xop/include")]
+        public Include Include { get; set; }
 
+        [XmlElementAttribute()]
+        public object IncludeObject { get; set; }
 
-
+        #region 2.3.3.2	CellSubResponseDataOptionalAttributes
         [XmlAttribute()]
         public string Etag { get; set; }
 
@@ -523,7 +563,11 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
         [XmlAttribute()]
         public string HaveOnlyDemotionChanges { get; set; }
+        #endregion
+        #endregion
 
+        #region 2.3.1.21	WhoAmISubResponseDataType
+        #region 2.3.3.6	WhoAmISubResponseDataOptionalAttributes
         [XmlAttribute(DataType = "NCName")]
         public string UserName { get; set; }
 
@@ -534,23 +578,32 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public string UserSIPAddress { get; set; }
 
         [XmlAttribute()]
-        public string UserLogin { get; set; }
-
-        [XmlAttribute()]
         public bool UserIsAnonymous { get; set; }
 
         [XmlIgnore()]
         public bool UserIsAnonymousSpecified { get; set; }
 
+        [XmlAttribute()]
+        public string UserLogin { get; set; }
+        #endregion
+        #endregion
+
+        #region 2.3.1.18	ServerTimeSubResponseDataType
         [XmlAttribute(DataType = "positiveInteger")]
         public string ServerTime { get; set; }
+        #endregion
 
+        #region 2.3.1.50	LockStatusSubResponseDataType
         [XmlAttribute()]
-        public string LockType { get; set; }
+        public string LockType;
 
         [XmlIgnore()]
         public bool LockTypeSpecified { get; set; }
+        #endregion
 
+
+        #region 2.3.1.7	CoauthSubResponseDataType
+        #region 2.3.1.11	ExclusiveLockSubResponseDataType
         [XmlAttribute()]
         public CoauthStatusType CoauthStatus { get; set; }
 
@@ -559,12 +612,26 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
         [XmlAttribute()]
         public string TransitionID { get; set; }
+        #endregion
 
         [XmlAttribute()]
         public ExclusiveLockReturnReasonTypes ExclusiveLockReturnReason { get; set; }
 
         [XmlIgnore()]
         public bool ExclusiveLockReturnReasonSpecified { get; set; }
+        #endregion
+
+        #region 2.2.8.2	SubResponseDataOptionalAttributes
+        #region 2.3.1.47	AmIAloneSubResponseDataType
+        [XmlAttribute()]
+        public string AmIAlone{ get; set; }
+        #endregion
+        [XmlAttribute()]
+        public string LockID { get; set; }
+
+        [XmlAttribute()]
+        public string LockedBy { get; set; }
+        #endregion
     }
 
     /// <summary>
@@ -596,31 +663,13 @@ namespace FSSHTTPandWOPIInspector.Parsers
     public class VersioningUserTableType
     {
         [XmlElementAttribute()]
-        public UserTableType UserTable { get; set; }
-    }
-
-    /// <summary>
-    /// UserTableType subelement type defined in section 2.3.1.40
-    /// </summary>
-    public class UserTableType
-    {
-        [XmlElementAttribute()]
         public UserDataType[] User { get; set; }
-    }
+    }    
 
     /// <summary>
     /// VersioningVersionListType 2.3.1.41
     /// </summary>
     public class VersioningVersionListType
-    {
-        [XmlElementAttribute()]
-        public VersionsType Versions { get; set; }
-    }
-
-    /// <summary>
-    /// VersionsType: subelement type defined in 2.3.1.41
-    /// </summary>
-    public class VersionsType
     {
         [XmlElementAttribute()]
         public FileVersionDataType[] Version { get; set; }
@@ -690,6 +739,45 @@ namespace FSSHTTPandWOPIInspector.Parsers
 
         [XmlAttribute()]
         public string UserId { get; set; }
+    }
+
+    /// <summary>
+    /// PropertyIdsType 2.3.1.56
+    /// </summary>
+    public class PropertyIdsType
+    {
+        [XmlElementAttribute()]
+        public PropertyIdType[] PropertyId { get; set; }
+    }
+
+    /// <summary>
+    /// PropertyIdType 2.3.1.57
+    /// </summary>
+    public class PropertyIdType
+    {
+        [XmlAttribute()]
+        public string id { get; set; }
+    }
+
+    /// <summary>
+    /// PropertyValuesType defined in 2.3.1.58
+    /// </summary>
+    public class PropertyValuesType 
+    {
+        [XmlElementAttribute()]
+        public PropertyValueType[] PropertyValue { get; set; }
+    }
+
+    /// <summary>
+    /// PropertyValueType defined in 2.3.1.59	
+    /// </summary>
+    public class PropertyValueType
+    {
+        [XmlAttribute()]
+        public string id { get; set; }
+
+        [XmlAttribute()]
+        public string value { get; set; }
     }
 
     /// <summary>
@@ -885,6 +973,15 @@ namespace FSSHTTPandWOPIInspector.Parsers
     {
         GetVersionList,
         RestoreVersion,
+    }
+
+    /// <summary>
+    /// The PropertiesRequestTypes simple type is used to represent the type of Properties subrequest. Defined in 2.3.2.10
+    /// </summary>
+    public enum PropertiesRequestTypes
+    {
+        PropertyEnumerate,
+        PropertyGet,
     }
 
     /// <summary>
