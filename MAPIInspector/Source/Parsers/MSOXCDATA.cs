@@ -3984,7 +3984,7 @@
         /// <summary>
         /// TDI#76879 tell us the real MapiHttp traffic will add the magic byte 'FF' for the string or binary based property value.
         /// </summary>
-        public byte? MagicNumber;
+        public byte? HasValue;
 
         /// <summary>
         /// The string Encoding : ASCII or Unicode
@@ -4037,7 +4037,7 @@
             base.Parse(s);
             if (this.ReadByte() == 0xff)
             {
-                this.MagicNumber = 0xff;
+                this.HasValue= 0xff;
             }
             else
             {
