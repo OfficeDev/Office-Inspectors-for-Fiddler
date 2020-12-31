@@ -607,7 +607,7 @@
         /// <summary>
         /// A variable value
         /// </summary>
-        public byte? MagicNumber;
+        public byte? HasValue;
 
         /// <summary>
         /// A single 8-bit character string value. This value is NULL-terminated.
@@ -624,7 +624,7 @@
             byte temp = ReadByte();
             if (temp == 0xFF)
             {
-                this.MagicNumber = temp;
+                this.HasValue = temp;
             }
             else
             {
@@ -644,7 +644,7 @@
         /// <summary>
         /// A variable value
         /// </summary>
-        public byte? MagicNumber;
+        public byte? HasValue;
 
         /// <summary>
         /// A single Unicode string value. This value is NULL-terminated.
@@ -661,7 +661,7 @@
             byte temp = ReadByte();
             if (temp == 0xFF)
             {
-                this.MagicNumber = temp;
+                this.HasValue= temp;
             }
             else
             {
@@ -679,9 +679,9 @@
     public class Binary_r : BaseStructure
     {
         /// <summary>
-        /// A variable value // TODO: Verify whether there is MagicNumber here
+        /// A variable value // TODO: Verify whether there is HasValue here
         /// </summary>
-        public byte? MagicNumber;
+        public byte? HasValue;
 
         /// <summary>
         /// The number of uninterpreted bytes represented in this structure. This value MUST NOT exceed 2,097,152.
@@ -703,7 +703,7 @@
             byte temp = this.ReadByte();
             if (temp == 0xFF)
             {
-                this.MagicNumber = temp;
+                this.HasValue= temp;
             }
             else
             {
@@ -789,7 +789,7 @@
         /// <summary>
         /// A variable value
         /// </summary>
-        public byte? MagicNumber;
+        public byte? HasValue;
 
         /// <summary>
         /// The number of 8-bit character string references represented in the StringArray_r structure. This value MUST NOT exceed 100,000.
@@ -811,7 +811,7 @@
             byte temp = this.ReadByte();
             if (temp == 0xFF)
             {
-                this.MagicNumber = temp;
+                this.HasValue = temp;
             }
             else
             {
@@ -839,7 +839,7 @@
         /// <summary>
         /// A variable value
         /// </summary>
-        public byte? MagicNumber;
+        public byte? HasValue;
 
         /// <summary>
         /// The number of Binary_r data structures represented in the BinaryArray_r structure. This value MUST NOT exceed 100,000.
@@ -861,7 +861,7 @@
             byte temp = this.ReadByte();
             if (temp == 0xFF)
             {
-                this.MagicNumber = temp;
+                this.HasValue = temp;
             }
             else
             {
@@ -924,7 +924,7 @@
         /// <summary>
         /// A variable value
         /// </summary>
-        public byte? MagicNumber;
+        public byte? HasValue;
 
         /// <summary>
         /// The number of Unicode character string references represented in the WStringArray_r structure. This value MUST NOT exceed 100,000.
@@ -946,7 +946,7 @@
             byte temp = this.ReadByte();
             if (temp == 0xFF)
             {
-                this.MagicNumber = temp;
+                this.HasValue = temp;
             }
             else
             {
@@ -1009,7 +1009,7 @@
         /// <summary>
         /// A variable value
         /// </summary>
-        public byte? MagicNumber;
+        public byte? HasValue;
 
         /// <summary>
         /// The number of character string structures in this aggregation. The value MUST NOT exceed 100,000.
@@ -1031,7 +1031,7 @@
             byte temp = this.ReadByte();
             if (temp == 0xFF)
             {
-                this.MagicNumber = temp;
+                this.HasValue = temp;
             }
             else
             {
@@ -1059,7 +1059,7 @@
         /// <summary>
         /// A variable value
         /// </summary>
-        public byte? MagicNumber;
+        public byte? HasValue;
 
         /// <summary>
         /// The number of character strings structures in this aggregation. The value MUST NOT exceed 100,000.
@@ -1081,7 +1081,7 @@
             byte temp = this.ReadByte();
             if (temp == 0xFF)
             {
-                this.MagicNumber = temp;
+                this.HasValue = temp;
             }
             else
             {
