@@ -1,8 +1,4 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
-/MAPIInspector/Source/.vs/
+﻿/MAPIInspector/Source/.vs/
 /MAPIInspector/Source/bin/
 /MAPIInspector/Source/obj/
 /MAPIInspector/Source/MAPIInspector.csproj.user
