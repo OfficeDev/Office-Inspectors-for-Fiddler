@@ -4636,9 +4636,19 @@
         public object[] ValueArray;
 
         /// <summary>
+        /// Bytes as byte array.
+        /// </summary>
+        public byte[] bytes;
+
+        /// <summary>
         /// The array of property tag.
         /// </summary>
         private PropertyTag[] propTags;
+
+        /// <summary>
+        /// Predetermined size of structure, used in ropNotify
+        /// </summary>
+        private int size;
 
         /// <summary>
         /// Initializes a new instance of the PropertyRow class
@@ -4646,6 +4656,17 @@
         /// <param name="propTags">The array of property tag.</param>
         public PropertyRow(PropertyTag[] propTags)
         {
+            this.propTags = propTags;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the PropertyRow class
+        /// </summary>
+        /// <param name="size">The size of the structure.</param>
+        /// <param name="propTags">The array of property tag.</param>
+        public PropertyRow(int size, PropertyTag[] propTags)
+        {
+            this.size = size;
             this.propTags = propTags;
         }
 
@@ -4698,6 +4719,10 @@
 
                     tempPropArray.Add(rowPropValue);
                 }
+            }
+            else if (size > 0)
+            {
+                this.bytes = this.ReadBytes(this.size - 1);
             }
 
             this.ValueArray = tempPropArray.ToArray();

@@ -581,28 +581,21 @@
             if (this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.TableModified && (this.TableEventType == TableEventTypeEnum.TableRowAdded || this.TableEventType == TableEventTypeEnum.TableRowModified))
             {
                 this.TableRowDataSize = this.ReadUshort();
-            }
 
-            if (this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.TableModified && (this.TableEventType == TableEventTypeEnum.TableRowAdded || this.TableEventType == TableEventTypeEnum.TableRowModified))
-            {
                 int parsingSessionID = MapiInspector.MAPIInspector.ParsingSession.id;
                 if (MapiInspector.MAPIInspector.IsFromFiddlerCore(MapiInspector.MAPIInspector.ParsingSession))
                 {
                     parsingSessionID = int.Parse(MapiInspector.MAPIInspector.ParsingSession["VirtualID"]);
                 }
-                if (!(DecodingContext.Notify_handlePropertyTags.Count > 0 && DecodingContext.Notify_handlePropertyTags.ContainsKey(this.notificationHandle) && DecodingContext.Notify_handlePropertyTags[this.notificationHandle].ContainsKey(parsingSessionID)
+                if (DecodingContext.Notify_handlePropertyTags.Count > 0 && DecodingContext.Notify_handlePropertyTags.ContainsKey(this.notificationHandle) && DecodingContext.Notify_handlePropertyTags[this.notificationHandle].ContainsKey(parsingSessionID)
                     && DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item1 == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath
                     && DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item2 == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
-                    && DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item3 == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"]))
-                {
-                    throw new MissingInformationException("Missing PropertyTags information for RopNotifyResponse", (ushort)RopIdType.RopNotify, new uint[] { this.IsEmptyMessageID(this.TableRowMessageID) ? (uint)0 : (uint)1, this.notificationHandle });
-                }
-                else
+                    && DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item3 == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
                     this.propertiesBySetColum = DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item4;
                 }
 
-                this.TableRowData = new PropertyRow(this.propertiesBySetColum);
+                this.TableRowData = new PropertyRow(this.TableRowDataSize.Value, this.propertiesBySetColum);
                 this.TableRowData.Parse(s);
             }
 
