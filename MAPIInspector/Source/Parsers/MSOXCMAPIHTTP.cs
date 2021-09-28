@@ -4721,46 +4721,50 @@
         /// <param name="s">A stream of the extended buffers.</param>
         public override void Parse(Stream s)
         {
-            base.Parse(s);
-
-            this.RPCHEADEREXT = new RPC_HEADER_EXT();
-            this.RPCHEADEREXT.Parse(s);
-
-            if (this.RPCHEADEREXT.Size > 0)
+            try
             {
-                byte[] payloadBytes = this.ReadBytes((int)this.RPCHEADEREXT.Size);
-                bool isCompressedXOR = false;
+                base.Parse(s);
 
-                if (((ushort)this.RPCHEADEREXT.Flags & (ushort)RpcHeaderFlags.XorMagic) == (ushort)RpcHeaderFlags.XorMagic)
+                this.RPCHEADEREXT = new RPC_HEADER_EXT();
+                this.RPCHEADEREXT.Parse(s);
+
+                if (this.RPCHEADEREXT.Size > 0)
                 {
-                    payloadBytes = CompressionAndObfuscationAlgorithm.XOR(payloadBytes);
-                    isCompressedXOR = true;
+                    byte[] payloadBytes = this.ReadBytes((int)this.RPCHEADEREXT.Size);
+                    bool isCompressedXOR = false;
+
+                    if (((ushort)this.RPCHEADEREXT.Flags & (ushort)RpcHeaderFlags.XorMagic) == (ushort)RpcHeaderFlags.XorMagic)
+                    {
+                        payloadBytes = CompressionAndObfuscationAlgorithm.XOR(payloadBytes);
+                        isCompressedXOR = true;
+                    }
+
+                    if (((ushort)this.RPCHEADEREXT.Flags & (ushort)RpcHeaderFlags.Compressed) == (ushort)RpcHeaderFlags.Compressed)
+                    {
+                        payloadBytes = CompressionAndObfuscationAlgorithm.LZ77Decompress(payloadBytes, (int)this.RPCHEADEREXT.SizeActual);
+                        isCompressedXOR = true;
+                    }
+
+                    if (isCompressedXOR)
+                    {
+                        MapiInspector.MAPIInspector.AuxPayLoadCompressedXOR = payloadBytes;
+                    }
+
+                    Stream stream = new MemoryStream(payloadBytes);
+                    List<AuxiliaryBufferPayload> payload = new List<AuxiliaryBufferPayload>();
+
+                    for (int length = 0; length < this.RPCHEADEREXT.Size;)
+                    {
+                        AuxiliaryBufferPayload buffer = new AuxiliaryBufferPayload();
+                        buffer.Parse(stream);
+                        payload.Add(buffer);
+                        length += buffer.AUXHEADER.Size;
+                    }
+
+                    this.Payload = payload.ToArray();
                 }
-
-                if (((ushort)this.RPCHEADEREXT.Flags & (ushort)RpcHeaderFlags.Compressed) == (ushort)RpcHeaderFlags.Compressed)
-                {
-                    payloadBytes = CompressionAndObfuscationAlgorithm.LZ77Decompress(payloadBytes, (int)this.RPCHEADEREXT.SizeActual);
-                    isCompressedXOR = true;
-                }
-
-                if (isCompressedXOR)
-                {
-                    MapiInspector.MAPIInspector.AuxPayLoadCompressedXOR = payloadBytes;
-                }
-
-                Stream stream = new MemoryStream(payloadBytes);
-                List<AuxiliaryBufferPayload> payload = new List<AuxiliaryBufferPayload>();
-
-                for (int length = 0; length < this.RPCHEADEREXT.Size;)
-                {
-                    AuxiliaryBufferPayload buffer = new AuxiliaryBufferPayload();
-                    buffer.Parse(stream);
-                    payload.Add(buffer);
-                    length += buffer.AUXHEADER.Size;
-                }
-
-                this.Payload = payload.ToArray();
             }
+            catch { }
         }
     }
     #endregion
