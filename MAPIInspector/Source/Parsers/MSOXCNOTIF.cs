@@ -45,7 +45,7 @@
         /// <summary>
         /// A search operation has been completed on the server
         /// </summary>
-        SearchComplete = 0x0080,
+        SearchCompleted = 0x0080,
 
         /// <summary>
         /// A table has been modified on the server
