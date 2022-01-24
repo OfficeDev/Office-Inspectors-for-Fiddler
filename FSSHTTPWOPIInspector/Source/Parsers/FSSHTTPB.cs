@@ -410,6 +410,39 @@ namespace FSSHTTPandWOPIInspector.Parsers
     }
 
     /// <summary>
+    /// 2.2.1.14	String Item Array
+    /// </summary>
+    public class StringItemArray : BaseStructure
+    {
+        public CompactUnsigned64bitInteger Count;
+        public StringItem[] Content;
+
+        /// <summary>
+        /// Parse the StringItemArray structure.
+        /// </summary>
+        /// <param name="s">A stream containing StringItemArray structure.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.Count = new CompactUnsigned64bitInteger();
+            this.Count = this.Count.TryParse(s);
+            List<StringItem> tempContent = new List<StringItem>();
+            if (this.Count.GetUint(Count) > 0)
+            {
+                ulong tempCount = this.Count.GetUint(Count);
+                StringItem tempGuid = new StringItem();
+                do
+                {
+                    tempGuid.Parse(s);
+                    tempContent.Add(tempGuid);
+                    tempCount--;
+                } while (tempCount > 0);
+                this.Content = tempContent.ToArray();
+            }
+        }
+    }
+
+    /// <summary>
     /// 2.2.1.5	Stream Object Header
     /// </summary>
     public class StreamObjectHeader : BaseStructure
@@ -3511,6 +3544,13 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public byte G;
         [BitAttribute(1)]
         public byte H;
+
+        public BinaryItem ContenVersionCoherencyCheck;
+
+        public StringItemArray AuthorLogins;
+
+        public byte Reserved1;
+
         public AdditionalFlags AdditionalFlags;
         public LockId LockId;
         public Knowledge ClientKnowledge;
@@ -3538,6 +3578,13 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.F = (byte)GetBits(tempByte, 5, 1);
             this.G = (byte)GetBits(tempByte, 6, 1);
             this.H = (byte)GetBits(tempByte, 7, 1);
+
+            this.Reserved1 = (byte)GetBits(tempByte, 8, 1);
+
+            this.ContenVersionCoherencyCheck = new BinaryItem();
+
+            this.AuthorLogins = new StringItemArray();
+
             if (ContainsStreamObjectStart32BitHeader(0x86))
             {
                 this.AdditionalFlags = new AdditionalFlags();
@@ -3582,6 +3629,8 @@ namespace FSSHTTPandWOPIInspector.Parsers
         [BitAttribute(10)]
         public ushort Reserved;
 
+        public ulong Reserved9;
+
         /// <summary>
         /// Parse the AdditionalFlags structure.
         /// </summary>
@@ -3599,6 +3648,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.E = (byte)GetBits(tempUshort, 4, 1);
             this.F = (byte)GetBits(tempUshort, 5, 1);
             this.Reserved = (byte)GetBits(tempUshort, 6, 16);
+            this.Reserved9 = (byte)GetBits(tempUshort, 7, 72);
         }
     }
 
