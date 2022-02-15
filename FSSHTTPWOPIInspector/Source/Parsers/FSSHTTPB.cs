@@ -3573,38 +3573,13 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.G = (byte)GetBits(tempByte, 6, 1);
             this.H = (byte)GetBits(tempByte, 7, 1);
 
-            if (ReadByte() == 0)
-            {
-                s.Position -= 1;
-                this.ContenVersionCoherencyCheck = new BinaryItem();
-                this.ContenVersionCoherencyCheck.Parse(s);
-            }
-            else
-            {
-                s.Position -= 1;
-            }
+            this.ContenVersionCoherencyCheck = new BinaryItem();
+            this.ContenVersionCoherencyCheck.Parse(s);
 
+            this.AuthorLogins = new StringItemArray();
+            this.AuthorLogins.Parse(s);
 
-            if (ReadByte() == 0)
-            {
-                s.Position -= 1;
-                this.AuthorLogins = new StringItemArray();
-                this.AuthorLogins.Parse(s);
-            }
-            else
-            {
-                s.Position -= 1;
-            }
-
-            if (ReadByte() == 0x2)
-            {
-                s.Position -= 1;
-                this.Reserved1 = ReadByte();
-            }
-            else
-            {
-                s.Position -= 1;
-            }
+            this.Reserved1 = ReadByte();
 
             if (ContainsStreamObjectStart32BitHeader(0x86))
             {
@@ -3649,7 +3624,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public byte F;
         [BitAttribute(10)]
         public ushort Reserved;
-        public CompactUnsigned64bitInteger Reserved9;
+        public CompactUnsigned64bitInteger Reserved2;
 
         /// <summary>
         /// Parse the AdditionalFlags structure.
@@ -3669,16 +3644,8 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.F = (byte)GetBits(tempUshort, 5, 1);
             this.Reserved = (byte)GetBits(tempUshort, 6, 16);
 
-            if (ReadByte() == 0)
-            {
-                s.Position -= 1;
-                this.Reserved9 = new CompactUintZero();
-                this.Reserved9.Parse(s);
-            }
-            else
-            {
-                s.Position -= 1;
-            }
+            this.Reserved2 = new CompactUnsigned64bitInteger();
+            this.Reserved2 = this.Reserved2.TryParse(s);
         }
     }
 
