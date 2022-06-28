@@ -1,0 +1,11 @@
+D:\AppData\Local\Programs\Fiddler\Inspectors\FSSHTTPandWOPIFiddlerInspector.dll
+D:\AppData\Local\Programs\Fiddler\Inspectors\FSSHTTPandWOPIFiddlerInspector.pdb
+D:\source\repos\Office-Inspectors-for-Fiddler\FSSHTTPWOPIInspector\Source\obj\Debug\FSSHTTPAndWOPIInspector.csproj.AssemblyReference.cache
+D:\source\repos\Office-Inspectors-for-Fiddler\FSSHTTPWOPIInspector\Source\obj\Debug\FSSHTTPandWOPIInspector.FSSHTTPandWOPIControl.resources
+D:\source\repos\Office-Inspectors-for-Fiddler\FSSHTTPWOPIInspector\Source\obj\Debug\FSSHTTPAndWOPIInspector.csproj.GenerateResource.cache
+D:\source\repos\Office-Inspectors-for-Fiddler\FSSHTTPWOPIInspector\Source\obj\Debug\FSSHTTPAndWOPIInspector.csproj.CoreCompileInputs.cache
+c:\users\tomjebo\AppData\Local\Programs\Fiddler\Inspectors\FSSHTTPandWOPIFiddlerInspector.dll
+c:\users\tomjebo\AppData\Local\Programs\Fiddler\Inspectors\FSSHTTPandWOPIFiddlerInspector.pdb
+D:\source\repos\Office-Inspectors-for-Fiddler\FSSHTTPWOPIInspector\Source\obj\Debug\FSSHTTPAndWOPIInspector.csproj.CopyComplete
+D:\source\repos\Office-Inspectors-for-Fiddler\FSSHTTPWOPIInspector\Source\obj\Debug\FSSHTTPandWOPIFiddlerInspector.dll
+D:\source\repos\Office-Inspectors-for-Fiddler\FSSHTTPWOPIInspector\Source\obj\Debug\FSSHTTPandWOPIFiddlerInspector.pdb

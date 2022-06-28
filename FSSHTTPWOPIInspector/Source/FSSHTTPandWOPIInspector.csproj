@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>FSSHTTPandWOPIInspector</RootNamespace>
     <AssemblyName>FSSHTTPandWOPIFiddlerInspector</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -41,7 +41,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Inspectors\</OutputPath>
+    <OutputPath>c:\users\tomjebo\AppData\Local\Programs\Fiddler\Inspectors\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -83,7 +83,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Be.Windows.Forms.HexBox">
-      <HintPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Be.Windows.Forms.HexBox.dll</HintPath>
+      <HintPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Inspectors\Be.Windows.Forms.HexBox.dll</HintPath>
     </Reference>
     <Reference Include="Fiddler">
       <HintPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Fiddler.exe</HintPath>

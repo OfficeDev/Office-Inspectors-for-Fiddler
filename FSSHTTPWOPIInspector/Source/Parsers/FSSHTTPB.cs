@@ -2988,38 +2988,43 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.Signature = ReadUlong();
             this.RequestStart = new bit32StreamObjectHeaderStart();
             this.RequestStart.Parse(s);
-            this.UserAgentStart = new bit32StreamObjectHeaderStart();
-            this.UserAgentStart.Parse(s);
-            if (ContainsStreamObjectStart32BitHeader(0x055))
-            {
-                this.UserAgentGUID = new bit32StreamObjectHeaderStart();
-                this.UserAgentGUID.Parse(s);
-            }
-            if (this.UserAgentGUID != null)
-            {
-                this.GUID = ReadGuid();
-            }
-            if (ContainsStreamObjectStart32BitHeader(0x8B))
-            {
-                this.UserAgentClientAndPlatform = new bit32StreamObjectHeaderStart();
-                this.UserAgentClientAndPlatform.Parse(s);
-            }
 
-            if (this.UserAgentClientAndPlatform != null)
+            if (ContainsStreamObjectStart32BitHeader(0x05D))
             {
-                this.ClientCount = new CompactUnsigned64bitInteger();
-                this.ClientCount = this.ClientCount.TryParse(s);
-                this.ClientByteArray = ReadBytes((int)this.ClientCount.GetUint(this.ClientCount));
-                this.PlatformCount = new CompactUnsigned64bitInteger();
-                this.PlatformCount = this.PlatformCount.TryParse(s);
-                this.PlatformByteArray = ReadBytes((int)this.PlatformCount.GetUint(this.PlatformCount));
-            }
+                this.UserAgentStart = new bit32StreamObjectHeaderStart();
+                this.UserAgentStart.Parse(s);
 
-            this.UserAgentVersion = new bit32StreamObjectHeaderStart();
-            this.UserAgentVersion.Parse(s);
-            this.Version = ReadUint();
-            this.UserAgentEnd = new bit16StreamObjectHeaderEnd();
-            this.UserAgentEnd.Parse(s);
+                if (ContainsStreamObjectStart32BitHeader(0x055))
+                {
+                    this.UserAgentGUID = new bit32StreamObjectHeaderStart();
+                    this.UserAgentGUID.Parse(s);
+                }
+                if (this.UserAgentGUID != null)
+                {
+                    this.GUID = ReadGuid();
+                }
+                if (ContainsStreamObjectStart32BitHeader(0x8B))
+                {
+                    this.UserAgentClientAndPlatform = new bit32StreamObjectHeaderStart();
+                    this.UserAgentClientAndPlatform.Parse(s);
+                }
+
+                if (this.UserAgentClientAndPlatform != null)
+                {
+                    this.ClientCount = new CompactUnsigned64bitInteger();
+                    this.ClientCount = this.ClientCount.TryParse(s);
+                    this.ClientByteArray = ReadBytes((int)this.ClientCount.GetUint(this.ClientCount));
+                    this.PlatformCount = new CompactUnsigned64bitInteger();
+                    this.PlatformCount = this.PlatformCount.TryParse(s);
+                    this.PlatformByteArray = ReadBytes((int)this.PlatformCount.GetUint(this.PlatformCount));
+                }
+
+                this.UserAgentVersion = new bit32StreamObjectHeaderStart();
+                this.UserAgentVersion.Parse(s);
+                this.Version = ReadUint();
+                this.UserAgentEnd = new bit16StreamObjectHeaderEnd();
+                this.UserAgentEnd.Parse(s);
+            }
             if (ContainsStreamObjectStart32BitHeader(0x88))
             {
                 this.RequestHashingOptionsDeclaration = new bit32StreamObjectHeaderStart();
