@@ -8,7 +8,7 @@ The Open Specifications are used to develop the Fiddler MAPI inspector. There ar
 - Release date, 10/17/2016
 - [MS-OXCSTOR][MS-OXCTABL] version information is v20170328
 - Release date, 3/28/2017
-- [MS-OXCDATA] version information is v20170509 
-- Release date, 5/9/2017
+- [MS-OXCDATA] version information is v20221115
+- Release date, 11/15/2022
 - [MS-OXCSTOR] version information is v20171212
 - Release date, 12/12/2017
