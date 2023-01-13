@@ -4236,7 +4236,7 @@
         public StoreObjectType FolderType;
 
         /// <summary>
-        /// A GUID associated with the Store object and corresponding to the ReplicaId field of the FID structure.
+        /// A GUID associated with the Store object and corresponding to the ReplicaId field of the Folder ID structure.
         /// </summary>
         public Guid DatabaseGuid;
 
