@@ -147,6 +147,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         {
             base.Parse(s);
             int Uint = ReadByte();
+            this.Uint = (byte)Uint;
         }
     }
 
@@ -406,6 +407,39 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.Count = new CompactUnsigned64bitInteger();
             this.Count = this.Count.TryParse(s);
             this.Content = ReadString(System.Text.Encoding.Unicode, "", (int)Count.GetUint(Count));
+        }
+    }
+
+    /// <summary>
+    /// 2.2.1.14	String Item Array
+    /// </summary>
+    public class StringItemArray : BaseStructure
+    {
+        public CompactUnsigned64bitInteger Count;
+        public StringItem[] Content;
+
+        /// <summary>
+        /// Parse the StringItemArray structure.
+        /// </summary>
+        /// <param name="s">A stream containing StringItemArray structure.</param>
+        public override void Parse(Stream s)
+        {
+            base.Parse(s);
+            this.Count = new CompactUnsigned64bitInteger();
+            this.Count = this.Count.TryParse(s);
+            List<StringItem> tempContent = new List<StringItem>();
+            if (this.Count.GetUint(Count) > 0)
+            {
+                ulong tempCount = this.Count.GetUint(Count);
+                StringItem tempGuid = new StringItem();
+                do
+                {
+                    tempGuid.Parse(s);
+                    tempContent.Add(tempGuid);
+                    tempCount--;
+                } while (tempCount > 0);
+                this.Content = tempContent.ToArray();
+            }
         }
     }
 
@@ -2954,38 +2988,43 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.Signature = ReadUlong();
             this.RequestStart = new bit32StreamObjectHeaderStart();
             this.RequestStart.Parse(s);
-            this.UserAgentStart = new bit32StreamObjectHeaderStart();
-            this.UserAgentStart.Parse(s);
-            if (ContainsStreamObjectStart32BitHeader(0x055))
-            {
-                this.UserAgentGUID = new bit32StreamObjectHeaderStart();
-                this.UserAgentGUID.Parse(s);
-            }
-            if (this.UserAgentGUID != null)
-            {
-                this.GUID = ReadGuid();
-            }
-            if (ContainsStreamObjectStart32BitHeader(0x8B))
-            {
-                this.UserAgentClientAndPlatform = new bit32StreamObjectHeaderStart();
-                this.UserAgentClientAndPlatform.Parse(s);
-            }
 
-            if (this.UserAgentClientAndPlatform != null)
+            if (ContainsStreamObjectStart32BitHeader(0x05D))
             {
-                this.ClientCount = new CompactUnsigned64bitInteger();
-                this.ClientCount = this.ClientCount.TryParse(s);
-                this.ClientByteArray = ReadBytes((int)this.ClientCount.GetUint(this.ClientCount));
-                this.PlatformCount = new CompactUnsigned64bitInteger();
-                this.PlatformCount = this.PlatformCount.TryParse(s);
-                this.PlatformByteArray = ReadBytes((int)this.PlatformCount.GetUint(this.PlatformCount));
-            }
+                this.UserAgentStart = new bit32StreamObjectHeaderStart();
+                this.UserAgentStart.Parse(s);
 
-            this.UserAgentVersion = new bit32StreamObjectHeaderStart();
-            this.UserAgentVersion.Parse(s);
-            this.Version = ReadUint();
-            this.UserAgentEnd = new bit16StreamObjectHeaderEnd();
-            this.UserAgentEnd.Parse(s);
+                if (ContainsStreamObjectStart32BitHeader(0x055))
+                {
+                    this.UserAgentGUID = new bit32StreamObjectHeaderStart();
+                    this.UserAgentGUID.Parse(s);
+                }
+                if (this.UserAgentGUID != null)
+                {
+                    this.GUID = ReadGuid();
+                }
+                if (ContainsStreamObjectStart32BitHeader(0x8B))
+                {
+                    this.UserAgentClientAndPlatform = new bit32StreamObjectHeaderStart();
+                    this.UserAgentClientAndPlatform.Parse(s);
+                }
+
+                if (this.UserAgentClientAndPlatform != null)
+                {
+                    this.ClientCount = new CompactUnsigned64bitInteger();
+                    this.ClientCount = this.ClientCount.TryParse(s);
+                    this.ClientByteArray = ReadBytes((int)this.ClientCount.GetUint(this.ClientCount));
+                    this.PlatformCount = new CompactUnsigned64bitInteger();
+                    this.PlatformCount = this.PlatformCount.TryParse(s);
+                    this.PlatformByteArray = ReadBytes((int)this.PlatformCount.GetUint(this.PlatformCount));
+                }
+
+                this.UserAgentVersion = new bit32StreamObjectHeaderStart();
+                this.UserAgentVersion.Parse(s);
+                this.Version = ReadUint();
+                this.UserAgentEnd = new bit16StreamObjectHeaderEnd();
+                this.UserAgentEnd.Parse(s);
+            }
             if (ContainsStreamObjectStart32BitHeader(0x88))
             {
                 this.RequestHashingOptionsDeclaration = new bit32StreamObjectHeaderStart();
@@ -3506,11 +3545,12 @@ namespace FSSHTTPandWOPIInspector.Parsers
         [BitAttribute(1)]
         public byte E;
         [BitAttribute(1)]
-        public byte F;
-        [BitAttribute(1)]
         public byte G;
         [BitAttribute(1)]
         public byte H;
+        public BinaryItem ContenVersionCoherencyCheck;
+        public StringItemArray AuthorLogins;
+        public byte Reserved1;
         public AdditionalFlags AdditionalFlags;
         public LockId LockId;
         public Knowledge ClientKnowledge;
@@ -3535,9 +3575,17 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.C = (byte)GetBits(tempByte, 2, 1);
             this.D = (byte)GetBits(tempByte, 3, 1);
             this.E = (byte)GetBits(tempByte, 4, 1);
-            this.F = (byte)GetBits(tempByte, 5, 1);
             this.G = (byte)GetBits(tempByte, 6, 1);
             this.H = (byte)GetBits(tempByte, 7, 1);
+
+            this.ContenVersionCoherencyCheck = new BinaryItem();
+            this.ContenVersionCoherencyCheck.Parse(s);
+
+            this.AuthorLogins = new StringItemArray();
+            this.AuthorLogins.Parse(s);
+
+            this.Reserved1 = ReadByte();
+
             if (ContainsStreamObjectStart32BitHeader(0x86))
             {
                 this.AdditionalFlags = new AdditionalFlags();
@@ -3581,6 +3629,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
         public byte F;
         [BitAttribute(10)]
         public ushort Reserved;
+        public CompactUnsigned64bitInteger Reserved2;
 
         /// <summary>
         /// Parse the AdditionalFlags structure.
@@ -3599,6 +3648,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.E = (byte)GetBits(tempUshort, 4, 1);
             this.F = (byte)GetBits(tempUshort, 5, 1);
             this.Reserved = (byte)GetBits(tempUshort, 6, 16);
+
+            this.Reserved2 = new CompactUnsigned64bitInteger();
+            this.Reserved2 = this.Reserved2.TryParse(s);
         }
     }
 

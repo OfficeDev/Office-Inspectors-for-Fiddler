@@ -552,7 +552,7 @@
         BadVersion = 0x00000451,
 
         /// <summary>
-        /// Too many columns requested in SetColumns.
+        /// Too many columns requested in RopSetColumns ([MS-OXCROPS] section 2.2.5.1).
         /// </summary>
         TooManyColumns = 0x00000452,
 
@@ -577,7 +577,7 @@
         UnsupportedProperty = 0x00000456,
 
         /// <summary>
-        /// During AbortSubmit, a message was not saved.
+        /// During RopAbortSubmit ([MS-OXCROPS] section 2.2.7.2), a message was not saved.
         /// </summary>
         MessageNotSaved = 0x00000457,
 
@@ -602,7 +602,7 @@
         AttachmentOpen = 0x0000045D,
 
         /// <summary>
-        /// The collapse state given to SetCollapseState is invalid.
+        /// The collapse state given to RopSetCollapseState ([MS-OXCROPS] section 2.2.5.19) is invalid.
         /// </summary>
         InvalidCollapseState = 0x0000045E,
 
@@ -777,12 +777,12 @@
         NotPrivateDatabase = 0x0000048B,
 
         /// <summary>
-        /// The Store object has been locked by the ISINTEG utility.
+        /// The Store object has been locked by the ISINTEG (Information store integrity) utility.
         /// </summary>
         IsintegMDB = 0x0000048C,
 
         /// <summary>
-        /// A recovery storage group operation was attempted on a non-RSG Store object, or vice versa.
+        /// A recovery storage group operation was attempted on a non-RSG (recovery storage group) Store object, or vice versa.
         /// </summary>
         RecoveryMismatch = 0x0000048D,
 
@@ -4236,7 +4236,7 @@
         public StoreObjectType FolderType;
 
         /// <summary>
-        /// A GUID associated with the Store object and corresponding to the ReplicaId field of the FID structure.
+        /// A GUID associated with the Store object and corresponding to the ReplicaId field of the Folder ID structure.
         /// </summary>
         public Guid DatabaseGuid;
 
@@ -4906,7 +4906,7 @@
         public MAPIString TransmittableDisplayName;
 
         /// <summary>
-        /// This value specifies the number of columns from the RecipientColumns field that are included in the RecipientProperties field. 
+        /// This value specifies the number of columns from the RecipientColumns field([MS-OXCROPS] section 2.2.6.16.2) that are included in the RecipientProperties field. 
         /// </summary>
         public ushort? RecipientColumnCount;
 
@@ -5394,7 +5394,7 @@
         public MessageID MessageID;
 
         /// <summary>
-        /// An unsigned instance number within an array of ServerIds to compare against. 
+        /// An unsigned instance number within an array of server IDs to compare against. 
         /// </summary>
         public uint? Instance;
 
