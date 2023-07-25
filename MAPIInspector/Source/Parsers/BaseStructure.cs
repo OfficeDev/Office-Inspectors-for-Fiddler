@@ -376,6 +376,11 @@
 
                                 bitLength += attribute.BitLength;
                             }
+                            else if (type.Name == "String")
+                            {
+                                // a string found here will likely be an error message.
+                                os = 0;
+                            }
                             else if (type.Name != "Boolean")
                             {
                                 os = Marshal.SizeOf(fieldType);
