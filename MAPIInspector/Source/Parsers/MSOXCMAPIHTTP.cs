@@ -683,7 +683,7 @@
                 this.RopBuffer.Parse(s);
             }
 
-            if (this.RemainingBytes() > 4)
+            if (this.RemainingBytes() >= 4)
             {
                 this.AuxiliaryBufferSize = this.ReadUint();
 
@@ -6766,6 +6766,10 @@
                         outputBuffer.Parse(stream);
                         this.Payload = outputBuffer;
                     }
+                    catch(MissingInformationException)
+                    {
+                        throw;
+                    }
                     catch (Exception e)
                     {
                         this.Payload = e.ToString();
@@ -6818,6 +6822,10 @@
                 try
                 {
                     buffer.Parse(s);
+                }
+                catch (MissingInformationException)
+                {
+                    throw;
                 }
                 catch (Exception e)
                 {
