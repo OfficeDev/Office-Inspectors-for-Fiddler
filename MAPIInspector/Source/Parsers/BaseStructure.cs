@@ -1035,6 +1035,15 @@
         }
 
         /// <summary>
+        /// Return the number of remaining bytes in the stream
+        /// </summary>
+        /// <returns>A count of bytes</returns>
+        protected long RemainingBytes()
+        {
+            return this.stream.Length - this.stream.Position;
+        }
+
+        /// <summary>
         /// Converts a simple (non-flag) enum to string. If the value is not present in the underlying enum, converts to a hex string.
         /// </summary>
         /// <param name="obj"></param>

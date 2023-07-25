@@ -2404,7 +2404,7 @@
             catch (Exception e)
             {
                 this.MAPIControl.MAPIRichTextBox.Visible = true;
-                this.MAPIControl.MAPIRichTextBox.Text = e.Message;
+                this.MAPIControl.MAPIRichTextBox.Text = e.ToString();
             }
             finally
             {

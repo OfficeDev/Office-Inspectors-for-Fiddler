@@ -683,16 +683,19 @@
                 this.RopBuffer.Parse(s);
             }
 
-            this.AuxiliaryBufferSize = this.ReadUint();
+            if (this.RemainingBytes() > 4)
+            {
+                this.AuxiliaryBufferSize = this.ReadUint();
 
-            if (this.AuxiliaryBufferSize > 0)
-            {
-                this.AuxiliaryBuffer = new ExtendedBuffer();
-                this.AuxiliaryBuffer.Parse(s);
-            }
-            else
-            {
-                this.AuxiliaryBuffer = null;
+                if (this.AuxiliaryBufferSize > 0)
+                {
+                    this.AuxiliaryBuffer = new ExtendedBuffer();
+                    this.AuxiliaryBuffer.Parse(s);
+                }
+                else
+                {
+                    this.AuxiliaryBuffer = null;
+                }
             }
         }
     }
@@ -6757,9 +6760,16 @@
                 }
                 else
                 {
-                    ROPOutputBuffer outputBuffer = new ROPOutputBuffer();
-                    outputBuffer.Parse(stream);
-                    this.Payload = outputBuffer;
+                    try
+                    {
+                        ROPOutputBuffer outputBuffer = new ROPOutputBuffer();
+                        outputBuffer.Parse(stream);
+                        this.Payload = outputBuffer;
+                    }
+                    catch (Exception e)
+                    {
+                        this.Payload = e.ToString();
+                    }
                 }
             }
         }
@@ -6805,7 +6815,15 @@
             while (s.Position - startPosition < this.RopBufferSize)
             {
                 RgbOutputBuffer buffer = new RgbOutputBuffer(index);
-                buffer.Parse(s);
+                try
+                {
+                    buffer.Parse(s);
+                }
+                catch (Exception e)
+                {
+                    buffer.Payload = e.ToString();
+                }
+
                 rgbOutputBufferList.Add(buffer);
                 index += 1;
             }
