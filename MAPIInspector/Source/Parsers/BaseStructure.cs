@@ -299,7 +299,9 @@
             // Check whether the data type is simple type
             if (Enum.IsDefined(typeof(DataType), t.Name))
             {
-                throw new Exception("The method doesn't support handling simple data type.");
+                TreeNode node = new TreeNode();
+                node.Text = obj.ToString();
+                res.Nodes.Add(node);
             }
             else
             {
