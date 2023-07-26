@@ -484,8 +484,10 @@
                                     result.Append(Utilities.ConvertArrayToHexString((uint[])arr));
                                 }
 
-                                TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
+                                TreeNode tn = new TreeNode($"{info[i].Name}:{result.ToString()}");
                                 res.Nodes.Add(tn);
+                                // Add subnode with length of array
+                                tn.Nodes.Add(new TreeNode($"cb:{arr.Length}"));
 
                                 for (int j = 0; j < arr.Length; j++)
                                 {
