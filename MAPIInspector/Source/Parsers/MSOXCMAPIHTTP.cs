@@ -6766,10 +6766,8 @@
                         outputBuffer.Parse(stream);
                         this.Payload = outputBuffer;
                     }
-                    catch(MissingInformationException)
-                    {
-                        throw;
-                    }
+                    catch (MissingInformationException) { throw; }
+                    catch (MissingPartialInformationException) { throw; }
                     catch (Exception e)
                     {
                         this.Payload = e.ToString();
@@ -6823,10 +6821,8 @@
                 {
                     buffer.Parse(s);
                 }
-                catch (MissingInformationException)
-                {
-                    throw;
-                }
+                catch (MissingInformationException) { throw; }
+                catch (MissingPartialInformationException) { throw; }
                 catch (Exception e)
                 {
                     buffer.Payload = e.ToString();
