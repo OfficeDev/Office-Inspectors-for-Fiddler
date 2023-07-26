@@ -379,7 +379,12 @@
                             else if (type.Name == "String")
                             {
                                 // a string found here will likely be an error message.
+                                // If it was from RgbOutputBuffer, assume the whole buffer was consumed
                                 os = 0;
+                                if (obj is RgbOutputBuffer buffer)
+                                {
+                                    os = buffer.RPCHEADEREXT.Size;
+                                }
                             }
                             else if (type.Name != "Boolean")
                             {
