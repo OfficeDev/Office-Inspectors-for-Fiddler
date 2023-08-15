@@ -299,7 +299,9 @@
             // Check whether the data type is simple type
             if (Enum.IsDefined(typeof(DataType), t.Name))
             {
-                throw new Exception("The method doesn't support handling simple data type.");
+                TreeNode node = new TreeNode();
+                node.Text = obj.ToString();
+                res.Nodes.Add(node);
             }
             else
             {
@@ -373,6 +375,16 @@
                                 }
 
                                 bitLength += attribute.BitLength;
+                            }
+                            else if (type.Name == "String")
+                            {
+                                // a string found here will likely be an error message.
+                                // If it was from RgbOutputBuffer, assume the whole buffer was consumed
+                                os = 0;
+                                if (obj is RgbOutputBuffer buffer)
+                                {
+                                    os = buffer.RPCHEADEREXT.Size;
+                                }
                             }
                             else if (type.Name != "Boolean")
                             {
@@ -472,8 +484,10 @@
                                     result.Append(Utilities.ConvertArrayToHexString((uint[])arr));
                                 }
 
-                                TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, result.ToString()));
+                                TreeNode tn = new TreeNode($"{info[i].Name}:{result.ToString()}");
                                 res.Nodes.Add(tn);
+                                // Add subnode with length of array
+                                tn.Nodes.Add(new TreeNode($"cb:{arr.Length}"));
 
                                 for (int j = 0; j < arr.Length; j++)
                                 {
@@ -1030,6 +1044,15 @@
             }
 
             return chars[0];
+        }
+
+        /// <summary>
+        /// Return the number of remaining bytes in the stream
+        /// </summary>
+        /// <returns>A count of bytes</returns>
+        protected long RemainingBytes()
+        {
+            return this.stream.Length - this.stream.Position;
         }
 
         /// <summary>

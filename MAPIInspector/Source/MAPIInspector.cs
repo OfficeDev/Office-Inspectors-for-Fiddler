@@ -2386,39 +2386,29 @@
             {
                 return;
             }
-            else if (obj.GetType().Name == "String")
-            {
-                this.MAPIViewControl.BeginUpdate();
-                this.MAPIControl.MAPIRichTextBox.Visible = true;
-                this.MAPIControl.MAPIRichTextBox.Text = obj.ToString();
-                this.MAPIViewControl.EndUpdate();
-            }
-            else
-            {
-                this.MAPIViewControl.BeginUpdate();
-                int result = 0;
 
-                try
+            this.MAPIViewControl.BeginUpdate();
+            try
+            {
+                int result;
+                TreeNode topNode = BaseStructure.AddNodesForTree(obj, 0, out result);
+                this.MAPIViewControl.Nodes.Add(topNode);
+                topNode.ExpandAll();
+                this.MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesForHexview);
+                this.MAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
+                if (this.MAPIViewControl.Nodes.Count != 0)
                 {
-                    TreeNode topNode = BaseStructure.AddNodesForTree(obj, 0, out result);
-                    this.MAPIViewControl.Nodes.Add(topNode);
-                    topNode.ExpandAll();
-                    this.MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesForHexview);
-                    this.MAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
-                    if (this.MAPIViewControl.Nodes.Count != 0)
-                    {
-                        this.MAPIViewControl.Nodes[0].EnsureVisible();
-                    }
+                    this.MAPIViewControl.Nodes[0].EnsureVisible();
                 }
-                catch (Exception e)
-                {
-                    this.MAPIControl.MAPIRichTextBox.Visible = true;
-                    this.MAPIControl.MAPIRichTextBox.Text = e.Message;
-                }
-                finally
-                {
-                    this.MAPIViewControl.EndUpdate();
-                }
+            }
+            catch (Exception e)
+            {
+                this.MAPIControl.MAPIRichTextBox.Visible = true;
+                this.MAPIControl.MAPIRichTextBox.Text = e.ToString();
+            }
+            finally
+            {
+                this.MAPIViewControl.EndUpdate();
             }
         }
 
