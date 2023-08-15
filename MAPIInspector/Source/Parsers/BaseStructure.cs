@@ -148,7 +148,12 @@
             int current = startIndex;
             TreeNode res = new TreeNode(t.Name);
 
-            if (t.Name == "MAPIString")
+            if (obj is AnnotatedData ad)
+            {
+                offset = ad.Size;
+                return res;
+            }
+            else if (t.Name == "MAPIString")
             {
                 int os = 0;
                 FieldInfo[] infoString = t.GetFields();
@@ -635,7 +640,16 @@
                                 fieldName = string.Format(fieldName + ": " + info[i].GetValue(obj).GetType().Name);
                             }
 
-                            node.Text = fieldName;
+                            var toString = info[i].GetValue(obj).ToString();
+                            if (!string.IsNullOrEmpty(toString))
+                            {
+                                node.Text = $"{fieldName}: {toString}";
+                            }
+                            else
+                            {
+                                node.Text = fieldName;
+                            }
+
                             res.Nodes.Add(node);
                             current += os;
                         }

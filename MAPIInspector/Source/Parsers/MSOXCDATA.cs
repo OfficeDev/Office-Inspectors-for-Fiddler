@@ -3859,6 +3859,26 @@
     }
 
     /// <summary>
+    /// The AnnotatedData class. Base class for annotated data. Allows us to specify an alternate display string for parsed data
+    /// </summary>
+    public class AnnotatedData : BaseStructure
+    {
+        /// <summary>
+        /// Alternate parsed string for display
+        /// </summary>
+        public string Annotation { get; set; }
+        /// <summary>
+        /// size of the data
+        /// </summary>
+        public virtual int Size { get; } = 0;
+
+        /// <summary>
+        /// By overriding ToString, we can display the annotation string instead of the raw data
+        /// </summary>
+        public override string ToString() => Annotation;
+    }
+
+    /// <summary>
     /// The AnnotatedBytes class to a byte stream with an alternate version of it (typically ConvertByteArrayToString)
     /// </summary>
     public class AnnotatedBytes : BaseStructure
@@ -3906,6 +3926,52 @@
         }
 
         public void SetAnnotation(string annotation) { this.Annotation = annotation; }
+    }
+
+    /// <summary>
+    /// The AnnotatedUint class.
+    /// </summary>
+    public class AnnotatedUint : AnnotatedData
+    {
+        /// <summary>
+        /// uint value
+        /// </summary>
+        public uint value;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="s">The stream to parse</param>
+        public AnnotatedUint(Stream s)
+        {
+            base.Parse(s);
+            value = this.ReadUint();
+        }
+
+        public override int Size { get; } = sizeof(uint);
+    }
+
+    /// <summary>
+    /// The AnnotatedGuid class.
+    /// </summary>
+    public class AnnotatedGuid : AnnotatedData
+    {
+        /// <summary>
+        /// uint value
+        /// </summary>
+        public Guid value;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="s">The stream to parse</param>
+        public AnnotatedGuid(Stream s)
+        {
+            base.Parse(s);
+            value = this.ReadGuid();
+        }
+
+        public override int Size { get; } = 16; // sizeof(Guid)
     }
 
     /// <summary>
@@ -4037,7 +4103,7 @@
             base.Parse(s);
             if (this.ReadByte() == 0xff)
             {
-                this.HasValue= 0xff;
+                this.HasValue = 0xff;
             }
             else
             {
@@ -4497,12 +4563,12 @@
         /// <summary>
         /// The GUID that identifies the property set for the named property.
         /// </summary>
-        public Guid GUID;
+        public AnnotatedGuid GUID;
 
         /// <summary>
         /// This field is present only if the value of the Kind field is equal to 0x00.
         /// </summary>
-        public uint? LID;
+        public AnnotatedUint LID;
 
         /// <summary>
         /// The value of this field is equal to the number of bytes in the Name string that follows it. 
@@ -4522,12 +4588,19 @@
         {
             base.Parse(s);
             this.Kind = (KindEnum)ReadByte();
-            this.GUID = this.ReadGuid();
+            this.GUID = new AnnotatedGuid(s);
+            this.GUID.Annotation = Guids.ToString(this.GUID.value);
             switch (this.Kind)
             {
                 case KindEnum.LID:
                     {
-                        this.LID = this.ReadUint();
+                        this.LID = new AnnotatedUint(s);
+                        var namedProp = NamedProperty.Lookup(GUID.value, LID.value);
+                        if (namedProp != null) 
+                            LID.Annotation = $"{namedProp.Name} = 0x{LID.value:X4}"; 
+                        else 
+                            LID.Annotation = $"0x{LID.value:X4}";
+
                         break;
                     }
 

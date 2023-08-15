@@ -704,6 +704,40 @@
             }
         }
 
+
+        private bool inSafeHandleContextInformation = false;
+        /// <summary>
+        /// SafeHandleContextInformation wraps HandleContextInformation to prevent reentrancy.
+        /// </summary>
+        /// <param name="sourceRopID">The ROP ID missing context information</param>
+        /// <param name="obj">The target object containing the context information</param>
+        /// <param name="bytes">The target byte array provided to HexView</param>
+        /// <param name="parameters">The missing context information ROP related parameters</param>
+        public void SafeHandleContextInformation(ushort sourceRopID, out object obj, out byte[] bytes, uint[] parameters = null)
+        {
+            if (inSafeHandleContextInformation)
+            {
+                obj = null;
+                bytes = new byte[0];
+                return;
+            }
+
+            try
+            {
+                inSafeHandleContextInformation = true;
+                HandleContextInformation(sourceRopID, out obj, out bytes, parameters);
+            }
+            catch
+            {
+                obj = null;
+                bytes = new byte[0];
+            }
+            finally
+            {
+                inSafeHandleContextInformation = false;
+            }
+        }
+
         /// <summary>
         /// This method is used to parse the sessions in advance, which is designed for the related context information ROPs.
         /// </summary>
@@ -732,7 +766,6 @@
             }
             else if ((RopIdType)sourceRopID == RopIdType.RopSetMessageReadFlag)
             {
-                Session currentSession = AllSessions[Convert.ToInt32(thisSession["Number"]) - 1];
                 string serverurl = thisSession.RequestHeaders.RequestPath;
                 string processName = thisSession.LocalProcess;
                 string clientInfo = thisSession.RequestHeaders["X-ClientInfo"];
@@ -746,24 +779,27 @@
                     targetDic.Add(sourceRopID, dic);
                     TargetHandle.Push(targetDic);
 
-                    do
+                    int startingIndex = Convert.ToInt32(thisSession["Number"]) - 1;
+                    for (int i = startingIndex; i >= 0; i--)
                     {
-                        if (currentSession.RequestHeaders.RequestPath == serverurl && currentSession.LocalProcess == processName && currentSession.RequestHeaders["X-ClientInfo"] == clientInfo &&
-                            IsMapihttpSession(currentSession, TrafficDirection.In) && currentSession.RequestHeaders["X-RequestType"] == "Execute")
+                        Session currentSession = AllSessions[i];
+                        if (currentSession.RequestHeaders.RequestPath == serverurl &&
+                            currentSession.LocalProcess == processName &&
+                            currentSession.RequestHeaders["X-ClientInfo"] == clientInfo &&
+                            IsMapihttpSession(currentSession, TrafficDirection.In) && 
+                            currentSession.RequestHeaders["X-RequestType"] == "Execute")
                         {
                             this.ParseRequestMessage(currentSession, out bytesForHexView, true);
-                        }
-
-                        if (Convert.ToInt32(currentSession["Number"]) == 1)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            currentSession = AllSessions[Convert.ToInt32(currentSession["Number"]) - 1];
+                            if (DecodingContext.LogonFlagMapLogId.Count > 0 &&
+                                DecodingContext.LogonFlagMapLogId.TryGetValue(serverurl, out var serverDict) &&
+                                serverDict.TryGetValue(processName, out var processDict) &&
+                                processDict.TryGetValue(clientInfo, out var clientDict) &&
+                                clientDict.ContainsKey((byte)parameters[0]))
+                            {
+                                break;
+                            }
                         }
                     }
-                    while (DecodingContext.LogonFlagMapLogId.Count == 0 || !(DecodingContext.LogonFlagMapLogId.ContainsKey(serverurl) && DecodingContext.LogonFlagMapLogId[serverurl].ContainsKey(processName) && DecodingContext.LogonFlagMapLogId[serverurl][processName].ContainsKey(clientInfo) && DecodingContext.LogonFlagMapLogId[serverurl][processName][clientInfo].ContainsKey((byte)parameters[0])));
 
                     if (DecodingContext.LogonFlagMapLogId.ContainsKey(serverurl) && DecodingContext.LogonFlagMapLogId[serverurl].ContainsKey(processName) && DecodingContext.LogonFlagMapLogId[serverurl][processName].ContainsKey(clientInfo) && DecodingContext.LogonFlagMapLogId[serverurl][processName][clientInfo].ContainsKey((byte)parameters[0]))
                     {
@@ -2360,7 +2396,7 @@
             catch (MissingInformationException missingException)
             {
                 DecodingContext.LogonFlagMapLogId = new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<byte, LogonFlags>>>>();
-                this.HandleContextInformation(missingException.RopID, out objectOut, out bytes, missingException.Parameters);
+                this.SafeHandleContextInformation(missingException.RopID, out objectOut, out bytes, missingException.Parameters);
                 return objectOut;
             }
             catch (MissingPartialInformationException missingPartialException)
