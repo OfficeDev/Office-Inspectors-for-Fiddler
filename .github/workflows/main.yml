@@ -1,1 +1,10 @@
+# basic on demand action that does nothing yet
+name: Build
 
+on:
+    workflow_dispatch
+
+jobs:
+    build:
+        runs-on: windows-latest
+        
