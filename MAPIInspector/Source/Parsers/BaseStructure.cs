@@ -153,6 +153,13 @@
             {
                 offset = ad.Size;
                 res.Text = ad.ToString();
+                if (!string.IsNullOrEmpty(ad.Annotation))
+                {
+                    var annotationNode = new TreeNode($"annotation:{ad.Annotation}");
+                    annotationNode.Tag = new Position(current, offset);
+                    res.Nodes.Add(annotationNode);
+                }
+
                 return res;
             }
             else if (t.Name == "MAPIStringAddressBook")
@@ -229,22 +236,6 @@
                     offset = os;
                 }
 
-                return res;
-            }
-            else if (t.Name == "AnnotatedBytes")
-            {
-                var infoString = t.GetFields();
-                var bytes = (byte[])infoString[0].GetValue(obj);
-                var bytesString = Utilities.ConvertArrayToHexString(bytes);
-                var annotation = (string)infoString[1].GetValue(obj);
-                var node = new TreeNode($"{infoString[0].Name}:{bytesString}");
-
-                offset = bytes.Length;
-                node.Tag = new Position(current, offset);
-                res.Nodes.Add(node);
-                var annotationNode = new TreeNode($"annotation:{annotation}");
-                annotationNode.Tag = new Position(current, offset);
-                res.Nodes.Add(annotationNode);
                 return res;
             }
 

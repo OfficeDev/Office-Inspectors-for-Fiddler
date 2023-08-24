@@ -3881,28 +3881,13 @@
     /// <summary>
     /// The AnnotatedBytes class to a byte stream with an alternate version of it (typically ConvertByteArrayToString)
     /// </summary>
-    public class AnnotatedBytes : BaseStructure
+    public class AnnotatedBytes : AnnotatedData
     {
         /// <summary>
         /// Bytes as byte array.
         /// </summary>
         public byte[] bytes;
-
-        /// <summary>
-        /// The annotated value
-        /// </summary>
-        public string Annotation;
-
-        //public int StartIndex;
-
-        private int Size;
-
-        /// <summary>
-        /// Initializes a new instance of the MAPIString class without parameters.
-        /// </summary>
-        public AnnotatedBytes()
-        {
-        }
+        private int size;
 
         /// <summary>
         /// Initializes a new instance of the Information class with parameters.
@@ -3910,7 +3895,7 @@
         /// <param name="size">Size of the byte array</param>
         public AnnotatedBytes(int size)
         {
-            this.Size = size;
+            this.size = size;
         }
 
         /// <summary>
@@ -3921,11 +3906,12 @@
         {
             base.Parse(s);
             var offset = (int)s.Position;
-            this.bytes = this.ReadBytes(this.Size);
+            this.bytes = this.ReadBytes(this.size);
             this.Annotation = Utilities.ConvertByteArrayToString(this.bytes);
         }
 
-        public void SetAnnotation(string annotation) { this.Annotation = annotation; }
+        public override int Size { get { return bytes.Length; } }
+        public override string ToString() => Utilities.ConvertArrayToHexString(bytes);
     }
 
     /// <summary>
