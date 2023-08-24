@@ -4035,6 +4035,7 @@
             base.Parse(s);
             this.Value = this.ReadString(this.Encode, this.Terminator, this.StringLength, this.ReducedUnicode);
         }
+                    // If the StringLength is not equal 0, the StringLength will be os value.
     }
 
     /// <summary>
