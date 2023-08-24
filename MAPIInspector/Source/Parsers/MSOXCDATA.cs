@@ -3863,19 +3863,33 @@
     /// </summary>
     public class AnnotatedData : BaseStructure
     {
+        public string ParsedValue { get; set; }
+
         /// <summary>
-        /// Alternate parsed string for display
-        /// </summary>
-        public string Annotation { get; set; }
-        /// <summary>
-        /// size of the data
+        /// Size of the data
         /// </summary>
         public virtual int Size { get; } = 0;
 
         /// <summary>
-        /// By overriding ToString, we can display the annotation string instead of the raw data
+        /// By overriding ToString, we can display the parsed string instead of the raw data
         /// </summary>
-        public override string ToString() => Annotation;
+        public override string ToString() => ParsedValue;
+
+        /// <summary>
+        /// Alternate parsings for display
+        /// </summary>
+        public Dictionary<string, string> parsedValues = new Dictionary<string, string>();
+        public string this[string key]
+        {
+            get
+            {
+                return parsedValues.ContainsKey(key) ? parsedValues[key] : string.Empty;
+            }
+            set
+            {
+                parsedValues[key] = value;
+            }
+        }
     }
 
     /// <summary>
@@ -3907,11 +3921,11 @@
             base.Parse(s);
             var offset = (int)s.Position;
             this.bytes = this.ReadBytes(this.size);
-            this.Annotation = Utilities.ConvertByteArrayToString(this.bytes);
+            this.ParsedValue = Utilities.ConvertArrayToHexString(this.bytes);
+            this["string"] = Utilities.ConvertByteArrayToString(this.bytes);
         }
 
-        public override int Size { get { return bytes.Length; } }
-        public override string ToString() => Utilities.ConvertArrayToHexString(bytes);
+        public override int Size { get { return this.bytes.Length; } }
     }
 
     /// <summary>
@@ -3955,6 +3969,7 @@
         {
             base.Parse(s);
             value = this.ReadGuid();
+            this.ParsedValue = Guids.ToString(this.value);
         }
 
         public override int Size { get; } = 16; // sizeof(Guid)
@@ -4618,7 +4633,6 @@
             base.Parse(s);
             this.Kind = (KindEnum)ReadByte();
             this.GUID = new AnnotatedGuid(s);
-            this.GUID.Annotation = Guids.ToString(this.GUID.value);
             switch (this.Kind)
             {
                 case KindEnum.LID:
@@ -4626,9 +4640,9 @@
                         this.LID = new AnnotatedUint(s);
                         var namedProp = NamedProperty.Lookup(GUID.value, LID.value);
                         if (namedProp != null)
-                            LID.Annotation = $"{namedProp.Name} = 0x{LID.value:X4}";
+                            LID.ParsedValue = $"{namedProp.Name} = 0x{LID.value:X4}";
                         else
-                            LID.Annotation = $"0x{LID.value:X4}";
+                            LID.ParsedValue = $"0x{LID.value:X4}";
 
                         break;
                     }

@@ -153,11 +153,11 @@
             {
                 offset = ad.Size;
                 res.Text = ad.ToString();
-                if (!string.IsNullOrEmpty(ad.Annotation))
+                foreach(var parsedValue in ad.parsedValues)
                 {
-                    var annotationNode = new TreeNode($"annotation:{ad.Annotation}");
-                    annotationNode.Tag = new Position(current, offset);
-                    res.Nodes.Add(annotationNode);
+                    var alternateParsingNode = new TreeNode($"{parsedValue.Key}:{parsedValue.Value}");
+                    alternateParsingNode.Tag = new Position(current, offset);
+                    res.Nodes.Add(alternateParsingNode);
                 }
 
                 return res;
