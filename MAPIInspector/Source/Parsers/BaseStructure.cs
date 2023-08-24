@@ -138,11 +138,12 @@
         /// <summary>
         /// Add the object to TreeNode and calculate the byte number it consumed
         /// </summary>
+        /// <param name="nodeName">Best guess at current node name for debugging - not currently used for display</param>
         /// <param name="obj">The object need to display in TreeView</param>
         /// <param name="startIndex">The start position of the object in HexView</param>
         /// <param name="offset">The byte number consumed by the object</param>
         /// <returns>The TreeNode with object value information</returns>
-        public static TreeNode AddNodesForTree(object obj, int startIndex, out int offset)
+        public static TreeNode AddNodesForTree(string nodeName, object obj, int startIndex, out int offset)
         {
             Type t = obj.GetType();
             int current = startIndex;
@@ -151,61 +152,7 @@
             if (obj is AnnotatedData ad)
             {
                 offset = ad.Size;
-                return res;
-            }
-            else if (t.Name == "MAPIString")
-            {
-                int os = 0;
-                FieldInfo[] infoString = t.GetFields();
-                string terminator = (string)infoString[2].GetValue(obj);
-                TreeNode node = new TreeNode(string.Format("{0}:{1}", infoString[0].Name, infoString[0].GetValue(obj)));
-
-                // If the Encoding is Unicode.
-                if (infoString[1].GetValue(obj).ToString() == "System.Text.UnicodeEncoding")
-                {
-                    // If the StringLength is not equal 0, the StringLength will be os value.
-                    if (infoString[3].GetValue(obj).ToString() != "0")
-                    {
-                        os = ((int)infoString[3].GetValue(obj)) * 2;
-                    }
-                    else
-                    {
-                        if (infoString[0].GetValue(obj) != null)
-                        {
-                            os = ((string)infoString[0].GetValue(obj)).Length * 2;
-                        }
-
-                        if (infoString[4].GetValue(obj).ToString() != "False")
-                        {
-                            os -= 1;
-                        }
-
-                        os += terminator.Length * 2;
-                    }
-                }
-                else
-                {
-                    // If the Encoding is ASCII.
-                    if (infoString[3].GetValue(obj).ToString() != "0")
-                    {
-                        // If the StringLength is not equal 0, the StringLength will be os value
-                        os = (int)infoString[3].GetValue(obj);
-                    }
-                    else
-                    {
-                        if (infoString[0].GetValue(obj) != null)
-                        {
-                            os = ((string)infoString[0].GetValue(obj)).Length;
-                        }
-
-                        os += terminator.Length;
-                    }
-                }
-
-                offset = os;
-                Position positionString = new Position(current, os);
-                node.Tag = positionString;
-                res.Nodes.Add(node);
+                res.Text = ad.ToString();
                 return res;
             }
             else if (t.Name == "MAPIStringAddressBook")
@@ -569,7 +516,7 @@
                                                 compressBufferindex += 1;
                                             }
 
-                                            tn = AddNodesForTree(a[k], current, out os);
+                                            tn = AddNodesForTree(fieldNameForAut, a[k], current, out os);
                                             treeNodeArray.Nodes.Add(tn);
                                             Position ps = new Position(current, os);
                                             tn.Tag = ps;
@@ -612,7 +559,7 @@
                             if (fieldName == "Payload" && IsCompressedXOR)
                             {
                                 RPC_HEADER_EXT header = (RPC_HEADER_EXT)info[0].GetValue(obj);
-                                node = AddNodesForTree(info[i].GetValue(obj), current, out os);
+                                node = AddNodesForTree(fieldName, info[i].GetValue(obj), current, out os);
                                 Position nodePosition = (Position)node.Tag;
                                 nodePosition.Offset = header.Size;
                                 os = nodePosition.Offset;
@@ -629,7 +576,7 @@
                                     compressBufferindex -= 1;
                                 }
 
-                                node = AddNodesForTree(info[i].GetValue(obj), current, out os);
+                                node = AddNodesForTree(fieldName, info[i].GetValue(obj), current, out os);
                                 Position nodePosition = new Position(current, os);
                                 node.Tag = nodePosition;
                             }

@@ -2427,7 +2427,7 @@
             try
             {
                 int result;
-                TreeNode topNode = BaseStructure.AddNodesForTree(obj, 0, out result);
+                TreeNode topNode = BaseStructure.AddNodesForTree("DisplayObjectRoot", obj, 0, out result);
                 this.MAPIViewControl.Nodes.Add(topNode);
                 topNode.ExpandAll();
                 this.MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesForHexview);
