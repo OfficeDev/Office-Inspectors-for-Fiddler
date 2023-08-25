@@ -4692,7 +4692,9 @@
 
                     break;
                 case PropertyDataType.PtypTime:
-                    this.FixedValue = stream.ReadTime();
+                    PtypTime tempPropertyValue = new PtypTime();
+                    tempPropertyValue.Parse(stream);
+                    this.FixedValue = tempPropertyValue;
                     break;
                 case PropertyDataType.PtypGuid:
                     this.FixedValue = stream.ReadGuid();
@@ -5106,7 +5108,9 @@
 
                         break;
                     case PropertyDataType.PtypTime:
-                        this.FixedValue = stream.ReadTime();
+                        PtypTime tempPropertyValue = new PtypTime();
+                        tempPropertyValue.Parse(stream);
+                        this.FixedValue = tempPropertyValue;
                         break;
                     case PropertyDataType.PtypGuid:
                         this.FixedValue = stream.ReadGuid();
@@ -5760,7 +5764,9 @@
 
                         break;
                     case PropertyDataType.PtypTime:
-                        this.FixedValue = stream.ReadTime();
+                        PtypTime tempPropertyValue = new PtypTime();
+                        tempPropertyValue.Parse(stream);
+                        this.FixedValue = tempPropertyValue;
                         break;
                     case PropertyDataType.PtypGuid:
                         this.FixedValue = stream.ReadGuid();
@@ -6419,7 +6425,9 @@
 
                         break;
                     case PropertyDataType.PtypTime:
-                        this.FixedValue = stream.ReadTime();
+                        PtypTime tempPropertyValue = new PtypTime();
+                        tempPropertyValue.Parse(stream);
+                        this.FixedValue = tempPropertyValue;
                         break;
                     case PropertyDataType.PtypGuid:
                         this.FixedValue = stream.ReadGuid();
