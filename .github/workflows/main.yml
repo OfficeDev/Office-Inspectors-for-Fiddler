@@ -17,13 +17,23 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 4.6.1
+    # - name: Setup .NET
+    #   uses: actions/setup-dotnet@v3
+    #   with:
+    #     dotnet-version: 4.6.1
+    - name: Download and Install .NET Framework 4.6.1 Developer Pack
+      run: |
+        # Download the .NET Framework 4.6.1 Developer Pack
+        Invoke-WebRequest -Uri https://aka.ms/msbuild/developerpacks/dotnetfx461devpack.exe -OutFile dotnetfx461devpack.exe
+
+        # Install the Developer Pack silently
+        Start-Process -FilePath dotnetfx461devpack.exe -ArgumentList "/q" -Wait
+
+        # Clean up the installer file
+        Remove-Item -Path dotnetfx461devpack.exe
     - name: Restore dependencies
       run: dotnet restore ./MAPIInspector/Source/MAPIInspector.sln
-    - name: "Install Fiddler"
+    - name: Download and Install Fiddler
       shell: pwsh
       run: |
         # Define the URL for the Fiddler installer (check for the latest version on the Telerik website)
