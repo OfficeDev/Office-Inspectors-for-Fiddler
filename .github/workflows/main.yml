@@ -18,12 +18,14 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Download and Install .NET Framework 4.6.1 Developer Pack
+      shell: pwsh
       run: |
         # Download the .NET Framework 4.6.1 Developer Pack
         Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/?linkid=2099470 -OutFile NDP461-DevPack-KB3105179-ENU.exe
 
         # Install the Developer Pack silently
         Start-Process -FilePath NDP461-DevPack-KB3105179-ENU.exe -ArgumentList "/q" -Wait
+
     - name: Download and Install Fiddler
       shell: pwsh
       run: |
@@ -44,3 +46,11 @@ jobs:
       run: |
         $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
         & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./MAPIInspector/Source/MAPIInspector.sln
+
+    - name: Publish Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-artifacts
+        path: |
+          .\MAPIInspector\Source\bin\Release\MAPIFiddlerInspector.dll
+          .\MAPIInspector\Source\bin\Release\MAPIFiddlerInspector.pdb
