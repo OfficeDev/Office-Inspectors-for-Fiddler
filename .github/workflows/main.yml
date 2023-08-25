@@ -17,22 +17,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    # - name: Setup .NET
-    #   uses: actions/setup-dotnet@v3
-    #   with:
-    #     dotnet-version: 4.6.1
-    - name: Download and Install .NET Framework 4.6.1 Developer Pack
+    - name: Download and Install .NET Framework 4.6.2 Developer Pack
       run: |
-        # Download the .NET Framework 4.6.1 Developer Pack
-        Invoke-WebRequest -Uri https://aka.ms/msbuild/developerpacks/dotnetfx461devpack.exe -OutFile dotnetfx461devpack.exe
+        # Download the .NET Framework 4.6.2 Developer Pack
+        Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/?linkid=2099466 -OutFile ndp462-devpack-kb3151934-enu.exe
 
         # Install the Developer Pack silently
-        Start-Process -FilePath dotnetfx461devpack.exe -ArgumentList "/q" -Wait
-
-        # Clean up the installer file
-        Remove-Item -Path dotnetfx461devpack.exe
-    - name: Restore dependencies
-      run: dotnet restore ./MAPIInspector/Source/MAPIInspector.sln
+        Start-Process -FilePath ndp462-devpack-kb3151934-enu.exe -ArgumentList "/q" -Wait
     - name: Download and Install Fiddler
       shell: pwsh
       run: |
