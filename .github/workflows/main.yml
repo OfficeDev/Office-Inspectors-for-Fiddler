@@ -23,5 +23,8 @@ jobs:
         dotnet-version: 6.0.x
     - name: Restore dependencies
       run: dotnet restore ./MAPIInspector/Source/MAPIInspector.sln
-    - name: Build
-      run: dotnet build --no-restore ./MAPIInspector/Source/MAPIInspector.sln Release
+    - name: "Build"
+      shell: pwsh
+      run: |
+        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./MAPIInspector/Source/MAPIInspector.sln
