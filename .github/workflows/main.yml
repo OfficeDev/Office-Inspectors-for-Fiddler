@@ -23,6 +23,21 @@ jobs:
         dotnet-version: 6.0.x
     - name: Restore dependencies
       run: dotnet restore ./MAPIInspector/Source/MAPIInspector.sln
+    - name: "Install Fiddler"
+      shell: pwsh
+      run: |
+        # Define the URL for the Fiddler installer (check for the latest version on the Telerik website)
+        $FiddlerInstallerUrl = "https://telerik-fiddler.s3.amazonaws.com/fiddler/FiddlerSetup.exe"
+
+        # Define the path where you want to save the installer
+        $InstallerPath = "$env:USERPROFILE\Downloads\FiddlerSetup.exe"
+
+        # Download Fiddler installer
+        Invoke-WebRequest -Uri $FiddlerInstallerUrl -OutFile $InstallerPath
+
+        # Install Fiddler silently
+        Start-Process -FilePath $InstallerPath -ArgumentList "/S" -Wait
+
     - name: "Build"
       shell: pwsh
       run: |
