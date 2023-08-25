@@ -17,13 +17,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Download and Install .NET Framework 4.6.2 Developer Pack
+    - name: Download and Install .NET Framework 4.6.1 Developer Pack
       run: |
-        # Download the .NET Framework 4.6.2 Developer Pack
-        Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/?linkid=2099466 -OutFile ndp462-devpack-kb3151934-enu.exe
+        # Download the .NET Framework 4.6.1 Developer Pack
+        Invoke-WebRequest -Uri https://go.microsoft.com/fwlink/?linkid=2099470 -OutFile NDP461-DevPack-KB3105179-ENU.exe
 
         # Install the Developer Pack silently
-        Start-Process -FilePath ndp462-devpack-kb3151934-enu.exe -ArgumentList "/q" -Wait
+        Start-Process -FilePath NDP461-DevPack-KB3105179-ENU.exe -ArgumentList "/q" -Wait
     - name: Download and Install Fiddler
       shell: pwsh
       run: |
