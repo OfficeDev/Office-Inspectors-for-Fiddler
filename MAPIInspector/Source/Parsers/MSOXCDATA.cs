@@ -3863,46 +3863,45 @@
     /// </summary>
     public class AnnotatedData : BaseStructure
     {
+        public string ParsedValue { get; set; }
+
         /// <summary>
-        /// Alternate parsed string for display
-        /// </summary>
-        public string Annotation { get; set; }
-        /// <summary>
-        /// size of the data
+        /// Size of the data
         /// </summary>
         public virtual int Size { get; } = 0;
 
         /// <summary>
-        /// By overriding ToString, we can display the annotation string instead of the raw data
+        /// By overriding ToString, we can display the parsed string instead of the raw data
         /// </summary>
-        public override string ToString() => Annotation;
+        public override string ToString() => ParsedValue;
+
+        /// <summary>
+        /// Alternate parsings for display
+        /// </summary>
+        public Dictionary<string, string> parsedValues = new Dictionary<string, string>();
+        public string this[string key]
+        {
+            get
+            {
+                return parsedValues.ContainsKey(key) ? parsedValues[key] : string.Empty;
+            }
+            set
+            {
+                parsedValues[key] = value;
+            }
+        }
     }
 
     /// <summary>
     /// The AnnotatedBytes class to a byte stream with an alternate version of it (typically ConvertByteArrayToString)
     /// </summary>
-    public class AnnotatedBytes : BaseStructure
+    public class AnnotatedBytes : AnnotatedData
     {
         /// <summary>
         /// Bytes as byte array.
         /// </summary>
         public byte[] bytes;
-
-        /// <summary>
-        /// The annotated value
-        /// </summary>
-        public string Annotation;
-
-        //public int StartIndex;
-
-        private int Size;
-
-        /// <summary>
-        /// Initializes a new instance of the MAPIString class without parameters.
-        /// </summary>
-        public AnnotatedBytes()
-        {
-        }
+        private int size;
 
         /// <summary>
         /// Initializes a new instance of the Information class with parameters.
@@ -3910,7 +3909,7 @@
         /// <param name="size">Size of the byte array</param>
         public AnnotatedBytes(int size)
         {
-            this.Size = size;
+            this.size = size;
         }
 
         /// <summary>
@@ -3921,11 +3920,12 @@
         {
             base.Parse(s);
             var offset = (int)s.Position;
-            this.bytes = this.ReadBytes(this.Size);
-            this.Annotation = Utilities.ConvertByteArrayToString(this.bytes);
+            this.bytes = this.ReadBytes(this.size);
+            this.ParsedValue = Utilities.ConvertArrayToHexString(this.bytes);
+            this["string"] = Utilities.ConvertByteArrayToString(this.bytes);
         }
 
-        public void SetAnnotation(string annotation) { this.Annotation = annotation; }
+        public override int Size { get { return this.bytes.Length; } }
     }
 
     /// <summary>
@@ -3969,6 +3969,7 @@
         {
             base.Parse(s);
             value = this.ReadGuid();
+            this.ParsedValue = Guids.ToString(this.value);
         }
 
         public override int Size { get; } = 16; // sizeof(Guid)
@@ -3977,7 +3978,7 @@
     /// <summary>
     /// The MAPIString class to record the related attributes of string.
     /// </summary>
-    public class MAPIString : BaseStructure
+    public class MAPIString : AnnotatedData
     {
         /// <summary>
         /// The string value
@@ -3987,29 +3988,22 @@
         /// <summary>
         /// The string Encoding : ASCII or Unicode
         /// </summary>
-        public Encoding Encode;
+        private Encoding Encode;
 
         /// <summary>
         /// The string Terminator. Default is "\0"
         /// </summary>
-        public string Terminator;
+        private string Terminator;
 
         /// <summary>
         /// If the StringLength is not 0, The StringLength will be as the string length
         /// </summary>
-        public int StringLength;
+        private int StringLength;
 
         /// <summary>
         /// If the Encoding is Unicode, and it is reduced Unicode, it is true
         /// </summary>
-        public bool ReducedUnicode;
-
-        /// <summary>
-        /// Initializes a new instance of the MAPIString class without parameters.
-        /// </summary>
-        public MAPIString()
-        {
-        }
+        private bool ReducedUnicode;
 
         /// <summary>
         /// Initializes a new instance of the MAPIString class with parameters.
@@ -4035,6 +4029,56 @@
             base.Parse(s);
             this.Value = this.ReadString(this.Encode, this.Terminator, this.StringLength, this.ReducedUnicode);
         }
+        public override string ToString() => Value;
+        public override int Size
+        {
+            get
+            {
+                var len = 0;
+                if (Encode == Encoding.Unicode)
+                {
+                    // If the StringLength is not equal 0, the StringLength will be basis for size
+                    if (StringLength != 0)
+                    {
+                        len = StringLength * 2;
+                    }
+                    else
+                    {
+                        if (Value != null)
+                        {
+                            len = Value.Length * 2;
+                        }
+
+                        if (ReducedUnicode)
+                        {
+                            len -= 1;
+                        }
+
+                        len += Terminator.Length * 2;
+                    }
+                }
+                else
+                {
+                    // If the Encoding is ASCII.
+                    if (StringLength != 0)
+                    {
+                        // If the StringLength is not equal 0, the StringLength will be basis for size
+                        len = StringLength;
+                    }
+                    else
+                    {
+                        if (Value != null)
+                        {
+                            len = Value.Length;
+                        }
+
+                        len += Terminator.Length;
+                    }
+                }
+
+                return len;
+            }
+        }
     }
 
     /// <summary>
@@ -4055,7 +4099,7 @@
         /// <summary>
         /// The string Encoding : ASCII or Unicode
         /// </summary>
-        public Encoding Encode;
+        private Encoding Encode;
 
         /// <summary>
         /// The string Terminator. Default is "\0".
@@ -4589,17 +4633,16 @@
             base.Parse(s);
             this.Kind = (KindEnum)ReadByte();
             this.GUID = new AnnotatedGuid(s);
-            this.GUID.Annotation = Guids.ToString(this.GUID.value);
             switch (this.Kind)
             {
                 case KindEnum.LID:
                     {
                         this.LID = new AnnotatedUint(s);
                         var namedProp = NamedProperty.Lookup(GUID.value, LID.value);
-                        if (namedProp != null) 
-                            LID.Annotation = $"{namedProp.Name} = 0x{LID.value:X4}"; 
-                        else 
-                            LID.Annotation = $"0x{LID.value:X4}";
+                        if (namedProp != null)
+                            LID.ParsedValue = $"{namedProp.Name} = 0x{LID.value:X4}";
+                        else
+                            LID.ParsedValue = $"0x{LID.value:X4}";
 
                         break;
                     }
@@ -5392,12 +5435,12 @@
     /// <summary>
     /// 8 bytes; a 64-bit integer representing the number of 100-nanosecond intervals since January 1, 1601.[MS-DTYP]: FILETIME.
     /// </summary>
-    public class PtypTime : BaseStructure
+    public class PtypTime : AnnotatedData
     {
         /// <summary>
         /// 64-bit integer representing the number of 100-nanosecond intervals since January 1, 1601.[MS-DTYP]: FILETIME.
         /// </summary>
-        public DateTime Value;
+        private DateTime Value;
 
         /// <summary>
         /// Parse the PtypTime structure.
@@ -5417,7 +5460,11 @@
                 // Used to deal special date of PidTagMessageDeliveryTime property
                 this.Value = new DateTime();
             }
+
+            this.ParsedValue = Value.ToString();
         }
+
+        public override int Size { get; } = 8; // sizeof(DateTime)
     }
 
     /// <summary>

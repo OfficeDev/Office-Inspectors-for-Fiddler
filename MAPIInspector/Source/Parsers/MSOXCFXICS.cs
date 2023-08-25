@@ -4418,6 +4418,8 @@
         public virtual void Parse(FastTransferStream stream)
         {
         }
+
+        public override string ToString() => string.Empty;
     }
 
     /// <summary>
@@ -4690,7 +4692,9 @@
 
                     break;
                 case PropertyDataType.PtypTime:
-                    this.FixedValue = stream.ReadTime();
+                    PtypTime tempPropertyValue = new PtypTime();
+                    tempPropertyValue.Parse(stream);
+                    this.FixedValue = tempPropertyValue;
                     break;
                 case PropertyDataType.PtypGuid:
                     this.FixedValue = stream.ReadGuid();
@@ -5104,7 +5108,9 @@
 
                         break;
                     case PropertyDataType.PtypTime:
-                        this.FixedValue = stream.ReadTime();
+                        PtypTime tempPropertyValue = new PtypTime();
+                        tempPropertyValue.Parse(stream);
+                        this.FixedValue = tempPropertyValue;
                         break;
                     case PropertyDataType.PtypGuid:
                         this.FixedValue = stream.ReadGuid();
@@ -5758,7 +5764,9 @@
 
                         break;
                     case PropertyDataType.PtypTime:
-                        this.FixedValue = stream.ReadTime();
+                        PtypTime tempPropertyValue = new PtypTime();
+                        tempPropertyValue.Parse(stream);
+                        this.FixedValue = tempPropertyValue;
                         break;
                     case PropertyDataType.PtypGuid:
                         this.FixedValue = stream.ReadGuid();
@@ -6417,7 +6425,9 @@
 
                         break;
                     case PropertyDataType.PtypTime:
-                        this.FixedValue = stream.ReadTime();
+                        PtypTime tempPropertyValue = new PtypTime();
+                        tempPropertyValue.Parse(stream);
+                        this.FixedValue = tempPropertyValue;
                         break;
                     case PropertyDataType.PtypGuid:
                         this.FixedValue = stream.ReadGuid();
@@ -6954,7 +6964,7 @@
         /// <summary>
         /// The PropertySet item in lexical definition.
         /// </summary>
-        public Guid PropertySet;
+        public AnnotatedGuid PropertySet;
 
         /// <summary>
         /// The flag variable.
@@ -6998,9 +7008,7 @@
         public override void Parse(FastTransferStream stream)
         {
             base.Parse(stream);
-            byte[] buffer = new byte[Guid.Empty.ToByteArray().Length];
-            stream.Read(buffer, 0, buffer.Length);
-            this.PropertySet = new Guid(buffer);
+            this.PropertySet = new AnnotatedGuid(stream);
             int tmp = stream.ReadByte();
             if (tmp > 0)
             {
@@ -7017,7 +7025,7 @@
         /// <summary>
         /// The Dispid in lexical definition.
         /// </summary>
-        public int Dispid;
+        public AnnotatedUint Dispid;
 
         /// <summary>
         /// Initializes a new instance of the DispidNamedPropInfo class.
@@ -7055,7 +7063,12 @@
         public override void Parse(FastTransferStream stream)
         {
             base.Parse(stream);
-            this.Dispid = stream.ReadInt32();
+            this.Dispid = new AnnotatedUint(stream);
+            var namedProp = NamedProperty.Lookup(this.PropertySet.value, Dispid.value);
+            if (namedProp != null)
+                Dispid.ParsedValue = $"{namedProp.Name} = 0x{Dispid.value:X4}";
+            else
+                Dispid.ParsedValue = $"0x{Dispid.value:X4}";
         }
     }
 
@@ -7274,12 +7287,12 @@
         /// <summary>
         /// The property type.
         /// </summary>
-        public ushort? PropType;
+        public PropertyDataType? PropType;
 
         /// <summary>
         /// The property id.
         /// </summary>
-        public ushort? PropID;
+        public PidTagPropertyEnum? PropID;
 
         /// <summary>
         /// The property value.
@@ -7319,8 +7332,8 @@
             if (MapiInspector.MAPIInspector.PartialGetType == 0 || (MapiInspector.MAPIInspector.PartialGetType != 0 && !(MapiInspector.MAPIInspector.PartialGetServerUrl == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIInspector.PartialGetProcessName == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
                 && MapiInspector.MAPIInspector.PartialGetClientInfo == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])))
             {
-                this.PropType = stream.ReadUInt16();
-                this.PropID = stream.ReadUInt16();
+                this.PropType = (PropertyDataType)stream.ReadUInt16();
+                this.PropID = (PidTagPropertyEnum)stream.ReadUInt16();
             }
 
             if (stream.IsEndOfStream)
