@@ -48,7 +48,7 @@ jobs:
         & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./MAPIInspector/Source/MAPIInspector.sln
 
     - name: Publish Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: build-artifacts
         path: |
