@@ -4418,6 +4418,8 @@
         public virtual void Parse(FastTransferStream stream)
         {
         }
+
+        public override string ToString() => string.Empty;
     }
 
     /// <summary>
