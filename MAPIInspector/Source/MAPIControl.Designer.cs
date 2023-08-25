@@ -194,11 +194,23 @@ namespace MapiInspector
             CopyMethod(sender, e, this.CROPSHexBox);
         }
 
+        /// <summary>
+        /// Cleans a string by removing trailing null characters and replacing internal null characters with "\\0".
+        /// </summary>
+        /// <param name="text">The input string to be cleaned.</param>
+        /// <returns>A cleaned string with null characters treated as specified.</returns>
+        private string CleanString(string text)
+        {
+            // Remove any trailing null characters
+            // Replace internal null characters with "\\0"
+            return text.TrimEnd('\0').Replace("\0", "\\0");
+        }
+
         private void MapiTreeViewMenuItem1_Click(object sender, EventArgs e)
         {
             if (this.mapiTreeView.SelectedNode != null)
             {
-                Clipboard.SetText(this.mapiTreeView.SelectedNode.Text);
+                Clipboard.SetText(CleanString(this.mapiTreeView.SelectedNode.Text));
             }
         }
 
@@ -226,7 +238,7 @@ namespace MapiInspector
             var indents = ++count;
             for (int i = 0; i < indents; i++)
                 sb.Append("   ");
-            sb.AppendLine(node.Text.Replace("\0", "\\0"));
+            sb.AppendLine(CleanString(node.Text));
             foreach (var n in node.Nodes)
                 GetNodeTreeText(sb, n as TreeNode, indents);
         }
