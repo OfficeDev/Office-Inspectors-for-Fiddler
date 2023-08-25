@@ -5435,12 +5435,12 @@
     /// <summary>
     /// 8 bytes; a 64-bit integer representing the number of 100-nanosecond intervals since January 1, 1601.[MS-DTYP]: FILETIME.
     /// </summary>
-    public class PtypTime : BaseStructure
+    public class PtypTime : AnnotatedData
     {
         /// <summary>
         /// 64-bit integer representing the number of 100-nanosecond intervals since January 1, 1601.[MS-DTYP]: FILETIME.
         /// </summary>
-        public DateTime Value;
+        private DateTime Value;
 
         /// <summary>
         /// Parse the PtypTime structure.
@@ -5460,7 +5460,11 @@
                 // Used to deal special date of PidTagMessageDeliveryTime property
                 this.Value = new DateTime();
             }
+
+            this.ParsedValue = Value.ToString();
         }
+
+        public override int Size { get; } = 8; // sizeof(DateTime)
     }
 
     /// <summary>
