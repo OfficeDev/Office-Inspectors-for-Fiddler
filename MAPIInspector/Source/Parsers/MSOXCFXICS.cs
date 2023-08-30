@@ -7159,6 +7159,8 @@
         /// </summary>
         /// <param name="stream">Stream contains the serialized object</param>
         public abstract void Parse(FastTransferStream stream);
+
+        public override string ToString() => string.Empty;
     }
 
     /// <summary>
@@ -7215,12 +7217,12 @@
         /// <summary>
         /// The property type.
         /// </summary>
-        public ushort PropType;
+        public PropertyDataType PropType;
 
         /// <summary>
         /// The property id.
         /// </summary>
-        public ushort PropID;
+        public PidTagPropertyEnum PropID;
 
         /// <summary>
         /// The property value.
@@ -7254,16 +7256,16 @@
         /// <param name="stream">A FastTransferStream.</param>
         public override void Parse(FastTransferStream stream)
         {
-            this.PropType = stream.ReadUInt16();
-            this.PropID = stream.ReadUInt16();
+            this.PropType = (PropertyDataType)stream.ReadUInt16();
+            this.PropID = (PidTagPropertyEnum)stream.ReadUInt16();
 
-            if (this.PropID != 0x4011 && this.PropID != 0x4008)
+            if (this.PropID != PidTagPropertyEnum.MetaTagNewFXFolder && this.PropID != PidTagPropertyEnum.MetaTagDnPrefix)
             {
                 this.PropValue = stream.ReadUInt32();
             }
             else
             {
-                if (this.PropID != 0x4011)
+                if (this.PropID != PidTagPropertyEnum.MetaTagNewFXFolder)
                 {
                     FolderReplicaInfo folderReplicaInfo = new FolderReplicaInfo();
                     folderReplicaInfo.Parse(stream);
