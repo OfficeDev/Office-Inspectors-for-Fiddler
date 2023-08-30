@@ -3893,6 +3893,20 @@
     }
 
     /// <summary>
+    /// The AnnotatedComment class is a comment node that takes up no space in the stream. It is used to annotate other nodes with comments.
+    /// </summary>
+    public class AnnotatedComment : AnnotatedData
+    {
+        /// <summary>
+        /// Initializes a new instance of the Information class with parameters.
+        /// </summary>
+        /// <param name="comment">The comment</param>
+        public AnnotatedComment(string comment) => this.ParsedValue = comment;
+        public static implicit operator AnnotatedComment(string comment) => new AnnotatedComment(comment);
+        public override int Size { get { return 0; } }
+    }
+
+    /// <summary>
     /// The AnnotatedBytes class to a byte stream with an alternate version of it (typically ConvertByteArrayToString)
     /// </summary>
     public class AnnotatedBytes : AnnotatedData
@@ -3904,7 +3918,7 @@
         private int size;
 
         /// <summary>
-        /// Initializes a new instance of the Information class with parameters.
+        /// Initializes a new instance of the AnnotatedBytes class with parameters.
         /// </summary>
         /// <param name="size">Size of the byte array</param>
         public AnnotatedBytes(int size)
@@ -4808,12 +4822,14 @@
                         {
                             PropertyValue propValue = new PropertyValue(tempPropTag.PropertyType);
                             propValue.Parse(s);
+                            propValue.PropertyTag = $"{tempPropTag.PropertyType}:{tempPropTag.PropertyId}";
                             rowPropValue = propValue;
                         }
                         else
                         {
                             TypedPropertyValue typePropValue = new TypedPropertyValue();
                             typePropValue.Parse(s);
+                            typePropValue.PropertyTag = $"{tempPropTag.PropertyType}:{tempPropTag.PropertyId}";
                             rowPropValue = typePropValue;
                         }
                     }
@@ -4823,12 +4839,14 @@
                         {
                             FlaggedPropertyValue flagPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType);
                             flagPropValue.Parse(s);
+                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{tempPropTag.PropertyId}";
                             rowPropValue = flagPropValue;
                         }
                         else
                         {
                             FlaggedPropertyValueWithType flagPropValue = new FlaggedPropertyValueWithType();
                             flagPropValue.Parse(s);
+                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{tempPropTag.PropertyId}";
                             rowPropValue = flagPropValue;
                         }
                     }
@@ -6444,9 +6462,14 @@
         private PropertyDataType propertyType;
 
         /// <summary>
-        /// Boole value indicates if this property value is for address book.
+        /// Bool value indicates if this property value is for address book.
         /// </summary>
         private bool isAddressBook;
+
+        /// <summary>
+        /// Source property tag information
+        /// </summary>
+        public AnnotatedComment PropertyTag;
 
         /// <summary>
         /// Initializes a new instance of the PropertyValue class
@@ -6787,6 +6810,11 @@
         public object PropertyValue;
 
         /// <summary>
+        /// Source property tag information
+        /// </summary>
+        public AnnotatedComment PropertyTag;
+
+        /// <summary>
         /// The Count wide size of ptypMutiple type.
         /// </summary>
         private CountWideEnum countWide;
@@ -6905,6 +6933,11 @@
         private CountWideEnum countWide;
 
         /// <summary>
+        /// Source property tag information
+        /// </summary>
+        public AnnotatedComment PropertyTag;
+
+        /// <summary>
         /// Initializes a new instance of the FlaggedPropertyValue class
         /// </summary>
         /// <param name="propertyType">The Property data type.</param>
@@ -6961,6 +6994,11 @@
         /// A PropertyValue structure, as specified in section 2.11.2.1, unless the Flag field is set to 0x1. 
         /// </summary>
         public object PropertyValue;
+
+        /// <summary>
+        /// Source property tag information
+        /// </summary>
+        public AnnotatedComment PropertyTag;
 
         /// <summary>
         /// The Count wide size.
