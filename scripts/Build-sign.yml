@@ -14,7 +14,7 @@ pool:
 stages:
 - stage: Build
   jobs:
-  - job: ${{ parameters.name }}
+  - job: Build
     steps:
     - checkout: self
       clean: true
@@ -46,7 +46,7 @@ stages:
 
 - stage: Release
   jobs:
-  - job: ${{ parameters.name }}
+  - job: Sign
     steps:
     - checkout: self
       clean: true
@@ -65,7 +65,6 @@ stages:
         version: '2.x'
 
     - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-      condition: ${{ parameters.sign }}
       displayName: 'ESRP CodeSigning'
       inputs:
         ConnectedServiceName: 'ESRP CodeSigning Service connection'
