@@ -20,17 +20,64 @@ stages:
       clean: true
 
     - powershell: |
+        # Define the URL for the .NET Framework 4.6.1 Developer Pack installer
+        $DotNetInstallerUrl = "https://go.microsoft.com/fwlink/?linkid=2099470"
+
+        # Define the path where you want to save the installer
+        $DotNetInstallerPath = "$env:USERPROFILE\Downloads\NDP461-DevPack-KB3105179-ENU.exe"
+
+        # Log that the download process is starting
+        Write-Host "Downloading .NET Framework 4.6.1 Developer Pack installer from $DotNetInstallerUrl..."
+
+        # Download the .NET Framework 4.6.1 Developer Pack
+        Invoke-WebRequest -Uri $DotNetInstallerUrl -OutFile $DotNetInstallerPath
+
+        # Check if the download was successful
+        if (Test-Path $DotNetInstallerPath) {
+            Write-Host ".NET Framework 4.6.1 Developer Pack installer downloaded successfully to $DotNetInstallerPath."
+        } else {
+            Write-Host "Failed to download .NET Framework 4.6.1 Developer Pack installer."
+            exit 1
+        }
+
+        # Log that the installation process is starting
+        Write-Host "Installing .NET Framework 4.6.1 Developer Pack silently..."
+
+        # Install the .NET Framework 4.6.1 Developer Pack silently
+        Start-Process -FilePath $DotNetInstallerPath -ArgumentList "/q" -Wait
+
+        # Log that the installation process is complete
+        Write-Host ".NET Framework 4.6.1 Developer Pack installation completed."
+
+    - powershell: |
         # Define the URL for the Fiddler installer (check for the latest version on the Telerik website)
         $FiddlerInstallerUrl = "https://telerik-fiddler.s3.amazonaws.com/fiddler/FiddlerSetup.exe"
 
         # Define the path where you want to save the installer
         $InstallerPath = "$env:USERPROFILE\Downloads\FiddlerSetup.exe"
 
+        # Log that the download process is starting
+        Write-Host "Downloading Fiddler installer from $FiddlerInstallerUrl..."
+
         # Download Fiddler installer
         Invoke-WebRequest -Uri $FiddlerInstallerUrl -OutFile $InstallerPath
 
+        # Check if the download was successful
+        if (Test-Path $InstallerPath) {
+            Write-Host "Fiddler installer downloaded successfully to $InstallerPath."
+        } else {
+            Write-Host "Failed to download Fiddler installer."
+            exit 1
+        }
+
+        # Log that the installation process is starting
+        Write-Host "Installing Fiddler silently..."
+
         # Install Fiddler silently
         Start-Process -FilePath $InstallerPath -ArgumentList "/S" -Wait
+
+        # Log that the installation process is complete
+        Write-Host "Fiddler installation completed."
       displayName: 'Install Fiddler'
 
     - task: VSBuild@1
