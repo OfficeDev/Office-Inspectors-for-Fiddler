@@ -41,6 +41,9 @@
     <FiddlerPath Condition="$(FiddlerPath) == '' AND Exists('$(LocalAppData)\Programs\Fiddler\Fiddler.exe')">$(LocalAppData)\Programs\Fiddler</FiddlerPath>
     <FiddlerPath Condition="$(FiddlerPath) == '' AND Exists('$(ProgramFiles)\Fiddler2\Fiddler.exe')">$(ProgramFiles)\Fiddler2</FiddlerPath>
   </PropertyGroup>
+  <Target Name="LogFiddlerPath" BeforeTargets="Build">
+    <Message Text="FiddlerPath: $(FiddlerPath)" Importance="High" />
+  </Target>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>

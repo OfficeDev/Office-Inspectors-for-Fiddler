@@ -48,6 +48,7 @@ stages:
 
         # Log that the installation process is complete
         Write-Host ".NET Framework 4.6.1 Developer Pack installation completed."
+      displayName: 'Install .NET Framework 4.6.1 Developer Pack'
 
     - powershell: |
         # Define the URL for the Fiddler installer (check for the latest version on the Telerik website)
@@ -79,6 +80,10 @@ stages:
         # Log that the installation process is complete
         Write-Host "Fiddler installation completed."
       displayName: 'Install Fiddler'
+
+    - powershell: |
+        tree /f
+      displayName: 'Tree'
 
     - task: VSBuild@1
       displayName: Build
