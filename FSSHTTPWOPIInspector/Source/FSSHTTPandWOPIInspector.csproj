@@ -114,7 +114,8 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Xceed.Compression.Formats.v5.4">
-      <HintPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Xceed.Compression.Formats.v5.4.dll</HintPath>
+      <HintPath>$(FiddlerPath)\Xceed.Compression.Formats.v5.4.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

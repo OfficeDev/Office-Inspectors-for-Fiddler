@@ -81,18 +81,6 @@ stages:
         Write-Host "Fiddler installation completed."
       displayName: 'Install Fiddler'
 
-    - powershell: |
-        tree /a c:\
-      displayName: 'Tree C'
-
-    - powershell: |
-        tree /a d:\
-      displayName: 'Tree D'
-
-    - powershell: |
-        Get-ChildItem Env:
-      displayName: 'Env'
-
     - task: VSBuild@1
       displayName: Build
       inputs:
