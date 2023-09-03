@@ -164,8 +164,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>start "CopyDLLs" /B /wait start xcopy "$(SolutionDir)$(OutDir)*.*" "$(FiddlerPath)\Inspectors" /Q /Y
-  </PostBuildEvent>
+    <PostBuildEvent>start "CopyDLLs" /B /wait start xcopy "$(SolutionDir)$(OutDir)*.*" "$(FiddlerPath)\Inspectors" /Q /Y</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>taskkill /im fiddler.exe /t /f 2&gt;&amp;1 | exit /B 0</PreBuildEvent>

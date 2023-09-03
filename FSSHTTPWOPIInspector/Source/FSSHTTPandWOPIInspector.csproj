@@ -37,11 +37,18 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
   </PropertyGroup>
+  <PropertyGroup>
+    <FiddlerPath Condition="$(FiddlerPath) == '' AND Exists('$(LocalAppData)\Programs\Fiddler\Fiddler.exe')">$(LocalAppData)\Programs\Fiddler</FiddlerPath>
+    <FiddlerPath Condition="$(FiddlerPath) == '' AND Exists('$(ProgramFiles)\Fiddler2\Fiddler.exe')">$(ProgramFiles)\Fiddler2</FiddlerPath>
+  </PropertyGroup>
+  <Target Name="LogFiddlerPath" BeforeTargets="Build">
+    <Message Text="FiddlerPath: $(FiddlerPath)" Importance="High" />
+  </Target>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>c:\users\tomjebo\AppData\Local\Programs\Fiddler\Inspectors\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -83,10 +90,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Be.Windows.Forms.HexBox">
-      <HintPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Inspectors\Be.Windows.Forms.HexBox.dll</HintPath>
+      <HintPath>$(FiddlerPath)\Be.Windows.Forms.HexBox.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Fiddler">
-      <HintPath>..\..\..\..\..\AppData\Local\Programs\Fiddler\Fiddler.exe</HintPath>
+      <HintPath>$(FiddlerPath)\Fiddler.exe</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -151,16 +160,12 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>start "CopyDLLs" /B /wait start xcopy "$(SolutionDir)$(OutDir)*.*" "C:\Program Files (x86)\Fiddler2\Inspectors" /Q /Y</PostBuildEvent>
+    <PostBuildEvent>start "CopyDLLs" /B /wait start xcopy "$(SolutionDir)$(OutDir)*.*" "$(FiddlerPath)\Inspectors" /Q /Y</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>taskkill /im fiddler.exe /t /f 2&gt;&amp;1 | exit /B 0</PreBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
+    <Error Text="Unable to find Fiddler installation" Condition="$(FiddlerPath) == ''" />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
