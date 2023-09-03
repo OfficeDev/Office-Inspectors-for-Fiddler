@@ -82,11 +82,11 @@ stages:
       displayName: 'Install Fiddler'
 
     - powershell: |
-        tree /f c:\
+        tree /a c:\
       displayName: 'Tree C'
 
     - powershell: |
-        tree /f d:\
+        tree /a d:\
       displayName: 'Tree D'
 
     - powershell: |
