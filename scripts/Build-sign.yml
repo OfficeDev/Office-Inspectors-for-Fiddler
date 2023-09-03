@@ -82,8 +82,16 @@ stages:
       displayName: 'Install Fiddler'
 
     - powershell: |
-        tree /f
-      displayName: 'Tree'
+        tree /f c:\
+      displayName: 'Tree C'
+
+    - powershell: |
+        tree /f d:\
+      displayName: 'Tree D'
+
+    - powershell: |
+        Get-ChildItem Env:
+      displayName: 'Env'
 
     - task: VSBuild@1
       displayName: Build
