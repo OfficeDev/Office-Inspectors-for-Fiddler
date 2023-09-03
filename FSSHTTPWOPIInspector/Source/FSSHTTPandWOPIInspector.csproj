@@ -113,10 +113,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Xceed.Compression.Formats.v5.4">
-      <HintPath>$(FiddlerPath)\Xceed.Compression.Formats.v5.4.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FSSHTTPAndWOPIControl.cs">

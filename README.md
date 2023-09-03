@@ -24,10 +24,9 @@ Each of the inspectors has a Visual Studio solution file in the Source folder, f
 
 These will allow you to modify and build the inspector dlls. 
 
-NOTE: There are dependencies on a few libraries and some of these are found in the Fiddler install folder. Specifically, the correct versions of the **Xceed** and **HexBox** libraries can be found in your system's install folder for Fiddler. These are the libraries that you should point the Visual Studio inspector projects to for references. For example: 
+NOTE: There are dependencies on a few libraries and some of these are found in the Fiddler install folder. Specifically, the correct versions of the **HexBox** libraries can be found in your system's install folder for Fiddler. These are the libraries that you should point the Visual Studio inspector projects to for references. For example: 
 
     `C:\Users\<username>\AppData\Local\Programs\Fiddler\Be.Windows.Forms.HexBox.dll`
-    `C:\Users\<username>\AppData\Local\Programs\Fiddler\Xceed.Compression.v5.4.dll`
 
 ## Installation 
 First install the latest [Fiddler](http://www.telerik.com/fiddler) tool and then run it. Note that Fiddler must be run at least once before installing any inspectors. To install the inspector of your choice (MAPI, FSSHTTPWOPI) or to install both, add the respective DLL files and the scripts.
