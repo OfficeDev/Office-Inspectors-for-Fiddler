@@ -19,6 +19,9 @@ stages:
     - checkout: self
       clean: true
 
+    - task: NuGetCommand@2
+      displayName: NuGet restore
+
     - powershell: |
         # Define the URL for the .NET Framework 4.6.1 Developer Pack installer
         $DotNetInstallerUrl = "https://go.microsoft.com/fwlink/?linkid=2099470"
