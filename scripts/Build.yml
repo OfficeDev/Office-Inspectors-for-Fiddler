@@ -25,21 +25,21 @@ stages:
     - task: NuGetCommand@2
       displayName: NuGet restore
 
-      - powershell: |
-          Write-Host "Prod.Company: '$(Prod.Company)'"
-          Write-Host "Prod.BuildVersion: '$(Prod.BuildVersion)'"
-          # create year variable
-          $year = (Get-Date -Format "YYYY")
-          $copyright = "Copyright © $year $(Prod.Company). All rights reserved."
-          Write-Host "copyright: '$copyright'"
-          Write-Host "##vso[task.setvariable variable=Prod.Copyright;]$copyright"
-        displayName: Debug Variables
-        continueOnError: true
+    - powershell: |
+        Write-Host "Prod.Company: '$(Prod.Company)'"
+        Write-Host "Prod.BuildVersion: '$(Prod.BuildVersion)'"
+        # create year variable
+        $year = (Get-Date -Format "YYYY")
+        $copyright = "Copyright © $year $(Prod.Company). All rights reserved."
+        Write-Host "copyright: '$copyright'"
+        Write-Host "##vso[task.setvariable variable=Prod.Copyright;]$copyright"
+      displayName: Debug Variables
+      continueOnError: true
 
-      - powershell: |
-          Write-Host "Prod.Copyright: '$(Prod.Copyright)'"
-        displayName: More Debug Variables
-        continueOnError: true
+    - powershell: |
+        Write-Host "Prod.Copyright: '$(Prod.Copyright)'"
+      displayName: More Debug Variables
+      continueOnError: true
 
     - task: Assembly-Info-NetFramework@3
       displayName: 'Set Assembly Manifest Data'
