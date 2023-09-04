@@ -1,9 +1,6 @@
 name: $(Year:yy).0.$(date:yy)$(DayOfYear)$(rev:.rr)
 variables:
   Prod.Company: 'Microsoft Corporation'
-  year: $(Get-Date -Format "YYYY")
-  Prod.Copyright: 'Copyright © $(year) Microsoft Corporation. All rights reserved.'
-  Prod.Version.Revision: $[counter(variables['Mex.Daily'])]
   Prod.BuildVersion: $(Build.BuildNumber)
 
 trigger: none
@@ -27,6 +24,22 @@ stages:
 
     - task: NuGetCommand@2
       displayName: NuGet restore
+
+      - powershell: |
+          Write-Host "Prod.Company: '$(Prod.Company)'"
+          Write-Host "Prod.BuildVersion: '$(Prod.BuildVersion)'"
+          # create year variable
+          $year = (Get-Date -Format "YYYY")
+          $copyright = "Copyright © $year $(Prod.Company). All rights reserved."
+          Write-Host "copyright: '$copyright'"
+          Write-Host "##vso[task.setvariable variable=Prod.Copyright;]$copyright"
+        displayName: Debug Variables
+        continueOnError: true
+
+      - powershell: |
+          Write-Host "Prod.Copyright: '$(Prod.Copyright)'"
+        displayName: More Debug Variables
+        continueOnError: true
 
     - task: Assembly-Info-NetFramework@3
       displayName: 'Set Assembly Manifest Data'
