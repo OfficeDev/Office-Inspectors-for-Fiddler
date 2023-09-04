@@ -23,6 +23,14 @@ jobs:
       shell: pwsh
       run: ./scripts/machine-setup.ps1
 
+    - name: Restore NuGet packages
+      working-directory: ${{ github.workspace }}
+      run: |
+        nuget restore ./MAPIInspector/Source/MAPIInspector.sln
+        nuget restore ./MAPIInspector/Test/MAPIAutomationTest/MAPIAutomationTest.sln
+        nuget restore ./FSSHTTPWOPIInspector/Source/FSSHTTPandWOPIInspector.sln
+        nuget restore ./FSSHTTPWOPIInspector/Test/WOPIautomation/WOPIautomation.sln
+
     - name: "Build MAPIInspector"
       shell: pwsh
       run: |
