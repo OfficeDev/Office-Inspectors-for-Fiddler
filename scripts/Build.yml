@@ -1,0 +1,143 @@
+name: $(Year:yy).0.$(date:yy)$(DayOfYear)$(rev:.rr)
+variables:
+  Prod.Company: 'Microsoft Corporation'
+  Prod.BuildVersion: $(Build.BuildNumber)
+
+trigger: none
+pr: none
+
+pool:
+  name: Azure Pipelines
+  vmImage: 'windows-latest'
+  demands:
+  - msbuild
+  - visualstudio
+  - vstest
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    steps:
+    - checkout: self
+      clean: true
+
+    - task: NuGetCommand@2
+      displayName: NuGet restore
+
+    - powershell: |
+        Write-Host "Prod.Company: '$(Prod.Company)'"
+        Write-Host "Prod.BuildVersion: '$(Prod.BuildVersion)'"
+        # create year variable
+        $year = (Get-Date -Format "yyyy")
+        $copyright = "Copyright © $year $(Prod.Company). All rights reserved."
+        Write-Host "copyright: '$copyright'"
+        Write-Host "##vso[task.setvariable variable=Prod.Copyright;]$copyright"
+      displayName: Debug Variables
+      continueOnError: true
+
+    - powershell: |
+        Write-Host "Prod.Copyright: '$(Prod.Copyright)'"
+      displayName: More Debug Variables
+      continueOnError: true
+
+    - task: Assembly-Info-NetFramework@3
+      displayName: 'Set Assembly Manifest Data'
+      inputs:
+        FileNames: |
+          **\AssemblyInfo.cs
+        Company: '$(Prod.Company)'
+        Copyright: '$(Prod.Copyright)'
+        Configuration: '$(Build.Configuration)'
+        VersionNumber: '$(Prod.BuildVersion)'
+        FileVersionNumber: '$(Prod.BuildVersion)'
+
+    - powershell: |
+        # Define the URL for the .NET Framework 4.6.1 Developer Pack installer
+        $DotNetInstallerUrl = "https://go.microsoft.com/fwlink/?linkid=2099470"
+
+        # Define the path where you want to save the installer
+        $DotNetInstallerPath = "$env:USERPROFILE\Downloads\NDP461-DevPack-KB3105179-ENU.exe"
+
+        # Log that the download process is starting
+        Write-Host "Downloading .NET Framework 4.6.1 Developer Pack installer from $DotNetInstallerUrl..."
+
+        # Download the .NET Framework 4.6.1 Developer Pack
+        Invoke-WebRequest -Uri $DotNetInstallerUrl -OutFile $DotNetInstallerPath
+
+        # Check if the download was successful
+        if (Test-Path $DotNetInstallerPath) {
+            Write-Host ".NET Framework 4.6.1 Developer Pack installer downloaded successfully to $DotNetInstallerPath."
+        } else {
+            Write-Host "Failed to download .NET Framework 4.6.1 Developer Pack installer."
+            exit 1
+        }
+
+        # Log that the installation process is starting
+        Write-Host "Installing .NET Framework 4.6.1 Developer Pack silently..."
+
+        # Install the .NET Framework 4.6.1 Developer Pack silently
+        Start-Process -FilePath $DotNetInstallerPath -ArgumentList "/q" -Wait
+
+        # Log that the installation process is complete
+        Write-Host ".NET Framework 4.6.1 Developer Pack installation completed."
+      displayName: 'Install .NET Framework 4.6.1 Developer Pack'
+
+    - powershell: |
+        # Define the URL for the Fiddler installer (check for the latest version on the Telerik website)
+        $FiddlerInstallerUrl = "https://telerik-fiddler.s3.amazonaws.com/fiddler/FiddlerSetup.exe"
+
+        # Define the path where you want to save the installer
+        $InstallerPath = "$env:USERPROFILE\Downloads\FiddlerSetup.exe"
+
+        # Log that the download process is starting
+        Write-Host "Downloading Fiddler installer from $FiddlerInstallerUrl..."
+
+        # Download Fiddler installer
+        Invoke-WebRequest -Uri $FiddlerInstallerUrl -OutFile $InstallerPath
+
+        # Check if the download was successful
+        if (Test-Path $InstallerPath) {
+            Write-Host "Fiddler installer downloaded successfully to $InstallerPath."
+        } else {
+            Write-Host "Failed to download Fiddler installer."
+            exit 1
+        }
+
+        # Log that the installation process is starting
+        Write-Host "Installing Fiddler silently..."
+
+        # Install Fiddler silently
+        Start-Process -FilePath $InstallerPath -ArgumentList "/S" -Wait
+
+        # Log that the installation process is complete
+        Write-Host "Fiddler installation completed."
+      displayName: 'Install Fiddler'
+
+    - task: VSBuild@1
+      displayName: Build
+      inputs:
+        solution: '**/*.sln'
+        vsVersion: latest
+        configuration: "Release"
+        clean: true
+        maximumCpuCount: true
+        msbuildArchitecture: x64
+        createLogFile: true
+
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)'
+        Contents: |
+          **\bin\**\MAPIFiddlerInspector.dll
+          **\bin\**\MAPIFiddlerInspector.pdb
+          **\bin\**\FSSHTTPandWOPIFiddlerInspector.dll
+          **\bin\**\FSSHTTPandWOPIFiddlerInspector.pdb
+        TargetFolder: '$(build.artifactstagingdirectory)'
+        flattenFolders: true
+        CleanTargetFolder: true
+        OverWrite: true
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'

@@ -18,6 +18,10 @@
     <TestProjectType>UnitTest</TestProjectType>
     <TargetFrameworkProfile />
   </PropertyGroup>
+  <PropertyGroup>
+    <FiddlerPath Condition="$(FiddlerPath) == '' AND Exists('$(LocalAppData)\Programs\Fiddler\Fiddler.exe')">$(LocalAppData)\Programs\Fiddler</FiddlerPath>
+    <FiddlerPath Condition="$(FiddlerPath) == '' AND Exists('$(ProgramFiles)\Fiddler2\Fiddler.exe')">$(ProgramFiles)\Fiddler2</FiddlerPath>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -52,9 +56,9 @@
     <Reference Include="EQATEC.Analytics.Monitor">
       <HintPath>..\ExternalReference\EQATEC.Analytics.Monitor.dll</HintPath>
     </Reference>
-    <Reference Include="Fiddler, Version=4.6.20172.31233, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\AppData\Local\Programs\Fiddler\Fiddler.exe</HintPath>
+    <Reference Include="Fiddler">
+      <HintPath>$(FiddlerPath)\Fiddler.exe</HintPath>
+      <Private>False</Private>
       <Aliases>FiddlerExe</Aliases>
     </Reference>
     <Reference Include="FiddlerCore4">
@@ -67,7 +71,7 @@
     </Reference>
     <Reference Include="MAPIFiddlerInspector, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Source\bin\Debug\MAPIFiddlerInspector.dll</HintPath>
+      <HintPath>$(FiddlerPath)\Inspectors\MAPIFiddlerInspector.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Office.Interop.Outlook, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
@@ -141,11 +145,7 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
+    <Error Text="Unable to find Fiddler installation" Condition="$(FiddlerPath) == ''" />
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
