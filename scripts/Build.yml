@@ -1,9 +1,8 @@
 name: $(Year:yy).0.$(date:yy)$(DayOfYear)$(rev:.rr)
 variables:
   Prod.Company: 'Microsoft Corporation'
-  Prod.Copyright: 'Copyright © Microsoft Corporation. All rights reserved.'
+  Prod.Copyright: 'Copyright © $(date +%Y) Microsoft Corporation. All rights reserved.'
   Prod.Version.Revision: $[counter(variables['Mex.Daily'])]
-  # Prod.BuildVersion: $(Prod.Version.Major).$(Prod.Version.Minor).$(Prod.Version.Build).$(Prod.Version.Revision)
   Prod.BuildVersion: $(Build.BuildNumber)
 
 trigger: none
