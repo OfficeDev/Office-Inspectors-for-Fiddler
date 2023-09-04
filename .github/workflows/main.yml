@@ -21,7 +21,6 @@ jobs:
     - name: Install tools
       shell: pwsh
       run: ./scripts/install-tools.ps1
-      working-directory: ${{ github.repository }}
 
     - name: "Build"
       shell: pwsh
