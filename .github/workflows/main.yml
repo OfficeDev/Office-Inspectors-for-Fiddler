@@ -18,9 +18,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Install tools
+    - name: Machine setup
       shell: pwsh
-      run: '& $env:GITHUB_ACTION_PATH/scripts/install-tools.ps1'
+      run: ./scripts/machine-setup.ps1
 
     - name: "Build"
       shell: pwsh
