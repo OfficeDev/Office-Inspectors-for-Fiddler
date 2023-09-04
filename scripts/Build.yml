@@ -98,13 +98,14 @@ stages:
     - task: CopyFiles@2
       displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
       inputs:
-        SourceFolder: '$(Build.SourcesDirectory)\**\bin'
+        SourceFolder: '$(Build.SourcesDirectory)'
         Contents: |
-          **\MAPIFiddlerInspector.dll
-          **\MAPIFiddlerInspector.pdb
-          **\FSSHTTPandWOPIFiddlerInspector.dll
-          **\FSSHTTPandWOPIFiddlerInspector.pdb
+          **\bin\**\MAPIFiddlerInspector.dll
+          **\bin\**\MAPIFiddlerInspector.pdb
+          **\bin\**\FSSHTTPandWOPIFiddlerInspector.dll
+          **\bin\**\FSSHTTPandWOPIFiddlerInspector.pdb
         TargetFolder: '$(build.artifactstagingdirectory)'
+        flattenFolders: true
         CleanTargetFolder: true
         OverWrite: true
 
