@@ -70,7 +70,8 @@ stages:
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publish Artifact: drop'
-      PathtoPublish: '$(System.ArtifactsDirectory)/drop'
+      inputs:
+        PathtoPublish: '$(System.ArtifactsDirectory)/drop'
 
     # - task: ArchiveFiles@2
     #   inputs:
