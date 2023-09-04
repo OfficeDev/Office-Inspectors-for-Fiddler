@@ -88,30 +88,4 @@ stages:
         isPreRelease: true
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'
-
-    # - task: GitHubRelease@1
-    #   inputs:
-    #     gitHubConnection: 'stephenegriffin'
-    #     repositoryName: '$(Build.Repository.Name)'
-    #     action: 'create'
-    #     target: '$(Build.SourceVersion)'
-    #     tagSource: 'userSpecifiedTag'
-    #     tag: '$(Build.BuildNumber)'
-    #     title: ${{ parameters.title }} ($(Build.BuildNumber))
-    #     releaseNotesSource: 'inline'
-    #     releaseNotesInline: |-
-    #       Build: *$(Build.BuildNumber)*
-
-    #       ${{ parameters.description }}
-    #       If you just want to run MFCMAPI or MrMAPI, get the executables (exe). If you want to debug them, get the symbol files (pdb).
-
-    #       *The 64 bit builds will only work on a machine with 64 bit Outlook installed. All other machines should use the 32 bit builds, regardless of the operating system.*
-
-    #       [![Facebook Badge](http://badge.facebook.com/badge/26764016480.2776.1538253884.png)](http://www.facebook.com/MFCMAPI)
-    #       [Download stats](https://hanadigital.github.io/grev/?user=stephenegriffin&repo=mfcmapi)
-    #     isDraft: true
-    #     isPreRelease: ${{ parameters.prerelease }}
-    #     changeLogCompareToRelease: 'lastFullRelease'
-    #     changeLogType: 'issueBased'
-    #     assets: |
-    #       $(Build.ArtifactStagingDirectory)/*.zip
+        title: MAPIFiddlerInspector & FSSHTTPandWOPIFiddlerInspector ($(Build.BuildNumber))
