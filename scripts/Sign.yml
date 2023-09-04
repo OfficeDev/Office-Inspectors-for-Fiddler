@@ -73,10 +73,20 @@ stages:
       inputs:
         PathtoPublish: '$(System.ArtifactsDirectory)/drop'
 
-    # - task: ArchiveFiles@2
-    #   inputs:
-    #     rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release_Unicode/MrMAPI.exe'
-    #     archiveFile: '$(Build.ArtifactStagingDirectory)/MrMAPI.exe.$(Build.BuildNumber).zip'
+    - task: GitHubRelease@1
+      inputs:
+        gitHubConnection: 'GitHub OfficeDev / Office-Inspectors-for-Fiddler'
+        repositoryName: '$(Build.Repository.Name)'
+        action: 'create'
+        target: '$(Build.SourceVersion)'
+        tagSource: 'gitTag'
+        assets: |
+          $(Build.ArtifactStagingDirectory)/drop/*.dll
+          $(Build.ArtifactStagingDirectory)/drop/*.pdb
+        isDraft: true
+        isPreRelease: true
+        changeLogCompareToRelease: 'lastFullRelease'
+        changeLogType: 'commitBased'
 
     # - task: GitHubRelease@1
     #   inputs:
