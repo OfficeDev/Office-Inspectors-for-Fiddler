@@ -20,7 +20,7 @@ jobs:
 
     - name: Install tools
       shell: pwsh
-      run: ./scripts/install-tools.ps1
+      run: '& $env:GITHUB_ACTION_PATH/scripts/install-tools.ps1'
 
     - name: "Build"
       shell: pwsh
