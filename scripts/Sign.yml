@@ -20,9 +20,14 @@ stages:
       clean: true
       submodules: recursive
 
-    - task: DownloadBuildArtifacts@0
+    # Download latest drop from build task
+    - task: DownloadBuildArtifacts@1
       inputs:
-        buildType: 'current'
+        buildType: 'specific'
+        project: '66af1341-9a01-4509-a5ff-5d71bf70ed37'
+        pipeline: '17'
+        specificBuildWithTriggering: true
+        buildVersionToDownload: 'latest'
         downloadType: 'single'
         artifactName: 'drop'
         downloadPath: '$(System.ArtifactsDirectory)'
