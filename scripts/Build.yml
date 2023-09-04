@@ -1,4 +1,10 @@
 name: $(Year:yy).0.$(date:yy)$(DayOfYear)$(rev:.rr)
+variables:
+  Prod.Company: 'Microsoft Corporation'
+  Prod.Copyright: 'Copyright © Microsoft Corporation. All rights reserved.'
+  Prod.Version.Revision: $[counter(variables['Mex.Daily'])]
+  # Prod.BuildVersion: $(Prod.Version.Major).$(Prod.Version.Minor).$(Prod.Version.Build).$(Prod.Version.Revision)
+  Prod.BuildVersion: $(Build.BuildNumber)
 
 trigger: none
 pr: none
@@ -21,6 +27,17 @@ stages:
 
     - task: NuGetCommand@2
       displayName: NuGet restore
+
+    - task: bleddynrichards.Assembly-Info-Task.Assembly-Info-Task.Assembly-Info-NetFramework@2
+      displayName: 'Set Assembly Manifest Data'
+      inputs:
+        FileNames: |
+          **\AssemblyInfo.cs
+        Company: '$(Prod.Company)'
+        Copyright: '$(Prod.Copyright)'
+        Configuration: '$(Build.Configuration)'
+        VersionNumber: '$(Prod.BuildVersion)'
+        FileVersionNumber: '$(Prod.BuildVersion)'
 
     - powershell: |
         # Define the URL for the .NET Framework 4.6.1 Developer Pack installer
