@@ -29,7 +29,7 @@ stages:
         Write-Host "Prod.Company: '$(Prod.Company)'"
         Write-Host "Prod.BuildVersion: '$(Prod.BuildVersion)'"
         # create year variable
-        $year = (Get-Date -Format "YYYY")
+        $year = (Get-Date -Format "yyyy")
         $copyright = "Copyright © $year $(Prod.Company). All rights reserved."
         Write-Host "copyright: '$copyright'"
         Write-Host "##vso[task.setvariable variable=Prod.Copyright;]$copyright"
