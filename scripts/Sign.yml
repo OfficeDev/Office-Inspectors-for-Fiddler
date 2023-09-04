@@ -68,6 +68,23 @@ stages:
                   }
               ]
 
+    - task: CopyFiles@2
+      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+      inputs:
+        SourceFolder: '$(System.ArtifactsDirectory)/drop'
+        Contents: |
+          **\MAPIFiddlerInspector.dll
+          **\MAPIFiddlerInspector.pdb
+          **\FSSHTTPandWOPIFiddlerInspector.dll
+          **\FSSHTTPandWOPIFiddlerInspector.pdb
+        TargetFolder: '$(build.artifactstagingdirectory)'
+        flattenFolders: true
+        CleanTargetFolder: true
+        OverWrite: true
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: drop'
+
     # - task: ArchiveFiles@2
     #   inputs:
     #     rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/Win32/MrMAPI/Release_Unicode/MrMAPI.exe'
