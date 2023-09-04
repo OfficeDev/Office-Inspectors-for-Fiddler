@@ -28,7 +28,7 @@ stages:
     - task: NuGetCommand@2
       displayName: NuGet restore
 
-    - task: bleddynrichards.Assembly-Info-Task.Assembly-Info-Task.Assembly-Info-NetFramework@2
+    - task: Assembly-Info-NetFramework@3
       displayName: 'Set Assembly Manifest Data'
       inputs:
         FileNames: |
