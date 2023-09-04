@@ -1,0 +1,63 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    continue-on-error: true
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Machine setup
+      shell: pwsh
+      run: ./scripts/machine-setup.ps1
+
+    - name: Restore NuGet packages
+      working-directory: ${{ github.workspace }}
+      run: |
+        nuget restore ./MAPIInspector/Source/MAPIInspector.sln
+        nuget restore ./MAPIInspector/Test/MAPIAutomationTest/MAPIAutomationTest.sln
+        nuget restore ./FSSHTTPWOPIInspector/Source/FSSHTTPandWOPIInspector.sln
+        nuget restore ./FSSHTTPWOPIInspector/Test/WOPIautomation/WOPIautomation.sln
+
+    - name: "Build MAPIInspector"
+      shell: pwsh
+      run: |
+        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./MAPIInspector/Source/MAPIInspector.sln
+
+    - name: "Build MAPIAutomationTest"
+      shell: pwsh
+      run: |
+        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./MAPIInspector/Test/MAPIAutomationTest/MAPIAutomationTest.sln
+
+    - name: "Build FSSHTTPandWOPIInspector"
+      shell: pwsh
+      run: |
+        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./FSSHTTPWOPIInspector/Source/FSSHTTPandWOPIInspector.sln
+
+    - name: "Build WOPIautomation"
+      shell: pwsh
+      run: |
+        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./FSSHTTPWOPIInspector/Test/WOPIautomation/WOPIautomation.sln
+
+    - name: Publish Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifacts
+        path: |
+          .\MAPIInspector\Source\bin\Release\MAPIFiddlerInspector.dll
+          .\MAPIInspector\Source\bin\Release\MAPIFiddlerInspector.pdb
+          .\FSSHTTPWOPIInspector\Source\bin\Release\FSSHTTPandWOPIFiddlerInspector.dll
+          .\FSSHTTPWOPIInspector\Source\bin\Release\FSSHTTPandWOPIFiddlerInspector.pdb
