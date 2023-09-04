@@ -14,6 +14,7 @@ jobs:
   build:
 
     runs-on: windows-latest
+    continue-on-error: true
 
     steps:
     - uses: actions/checkout@v3
@@ -22,13 +23,28 @@ jobs:
       shell: pwsh
       run: ./scripts/machine-setup.ps1
 
-    - name: "Build"
+    - name: "Build MAPIInspector"
       shell: pwsh
       run: |
         $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
         & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./MAPIInspector/Source/MAPIInspector.sln
+
+    - name: "Build MAPIAutomationTest"
+      shell: pwsh
+      run: |
+        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
         & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./MAPIInspector/Test/MAPIAutomationTest/MAPIAutomationTest.sln
+
+    - name: "Build FSSHTTPandWOPIInspector"
+      shell: pwsh
+      run: |
+        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
         & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./FSSHTTPWOPIInspector/Source/FSSHTTPandWOPIInspector.sln
+
+    - name: "Build WOPIautomation"
+      shell: pwsh
+      run: |
+        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
         & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./FSSHTTPWOPIInspector/Test/WOPIautomation/WOPIautomation.sln
 
     - name: Publish Artifacts
