@@ -27,6 +27,9 @@ jobs:
       run: |
         $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
         & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./MAPIInspector/Source/MAPIInspector.sln
+        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./MAPIInspector/Test/MAPIAutomationTest/MAPIAutomationTest.sln
+        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./FSSHTTPWOPIInspector/Source/FSSHTTPandWOPIInspector.sln
+        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./FSSHTTPWOPIInspector/Test/WOPIautomation/WOPIautomation.sln
 
     - name: Publish Artifacts
       uses: actions/upload-artifact@v3
@@ -35,3 +38,5 @@ jobs:
         path: |
           .\MAPIInspector\Source\bin\Release\MAPIFiddlerInspector.dll
           .\MAPIInspector\Source\bin\Release\MAPIFiddlerInspector.pdb
+          .\FSSHTTPWOPIInspector\Source\bin\Release\FSSHTTPandWOPIFiddlerInspector.dll
+          .\FSSHTTPWOPIInspector\Source\bin\Release\FSSHTTPandWOPIFiddlerInspector.pdb
