@@ -79,7 +79,8 @@ stages:
         repositoryName: '$(Build.Repository.Name)'
         action: 'create'
         target: '$(Build.SourceVersion)'
-        tagSource: 'gitTag'
+        tagSource: 'userSpecifiedTag'
+        tag: '$(Build.BuildNumber)'
         assets: |
           $(Build.ArtifactStagingDirectory)/drop/*.dll
           $(Build.ArtifactStagingDirectory)/drop/*.pdb
