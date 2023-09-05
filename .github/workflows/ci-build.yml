@@ -9,12 +9,21 @@ on:
 
 jobs:
   build:
-
     runs-on: windows-latest
     continue-on-error: true
+    timeout-minutes: 360
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: 'csharp'
 
     - name: Machine setup
       shell: pwsh
@@ -51,6 +60,11 @@ jobs:
       run: |
         $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
         & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./FSSHTTPWOPIInspector/Test/WOPIautomation/WOPIautomation.sln
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+      with:
+        category: "/language:csharp"
 
     - name: Publish Artifacts
       uses: actions/upload-artifact@v3
