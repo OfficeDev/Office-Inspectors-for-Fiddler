@@ -21,10 +21,9 @@ This repository also includes Jscript that adds an *MS Protocol* column in the F
 
 ## Building the Inspectors
 
-Each of the inspectors has a Visual Studio solution file in the Source folder, for example:
-
-    `Office-Inspectors-for-Fiddler\MAPIInspector\Source\MAPIInspector.sln`
-    `Office-Inspectors-for-Fiddler\FSSHTTPWOPIInspector\Source\FSSHTTPandWOPIInspector.sln`
+Each of the inspectors has a Visual Studio solution file in the Source folder, for example:  
+`Office-Inspectors-for-Fiddler\MAPIInspector\Source\MAPIInspector.sln`  
+`Office-Inspectors-for-Fiddler\FSSHTTPWOPIInspector\Source\FSSHTTPandWOPIInspector.sln`
 
 These will allow you to modify and build the inspector dlls.
 
