@@ -99,7 +99,7 @@ stages:
         tagSource: 'userSpecifiedTag'
         tag: '$(Build.BuildNumber)'
         assets: |
-          $(System.ArtifactStagingDirectory)/drop/*.zip
+          $(System.ArtifactStagingDirectory)/*.zip
         isDraft: true
         isPreRelease: true
         changeLogCompareToRelease: 'lastFullRelease'
