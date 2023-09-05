@@ -1,0 +1,76 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ "main" ]
+  schedule:
+    - cron: '33 10 * * 4'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ${{ 'windows-latest' }}
+    timeout-minutes: ${{ 360 }}
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'csharp' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ matrix.language }}
+
+    - name: Machine setup
+      shell: pwsh
+      run: ./scripts/machine-setup.ps1
+
+    - name: Restore NuGet packages
+      working-directory: ${{ github.workspace }}
+      run: |
+        nuget restore ./MAPIInspector/Source/MAPIInspector.sln
+        nuget restore ./MAPIInspector/Test/MAPIAutomationTest/MAPIAutomationTest.sln
+        nuget restore ./FSSHTTPWOPIInspector/Source/FSSHTTPandWOPIInspector.sln
+        nuget restore ./FSSHTTPWOPIInspector/Test/WOPIautomation/WOPIautomation.sln
+
+    - name: "Build MAPIInspector"
+      shell: pwsh
+      run: |
+        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./MAPIInspector/Source/MAPIInspector.sln
+
+    - name: "Build MAPIAutomationTest"
+      shell: pwsh
+      run: |
+        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./MAPIInspector/Test/MAPIAutomationTest/MAPIAutomationTest.sln
+
+    - name: "Build FSSHTTPandWOPIInspector"
+      shell: pwsh
+      run: |
+        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./FSSHTTPWOPIInspector/Source/FSSHTTPandWOPIInspector.sln
+
+    - name: "Build WOPIautomation"
+      shell: pwsh
+      run: |
+        $path = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+        & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./FSSHTTPWOPIInspector/Test/WOPIautomation/WOPIautomation.sln
+        
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+      with:
+        category: "/language:${{matrix.language}}"
