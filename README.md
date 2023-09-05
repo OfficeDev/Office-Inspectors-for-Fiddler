@@ -29,7 +29,7 @@ These will allow you to modify and build the inspector dlls.
 
 ## Installation
 
-First install the latest [Fiddler](http://www.telerik.com/fiddler) tool and then run it. Note that Fiddler must be run at least once before installing any inspectors. To install the inspector of your choice (MAPI, FSSHTTPWOPI) or to install both, add the respective DLL files and the scripts.
+First install the latest [Fiddler Classic](https://www.telerik.com/download/fiddler) tool and then run it. Note that Fiddler must be run at least once before installing any inspectors. To install the inspector of your choice (MAPI, FSSHTTPWOPI) or to install both, add the respective DLL files and the scripts.
 
 ### Inspector DLL
 
