@@ -76,19 +76,19 @@ stages:
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/MAPIFiddlerInspector.dll'
-        archiveFile: '$(System.ArtifactStagingDirectory)/MAPIFiddlerInspector.dll.$(Build.BuildNumber).zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MAPIFiddlerInspector.dll.$(Build.BuildNumber).zip'
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/MAPIFiddlerInspector.pdb'
-        archiveFile: '$(System.ArtifactStagingDirectory)/MAPIFiddlerInspector.pdb.$(Build.BuildNumber).zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/MAPIFiddlerInspector.pdb.$(Build.BuildNumber).zip'
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/FSSHTTPandWOPIFiddlerInspector.dll'
-        archiveFile: '$(System.ArtifactStagingDirectory)/FSSHTTPandWOPIFiddlerInspector.dll.$(Build.BuildNumber).zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/FSSHTTPandWOPIFiddlerInspector.dll.$(Build.BuildNumber).zip'
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: '$(System.ArtifactsDirectory)/drop/FSSHTTPandWOPIFiddlerInspector.pdb'
-        archiveFile: '$(System.ArtifactStagingDirectory)/FSSHTTPandWOPIFiddlerInspector.pdb.$(Build.BuildNumber).zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/FSSHTTPandWOPIFiddlerInspector.pdb.$(Build.BuildNumber).zip'
 
     - task: GitHubRelease@1
       inputs:
