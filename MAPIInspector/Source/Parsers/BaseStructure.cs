@@ -350,7 +350,7 @@
                         // the size of underlying type of enum. 
                         Type fieldType = type;
 
-                        TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, EnumToString(info[i].GetValue(obj))));
+                        TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, Utilities.EnumToString(info[i].GetValue(obj))));
                         res.Nodes.Add(tn);
 
                         if (type.Name == "String")
@@ -1009,23 +1009,6 @@
         protected long RemainingBytes()
         {
             return this.stream.Length - this.stream.Position;
-        }
-
-        /// <summary>
-        /// Converts a simple (non-flag) enum to string. If the value is not present in the underlying enum, converts to a hex string.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        private static string EnumToString(object obj)
-        {
-            if (Enum.IsDefined(obj.GetType(), obj))
-            {
-                return obj.ToString();
-            }
-            else
-            {
-                return $"0x{Convert.ToUInt64(obj):X}";
-            }
         }
 
         /// <summary>
