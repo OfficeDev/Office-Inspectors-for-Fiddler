@@ -5192,7 +5192,7 @@
     /// <summary>
     /// 2 bytes; a 16-bit integer. [MS-DTYP]: INT16
     /// </summary>
-    public class PtypInteger16 : BaseStructure
+    public class PtypInteger16 : AnnotatedData
     {
         /// <summary>
         /// 16-bit integer. 
@@ -5207,7 +5207,10 @@
         {
             base.Parse(s);
             this.Value = this.ReadINT16();
+            this.ParsedValue = $"{Value}";
         }
+
+        public override int Size { get; } = 2;
     }
 
     /// <summary>
