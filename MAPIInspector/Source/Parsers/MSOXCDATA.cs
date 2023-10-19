@@ -5417,7 +5417,7 @@
             base.Parse(s);
             this.Value = new MAPIString(Encoding.Unicode, "\0", this.length);
             this.Value.Parse(s);
-            this.ParsedValue = Value.ToString();
+            this.ParsedValue = $"\"{Value}\"";
         }
 
         public override int Size
