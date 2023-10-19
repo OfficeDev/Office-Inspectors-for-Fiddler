@@ -429,8 +429,12 @@
 
                                 TreeNode tn = new TreeNode($"{info[i].Name}:{result.ToString()}");
                                 res.Nodes.Add(tn);
-                                // Add subnode with length of array
-                                tn.Nodes.Add(new TreeNode($"cb:{arr.Length}"));
+
+                                if (!(obj is PtypBinary))
+                                {
+                                    // Add subnode with length of array
+                                    tn.Nodes.Add(new TreeNode($"cb:{arr.Length}"));
+                                }
 
                                 for (int j = 0; j < arr.Length; j++)
                                 {
