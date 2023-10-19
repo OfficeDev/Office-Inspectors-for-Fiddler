@@ -418,21 +418,9 @@
                                         result.Append(tempbye.ToString("X2"));
                                     }
                                 }
-                                else if (arr.GetType().ToString() == "System.Byte[]")
-                                {
-                                    result.Append(Utilities.ConvertArrayToHexString((byte[])arr));
-                                }
-                                else if (arr.GetType().ToString() == "System.Uint[]")
-                                {
-                                    result.Append(Utilities.ConvertArrayToHexString((uint[])arr));
-                                }
                                 else if (arr.Length > 0)
                                 {
-                                    // loop over arr and add each element to result
-                                    foreach (var ar in arr)
-                                    {
-                                        result.Append($"{ar}" + ",");
-                                    }
+                                    result.Append(Utilities.ConvertArrayToHexString(arr));
                                 }
 
                                 TreeNode tn = new TreeNode($"{info[i].Name}:{result.ToString()}");
