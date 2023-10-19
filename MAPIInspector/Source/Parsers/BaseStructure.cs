@@ -426,6 +426,14 @@
                                 {
                                     result.Append(Utilities.ConvertArrayToHexString((uint[])arr));
                                 }
+                                else if (arr.Length > 0)
+                                {
+                                    // loop over arr and add each element to result
+                                    foreach (var ar in arr)
+                                    {
+                                        result.Append($"{ar}" + ",");
+                                    }
+                                }
 
                                 TreeNode tn = new TreeNode($"{info[i].Name}:{result.ToString()}");
                                 res.Nodes.Add(tn);
