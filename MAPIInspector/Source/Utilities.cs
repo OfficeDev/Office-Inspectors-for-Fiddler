@@ -69,7 +69,7 @@
 
             foreach (var b in bin)
             {
-                result.Append(b.ToString() + ",");
+                result.Append($"{b:X2},");
 
                 if (displayLength <= 1)
                 {
