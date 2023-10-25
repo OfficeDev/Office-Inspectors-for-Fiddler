@@ -2867,7 +2867,52 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// The MetaTagDnPrefix meta-property MUST be ignored when received
         /// </summary>
-        MetaTagDnPrefix = 0x4008
+        MetaTagDnPrefix = 0x4008,
+
+        /// <summary>
+        ///  Contains a count of the significant characters of the message text.
+        /// </summary>
+        PidTagRtfSyncBodyCount = 0x1007,
+
+        /// <summary>
+        /// Contains significant characters that appear at the beginning of the message text.
+        /// </summary>
+        PidTagRtfSyncBodyTag = 0x1008,
+
+        /// <summary>
+        /// Contains a count of the ignorable characters that appear before the significant characters of the message.
+        /// </summary>
+        PidTagRtfSyncPrefixCount = 0x1010,
+
+        /// <summary>
+        /// Contains a count of the ignorable characters that appear after the significant characters of the message.
+        /// </summary>
+        PidTagRtfSyncTrailingCount = 0x1011,
+
+        /// <summary>
+        /// The OrigEntryId
+        /// </summary>
+        OrigEntryId = 0x300F,
+
+        /// <summary>
+        /// he MetaTagIdsetGiven property contains a serialization of REPLGUID-based IDSET structures, as specified in section 2.2.2.4.2.
+        /// </summary>
+        MetaTagIdsetGiven = 0x4017,
+
+        /// <summary>
+        /// The MetaTagCnsetSeen property contains a serialization of REPLGUID-based CNSET structures, as specified in section 2.2.2.4.
+        /// </summary>
+        MetaTagCnsetSeen = 0x6796,
+
+        /// <summary>
+        /// The MetaTagCnsetRead property contains a serialization of REPLGUID-based CNSET structures, as specified in section 2.2.2.4.
+        /// </summary>
+        MetaTagCnsetRead = 0x67D2,
+
+        /// <summary>
+        /// The MetaTagCnsetSeenFAI property contains a serialization of REPLGUID-based IDSET structures, as specified in section 2.2.2.4.
+        /// </summary>
+        MetaTagCnsetSeenFAI = 0x67DA
     }
 
     /// <summary>
