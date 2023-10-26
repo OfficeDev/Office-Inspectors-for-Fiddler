@@ -2576,7 +2576,7 @@
         /// <summary>
         /// A PropertyTag structure.
         /// </summary>
-        public uint StateProperty;
+        public PropertyTag StateProperty;
 
         /// <summary>
         /// An unsigned integer that specifies the size of the stream to be uploaded.
@@ -2594,7 +2594,9 @@
             this.RopId = (RopIdType)this.ReadByte();
             this.LogonId = this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.StateProperty = this.ReadUint();
+            this.StateProperty = new PropertyTag();
+            this.StateProperty.Parse(s);
+
             this.TransferBufferSize = this.ReadUint();
         }
     }
