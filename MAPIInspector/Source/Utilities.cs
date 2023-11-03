@@ -61,15 +61,15 @@
         }
 
         // Array type just display the first 30 values if the array length is more than 30.
-        public static string ConvertArrayToHexString<T>(T[] bin, int? limit = 30)
+        public static string ConvertArrayToHexString(Array bin, int? limit = 30)
         {
             var result = new StringBuilder();
-            int displayLength = limit.HasValue ? limit.Value : bin.Length;
+            int displayLength = limit ?? bin.Length;
             result.Append("[");
 
             foreach (var b in bin)
             {
-                result.Append(b.ToString() + ",");
+                result.Append($"{b:X2},");
 
                 if (displayLength <= 1)
                 {
@@ -212,6 +212,23 @@
         {
             SealTheObject sealTheObject = new SealTheObject(id, isRequest, obj);
             return JsonConvert.SerializeObject((object)sealTheObject);
+        }
+
+        /// <summary>
+        /// Converts a simple (non-flag) enum to string. If the value is not present in the underlying enum, converts to a hex string.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static string EnumToString(object obj)
+        {
+            if (Enum.IsDefined(obj.GetType(), obj))
+            {
+                return obj.ToString();
+            }
+            else
+            {
+                return $"0x{Convert.ToUInt64(obj):X}";
+            }
         }
     }
 }

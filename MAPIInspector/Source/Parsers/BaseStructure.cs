@@ -350,7 +350,7 @@
                         // the size of underlying type of enum. 
                         Type fieldType = type;
 
-                        TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, EnumToString(info[i].GetValue(obj))));
+                        TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, Utilities.EnumToString(info[i].GetValue(obj))));
                         res.Nodes.Add(tn);
 
                         if (type.Name == "String")
@@ -418,19 +418,19 @@
                                         result.Append(tempbye.ToString("X2"));
                                     }
                                 }
-                                else if (arr.GetType().ToString() == "System.Byte[]")
+                                else if (arr.Length > 0)
                                 {
-                                    result.Append(Utilities.ConvertArrayToHexString((byte[])arr));
-                                }
-                                else if (arr.GetType().ToString() == "System.Uint[]")
-                                {
-                                    result.Append(Utilities.ConvertArrayToHexString((uint[])arr));
+                                    result.Append(Utilities.ConvertArrayToHexString(arr));
                                 }
 
                                 TreeNode tn = new TreeNode($"{info[i].Name}:{result.ToString()}");
                                 res.Nodes.Add(tn);
-                                // Add subnode with length of array
-                                tn.Nodes.Add(new TreeNode($"cb:{arr.Length}"));
+
+                                if (!(obj is PtypBinary))
+                                {
+                                    // Add subnode with length of array
+                                    tn.Nodes.Add(new TreeNode($"cb:{arr.Length}"));
+                                }
 
                                 for (int j = 0; j < arr.Length; j++)
                                 {
@@ -1005,23 +1005,6 @@
         protected long RemainingBytes()
         {
             return this.stream.Length - this.stream.Position;
-        }
-
-        /// <summary>
-        /// Converts a simple (non-flag) enum to string. If the value is not present in the underlying enum, converts to a hex string.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        private static string EnumToString(object obj)
-        {
-            if (Enum.IsDefined(obj.GetType(), obj))
-            {
-                return obj.ToString();
-            }
-            else
-            {
-                return $"0x{Convert.ToUInt64(obj):X}";
-            }
         }
 
         /// <summary>

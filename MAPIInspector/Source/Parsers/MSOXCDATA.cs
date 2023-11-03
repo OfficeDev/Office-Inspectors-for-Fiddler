@@ -4822,14 +4822,15 @@
                         {
                             PropertyValue propValue = new PropertyValue(tempPropTag.PropertyType);
                             propValue.Parse(s);
-                            propValue.PropertyTag = $"{tempPropTag.PropertyType}:{tempPropTag.PropertyId}";
+                            //todo
+                            propValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId)}";
                             rowPropValue = propValue;
                         }
                         else
                         {
                             TypedPropertyValue typePropValue = new TypedPropertyValue();
                             typePropValue.Parse(s);
-                            typePropValue.PropertyTag = $"{tempPropTag.PropertyType}:{tempPropTag.PropertyId}";
+                            typePropValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId)}";
                             rowPropValue = typePropValue;
                         }
                     }
@@ -4839,14 +4840,14 @@
                         {
                             FlaggedPropertyValue flagPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType);
                             flagPropValue.Parse(s);
-                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{tempPropTag.PropertyId}";
+                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId)}";
                             rowPropValue = flagPropValue;
                         }
                         else
                         {
                             FlaggedPropertyValueWithType flagPropValue = new FlaggedPropertyValueWithType();
                             flagPropValue.Parse(s);
-                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{tempPropTag.PropertyId}";
+                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId)}";
                             rowPropValue = flagPropValue;
                         }
                     }
@@ -5192,7 +5193,7 @@
     /// <summary>
     /// 2 bytes; a 16-bit integer. [MS-DTYP]: INT16
     /// </summary>
-    public class PtypInteger16 : BaseStructure
+    public class PtypInteger16 : AnnotatedData
     {
         /// <summary>
         /// 16-bit integer. 
@@ -5207,13 +5208,16 @@
         {
             base.Parse(s);
             this.Value = this.ReadINT16();
+            this.ParsedValue = $"{Value}";
         }
+
+        public override int Size { get; } = 2;
     }
 
     /// <summary>
     /// 4 bytes; a 32-bit integer. [MS-DTYP]: INT32
     /// </summary>
-    public class PtypInteger32 : BaseStructure
+    public class PtypInteger32 : AnnotatedData
     {
         /// <summary>
         /// 32-bit integer. 
@@ -5228,7 +5232,10 @@
         {
             base.Parse(s);
             this.Value = this.ReadINT32();
+            this.ParsedValue = $"{Value}";
         }
+
+        public override int Size { get; } = 4;
     }
 
     /// <summary>
@@ -5339,7 +5346,7 @@
     /// <summary>
     /// 1 byte; restricted to 1 or 0.
     /// </summary>
-    public class PtypBoolean : BaseStructure
+    public class PtypBoolean : AnnotatedData
     {
         /// <summary>
         /// 1 byte; restricted to 1 or 0.
@@ -5354,7 +5361,10 @@
         {
             base.Parse(s);
             this.Value = this.ReadBoolean();
+            this.ParsedValue = Value.ToString();
         }
+
+        public override int Size { get; } = 1;
     }
 
     /// <summary>
@@ -5381,7 +5391,7 @@
     /// <summary>
     /// Variable size; a string of Unicode characters in UTF-16LE format encoding with terminating null character (0x0000).
     /// </summary>
-    public class PtypString : BaseStructure
+    public class PtypString : AnnotatedData
     {
         /// <summary>
         /// A string of Unicode characters in UTF-16LE format encoding with terminating null character (0x0000).
@@ -5411,6 +5421,12 @@
             base.Parse(s);
             this.Value = new MAPIString(Encoding.Unicode, "\0", this.length);
             this.Value.Parse(s);
+            this.ParsedValue = $"\"{Value}\"";
+        }
+
+        public override int Size
+        {
+            get { return Value.Size; }
         }
     }
 

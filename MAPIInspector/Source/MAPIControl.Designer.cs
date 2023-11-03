@@ -181,7 +181,10 @@ namespace MapiInspector
             byte[] targetBytes = new byte[hexBox.SelectionLength];
             Array.Copy(hexBox.GetAllBytes(), hexBox.SelectionStart, targetBytes, 0, hexBox.SelectionLength);
             string hex = BitConverter.ToString(targetBytes).Replace("-", string.Empty);
-            Clipboard.SetText(hex);
+            if (!string.IsNullOrEmpty(hex))
+            {
+                Clipboard.SetText(hex);
+            }
         }
 
         void MAPI_Copy(object sender, EventArgs e)
