@@ -431,9 +431,9 @@ namespace FSSHTTPandWOPIInspector.Parsers
             if (this.Count.GetUint(Count) > 0)
             {
                 ulong tempCount = this.Count.GetUint(Count);
-                StringItem tempGuid = new StringItem();
                 do
                 {
+                    StringItem tempGuid = new StringItem();
                     tempGuid.Parse(s);
                     tempContent.Add(tempGuid);
                     tempCount--;
@@ -3545,6 +3545,8 @@ namespace FSSHTTPandWOPIInspector.Parsers
         [BitAttribute(1)]
         public byte E;
         [BitAttribute(1)]
+        public byte F;
+        [BitAttribute(1)]
         public byte G;
         [BitAttribute(1)]
         public byte H;
@@ -3575,6 +3577,7 @@ namespace FSSHTTPandWOPIInspector.Parsers
             this.C = (byte)GetBits(tempByte, 2, 1);
             this.D = (byte)GetBits(tempByte, 3, 1);
             this.E = (byte)GetBits(tempByte, 4, 1);
+            this.F = (byte)GetBits(tempByte, 5, 1);
             this.G = (byte)GetBits(tempByte, 6, 1);
             this.H = (byte)GetBits(tempByte, 7, 1);
 
