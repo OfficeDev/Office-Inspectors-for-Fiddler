@@ -333,7 +333,7 @@
         /// <summary>
         /// Gets or sets the base HTTP headers assigned by the request or response
         /// </summary>
-        public HTTPHeaders BaseHeaders { get; set; }
+        public static HTTPHeaders BaseHeaders { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the message is MAPI protocol message.
@@ -655,15 +655,15 @@
                 this.session = oS;
             }
 
-            if (null == this.BaseHeaders)
+            if (null == BaseHeaders)
             {
                 if (this is IRequestInspector2)
                 {
-                    this.BaseHeaders = this.session.oRequest.headers;
+                    BaseHeaders = this.session.oRequest.headers;
                 }
                 else
                 {
-                    this.BaseHeaders = this.session.oResponse.headers;
+                    BaseHeaders = this.session.oResponse.headers;
                 }
             }
 
@@ -2450,7 +2450,7 @@
         /// <summary>
         /// Clean parsed session related dictionaries
         /// </summary>
-        public void ResetHandleInformation()
+        public static void ResetHandleInformation()
         {
             requestDic = new Dictionary<int, object>();
             responseDic = new Dictionary<int, object>();
@@ -2461,7 +2461,7 @@
         /// <summary>
         /// Clean partial fast transfer stream related dictionaries
         /// </summary>
-        public void ResetPartialContextInformation()
+        public static void ResetPartialContextInformation()
         {
             HandleWithSessionGetContextInformation = new Dictionary<uint, SortedDictionary<int, PartialContextInformation>>();
             HandleWithSessionPutContextInformation = new Dictionary<uint, SortedDictionary<int, PartialContextInformation>>();
@@ -2471,7 +2471,7 @@
         /// <summary>
         /// Empty the partial related parameters information
         /// </summary>
-        public void ResetPartialParameters()
+        public static void ResetPartialParameters()
         {
             // Empty the partial parameters of RopGetBuffer
             PartialGetType = 0;
@@ -2502,15 +2502,15 @@
         /// <param name="e">A EventArgs that contains the event data.</param>
         public void AfterCallDoImport(object sender, EventArgs e)
         {
-            this.ResetHandleInformation();
-            this.ResetPartialContextInformation();
-            this.ResetPartialParameters();
+            ResetHandleInformation();
+            ResetPartialContextInformation();
+            ResetPartialParameters();
         }
 
         /// <summary>
         /// Add a index feature for session
         /// </summary>
-        public void SetIndexForContextRelatedMethods()
+        public static void SetIndexForContextRelatedMethods()
         {
             for (int i = 0; i < AllSessions.Length; i++)
             {
@@ -2529,7 +2529,7 @@
             IsLooperCall = false;
             TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
             ContextInformationCollection = new List<ContextInformation>();
-            this.ResetPartialParameters();
+            ResetPartialParameters();
 
             if (this.IsMapihttp)
             {
@@ -2548,24 +2548,24 @@
 
                 if (allSessionLength > 0 && AllSessions[allSessionLength - 1]["Number"] == null)
                 {
-                    this.SetIndexForContextRelatedMethods();
+                    SetIndexForContextRelatedMethods();
                 }
 
                 try
                 {
                     if (this.Direction == TrafficDirection.In)
                     {
-                        parserResult = ParseHTTPPayload(this.BaseHeaders, this.session, this.session.requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                        parserResult = ParseHTTPPayload(BaseHeaders, this.session, this.session.requestBodyBytes, TrafficDirection.In, out bytesForHexView);
                     }
                     else
                     {
                         // An X-ResponseCode of 0 (zero) means success from the perspective of the protocol transport, and the client SHOULD parse the response body based on the request that was issued.
-                        if (this.BaseHeaders["X-ResponseCode"] != "0")
+                        if (BaseHeaders["X-ResponseCode"] != "0")
                         {
                             return;
                         }
 
-                        parserResult = ParseHTTPPayload(this.BaseHeaders, this.session, this.session.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                        parserResult = ParseHTTPPayload(BaseHeaders, this.session, this.session.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
                     }
 
                     this.DisplayObject(parserResult, bytesForHexView);
@@ -2608,7 +2608,7 @@
         /// Method to judge whether a session is MAPIHTTP message or not when Automation Test
         /// </summary>        
         /// <returns>Boole value indicates whether this session is MAPIHTTP layer message</returns>
-        public bool IsMapihttpWithoutUI()
+        public static bool IsMapihttpWithoutUI()
         {
             if (MapiInspector.MAPIInspector.ParsingSession != null)
             {
@@ -2637,7 +2637,7 @@
         /// <param name="autoCaseName">The test case name to parse</param>
         /// <param name="allRops">All ROPs contained in list</param>
         /// <returns>Parse result, true means success</returns>
-        public bool ParseCaptureFile(Fiddler.Session[] sessionsFromCore, string pathName, string autoCaseName, out List<string> allRops)
+        public static bool ParseCaptureFile(Fiddler.Session[] sessionsFromCore, string pathName, string autoCaseName, out List<string> allRops)
         {
             var errorStringList = new List<string>();
             StringBuilder stringBuilder = new StringBuilder();
@@ -2658,6 +2658,7 @@
                 {
                     SetIndexForContextRelatedMethods();
                 }
+
                 if (IsMapihttpWithoutUI())
                 {
                     try

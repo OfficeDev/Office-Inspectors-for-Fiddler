@@ -14,12 +14,12 @@
         {
             get
             {
-                return this.BaseHeaders as HTTPRequestHeaders;
+                return BaseHeaders as HTTPRequestHeaders;
             }
 
             set
             {
-                this.BaseHeaders = value;
+                BaseHeaders = value;
             }
         }
     }
