@@ -7,6 +7,7 @@
     using System.Text;
     using Fiddler;
     using global::MAPIInspector.Parsers;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// MAPIParser Class
@@ -2252,6 +2253,19 @@
         }
 
         /// <summary>
+        /// The MAPIFrame Class is used to sealing the parse result.
+        /// </summary>
+        private class MAPIFrame
+        {
+            public int Frame { get; set; }
+            public string Time { get; set; }
+            public string Url { get; set; }
+            public string LocalProcess { get; set; }
+            public object Request { get; set; }
+            public object Response { get; set; }
+        }
+
+        /// <summary>
         /// Parse the sessions from capture file using the MAPI Inspector
         /// </summary>
         /// <param name="sessionsFromCore">The sessions which from FiddlerCore to parse</param>
@@ -2301,7 +2315,16 @@
                         object requestObj = ParseHTTPPayload(session.RequestHeaders, session, session.requestBodyBytes, TrafficDirection.In, out var bytes);
                         object responseObj = ParseHTTPPayload(session.RequestHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out bytes);
 
-                        JsonResult.Add(Utilities.ConvertCSharpToJson(i, requestObj, responseObj));
+                        MAPIFrame mapiFrame = new MAPIFrame
+                        {
+                            Frame = session.id,
+                            Time = session.Timers.ClientBeginRequest.ToString("yyyy-MM-dd HH:mm:ss.fff"),
+                            Url = session.url,
+                            LocalProcess = session.LocalProcess,
+                            Request = requestObj,
+                            Response = responseObj
+                        };
+                        JsonResult.Add(JsonConvert.SerializeObject(mapiFrame, Formatting.Indented));
                     }
                     catch (Exception ex)
                     {
