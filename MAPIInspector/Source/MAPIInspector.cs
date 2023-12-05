@@ -214,32 +214,32 @@
         /// <summary>
         /// The requestDic is used to save the session id and its parsed execute request.
         /// </summary>
-        private Dictionary<int, object> requestDic = new Dictionary<int, object>();
+        private static Dictionary<int, object> requestDic = new Dictionary<int, object>();
 
         /// <summary>
         /// The responseDic is used to save the session id and its parsed execute response.
         /// </summary>
-        private Dictionary<int, object> responseDic = new Dictionary<int, object>();
+        private static Dictionary<int, object> responseDic = new Dictionary<int, object>();
 
         /// <summary>
         /// The handleGetDic is used to save the session id and its response handle for RopGetBuffer.
         /// </summary>
-        private Dictionary<int, List<uint>> handleGetDic = new Dictionary<int, List<uint>>();
+        private static Dictionary<int, List<uint>> handleGetDic = new Dictionary<int, List<uint>>();
 
         /// <summary>
         /// The handlePutDic is used to save the session id and its request handle for RopPutBuffer.
         /// </summary>
-        private Dictionary<int, List<uint>> handlePutDic = new Dictionary<int, List<uint>>();
+        private static Dictionary<int, List<uint>> handlePutDic = new Dictionary<int, List<uint>>();
 
         /// <summary>
         /// The requestBytesForHexview is used to save the session id and its parsed request bytes provided for MAPIHexBox.
         /// </summary>
-        private Dictionary<int, byte[]> requestBytesForHexview = new Dictionary<int, byte[]>();
+        private static Dictionary<int, byte[]> requestBytesForHexview = new Dictionary<int, byte[]>();
 
         /// <summary>
         /// The responseBytesForHexview is used to save the session id and its parsed response bytes provided for MAPIHexBox.
         /// </summary>
-        private Dictionary<int, byte[]> responseBytesForHexview = new Dictionary<int, byte[]>();
+        private static Dictionary<int, byte[]> responseBytesForHexview = new Dictionary<int, byte[]>();
 
         /// <summary>
         /// The JsonResult is used to save the Json string which converted by parse result
@@ -1286,8 +1286,8 @@
             {
                 if (DecodingContext.SessionRequestRemainSize.Count > 0 && DecodingContext.SessionRequestRemainSize.ContainsKey(thisSessionID))
                 {
-                    obj = this.responseDic[thisSessionID];
-                    bytes = this.responseBytesForHexview[thisSessionID];
+                    obj = responseDic[thisSessionID];
+                    bytes = responseBytesForHexview[thisSessionID];
                 }
                 else
                 {
@@ -1392,10 +1392,10 @@
 
             if (ropID == RopIdType.RopFastTransferSourceGetBuffer)
             {
-                if (this.responseDic.ContainsKey(thisSessionID))
+                if (responseDic.ContainsKey(thisSessionID))
                 {
-                    obj = this.responseDic[thisSessionID];
-                    bytes = this.responseBytesForHexview[thisSessionID];
+                    obj = responseDic[thisSessionID];
+                    bytes = responseBytesForHexview[thisSessionID];
 
                     if (HandleWithSessionGetContextInformation.ContainsKey(parameters) && HandleWithSessionGetContextInformation[parameters].ContainsKey(thisSessionID))
                     {
@@ -1473,9 +1473,9 @@
                         {
                             List<uint> tableHandles = new List<uint>();
 
-                            if (this.handleGetDic.ContainsKey(currentSessionID))
+                            if (handleGetDic.ContainsKey(currentSessionID))
                             {
-                                tableHandles = this.handleGetDic[currentSessionID];
+                                tableHandles = handleGetDic[currentSessionID];
                             }
                             else
                             {
@@ -1526,10 +1526,10 @@
             }
             else if (ropID == RopIdType.RopFastTransferDestinationPutBuffer || ropID == RopIdType.RopFastTransferDestinationPutBufferExtended)
             {
-                if (this.requestDic.ContainsKey(thisSessionID))
+                if (requestDic.ContainsKey(thisSessionID))
                 {
-                    obj = this.requestDic[thisSessionID];
-                    bytes = this.requestBytesForHexview[thisSessionID];
+                    obj = requestDic[thisSessionID];
+                    bytes = requestBytesForHexview[thisSessionID];
 
                     if ((RopIdType)ropID == RopIdType.RopFastTransferDestinationPutBuffer)
                     {
@@ -1675,9 +1675,9 @@
                         {
                             List<uint> tableHandles = new List<uint>();
 
-                            if (this.handlePutDic.ContainsKey(currentSessionID))
+                            if (handlePutDic.ContainsKey(currentSessionID))
                             {
-                                tableHandles = this.handlePutDic[currentSessionID];
+                                tableHandles = handlePutDic[currentSessionID];
                             }
                             else
                             {
@@ -1778,28 +1778,28 @@
 
                 if (mapiRequest != null)
                 {
-                    if (parsingSession.requestBodyBytes.Length != 0 && mapiRequest.GetType().Name == "ExecuteRequestBody" && this.requestDic != null && !this.requestDic.ContainsKey(parsingSessionID))
+                    if (parsingSession.requestBodyBytes.Length != 0 && mapiRequest.GetType().Name == "ExecuteRequestBody" && requestDic != null && !requestDic.ContainsKey(parsingSessionID))
                     {
                         if (!IsOnlyGetServerHandle)
                         {
-                            this.requestDic.Add(parsingSessionID, mapiRequest);
-                            this.requestBytesForHexview.Add(parsingSessionID, bytesForHexView);
+                            requestDic.Add(parsingSessionID, mapiRequest);
+                            requestBytesForHexview.Add(parsingSessionID, bytesForHexView);
                         }
                         else
                         {
-                            if (!this.handlePutDic.ContainsKey(parsingSessionID))
+                            if (!handlePutDic.ContainsKey(parsingSessionID))
                             {
                                 if ((mapiRequest as ExecuteRequestBody).RopBuffer != null && (mapiRequest as ExecuteRequestBody).RopBuffer.Buffers.Count() != 0)
                                 {
-                                    this.handlePutDic.Add(parsingSessionID, ((ROPInputBuffer_WithoutCROPS)(mapiRequest as ExecuteRequestBody).RopBuffer.Buffers[0].Payload).ServerObjectHandleTable.ToList());
+                                    handlePutDic.Add(parsingSessionID, ((ROPInputBuffer_WithoutCROPS)(mapiRequest as ExecuteRequestBody).RopBuffer.Buffers[0].Payload).ServerObjectHandleTable.ToList());
                                 }
                             }
                         }
                     }
-                    else if (parsingSession.requestBodyBytes.Length != 0 && mapiRequest.GetType().Name == "ExecuteRequestBody" && this.requestDic != null && this.requestDic.ContainsKey(parsingSessionID) && !IsOnlyGetServerHandle)
+                    else if (parsingSession.requestBodyBytes.Length != 0 && mapiRequest.GetType().Name == "ExecuteRequestBody" && requestDic != null && requestDic.ContainsKey(parsingSessionID) && !IsOnlyGetServerHandle)
                     {
-                        this.requestDic.Remove(parsingSessionID);
-                        this.requestDic.Add(parsingSessionID, mapiRequest);
+                        requestDic.Remove(parsingSessionID);
+                        requestDic.Add(parsingSessionID, mapiRequest);
                     }
                 }
             }
@@ -1838,28 +1838,28 @@
                     }
                     if (mapiResponse != null)
                     {
-                        if (currentSession.responseBodyBytes.Length != 0 && mapiResponse.GetType().Name == "ExecuteResponseBody" && this.responseDic != null && !this.responseDic.ContainsKey(parsingSessionID))
+                        if (currentSession.responseBodyBytes.Length != 0 && mapiResponse.GetType().Name == "ExecuteResponseBody" && responseDic != null && !responseDic.ContainsKey(parsingSessionID))
                         {
                             if (!IsOnlyGetServerHandle)
                             {
-                                this.responseDic.Add(parsingSessionID, mapiResponse);
-                                this.responseBytesForHexview.Add(parsingSessionID, bytesForHexView);
+                                responseDic.Add(parsingSessionID, mapiResponse);
+                                responseBytesForHexview.Add(parsingSessionID, bytesForHexView);
                             }
                             else
                             {
-                                if (!this.handleGetDic.ContainsKey(parsingSessionID))
+                                if (!handleGetDic.ContainsKey(parsingSessionID))
                                 {
                                     if ((mapiResponse as ExecuteResponseBody).RopBuffer != null && (mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
                                     {
-                                        this.handleGetDic.Add(parsingSessionID, ((ROPOutputBuffer_WithoutCROPS)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList());
+                                        handleGetDic.Add(parsingSessionID, ((ROPOutputBuffer_WithoutCROPS)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList());
                                     }
                                 }
                             }
                         }
-                        else if (currentSession.responseBodyBytes.Length != 0 && mapiResponse.GetType().Name == "ExecuteResponseBody" && this.responseDic != null && this.responseDic.ContainsKey(parsingSessionID) && !IsOnlyGetServerHandle)
+                        else if (currentSession.responseBodyBytes.Length != 0 && mapiResponse.GetType().Name == "ExecuteResponseBody" && responseDic != null && responseDic.ContainsKey(parsingSessionID) && !IsOnlyGetServerHandle)
                         {
-                            this.responseDic.Remove(parsingSessionID);
-                            this.responseDic.Add(parsingSessionID, mapiResponse);
+                            responseDic.Remove(parsingSessionID);
+                            responseDic.Add(parsingSessionID, mapiResponse);
                         }
                     }
                 }
@@ -1879,28 +1879,28 @@
                     }
                     if (mapiResponse != null)
                     {
-                        if (currentSession.responseBodyBytes.Length != 0 && mapiResponse.GetType().Name == "ExecuteResponseBody" && this.responseDic != null && !this.responseDic.ContainsKey(parsingSessionID))
+                        if (currentSession.responseBodyBytes.Length != 0 && mapiResponse.GetType().Name == "ExecuteResponseBody" && responseDic != null && !responseDic.ContainsKey(parsingSessionID))
                         {
                             if (!IsOnlyGetServerHandle)
                             {
-                                this.responseDic.Add(parsingSessionID, mapiResponse);
-                                this.responseBytesForHexview.Add(parsingSessionID, bytesForHexView);
+                                responseDic.Add(parsingSessionID, mapiResponse);
+                                responseBytesForHexview.Add(parsingSessionID, bytesForHexView);
                             }
                             else
                             {
-                                if (!this.handleGetDic.ContainsKey(parsingSessionID))
+                                if (!handleGetDic.ContainsKey(parsingSessionID))
                                 {
                                     if ((mapiResponse as ExecuteResponseBody).RopBuffer != null && (mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
                                     {
-                                        this.handleGetDic.Add(parsingSessionID, ((ROPOutputBuffer_WithoutCROPS)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList());
+                                        handleGetDic.Add(parsingSessionID, ((ROPOutputBuffer_WithoutCROPS)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList());
                                     }
                                 }
                             }
                         }
-                        else if (currentSession.responseBodyBytes.Length != 0 && mapiResponse.GetType().Name == "ExecuteResponseBody" && this.responseDic != null && this.responseDic.ContainsKey(parsingSessionID) && !IsOnlyGetServerHandle)
+                        else if (currentSession.responseBodyBytes.Length != 0 && mapiResponse.GetType().Name == "ExecuteResponseBody" && responseDic != null && responseDic.ContainsKey(parsingSessionID) && !IsOnlyGetServerHandle)
                         {
-                            this.responseDic.Remove(parsingSessionID);
-                            this.responseDic.Add(parsingSessionID, mapiResponse);
+                            responseDic.Remove(parsingSessionID);
+                            responseDic.Add(parsingSessionID, mapiResponse);
                         }
                     }
                 }
@@ -2452,10 +2452,10 @@
         /// </summary>
         public void ResetHandleInformation()
         {
-            this.requestDic = new Dictionary<int, object>();
-            this.responseDic = new Dictionary<int, object>();
-            this.handleGetDic = new Dictionary<int, List<uint>>();
-            this.handlePutDic = new Dictionary<int, List<uint>>();
+            requestDic = new Dictionary<int, object>();
+            responseDic = new Dictionary<int, object>();
+            handleGetDic = new Dictionary<int, List<uint>>();
+            handlePutDic = new Dictionary<int, List<uint>>();
         }
 
         /// <summary>
