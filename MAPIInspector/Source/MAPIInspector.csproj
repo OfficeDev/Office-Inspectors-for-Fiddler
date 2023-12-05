@@ -102,6 +102,7 @@
       <DependentUpon>MAPIControl.cs</DependentUpon>
     </Compile>
     <Compile Include="MAPIExporter.cs" />
+    <Compile Include="MAPIParser.cs" />
     <Compile Include="MAPIInspector.cs" />
     <Compile Include="MAPIRequestInspector.cs" />
     <Compile Include="MAPIResponseInspector.cs" />

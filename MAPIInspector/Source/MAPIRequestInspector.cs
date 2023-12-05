@@ -14,12 +14,12 @@
         {
             get
             {
-                return BaseHeaders as HTTPRequestHeaders;
+                return MAPIParser.BaseHeaders as HTTPRequestHeaders;
             }
 
             set
             {
-                BaseHeaders = value;
+                MAPIParser.BaseHeaders = value;
             }
         }
     }

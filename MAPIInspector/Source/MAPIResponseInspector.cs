@@ -6,7 +6,7 @@
     /// MAPI Response inspector derived from MAPIInspector and implemented Fiddler.IResponseInspector2
     /// </summary>
     public class MAPIResponseInspector : MAPIInspector, IResponseInspector2
-    {        
+    {
         /// <summary>
         ///  Gets or sets the response headers from the frame
         /// </summary>
@@ -14,12 +14,12 @@
         {
             get
             {
-                return BaseHeaders as HTTPResponseHeaders;
+                return MAPIParser.BaseHeaders as HTTPResponseHeaders;
             }
 
             set
             {
-                BaseHeaders = value;
+                MAPIParser.BaseHeaders = value;
             }
         }
     }
