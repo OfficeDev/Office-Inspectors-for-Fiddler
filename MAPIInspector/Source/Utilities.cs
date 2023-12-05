@@ -154,9 +154,10 @@
         {
             private string title;
 
-            private string message;
-
-            private object obj;
+            private string message1;
+            private object objRequest;
+            private string message2;
+            private object objResponse;
 
             public string Title
             {
@@ -170,35 +171,61 @@
                 }
             }
 
-            public string Message
+            public string Message1
             {
                 get
                 {
-                    return message;
+                    return message1;
                 }
                 set
                 {
-                    message = value;
+                    message1 = value;
                 }
             }
 
-            public object Obj
+            public object ObjRequest
             {
                 get
                 {
-                    return obj;
+                    return objRequest;
                 }
                 set
                 {
-                    obj = value;
+                    objRequest = value;
                 }
             }
 
-            public SealTheObject(int id, bool isRequest, object obj)
+            public string Message2
             {
-                title = "Frame" + id + (isRequest ? "Request" : "Response");
-                message = obj.GetType().Name;
-                Obj = obj;
+                get
+                {
+                    return message2;
+                }
+                set
+                {
+                    message2 = value;
+                }
+            }
+
+            public object ObjResponse
+            {
+                get
+                {
+                    return objResponse;
+                }
+                set
+                {
+                    objResponse = value;
+                }
+            }
+
+            public SealTheObject(int id, object objRequest, object objResponse)
+            {
+                title = "Frame" + id;
+                message1= objRequest?.GetType().Name;
+                ObjRequest = objRequest;
+                message2 = objResponse?.GetType().Name;
+                ObjResponse = objResponse;
             }
         }
         /// <summary>
@@ -208,10 +235,10 @@
         /// <param name="isRequest">Bool value indicates the session is a HttpRequest message or HttpResponse message</param>
         /// <param name="obj">The object of parse result</param>
         /// <returns>Json string converted by parse result</returns>
-        public static string ConvertCSharpToJson(int id, bool isRequest, object obj)
+        public static string ConvertCSharpToJson(int id, object objRequest, object objResponse)
         {
-            SealTheObject sealTheObject = new SealTheObject(id, isRequest, obj);
-            return JsonConvert.SerializeObject((object)sealTheObject);
+            SealTheObject sealTheObject = new SealTheObject(id, objRequest, objResponse);
+            return JsonConvert.SerializeObject(sealTheObject, Formatting.Indented);
         }
 
         /// <summary>

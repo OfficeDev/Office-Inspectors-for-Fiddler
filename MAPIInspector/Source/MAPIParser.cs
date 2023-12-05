@@ -2260,6 +2260,8 @@
         public static bool ParseCaptureFile(Session[] sessionsFromCore, string fileName)
         {
             var errorStringList = new List<string>();
+            var JsonResult = new List<string>();
+            bool haveWrittenJson = false;
             StringBuilder stringBuilder = new StringBuilder();
             AllSessions = sessionsFromCore;
             ResetPartialParameters();
@@ -2277,35 +2279,33 @@
                 File.Delete(errorPath);
             }
 
-            string JsonResult = string.Empty;
-
-            for (int i = 0; i < AllSessions.Length; i++)
+            using (StreamWriter streamWriter = File.CreateText(fileName))
             {
-                Session val = AllSessions[i];
-                if (AllSessions.Length > 0 && AllSessions[AllSessions.Length - 1]["Number"] == null)
-                {
-                    SetIndexForContextRelatedMethods();
-                }
+                streamWriter.WriteLine("[");
+            }
 
-                if (IsMapihttpSession(val, TrafficDirection.In) || IsMapihttpSession(val, TrafficDirection.Out))
+            if (AllSessions.Length > 0 && AllSessions[AllSessions.Length - 1]["Number"] == null)
+            {
+                SetIndexForContextRelatedMethods();
+            }
+
+            int i = 0;
+            foreach (var session in AllSessions)
+            {
+                if (IsMapihttpSession(session, TrafficDirection.In) || IsMapihttpSession(session, TrafficDirection.Out))
                 {
                     try
                     {
                         IsLooperCall = false;
                         ResetPartialParameters();
-                        BaseHeaders = val.RequestHeaders;
-                        byte[] bytes;
-                        object obj = ParseHTTPPayload(BaseHeaders, val, val.requestBodyBytes, TrafficDirection.In, out bytes);
-                        JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: true, obj);
-                        //if (val.ResponseHeaders["X-ResponseCode"] == "0")
-                        {
-                            object obj2 = ParseHTTPPayload(BaseHeaders, val, val.responseBodyBytes, TrafficDirection.Out, out bytes);
-                            JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: false, obj2);
-                        }
+                        object requestObj = ParseHTTPPayload(session.RequestHeaders, session, session.requestBodyBytes, TrafficDirection.In, out var bytes);
+                        object responseObj = ParseHTTPPayload(session.RequestHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out bytes);
+
+                        JsonResult.Add(Utilities.ConvertCSharpToJson(i, requestObj, responseObj));
                     }
                     catch (Exception ex)
                     {
-                        errorStringList.Add(string.Format("{0}. Error: Frame#{1} Error Message:{2}", errorStringList.Count + 1, val["VirtualID"], ex.Message));
+                        errorStringList.Add(string.Format("{0}. Error: Frame#{1} Error Message:{2}", errorStringList.Count + 1, session["VirtualID"], ex.Message));
                     }
                     finally
                     {
@@ -2317,26 +2317,44 @@
                     }
 
                     // Write out what we've accumulated so far.
-                    if (i % 10 == 0 && JsonResult.Length != 0)
+                    if (JsonResult.Count >= 10)
                     {
-                        if (!File.Exists(fileName))
+                        using (StreamWriter streamWriter = File.AppendText(fileName))
                         {
-                            using (StreamWriter streamWriter = File.CreateText(fileName))
+                            if (haveWrittenJson)
                             {
-                                streamWriter.WriteLine(JsonResult);
+                                streamWriter.WriteLine(",");
                             }
-                        }
-                        else
-                        {
-                            using (StreamWriter streamWriter2 = File.AppendText(fileName))
-                            {
-                                streamWriter2.WriteLine(JsonResult);
-                            }
+
+                            streamWriter.Write(string.Join(",\r\n", JsonResult));
                         }
 
-                        JsonResult = string.Empty;
+                        haveWrittenJson = true;
+                        JsonResult = new List<string>();
                     }
                 }
+
+                i++;
+            }
+
+            // Write out whatever's left and cap the array
+            using (StreamWriter streamWriter = File.AppendText(fileName))
+            {
+                if (JsonResult.Count != 0)
+                {
+                    if (haveWrittenJson)
+                    {
+                        streamWriter.WriteLine(",");
+                    }
+
+                    streamWriter.WriteLine(string.Join(",\r\n", JsonResult));
+                }
+                else
+                {
+                    streamWriter.WriteLine();
+                }
+
+                streamWriter.WriteLine("]");
             }
 
             foreach (string errorString in errorStringList)
