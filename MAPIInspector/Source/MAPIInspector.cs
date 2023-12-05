@@ -704,7 +704,7 @@
             }
         }
 
-        private bool inSafeHandleContextInformation = false;
+        private static bool inSafeHandleContextInformation = false;
         /// <summary>
         /// SafeHandleContextInformation wraps HandleContextInformation to prevent reentrancy.
         /// </summary>
@@ -712,7 +712,7 @@
         /// <param name="obj">The target object containing the context information</param>
         /// <param name="bytes">The target byte array provided to HexView</param>
         /// <param name="parameters">The missing context information ROP related parameters</param>
-        public void SafeHandleContextInformation(ushort sourceRopID, out object obj, out byte[] bytes, uint[] parameters = null)
+        public static void SafeHandleContextInformation(ushort sourceRopID, out object obj, out byte[] bytes, uint[] parameters = null)
         {
             if (inSafeHandleContextInformation)
             {
@@ -744,7 +744,7 @@
         /// <param name="obj">The target object containing the context information</param>
         /// <param name="bytes">The target byte array provided to HexView</param>
         /// <param name="parameters">The missing context information ROP related parameters</param>
-        public void HandleContextInformation(ushort sourceRopID, out object obj, out byte[] bytes, uint[] parameters = null)
+        public static void HandleContextInformation(ushort sourceRopID, out object obj, out byte[] bytes, uint[] parameters = null)
         {
             byte[] bytesForHexView;
             object mapiRequest = new object();
@@ -759,8 +759,8 @@
             }
             if ((RopIdType)sourceRopID == RopIdType.RopLogon)
             {
-                this.ParseRequestMessage(thisSession, out bytesForHexView, true);
-                obj = this.ParseResponseMessage(thisSession, out bytesForHexView, true);
+                ParseRequestMessage(thisSession, out bytesForHexView, true);
+                obj = ParseResponseMessage(thisSession, out bytesForHexView, true);
                 bytes = bytesForHexView;
             }
             else if ((RopIdType)sourceRopID == RopIdType.RopSetMessageReadFlag)
@@ -785,10 +785,10 @@
                         if (currentSession.RequestHeaders.RequestPath == serverurl &&
                             currentSession.LocalProcess == processName &&
                             currentSession.RequestHeaders["X-ClientInfo"] == clientInfo &&
-                            IsMapihttpSession(currentSession, TrafficDirection.In) && 
+                            IsMapihttpSession(currentSession, TrafficDirection.In) &&
                             currentSession.RequestHeaders["X-RequestType"] == "Execute")
                         {
-                            this.ParseRequestMessage(currentSession, out bytesForHexView, true);
+                            ParseRequestMessage(currentSession, out bytesForHexView, true);
                             if (DecodingContext.LogonFlagMapLogId.Count > 0 &&
                                 DecodingContext.LogonFlagMapLogId.TryGetValue(serverurl, out var serverDict) &&
                                 serverDict.TryGetValue(processName, out var processDict) &&
@@ -817,7 +817,7 @@
                         information.RelatedInformation = result;
                         ContextInformationCollection.Add(information);
 
-                        if (!this.OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
+                        if (!OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
                         {
                             obj = savedResult;
                             bytes = new byte[0];
@@ -837,7 +837,7 @@
                     }
 
                     // Parsing the request structure of this session.
-                    obj = this.ParseRequestMessage(thisSession, out bytesForHexView, true);
+                    obj = ParseRequestMessage(thisSession, out bytesForHexView, true);
                     bytes = bytesForHexView;
                 }
                 else
@@ -848,8 +848,8 @@
             }
             else if ((RopIdType)sourceRopID == RopIdType.RopGetPropertiesSpecific)
             {
-                this.ParseRequestMessage(thisSession, out bytesForHexView, true);
-                obj = this.ParseResponseMessage(thisSession, out bytesForHexView, true);
+                ParseRequestMessage(thisSession, out bytesForHexView, true);
+                obj = ParseResponseMessage(thisSession, out bytesForHexView, true);
                 bytes = bytesForHexView;
             }
             else if ((RopIdType)sourceRopID == RopIdType.RopWritePerUserInformation)
@@ -874,7 +874,7 @@
                         if (currentSession.RequestHeaders.RequestPath == serverurl && currentSession["LocalProcess"] == processName && currentSession.RequestHeaders["X-ClientInfo"] == clientInfo &&
                             IsMapihttpSession(currentSession, TrafficDirection.In) && currentSession.RequestHeaders["X-RequestType"] == "Execute")
                         {
-                            this.ParseRequestMessage(currentSession, out bytesForHexView);
+                            ParseRequestMessage(currentSession, out bytesForHexView);
                         }
 
                         if (Convert.ToInt32(currentSession["Number"]) == 1)
@@ -905,7 +905,7 @@
                         information.RelatedInformation = result;
                         ContextInformationCollection.Add(information);
 
-                        if (!this.OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
+                        if (!OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
                         {
                             obj = savedResult;
                             bytes = new byte[0];
@@ -925,7 +925,7 @@
                     }
 
                     // Parsing the request structure of this session.
-                    obj = this.ParseRequestMessage(thisSession, out bytesForHexView, true);
+                    obj = ParseRequestMessage(thisSession, out bytesForHexView, true);
                     bytes = bytesForHexView;
                 }
                 else
@@ -956,7 +956,7 @@
                     // SetColumn_InputHandles_InResponse is only set in this session(and RopSetColumns) response parse, so if SetColumn_InputHandles_InResponse contains this rops outputhandle means that setcolumn and this rop is in the same session.
                     if (DecodingContext.SetColumn_InputHandles_InResponse.Count > 0 && DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                     {
-                        this.ParseRequestMessage(thisSession, out bytesForHexView, true);
+                        ParseRequestMessage(thisSession, out bytesForHexView, true);
                     }
                     else
                     {
@@ -977,7 +977,7 @@
 
                             if (currentServerPath == serverurl && currentProcessName == processName && currentClientInfo == clientInfo && IsMapihttpSession(currentSession, TrafficDirection.In) && currentSession.RequestHeaders["X-RequestType"] == "Execute")
                             {
-                                this.ParseRequestMessage(currentSession, out bytesForHexView, true);
+                                ParseRequestMessage(currentSession, out bytesForHexView, true);
                             }
 
                             if (Convert.ToInt32(currentSession["Number"]) == 1)
@@ -1029,7 +1029,7 @@
                     information.RelatedInformation = result;
                     ContextInformationCollection.Add(information);
 
-                    if (!this.OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
+                    if (!OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
                     {
                         obj = savedResult;
                         bytes = new byte[0];
@@ -1052,7 +1052,7 @@
                         DecodingContext.RowRops_handlePropertyTags.Add(parameters[1], sessionTagMap);
                     }
 
-                    obj = this.ParseResponseMessage(thisSession, out bytesForHexView, true);
+                    obj = ParseResponseMessage(thisSession, out bytesForHexView, true);
                     bytes = bytesForHexView;
                 }
                 else
@@ -1085,7 +1085,7 @@
                     // SetColumn_InputHandles_InResponse is only set in this session(and RopSetColumns) response parse, so if SetColumn_InputHandles_InResponse contains this ROP's output handle means the RopSetColumns and this ROP is in the same session.
                     if (DecodingContext.SetColumn_InputHandles_InResponse.Count > 0 && DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                     {
-                        this.ParseRequestMessage(thisSession, out bytesForHexView, true);
+                        ParseRequestMessage(thisSession, out bytesForHexView, true);
                     }
                     else
                     {
@@ -1111,7 +1111,7 @@
                             if (currentServerPath == serverurl && currentProcessName == processName && currentClientInfo == clientInfo && IsMapihttpSession(currentSession, TrafficDirection.Out) && currentSession.RequestHeaders["X-RequestType"] == "Execute")
                             {
                                 IsOnlyGetServerHandle = true;
-                                object resResult = this.ParseResponseMessage(currentSession, out bytesForHexView, false);
+                                object resResult = ParseResponseMessage(currentSession, out bytesForHexView, false);
                                 IsOnlyGetServerHandle = false;
 
                                 if (resResult != null && (resResult as ExecuteResponseBody).RopBuffer != null && (resResult as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
@@ -1121,7 +1121,7 @@
                                     if (tableHandles.Contains(parameters[1]) && currentServerPath == serverurl && currentProcessName == processName && currentClientInfo == clientInfo)
                                     {
                                         int handleIndex = tableHandles.IndexOf(parameters[1]);
-                                        object requestResult = this.ParseRequestMessage(currentSession, out bytesForHexView, true);
+                                        object requestResult = ParseRequestMessage(currentSession, out bytesForHexView, true);
 
                                         if (requestResult != null)
                                         {
@@ -1250,7 +1250,7 @@
                     information.RelatedInformation = result;
                     ContextInformationCollection.Add(information);
 
-                    if (!this.OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
+                    if (!OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
                     {
                         obj = savedResult;
                         bytes = new byte[0];
@@ -1273,7 +1273,7 @@
                         DecodingContext.Notify_handlePropertyTags.Add(parameters[1], sessionTagMap);
                     }
 
-                    obj = this.ParseResponseMessage(thisSession, out bytesForHexView, true);
+                    obj = ParseResponseMessage(thisSession, out bytesForHexView, true);
                     bytes = bytesForHexView;
                 }
                 else
@@ -1291,8 +1291,8 @@
                 }
                 else
                 {
-                    this.ParseRequestMessage(thisSession, out bytesForHexView, true);
-                    obj = this.ParseResponseMessage(thisSession, out bytesForHexView, true);
+                    ParseRequestMessage(thisSession, out bytesForHexView, true);
+                    obj = ParseResponseMessage(thisSession, out bytesForHexView, true);
                     bytes = bytesForHexView;
                 }
             }
@@ -1312,7 +1312,7 @@
         /// <param name="clientInfo">The clientInfo for this session</param>
         /// <param name="result">The result for missing related information </param>
         /// <returns>The result for overwriting.</returns>
-        public bool OverwriteOriginalInformation(int sessionID, string serverurl, string processName, string clientInfo, out string result)
+        public static bool OverwriteOriginalInformation(int sessionID, string serverurl, string processName, string clientInfo, out string result)
         {
             bool checkResult = true;
             result = string.Empty;
@@ -1378,7 +1378,7 @@
         /// <param name="parameters">The handle information</param>
         /// <param name="bytes">The output bytes returned</param>
         /// <returns>The parsed result for current session</returns>
-        public object Partial(RopIdType ropID, uint parameters, out byte[] bytes)
+        public static object Partial(RopIdType ropID, uint parameters, out byte[] bytes)
         {
             byte[] bytesForHexView = new byte[0];
             object obj = new object();
@@ -1482,7 +1482,7 @@
                                 try
                                 {
                                     IsOnlyGetServerHandle = true;
-                                    object mapiResponse = this.ParseResponseMessage(currentSession, out bytesForHexView, false);
+                                    object mapiResponse = ParseResponseMessage(currentSession, out bytesForHexView, false);
 
                                     if (mapiResponse != null && (mapiResponse as ExecuteResponseBody).RopBuffer != null && (mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
                                     {
@@ -1497,7 +1497,7 @@
 
                             if (tableHandles.Contains(parameters))
                             {
-                                this.ParseResponseMessage(currentSession, out bytesForHexView, true);
+                                ParseResponseMessage(currentSession, out bytesForHexView, true);
                             }
                         }
 
@@ -1519,7 +1519,7 @@
                         DecodingContext.PartialInformationReady.Add(thisSessionID, true);
                     }
 
-                    obj = this.ParseResponseMessage(thisSession, out bytesForHexView, true);
+                    obj = ParseResponseMessage(thisSession, out bytesForHexView, true);
                     DecodingContext.PartialInformationReady = new Dictionary<int, bool>();
                     bytes = bytesForHexView;
                 }
@@ -1684,7 +1684,7 @@
                                 try
                                 {
                                     IsOnlyGetServerHandle = true;
-                                    object mapiRequest = this.ParseRequestMessage(currentSession, out bytesForHexView, false);
+                                    object mapiRequest = ParseRequestMessage(currentSession, out bytesForHexView, false);
 
                                     if (mapiRequest != null && (mapiRequest as ExecuteRequestBody).RopBuffer != null && (mapiRequest as ExecuteRequestBody).RopBuffer.Buffers.Count() != 0)
                                     {
@@ -1699,7 +1699,7 @@
 
                             if (tableHandles.Contains(parameters))
                             {
-                                this.ParseRequestMessage(currentSession, out bytesForHexView, true);
+                                ParseRequestMessage(currentSession, out bytesForHexView, true);
                             }
                             else if (tableHandles.Contains(0xffffffff))
                             {
@@ -1708,7 +1708,7 @@
                                 try
                                 {
                                     IsOnlyGetServerHandle = true;
-                                    object mapiResponse = this.ParseResponseMessage(currentSession, out bytesForHexView, false);
+                                    object mapiResponse = ParseResponseMessage(currentSession, out bytesForHexView, false);
 
                                     if (mapiResponse != null && (mapiResponse as ExecuteResponseBody).RopBuffer != null && (mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
                                     {
@@ -1722,7 +1722,7 @@
 
                                 if (tableHandles.Contains(parameters))
                                 {
-                                    this.ParseRequestMessage(currentSession, out bytesForHexView, true);
+                                    ParseRequestMessage(currentSession, out bytesForHexView, true);
                                 }
                             }
                         }
@@ -1743,7 +1743,7 @@
                         DecodingContext.PartialInformationReady.Add(thisSessionID, true);
                     }
 
-                    obj = this.ParseRequestMessage(thisSession, out bytesForHexView, true);
+                    obj = ParseRequestMessage(thisSession, out bytesForHexView, true);
                     DecodingContext.PartialInformationReady = new Dictionary<int, bool>();
                     bytes = bytesForHexView;
                 }
@@ -1759,7 +1759,7 @@
         /// <param name="hexViewBytes">Byte array for display in RopHexView</param>
         /// <param name="isLooper">A boolean value indicates if this session is in a loop for parsing context sessions</param>
         /// <returns>MAPI request object</returns>
-        public object ParseRequestMessage(Session parsingSession, out byte[] hexViewBytes, bool isLooper = false)
+        public static object ParseRequestMessage(Session parsingSession, out byte[] hexViewBytes, bool isLooper = false)
         {
             object mapiRequest = null;
             hexViewBytes = new byte[0];
@@ -1768,7 +1768,7 @@
             {
                 NeedToParseCROPSLayer = isLooper;
                 byte[] bytesForHexView;
-                mapiRequest = this.ParseHTTPPayload(parsingSession.RequestHeaders, parsingSession, parsingSession.requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                mapiRequest = ParseHTTPPayload(parsingSession.RequestHeaders, parsingSession, parsingSession.requestBodyBytes, TrafficDirection.In, out bytesForHexView);
                 hexViewBytes = bytesForHexView;
                 int parsingSessionID = parsingSession.id;
                 if (MapiInspector.MAPIInspector.IsFromFiddlerCore(parsingSession))
@@ -1819,7 +1819,7 @@
         /// <param name="hexViewBytes">Byte array for display in RopHexView</param>
         /// <param name="isLooper">A boolean value indicates if this session is in a loop for parsing context sessions</param>
         /// <returns>MAPI response object</returns>
-        public object ParseResponseMessage(Session currentSession, out byte[] hexViewBytes, bool isLooper = false)
+        public static object ParseResponseMessage(Session currentSession, out byte[] hexViewBytes, bool isLooper = false)
         {
             object mapiResponse = null;
             hexViewBytes = new byte[0];
@@ -1829,7 +1829,7 @@
                 {
                     NeedToParseCROPSLayer = isLooper;
                     byte[] bytesForHexView;
-                    mapiResponse = this.ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                    mapiResponse = ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
                     hexViewBytes = bytesForHexView;
                     int parsingSessionID = currentSession.id;
                     if (MapiInspector.MAPIInspector.IsFromFiddlerCore(currentSession))
@@ -1870,7 +1870,7 @@
                 {
                     NeedToParseCROPSLayer = isLooper;
                     byte[] bytesForHexView;
-                    mapiResponse = this.ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                    mapiResponse = ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
                     hexViewBytes = bytesForHexView;
                     int parsingSessionID = currentSession.id;
                     if (currentSession.id == 0)
@@ -1924,7 +1924,7 @@
         /// <param name="direction">The direction of the traffic.</param>
         /// <param name="bytes">The bytes provided for MAPI view layer.</param>
         /// <returns>The object parsed result</returns>
-        public object ParseHTTPPayload(HTTPHeaders headers, Session currentSession, byte[] bytesFromHTTP, TrafficDirection direction, out byte[] bytes)
+        public static object ParseHTTPPayload(HTTPHeaders headers, Session currentSession, byte[] bytesFromHTTP, TrafficDirection direction, out byte[] bytes)
         {
             object objectOut = null;
             byte[] emptyByte = new byte[0];
@@ -2395,12 +2395,12 @@
             catch (MissingInformationException missingException)
             {
                 DecodingContext.LogonFlagMapLogId = new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<byte, LogonFlags>>>>();
-                this.SafeHandleContextInformation(missingException.RopID, out objectOut, out bytes, missingException.Parameters);
+                SafeHandleContextInformation(missingException.RopID, out objectOut, out bytes, missingException.Parameters);
                 return objectOut;
             }
             catch (MissingPartialInformationException missingPartialException)
             {
-                objectOut = this.Partial(missingPartialException.RopID, missingPartialException.Parameter, out bytes);
+                objectOut = Partial(missingPartialException.RopID, missingPartialException.Parameter, out bytes);
                 return objectOut;
             }
             catch (Exception ex)
@@ -2555,7 +2555,7 @@
                 {
                     if (this.Direction == TrafficDirection.In)
                     {
-                        parserResult = this.ParseHTTPPayload(this.BaseHeaders, this.session, this.session.requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                        parserResult = ParseHTTPPayload(this.BaseHeaders, this.session, this.session.requestBodyBytes, TrafficDirection.In, out bytesForHexView);
                     }
                     else
                     {
@@ -2565,7 +2565,7 @@
                             return;
                         }
 
-                        parserResult = this.ParseHTTPPayload(this.BaseHeaders, this.session, this.session.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                        parserResult = ParseHTTPPayload(this.BaseHeaders, this.session, this.session.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
                     }
 
                     this.DisplayObject(parserResult, bytesForHexView);
