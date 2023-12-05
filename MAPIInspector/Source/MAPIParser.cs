@@ -239,21 +239,6 @@
         private static Dictionary<int, byte[]> responseBytesForHexview = new Dictionary<int, byte[]>();
 
         /// <summary>
-        /// The JsonResult is used to save the Json string which converted by parse result
-        /// </summary>
-        public static string JsonResult = string.Empty;
-
-        /// <summary>
-        /// The JsonFile is used to set a file name to save JsonResult
-        /// </summary>
-        public static string JsonFile = "Json.txt";
-
-        /// <summary>
-        /// The JsonFile is used to set a file name to save error messages when automation test
-        /// </summary>
-        public static string ErrorFile = "Error.txt";
-
-        /// <summary>
         /// The AllRopsList is used to save all Rop messages when automation test.
         /// </summary>
         public static List<string> AllRopsList = new List<string>();
@@ -2270,33 +2255,39 @@
         /// Parse the sessions from capture file using the MAPI Inspector
         /// </summary>
         /// <param name="sessionsFromCore">The sessions which from FiddlerCore to parse</param>
-        /// <param name="pathName">The path for save result file</param>
-        /// <param name="autoCaseName">The test case name to parse</param>
-        /// <param name="allRops">All ROPs contained in list</param>
+        /// <param name="fileName">Filepath for the save result file</param>
         /// <returns>Parse result, true means success</returns>
-        public static bool ParseCaptureFile(Fiddler.Session[] sessionsFromCore, string pathName, string autoCaseName, out List<string> allRops)
+        public static bool ParseCaptureFile(Session[] sessionsFromCore, string fileName)
         {
             var errorStringList = new List<string>();
             StringBuilder stringBuilder = new StringBuilder();
             AllSessions = sessionsFromCore;
-            DecodingContext decodingContext = new DecodingContext();
             ResetPartialParameters();
             ResetPartialContextInformation();
             ResetHandleInformation();
+
+            if (File.Exists(fileName))
+            {
+                File.Delete(fileName);
+            }
+
+            string errorPath = Path.Combine(Path.GetDirectoryName(fileName), Path.GetFileNameWithoutExtension(fileName) + ".error" + Path.GetExtension(fileName));
+            if (File.Exists(errorPath))
+            {
+                File.Delete(errorPath);
+            }
+
+            string JsonResult = string.Empty;
+
             for (int i = 0; i < AllSessions.Length; i++)
             {
-                var session = AllSessions[i];
                 Session val = AllSessions[i];
-                if (AllSessions[i]["VirtualID"] != null)
-                {
-                    ParsingSession = val;
-                }
                 if (AllSessions.Length > 0 && AllSessions[AllSessions.Length - 1]["Number"] == null)
                 {
                     SetIndexForContextRelatedMethods();
                 }
 
-                if (IsMapihttpWithoutUI())
+                if (IsMapihttpSession(val, TrafficDirection.In) || IsMapihttpSession(val, TrafficDirection.Out))
                 {
                     try
                     {
@@ -2306,7 +2297,7 @@
                         byte[] bytes;
                         object obj = ParseHTTPPayload(BaseHeaders, val, val.requestBodyBytes, TrafficDirection.In, out bytes);
                         JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: true, obj);
-                        if (val["X-ResponseCode"] == "0")
+                        //if (val.ResponseHeaders["X-ResponseCode"] == "0")
                         {
                             object obj2 = ParseHTTPPayload(BaseHeaders, val, val.responseBodyBytes, TrafficDirection.Out, out bytes);
                             JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: false, obj2);
@@ -2324,38 +2315,41 @@
                         ContextInformationCollection = new List<ContextInformation>();
                         IsLooperCall = true;
                     }
-                }
-                if (i % 10 == 0 && JsonResult.Length != 0)
-                {
-                    string path = pathName + Path.DirectorySeparatorChar.ToString() + autoCaseName + "-" + JsonFile;
-                    if (!File.Exists(path))
+
+                    // Write out what we've accumulated so far.
+                    if (i % 10 == 0 && JsonResult.Length != 0)
                     {
-                        using (StreamWriter streamWriter = File.CreateText(path))
+                        if (!File.Exists(fileName))
                         {
-                            streamWriter.WriteLine(JsonResult);
+                            using (StreamWriter streamWriter = File.CreateText(fileName))
+                            {
+                                streamWriter.WriteLine(JsonResult);
+                            }
                         }
-                    }
-                    else
-                    {
-                        using (StreamWriter streamWriter2 = File.AppendText(path))
+                        else
                         {
-                            streamWriter2.WriteLine(JsonResult);
+                            using (StreamWriter streamWriter2 = File.AppendText(fileName))
+                            {
+                                streamWriter2.WriteLine(JsonResult);
+                            }
                         }
+
+                        JsonResult = string.Empty;
                     }
-                    JsonResult = string.Empty;
                 }
             }
-            allRops = AllRopsList;
+
             foreach (string errorString in errorStringList)
             {
                 stringBuilder.AppendLine(errorString);
             }
+
             if (stringBuilder.Length != 0)
             {
-                string path2 = pathName + Path.DirectorySeparatorChar.ToString() + autoCaseName + "-" + ErrorFile;
-                File.WriteAllText(path2, stringBuilder.ToString());
+                File.WriteAllText(errorPath, stringBuilder.ToString());
                 return false;
             }
+
             return true;
         }
     }

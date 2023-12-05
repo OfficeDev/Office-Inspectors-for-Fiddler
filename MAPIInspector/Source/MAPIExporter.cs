@@ -1,51 +1,40 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using System.Windows.Forms;
 using Fiddler;
 using System.Collections.Generic;
+using MapiInspector;
 
 [ProfferFormat("MAPI", "Parsed MAPI frames")]
-public class MAPIExporter : ISessionExporter  // Ensure class is public, or Fiddler Classic won't see it!
+public class MAPIExporter : ISessionExporter
 {
     public bool ExportSessions(string sFormat, Session[] oSessions, Dictionary<string, object> dictOptions,
         EventHandler<ProgressCallbackEventArgs> evtProgressNotifications)
     {
-        bool bResult;
+        bool result;
 
-        // Determine if we already have a filename from the dictOptions collection
-        string sFilename = null;
-        if (null != dictOptions && dictOptions.ContainsKey("Filename"))
+        string filePath = null;
+        if (null != dictOptions && dictOptions.ContainsKey("FilePath"))
         {
-            sFilename = dictOptions["Filename"] as string;
+            filePath = dictOptions["FilePath"] as string;
         }
 
-        if (string.IsNullOrEmpty(sFilename)) sFilename = Utilities.ObtainSaveFilename("Export As " + sFormat, "CSV Files (*.csv)|*.csv");
+        if (string.IsNullOrEmpty(filePath)) filePath = Fiddler.Utilities.ObtainSaveFilename("Export As " + sFormat, "JSON File (*.json)|*.json");
 
-        if (string.IsNullOrEmpty(sFilename)) return false;
+        if (string.IsNullOrEmpty(filePath)) return false;
 
         try
         {
-            StreamWriter swOutput = new StreamWriter(sFilename, false, Encoding.UTF8);
-
-            foreach (Session oS in oSessions)
-            {
-                //swOutput.WriteLine();
-            }
-
-            swOutput.Close();
-            bResult = true;
+            MAPIParser.ParseCaptureFile(oSessions, filePath);
+            result = true;
         }
-        catch (Exception eX)
+        catch (Exception ex)
         {
-            MessageBox.Show(eX.Message, "Failed to export");
-            bResult = false;
+            MessageBox.Show(ex.Message, "Failed to export");
+            result = false;
         }
 
-        return bResult;
+        return result;
     }
 
-    public void Dispose()
-    {
-    }
+    public void Dispose() { }
 }
