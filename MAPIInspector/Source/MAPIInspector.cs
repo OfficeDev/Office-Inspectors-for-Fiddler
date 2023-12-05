@@ -704,7 +704,6 @@
             }
         }
 
-
         private bool inSafeHandleContextInformation = false;
         /// <summary>
         /// SafeHandleContextInformation wraps HandleContextInformation to prevent reentrancy.
@@ -2451,7 +2450,7 @@
         /// <summary>
         /// Clean parsed session related dictionaries
         /// </summary>
-        public void ResetHanleInformation()
+        public void ResetHandleInformation()
         {
             this.requestDic = new Dictionary<int, object>();
             this.responseDic = new Dictionary<int, object>();
@@ -2503,7 +2502,7 @@
         /// <param name="e">A EventArgs that contains the event data.</param>
         public void AfterCallDoImport(object sender, EventArgs e)
         {
-            this.ResetHanleInformation();
+            this.ResetHandleInformation();
             this.ResetPartialContextInformation();
             this.ResetPartialParameters();
         }
@@ -2646,7 +2645,7 @@
             DecodingContext decodingContext = new DecodingContext();
             ResetPartialParameters();
             ResetPartialContextInformation();
-            ResetHanleInformation();
+            ResetHandleInformation();
             for (int i = 0; i < AllSessions.Length; i++)
             {
                 var session = AllSessions[i];
