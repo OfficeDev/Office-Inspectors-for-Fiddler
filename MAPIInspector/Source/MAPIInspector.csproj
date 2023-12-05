@@ -119,6 +119,7 @@
     <Compile Include="MAPIControl.Designer.cs">
       <DependentUpon>MAPIControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="MAPIExporter.cs" />
     <Compile Include="MAPIInspector.cs" />
     <Compile Include="MAPIRequestInspector.cs" />
     <Compile Include="MAPIResponseInspector.cs" />
@@ -164,7 +165,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>start "CopyDLLs" /B /wait start xcopy "$(SolutionDir)$(OutDir)*.*" "$(FiddlerPath)\Inspectors" /Q /Y</PostBuildEvent>
+    <PostBuildEvent>start "CopyDLLs" /B /wait start $(SolutionDir)CopyBinaries.cmd $(SolutionDir)$(OutDir) $(FiddlerPath)</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>taskkill /im fiddler.exe /t /f 2&gt;&amp;1 | exit /B 0</PreBuildEvent>
