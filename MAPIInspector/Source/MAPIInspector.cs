@@ -2,16 +2,34 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Text;
     using System.Windows.Forms;
     using Be.Windows.Forms;
     using Fiddler;
     using global::MAPIInspector.Parsers;
+    using static MapiInspector.MAPIParser;
 
     /// <summary>
     /// MAPIInspector Class
     /// </summary>
     public abstract class MAPIInspector : Inspector2
     {
+        /// <summary>
+        /// The JsonResult is used to save the Json string which converted by parse result
+        /// </summary>
+        public static string JsonResult = string.Empty;
+
+        /// <summary>
+        /// The JsonFile is used to set a file name to save JsonResult
+        /// </summary>
+        public static string JsonFile = "Json.txt";
+
+        /// <summary>
+        /// The JsonFile is used to set a file name to save error messages when automation test
+        /// </summary>
+        public static string ErrorFile = "Error.txt";
+
         /// <summary>
         /// Gets or sets the Tree View control where displayed the MAPI message.
         /// </summary>
@@ -382,6 +400,99 @@
             {
                 return;
             }
+        }
+
+        /// <summary>
+        /// Parse the sessions from capture file using the MAPI Inspector
+        /// Used in test automation
+        /// </summary>
+        /// <param name="sessionsFromCore">The sessions which from FiddlerCore to parse</param>
+        /// <param name="pathName">The path for save result file</param>
+        /// <param name="autoCaseName">The test case name to parse</param>
+        /// <param name="allRops">All ROPs contained in list</param>
+        /// <returns>Parse result, true means success</returns>
+        public bool ParseCaptureFile(Fiddler.Session[] sessionsFromCore, string pathName, string autoCaseName, out List<string> allRops)
+        {
+            var errorStringList = new List<string>();
+            StringBuilder stringBuilder = new StringBuilder();
+            AllSessions = sessionsFromCore;
+            DecodingContext decodingContext = new DecodingContext();
+            ResetPartialParameters();
+            ResetPartialContextInformation();
+            ResetHandleInformation();
+            for (int i = 0; i < AllSessions.Length; i++)
+            {
+                var session = AllSessions[i];
+                Session val = AllSessions[i];
+                if (AllSessions[i]["VirtualID"] != null)
+                {
+                    MAPIParser.ParsingSession = val;
+                }
+                if (AllSessions.Length > 0 && AllSessions[AllSessions.Length - 1]["Number"] == null)
+                {
+                    SetIndexForContextRelatedMethods();
+                }
+                if (IsMapihttpWithoutUI())
+                {
+                    try
+                    {
+                        MAPIParser.IsLooperCall = false;
+                        ResetPartialParameters();
+                        BaseHeaders = val.RequestHeaders;
+                        byte[] bytes;
+                        object obj = ParseHTTPPayload(BaseHeaders, val, val.requestBodyBytes, TrafficDirection.In, out bytes);
+                        JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: true, obj);
+                        if (val["X-ResponseCode"] == "0")
+                        {
+                            object obj2 = ParseHTTPPayload(BaseHeaders, val, val.responseBodyBytes, TrafficDirection.Out, out bytes);
+                            JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: false, obj2);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        errorStringList.Add(string.Format("{0}. Error: Frame#{1} Error Message:{2}", errorStringList.Count + 1, val["VirtualID"], ex.Message));
+                    }
+                    finally
+                    {
+                        DecodingContext.Notify_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[], string>>>();
+                        DecodingContext.RowRops_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[]>>>();
+                        TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
+                        ContextInformationCollection = new List<ContextInformation>();
+                        MAPIParser.IsLooperCall = true;
+                    }
+                }
+                if (i % 10 == 0 && JsonResult.Length != 0)
+                {
+                    string path = pathName + Path.DirectorySeparatorChar.ToString() + autoCaseName + "-" + JsonFile;
+                    if (!File.Exists(path))
+                    {
+                        using (StreamWriter streamWriter = File.CreateText(path))
+                        {
+                            streamWriter.WriteLine(JsonResult);
+                        }
+                    }
+                    else
+                    {
+                        using (StreamWriter streamWriter2 = File.AppendText(path))
+                        {
+                            streamWriter2.WriteLine(JsonResult);
+                        }
+                    }
+                    JsonResult = string.Empty;
+                }
+            }
+            allRops = AllRopsList;
+            foreach (string errorString in errorStringList)
+            {
+                stringBuilder.AppendLine(errorString);
+            }
+            if (stringBuilder.Length != 0)
+            {
+                string path2 = pathName + Path.DirectorySeparatorChar.ToString() + autoCaseName + "-" + ErrorFile;
+                File.WriteAllText(path2, stringBuilder.ToString());
+                return false;
+            }
+            return true;
         }
     }
 }
