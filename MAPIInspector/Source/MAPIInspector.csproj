@@ -95,6 +95,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ByteArrayConverter.cs" />
     <Compile Include="MAPIControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

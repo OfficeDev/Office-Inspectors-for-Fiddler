@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Text;
     using Fiddler;
+    using global::MAPIInspector;
     using global::MAPIInspector.Parsers;
     using Newtonsoft.Json;
 
@@ -2303,6 +2304,8 @@
                 SetIndexForContextRelatedMethods();
             }
 
+            var JsonConverters = new JsonConverter[] { new Newtonsoft.Json.Converters.StringEnumConverter(), new ByteArrayConverter() };
+
             int i = 0;
             foreach (var session in AllSessions)
             {
@@ -2324,7 +2327,7 @@
                             Request = requestObj,
                             Response = responseObj
                         };
-                        JsonResult.Add(JsonConvert.SerializeObject(mapiFrame, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter()));
+                        JsonResult.Add(JsonConvert.SerializeObject(mapiFrame, Formatting.Indented, JsonConverters));
                     }
                     catch (Exception ex)
                     {
