@@ -799,10 +799,10 @@
             List<uint> serverObjectHandleTable = new List<uint>();
             List<uint> ropRemainSize = new List<uint>();
             List<uint> tempServerObjectHandleTable = new List<uint>();
-            int parsingSessionID = MapiInspector.MAPIInspector.ParsingSession.id;
-            if (MapiInspector.MAPIInspector.IsFromFiddlerCore(MapiInspector.MAPIInspector.ParsingSession))
+            int parsingSessionID = MapiInspector.MAPIParser.ParsingSession.id;
+            if (MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
             {
-                parsingSessionID = int.Parse(MapiInspector.MAPIInspector.ParsingSession["VirtualID"]);
+                parsingSessionID = int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"]);
             }
             long currentPosition = s.Position;
             s.Position += this.RopSize - 2;
@@ -811,11 +811,11 @@
             {
                 uint serverObjectTable = this.ReadUint();
 
-                if (MapiInspector.MAPIInspector.TargetHandle.Count > 0)
+                if (MapiInspector.MAPIParser.TargetHandle.Count > 0)
                 {
-                    MapiInspector.MAPIInspector.IsLooperCall = true;
+                    MapiInspector.MAPIParser.IsLooperCall = true;
                     Dictionary<ushort, Dictionary<int, uint>> item = new Dictionary<ushort, Dictionary<int, uint>>();
-                    item = MapiInspector.MAPIInspector.TargetHandle.Peek();
+                    item = MapiInspector.MAPIParser.TargetHandle.Peek();
 
                     if (item.First().Value.ContainsValue(serverObjectTable))
                     {
@@ -824,7 +824,7 @@
                 }
                 else
                 {
-                    MapiInspector.MAPIInspector.IsLooperCall = false;
+                    MapiInspector.MAPIParser.IsLooperCall = false;
                 }
 
                 tempServerObjectHandleTable.Add(serverObjectTable);
@@ -832,7 +832,7 @@
 
             s.Position = currentPosition;
 
-            if (!MapiInspector.MAPIInspector.IsLooperCall || parseToCROPSRequestLayer || MapiInspector.MAPIInspector.NeedToParseCROPSLayer)
+            if (!MapiInspector.MAPIParser.IsLooperCall || parseToCROPSRequestLayer || MapiInspector.MAPIParser.NeedToParseCROPSLayer)
             {
                 Queue<PropertyTag[]> proDics = new Queue<PropertyTag[]>();
                 Dictionary<uint, Queue<PropertyTag[]>> propertyTagsForGetPropertiesSpec = new Dictionary<uint, Queue<PropertyTag[]>>();
@@ -880,21 +880,21 @@
                                 Dictionary<byte, LogonFlags> logIdAndFlags = new Dictionary<byte, LogonFlags>();
 
                                 // update variables used for parsing messages in other ROPs which need logonFlags
-                                if (DecodingContext.LogonFlagMapLogId.Count > 0 && DecodingContext.LogonFlagMapLogId.ContainsKey(MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath))
+                                if (DecodingContext.LogonFlagMapLogId.Count > 0 && DecodingContext.LogonFlagMapLogId.ContainsKey(MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath))
                                 {
-                                    processNameMap = DecodingContext.LogonFlagMapLogId[MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath];
-                                    DecodingContext.LogonFlagMapLogId.Remove(MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath);
+                                    processNameMap = DecodingContext.LogonFlagMapLogId[MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath];
+                                    DecodingContext.LogonFlagMapLogId.Remove(MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath);
 
-                                    if (processNameMap.ContainsKey(MapiInspector.MAPIInspector.ParsingSession.LocalProcess))
+                                    if (processNameMap.ContainsKey(MapiInspector.MAPIParser.ParsingSession.LocalProcess))
                                     {
-                                        clientInfoMap = processNameMap[MapiInspector.MAPIInspector.ParsingSession.LocalProcess];
-                                        processNameMap.Remove(MapiInspector.MAPIInspector.ParsingSession.LocalProcess);
+                                        clientInfoMap = processNameMap[MapiInspector.MAPIParser.ParsingSession.LocalProcess];
+                                        processNameMap.Remove(MapiInspector.MAPIParser.ParsingSession.LocalProcess);
                                     }
 
-                                    if (clientInfoMap.ContainsKey(MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"]))
+                                    if (clientInfoMap.ContainsKey(MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"]))
                                     {
-                                        logIdAndFlags = clientInfoMap[MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"]];
-                                        clientInfoMap.Remove(MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"]);
+                                        logIdAndFlags = clientInfoMap[MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"]];
+                                        clientInfoMap.Remove(MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"]);
                                     }
 
                                     if (logIdAndFlags.ContainsKey(ropLogonRequest.LogonId))
@@ -904,9 +904,9 @@
                                 }
 
                                 logIdAndFlags.Add(ropLogonRequest.LogonId, ropLogonRequest.LogonFlags);
-                                clientInfoMap.Add(MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"], logIdAndFlags);
-                                processNameMap.Add(MapiInspector.MAPIInspector.ParsingSession.LocalProcess, clientInfoMap);
-                                DecodingContext.LogonFlagMapLogId.Add(MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath, processNameMap);
+                                clientInfoMap.Add(MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"], logIdAndFlags);
+                                processNameMap.Add(MapiInspector.MAPIParser.ParsingSession.LocalProcess, clientInfoMap);
+                                DecodingContext.LogonFlagMapLogId.Add(MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath, processNameMap);
                                 break;
                             case RopIdType.RopGetReceiveFolder:
                                 RopGetReceiveFolderRequest ropGetReceiveFolderRequest = new RopGetReceiveFolderRequest();
@@ -1030,7 +1030,7 @@
                                 ropReleaseRequest.Parse(s);
                                 ropsList.Add(ropReleaseRequest);
                                 uint handle_Release = tempServerObjectHandleTable[ropReleaseRequest.InputHandleIndex];
-                                string serverRequestPath = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                                string serverRequestPath = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
 
                                 if (DecodingContext.RowRops_handlePropertyTags.ContainsKey(handle_Release))
                                 {
@@ -1038,7 +1038,7 @@
 
                                     foreach (var ele in DecodingContext.RowRops_handlePropertyTags[handle_Release])
                                     {
-                                        if (ele.Value.Item1 == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath && ele.Value.Item2 == MapiInspector.MAPIInspector.ParsingSession.LocalProcess && ele.Value.Item3 == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
+                                        if (ele.Value.Item1 == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && ele.Value.Item2 == MapiInspector.MAPIParser.ParsingSession.LocalProcess && ele.Value.Item3 == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                                         {
                                             sessions.Add(ele.Key);
                                         }
@@ -1069,13 +1069,13 @@
                                 ropSetColumnsRequest.Parse(s);
                                 ropsList.Add(ropSetColumnsRequest);
                                 uint handle_SetColumns = tempServerObjectHandleTable[ropSetColumnsRequest.InputHandleIndex];
-                                string serverUrl = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
+                                string serverUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
 
                                 if (handle_SetColumns != 0xFFFFFFFF)
                                 {
-                                    if (MapiInspector.MAPIInspector.TargetHandle.Count > 0)
+                                    if (MapiInspector.MAPIParser.TargetHandle.Count > 0)
                                     {
-                                        Dictionary<ushort, Dictionary<int, uint>> target = MapiInspector.MAPIInspector.TargetHandle.Peek();
+                                        Dictionary<ushort, Dictionary<int, uint>> target = MapiInspector.MAPIParser.TargetHandle.Peek();
 
                                         if ((RopIdType)target.First().Key == RopIdType.RopQueryRows || (RopIdType)target.First().Key == RopIdType.RopFindRow || (RopIdType)target.First().Key == RopIdType.RopExpandRow)
                                         {
@@ -1094,7 +1094,7 @@
                                                 }
                                             }
 
-                                            tuples = new Tuple<string, string, string, PropertyTag[]>(MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath, MapiInspector.MAPIInspector.ParsingSession.LocalProcess, MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"], ropSetColumnsRequest.PropertyTags);
+                                            tuples = new Tuple<string, string, string, PropertyTag[]>(MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath, MapiInspector.MAPIParser.ParsingSession.LocalProcess, MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"], ropSetColumnsRequest.PropertyTags);
                                             sessionTuples.Add(parsingSessionID, tuples);
                                             DecodingContext.RowRops_handlePropertyTags.Add(handle_SetColumns, sessionTuples);
                                         }
@@ -1115,31 +1115,31 @@
                                                 }
                                             }
 
-                                            tuples = new Tuple<string, string, string, PropertyTag[], string>(MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath, MapiInspector.MAPIInspector.ParsingSession.LocalProcess, MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"], ropSetColumnsRequest.PropertyTags, string.Empty);
+                                            tuples = new Tuple<string, string, string, PropertyTag[], string>(MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath, MapiInspector.MAPIParser.ParsingSession.LocalProcess, MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"], ropSetColumnsRequest.PropertyTags, string.Empty);
                                             sessionTuples.Add(parsingSessionID, tuples);
                                             DecodingContext.Notify_handlePropertyTags.Add(handle_SetColumns, sessionTuples);
                                         }
                                     }
                                 }
-                                else if(MapiInspector.MAPIInspector.IsFromFiddlerCore(MapiInspector.MAPIInspector.ParsingSession))
+                                else if(MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
                                 {
-                                    if (MapiInspector.MAPIInspector.ParsingSession["X-ResponseCode"] == "0")
+                                    if (MapiInspector.MAPIParser.ParsingSession["X-ResponseCode"] == "0")
                                     {
                                         uint outputHandle;
 
                                         try
                                         {
-                                            MapiInspector.MAPIInspector.IsOnlyGetServerHandle = true;
-                                            outputHandle = MapiInspector.MAPIInspector.ParseResponseMessageSimplely(MapiInspector.MAPIInspector.ParsingSession, ropSetColumnsRequest.InputHandleIndex);
+                                            MapiInspector.MAPIParser.IsOnlyGetServerHandle = true;
+                                            outputHandle = MapiInspector.MAPIParser.ParseResponseMessageSimplely(MapiInspector.MAPIParser.ParsingSession, ropSetColumnsRequest.InputHandleIndex);
                                         }
                                         finally
                                         {
-                                            MapiInspector.MAPIInspector.IsOnlyGetServerHandle = false;
+                                            MapiInspector.MAPIParser.IsOnlyGetServerHandle = false;
                                         }
 
-                                        if (MapiInspector.MAPIInspector.TargetHandle.Count > 0)
+                                        if (MapiInspector.MAPIParser.TargetHandle.Count > 0)
                                         {
-                                            Dictionary<ushort, Dictionary<int, uint>> target = MapiInspector.MAPIInspector.TargetHandle.Peek();
+                                            Dictionary<ushort, Dictionary<int, uint>> target = MapiInspector.MAPIParser.TargetHandle.Peek();
 
                                             if ((RopIdType)target.First().Key == RopIdType.RopQueryRows || (RopIdType)target.First().Key == RopIdType.RopFindRow || (RopIdType)target.First().Key == RopIdType.RopExpandRow)
                                             {
@@ -1158,7 +1158,7 @@
                                                     }
                                                 }
 
-                                                tuples = new Tuple<string, string, string, PropertyTag[]>(MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath, MapiInspector.MAPIInspector.ParsingSession.LocalProcess, MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"], ropSetColumnsRequest.PropertyTags);
+                                                tuples = new Tuple<string, string, string, PropertyTag[]>(MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath, MapiInspector.MAPIParser.ParsingSession.LocalProcess, MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"], ropSetColumnsRequest.PropertyTags);
                                                 sessionTuples.Add(parsingSessionID, tuples);
                                                 DecodingContext.RowRops_handlePropertyTags.Add(outputHandle, sessionTuples);
                                             }
@@ -1180,30 +1180,30 @@
                                                     }
                                                 }
 
-                                                tuples = new Tuple<string, string, string, PropertyTag[], string>(MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath, MapiInspector.MAPIInspector.ParsingSession.LocalProcess, MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"], ropSetColumnsRequest.PropertyTags, string.Empty);
+                                                tuples = new Tuple<string, string, string, PropertyTag[], string>(MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath, MapiInspector.MAPIParser.ParsingSession.LocalProcess, MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"], ropSetColumnsRequest.PropertyTags, string.Empty);
                                                 sessionTuples.Add(parsingSessionID, tuples);
                                                 DecodingContext.Notify_handlePropertyTags.Add(outputHandle, sessionTuples);
                                             }
                                         }
                                     }
                                 }
-                                else if (MapiInspector.MAPIInspector.ParsingSession.ResponseHeaders["X-ResponseCode"] == "0")
+                                else if (MapiInspector.MAPIParser.ParsingSession.ResponseHeaders["X-ResponseCode"] == "0")
                                 {
                                     uint outputHandle;
 
                                     try
                                     {
-                                        MapiInspector.MAPIInspector.IsOnlyGetServerHandle = true;
-                                        outputHandle = MapiInspector.MAPIInspector.ParseResponseMessageSimplely(MapiInspector.MAPIInspector.ParsingSession, ropSetColumnsRequest.InputHandleIndex);
+                                        MapiInspector.MAPIParser.IsOnlyGetServerHandle = true;
+                                        outputHandle = MapiInspector.MAPIParser.ParseResponseMessageSimplely(MapiInspector.MAPIParser.ParsingSession, ropSetColumnsRequest.InputHandleIndex);
                                     }
                                     finally
                                     {
-                                        MapiInspector.MAPIInspector.IsOnlyGetServerHandle = false;
+                                        MapiInspector.MAPIParser.IsOnlyGetServerHandle = false;
                                     }
 
-                                    if (MapiInspector.MAPIInspector.TargetHandle.Count > 0)
+                                    if (MapiInspector.MAPIParser.TargetHandle.Count > 0)
                                     {
-                                        Dictionary<ushort, Dictionary<int, uint>> target = MapiInspector.MAPIInspector.TargetHandle.Peek();
+                                        Dictionary<ushort, Dictionary<int, uint>> target = MapiInspector.MAPIParser.TargetHandle.Peek();
 
                                         if ((RopIdType)target.First().Key == RopIdType.RopQueryRows || (RopIdType)target.First().Key == RopIdType.RopFindRow || (RopIdType)target.First().Key == RopIdType.RopExpandRow)
                                         {
@@ -1222,7 +1222,7 @@
                                                 }
                                             }
 
-                                            tuples = new Tuple<string, string, string, PropertyTag[]>(MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath, MapiInspector.MAPIInspector.ParsingSession.LocalProcess, MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"], ropSetColumnsRequest.PropertyTags);
+                                            tuples = new Tuple<string, string, string, PropertyTag[]>(MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath, MapiInspector.MAPIParser.ParsingSession.LocalProcess, MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"], ropSetColumnsRequest.PropertyTags);
                                             sessionTuples.Add(parsingSessionID, tuples);
                                             DecodingContext.RowRops_handlePropertyTags.Add(outputHandle, sessionTuples);
                                         }
@@ -1244,7 +1244,7 @@
                                                 }
                                             }
 
-                                            tuples = new Tuple<string, string, string, PropertyTag[], string>(MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath, MapiInspector.MAPIInspector.ParsingSession.LocalProcess, MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"], ropSetColumnsRequest.PropertyTags, string.Empty);
+                                            tuples = new Tuple<string, string, string, PropertyTag[], string>(MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath, MapiInspector.MAPIParser.ParsingSession.LocalProcess, MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"], ropSetColumnsRequest.PropertyTags, string.Empty);
                                             sessionTuples.Add(parsingSessionID, tuples);
                                             DecodingContext.Notify_handlePropertyTags.Add(outputHandle, sessionTuples);
                                         }
@@ -1422,7 +1422,7 @@
                                 int tempInputHandleIndex_putBuffer = s.ReadByte();
                                 s.Position = currentPos_putBuffer;
                                 uint ropPutbufferHandle = tempServerObjectHandleTable[tempInputHandleIndex_putBuffer];
-                                Session destinationParsingSession = MapiInspector.MAPIInspector.ParsingSession;
+                                Session destinationParsingSession = MapiInspector.MAPIParser.ParsingSession;
                                 int destinationParsingSessionID = parsingSessionID;
 
                                 if (tempServerObjectHandleTable[tempInputHandleIndex_putBuffer] != 0xffffffff)
@@ -1434,23 +1434,23 @@
                                 }
                                 else
                                 {
-                                    MapiInspector.MAPIInspector.PartialPutType = 0;
-                                    MapiInspector.MAPIInspector.PartialPutRemainSize = -1;
-                                    MapiInspector.MAPIInspector.PartialPutSubRemainSize = -1;
+                                    MapiInspector.MAPIParser.PartialPutType = 0;
+                                    MapiInspector.MAPIParser.PartialPutRemainSize = -1;
+                                    MapiInspector.MAPIParser.PartialPutSubRemainSize = -1;
                                 }
 
                                 RopFastTransferDestinationPutBufferRequest ropFastTransferDestinationPutBufferRequest = new RopFastTransferDestinationPutBufferRequest();
-                                MapiInspector.MAPIInspector.IsPut = true;
+                                MapiInspector.MAPIParser.IsPut = true;
                                 ropFastTransferDestinationPutBufferRequest.Parse(s);
                                 ropsList.Add(ropFastTransferDestinationPutBufferRequest);
 
-                                PartialContextInformation putBufferPartialInformaiton = new PartialContextInformation(MapiInspector.MAPIInspector.PartialPutType, MapiInspector.MAPIInspector.PartialPutId, MapiInspector.MAPIInspector.PartialPutRemainSize, MapiInspector.MAPIInspector.PartialPutSubRemainSize, false, destinationParsingSession, MapiInspector.MAPIInspector.InputPayLoadCompressedXOR);
+                                PartialContextInformation putBufferPartialInformaiton = new PartialContextInformation(MapiInspector.MAPIParser.PartialPutType, MapiInspector.MAPIParser.PartialPutId, MapiInspector.MAPIParser.PartialPutRemainSize, MapiInspector.MAPIParser.PartialPutSubRemainSize, false, destinationParsingSession, MapiInspector.MAPIParser.InputPayLoadCompressedXOR);
                                 SortedDictionary<int, PartialContextInformation> sessionputContextInfor = new SortedDictionary<int, PartialContextInformation>();
 
-                                if (MapiInspector.MAPIInspector.HandleWithSessionPutContextInformation.ContainsKey(ropPutbufferHandle))
+                                if (MapiInspector.MAPIParser.HandleWithSessionPutContextInformation.ContainsKey(ropPutbufferHandle))
                                 {
-                                    sessionputContextInfor = MapiInspector.MAPIInspector.HandleWithSessionPutContextInformation[ropPutbufferHandle];
-                                    MapiInspector.MAPIInspector.HandleWithSessionPutContextInformation.Remove(ropPutbufferHandle);
+                                    sessionputContextInfor = MapiInspector.MAPIParser.HandleWithSessionPutContextInformation[ropPutbufferHandle];
+                                    MapiInspector.MAPIParser.HandleWithSessionPutContextInformation.Remove(ropPutbufferHandle);
                                 }
 
                                 if (sessionputContextInfor.ContainsKey(destinationParsingSessionID))
@@ -1462,8 +1462,8 @@
                                     sessionputContextInfor.Add(destinationParsingSessionID, putBufferPartialInformaiton);
                                 }
 
-                                MapiInspector.MAPIInspector.HandleWithSessionPutContextInformation.Add(ropPutbufferHandle, sessionputContextInfor);
-                                MapiInspector.MAPIInspector.IsPut = false;
+                                MapiInspector.MAPIParser.HandleWithSessionPutContextInformation.Add(ropPutbufferHandle, sessionputContextInfor);
+                                MapiInspector.MAPIParser.IsPut = false;
                                 break;
 
                             case RopIdType.RopFastTransferDestinationPutBufferExtended:
@@ -1473,7 +1473,7 @@
                                 s.Position = currentPos_putBufferExtended;
                                 uint ropPutExtendbufferHandle = tempServerObjectHandleTable[tempInputHandleIndex_putBufferExtended];
                                 int aimsParsingSessionID = parsingSessionID;
-                                Session aimsParsingSession = MapiInspector.MAPIInspector.ParsingSession;
+                                Session aimsParsingSession = MapiInspector.MAPIParser.ParsingSession;
 
                                 if (tempServerObjectHandleTable[tempInputHandleIndex_putBufferExtended] != 0xffffffff)
                                 {
@@ -1484,23 +1484,23 @@
                                 }
                                 else
                                 {
-                                    MapiInspector.MAPIInspector.PartialPutExtendType = 0;
-                                    MapiInspector.MAPIInspector.PartialPutExtendRemainSize = -1;
-                                    MapiInspector.MAPIInspector.PartialPutExtendSubRemainSize = -1;
+                                    MapiInspector.MAPIParser.PartialPutExtendType = 0;
+                                    MapiInspector.MAPIParser.PartialPutExtendRemainSize = -1;
+                                    MapiInspector.MAPIParser.PartialPutExtendSubRemainSize = -1;
                                 }
 
                                 RopFastTransferDestinationPutBufferExtendedRequest ropFastTransferDestinationPutBufferExtendedRequest = new RopFastTransferDestinationPutBufferExtendedRequest();
-                                MapiInspector.MAPIInspector.IsPutExtend = true;
+                                MapiInspector.MAPIParser.IsPutExtend = true;
                                 ropFastTransferDestinationPutBufferExtendedRequest.Parse(s);
                                 ropsList.Add(ropFastTransferDestinationPutBufferExtendedRequest);
 
-                                PartialContextInformation putExtendBufferPartialInformaiton = new PartialContextInformation(MapiInspector.MAPIInspector.PartialPutType, MapiInspector.MAPIInspector.PartialPutId, MapiInspector.MAPIInspector.PartialPutRemainSize, MapiInspector.MAPIInspector.PartialPutSubRemainSize, false, aimsParsingSession, MapiInspector.MAPIInspector.InputPayLoadCompressedXOR);
+                                PartialContextInformation putExtendBufferPartialInformaiton = new PartialContextInformation(MapiInspector.MAPIParser.PartialPutType, MapiInspector.MAPIParser.PartialPutId, MapiInspector.MAPIParser.PartialPutRemainSize, MapiInspector.MAPIParser.PartialPutSubRemainSize, false, aimsParsingSession, MapiInspector.MAPIParser.InputPayLoadCompressedXOR);
                                 SortedDictionary<int, PartialContextInformation> sessionputExtendContextInfor = new SortedDictionary<int, PartialContextInformation>();
 
-                                if (MapiInspector.MAPIInspector.HandleWithSessionPutExtendContextInformation.ContainsKey(ropPutExtendbufferHandle))
+                                if (MapiInspector.MAPIParser.HandleWithSessionPutExtendContextInformation.ContainsKey(ropPutExtendbufferHandle))
                                 {
-                                    sessionputExtendContextInfor = MapiInspector.MAPIInspector.HandleWithSessionPutExtendContextInformation[ropPutExtendbufferHandle];
-                                    MapiInspector.MAPIInspector.HandleWithSessionPutExtendContextInformation.Remove(ropPutExtendbufferHandle);
+                                    sessionputExtendContextInfor = MapiInspector.MAPIParser.HandleWithSessionPutExtendContextInformation[ropPutExtendbufferHandle];
+                                    MapiInspector.MAPIParser.HandleWithSessionPutExtendContextInformation.Remove(ropPutExtendbufferHandle);
                                 }
 
                                 if (sessionputExtendContextInfor.ContainsKey(aimsParsingSessionID))
@@ -1512,8 +1512,8 @@
                                     sessionputExtendContextInfor.Add(aimsParsingSessionID, putExtendBufferPartialInformaiton);
                                 }
 
-                                MapiInspector.MAPIInspector.HandleWithSessionPutExtendContextInformation.Add(ropPutExtendbufferHandle, sessionputExtendContextInfor);
-                                MapiInspector.MAPIInspector.IsPutExtend = false;
+                                MapiInspector.MAPIParser.HandleWithSessionPutExtendContextInformation.Add(ropPutExtendbufferHandle, sessionputExtendContextInfor);
+                                MapiInspector.MAPIParser.IsPutExtend = false;
                                 break;
 
                             case RopIdType.RopSynchronizationConfigure:
@@ -2043,9 +2043,9 @@
                 object[] roplist = RopsList;
                 foreach (object obj in roplist)
                 {
-                    if (MapiInspector.MAPIInspector.AllRopsList.Count <= 0 || !MapiInspector.MAPIInspector.AllRopsList.Contains(obj.GetType().Name))
+                    if (MapiInspector.MAPIParser.AllRopsList.Count <= 0 || !MapiInspector.MAPIParser.AllRopsList.Contains(obj.GetType().Name))
                     {
-                        MapiInspector.MAPIInspector.AllRopsList.Add(obj.GetType().Name);
+                        MapiInspector.MAPIParser.AllRopsList.Add(obj.GetType().Name);
                     }
                 }
             }
@@ -2187,20 +2187,20 @@
             List<uint> tempServerObjectHandleTable = new List<uint>();
             long currentPosition = s.Position;
             s.Position += this.RopSize - 2;
-            int parsingSessionID = MapiInspector.MAPIInspector.ParsingSession.id;
-            if (MapiInspector.MAPIInspector.IsFromFiddlerCore(MapiInspector.MAPIInspector.ParsingSession))
+            int parsingSessionID = MapiInspector.MAPIParser.ParsingSession.id;
+            if (MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
             {
-                parsingSessionID = int.Parse(MapiInspector.MAPIInspector.ParsingSession["VirtualID"]);
+                parsingSessionID = int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"]);
             }
             while (s.Position < s.Length)
             {
                 uint serverObjectTable = this.ReadUint();
 
-                if (MapiInspector.MAPIInspector.TargetHandle.Count > 0)
+                if (MapiInspector.MAPIParser.TargetHandle.Count > 0)
                 {
-                    MapiInspector.MAPIInspector.IsLooperCall = true;
+                    MapiInspector.MAPIParser.IsLooperCall = true;
                     Dictionary<ushort, Dictionary<int, uint>> item = new Dictionary<ushort, Dictionary<int, uint>>();
-                    item = MapiInspector.MAPIInspector.TargetHandle.Peek();
+                    item = MapiInspector.MAPIParser.TargetHandle.Peek();
 
                     if (item.First().Value.ContainsValue(serverObjectTable))
                     {
@@ -2209,7 +2209,7 @@
                 }
                 else
                 {
-                    MapiInspector.MAPIInspector.IsLooperCall = false;
+                    MapiInspector.MAPIParser.IsLooperCall = false;
                 }
 
                 tempServerObjectHandleTable.Add(serverObjectTable);
@@ -2217,7 +2217,7 @@
 
             s.Position = currentPosition;
 
-            if (!MapiInspector.MAPIInspector.IsLooperCall || parseToCROPSResponseLayer || MapiInspector.MAPIInspector.NeedToParseCROPSLayer)
+            if (!MapiInspector.MAPIParser.IsLooperCall || parseToCROPSResponseLayer || MapiInspector.MAPIParser.NeedToParseCROPSLayer)
             {
                 // empty intermediate variables for ROPs need context information 
                 DecodingContext.SetColumn_InputHandles_InResponse = new List<uint>();
@@ -2422,9 +2422,9 @@
                                 int tempInputHandleIndex_QueryRow = s.ReadByte();
                                 uint returnValue_queryRow = this.ReadUint();
                                 s.Position = currentPos;
-                                string serverPath_QueryRow = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
-                                string processName_QueryROw = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
-                                string clientInfo_QueryROw = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
+                                string serverPath_QueryRow = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
+                                string processName_QueryROw = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
+                                string clientInfo_QueryROw = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
                                 uint objHandle_QueryROw = tempServerObjectHandleTable[tempInputHandleIndex_QueryRow];
                                 if (returnValue_queryRow == 0)
                                 {
@@ -2502,9 +2502,9 @@
                                 uint returnValue_findRow = this.ReadUint();
                                 s.Position = currentPos_findRow;
                                 uint objHandle_FindRow = tempServerObjectHandleTable[tempInputHandleIndex_findRow];
-                                string serverPath_FindRow = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
-                                string processName_FindRow = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
-                                string clientInfo_FindRow = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
+                                string serverPath_FindRow = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
+                                string processName_FindRow = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
+                                string clientInfo_FindRow = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
                                 if (returnValue_findRow == 0)
                                 {
                                     if (!(DecodingContext.RowRops_handlePropertyTags.ContainsKey(objHandle_FindRow) && DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow].ContainsKey(parsingSessionID) && DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow][parsingSessionID].Item1 == serverPath_FindRow
@@ -2545,9 +2545,9 @@
                                 uint returnValue_expandRow = this.ReadUint();
                                 s.Position = currentPos_expandRow;
                                 uint objHandle_ExpandRow = tempServerObjectHandleTable[tempInputHandleIndex_expandRow];
-                                string serverPath_ExpandRow = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath;
-                                string processName_ExpandRow = MapiInspector.MAPIInspector.ParsingSession.LocalProcess;
-                                string clientInfo_ExpandRow = MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"];
+                                string serverPath_ExpandRow = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
+                                string processName_ExpandRow = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
+                                string clientInfo_ExpandRow = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
                                 if (returnValue_expandRow == 0)
                                 {
                                     if (!(DecodingContext.RowRops_handlePropertyTags.ContainsKey(objHandle_ExpandRow) && DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow].ContainsKey(parsingSessionID) && DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow][parsingSessionID].Item1 == serverPath_ExpandRow
@@ -2635,7 +2635,7 @@
                                 ushort status = this.ReadUshort();
                                 s.Position = currentPos_getBuffer;
                                 int getParsingSessionID = parsingSessionID;
-                                Session getParsingSession = MapiInspector.MAPIInspector.ParsingSession;
+                                Session getParsingSession = MapiInspector.MAPIParser.ParsingSession;
                                 uint ropGetbufferHandle = tempServerObjectHandleTable[tempInputHandleIndex_getBuffer];
                                 PartialContextInformation[] partialBeforeAndAfterInformation = new PartialContextInformation[2];
                                 if (returnValue == 0)
@@ -2647,16 +2647,16 @@
                                 }
 
                                 RopFastTransferSourceGetBufferResponse ropFastTransferSourceGetBufferResponse = new RopFastTransferSourceGetBufferResponse();
-                                MapiInspector.MAPIInspector.IsGet = true;
+                                MapiInspector.MAPIParser.IsGet = true;
                                 ropFastTransferSourceGetBufferResponse.Parse(s);
                                 ropsList.Add(ropFastTransferSourceGetBufferResponse);
-                                PartialContextInformation getBufferPartialInformaiton = new PartialContextInformation(MapiInspector.MAPIInspector.PartialGetType, MapiInspector.MAPIInspector.PartialGetId, MapiInspector.MAPIInspector.PartialGetRemainSize, MapiInspector.MAPIInspector.PartialGetSubRemainSize, true, getParsingSession, MapiInspector.MAPIInspector.OutputPayLoadCompressedXOR);
+                                PartialContextInformation getBufferPartialInformaiton = new PartialContextInformation(MapiInspector.MAPIParser.PartialGetType, MapiInspector.MAPIParser.PartialGetId, MapiInspector.MAPIParser.PartialGetRemainSize, MapiInspector.MAPIParser.PartialGetSubRemainSize, true, getParsingSession, MapiInspector.MAPIParser.OutputPayLoadCompressedXOR);
                                 SortedDictionary<int, PartialContextInformation> sessionGetContextInfor = new SortedDictionary<int, PartialContextInformation>();
 
-                                if (MapiInspector.MAPIInspector.HandleWithSessionGetContextInformation.ContainsKey(ropGetbufferHandle))
+                                if (MapiInspector.MAPIParser.HandleWithSessionGetContextInformation.ContainsKey(ropGetbufferHandle))
                                 {
-                                    sessionGetContextInfor = MapiInspector.MAPIInspector.HandleWithSessionGetContextInformation[ropGetbufferHandle];
-                                    MapiInspector.MAPIInspector.HandleWithSessionGetContextInformation.Remove(ropGetbufferHandle);
+                                    sessionGetContextInfor = MapiInspector.MAPIParser.HandleWithSessionGetContextInformation[ropGetbufferHandle];
+                                    MapiInspector.MAPIParser.HandleWithSessionGetContextInformation.Remove(ropGetbufferHandle);
                                 }
 
                                 if (sessionGetContextInfor.ContainsKey(getParsingSessionID))
@@ -2668,8 +2668,8 @@
                                     sessionGetContextInfor.Add(getParsingSessionID, getBufferPartialInformaiton);
                                 }
 
-                                MapiInspector.MAPIInspector.HandleWithSessionGetContextInformation.Add(ropGetbufferHandle, sessionGetContextInfor);
-                                MapiInspector.MAPIInspector.IsGet = false;
+                                MapiInspector.MAPIParser.HandleWithSessionGetContextInformation.Add(ropGetbufferHandle, sessionGetContextInfor);
+                                MapiInspector.MAPIParser.IsGet = false;
                                 break;
 
                             case RopIdType.RopTellVersion:
@@ -3150,9 +3150,9 @@
                 object[] roplist = RopsList;
                 foreach (object obj in roplist)
                 {
-                    if (MapiInspector.MAPIInspector.AllRopsList.Count <= 0 || !MapiInspector.MAPIInspector.AllRopsList.Contains(obj.GetType().Name))
+                    if (MapiInspector.MAPIParser.AllRopsList.Count <= 0 || !MapiInspector.MAPIParser.AllRopsList.Contains(obj.GetType().Name))
                     {
-                        MapiInspector.MAPIInspector.AllRopsList.Add(obj.GetType().Name);
+                        MapiInspector.MAPIParser.AllRopsList.Add(obj.GetType().Name);
                     }
                 }
             }

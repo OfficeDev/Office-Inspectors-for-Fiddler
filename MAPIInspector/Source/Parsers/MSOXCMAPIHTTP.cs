@@ -4750,7 +4750,7 @@
 
                     if (isCompressedXOR)
                     {
-                        MapiInspector.MAPIInspector.AuxPayLoadCompressedXOR = payloadBytes;
+                        MapiInspector.MAPIParser.AuxPayLoadCompressedXOR = payloadBytes;
                     }
 
                     Stream stream = new MemoryStream(payloadBytes);
@@ -6534,8 +6534,8 @@
             base.Parse(s);
             int index = 0;
             List<ExtendedBuffer_Input> extendedBuffer_Inputs = new List<ExtendedBuffer_Input>();
-            MapiInspector.MAPIInspector.InputPayLoadCompressedXOR = new List<byte[]>();
-            MapiInspector.MAPIInspector.BuffersIsCompressed = new List<bool>();
+            MapiInspector.MAPIParser.InputPayLoadCompressedXOR = new List<byte[]>();
+            MapiInspector.MAPIParser.BuffersIsCompressed = new List<bool>();
 
             while (this.ropBufferSize > 0)
             {
@@ -6611,38 +6611,38 @@
                 {
                     if (isCompressedXOR)
                     {
-                        if (!MapiInspector.MAPIInspector.BuffersIsCompressed.Contains(true))
+                        if (!MapiInspector.MAPIParser.BuffersIsCompressed.Contains(true))
                         {
-                            MapiInspector.MAPIInspector.InputPayLoadCompressedXOR = new List<byte[]>();
+                            MapiInspector.MAPIParser.InputPayLoadCompressedXOR = new List<byte[]>();
                         }
 
-                        MapiInspector.MAPIInspector.InputPayLoadCompressedXOR.Add(payloadBytes);
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(true);
+                        MapiInspector.MAPIParser.InputPayLoadCompressedXOR.Add(payloadBytes);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(true);
                     }
                     else
                     {
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(false);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(false);
                     }
                 }
                 else
                 {
-                    MapiInspector.MAPIInspector.BuffersIsCompressed = new List<bool>();
+                    MapiInspector.MAPIParser.BuffersIsCompressed = new List<bool>();
 
                     if (isCompressedXOR)
                     {
-                        MapiInspector.MAPIInspector.InputPayLoadCompressedXOR = new List<byte[]>();
-                        MapiInspector.MAPIInspector.InputPayLoadCompressedXOR.Add(payloadBytes);
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(true);
+                        MapiInspector.MAPIParser.InputPayLoadCompressedXOR = new List<byte[]>();
+                        MapiInspector.MAPIParser.InputPayLoadCompressedXOR.Add(payloadBytes);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(true);
                     }
                     else
                     {
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(false);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(false);
                     }
                 }
 
                 Stream stream = new MemoryStream(payloadBytes);
 
-                if (MapiInspector.MAPIInspector.IsOnlyGetServerHandle)
+                if (MapiInspector.MAPIParser.IsOnlyGetServerHandle)
                 {
                     ROPInputBuffer_WithoutCROPS inputBufferWithoutCROPS = new ROPInputBuffer_WithoutCROPS();
                     inputBufferWithoutCROPS.Parse(stream);
@@ -6721,38 +6721,38 @@
                 {
                     if (isCompressedXOR)
                     {
-                        if (!MapiInspector.MAPIInspector.BuffersIsCompressed.Contains(true))
+                        if (!MapiInspector.MAPIParser.BuffersIsCompressed.Contains(true))
                         {
-                            MapiInspector.MAPIInspector.OutputPayLoadCompressedXOR = new List<byte[]>();
+                            MapiInspector.MAPIParser.OutputPayLoadCompressedXOR = new List<byte[]>();
                         }
 
-                        MapiInspector.MAPIInspector.OutputPayLoadCompressedXOR.Add(payloadBytes);
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(true);
+                        MapiInspector.MAPIParser.OutputPayLoadCompressedXOR.Add(payloadBytes);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(true);
                     }
                     else
                     {
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(false);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(false);
                     }
                 }
                 else
                 {
-                    MapiInspector.MAPIInspector.BuffersIsCompressed = new List<bool>();
+                    MapiInspector.MAPIParser.BuffersIsCompressed = new List<bool>();
 
                     if (isCompressedXOR)
                     {
-                        MapiInspector.MAPIInspector.OutputPayLoadCompressedXOR = new List<byte[]>();
-                        MapiInspector.MAPIInspector.OutputPayLoadCompressedXOR.Add(payloadBytes);
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(true);
+                        MapiInspector.MAPIParser.OutputPayLoadCompressedXOR = new List<byte[]>();
+                        MapiInspector.MAPIParser.OutputPayLoadCompressedXOR.Add(payloadBytes);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(true);
                     }
                     else
                     {
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(false);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(false);
                     }
                 }
 
                 Stream stream = new MemoryStream(payloadBytes);
 
-                if (MapiInspector.MAPIInspector.IsOnlyGetServerHandle)
+                if (MapiInspector.MAPIParser.IsOnlyGetServerHandle)
                 {
                     ROPOutputBuffer_WithoutCROPS outputBufferWithoutCROPS = new ROPOutputBuffer_WithoutCROPS();
                     outputBufferWithoutCROPS.Parse(stream);
@@ -6811,8 +6811,8 @@
             int index = 0;
             List<RgbOutputBuffer> rgbOutputBufferList = new List<RgbOutputBuffer>();
             long startPosition = s.Position;
-            MapiInspector.MAPIInspector.OutputPayLoadCompressedXOR = new List<byte[]>();
-            MapiInspector.MAPIInspector.BuffersIsCompressed = new List<bool>();
+            MapiInspector.MAPIParser.OutputPayLoadCompressedXOR = new List<byte[]>();
+            MapiInspector.MAPIParser.BuffersIsCompressed = new List<bool>();
 
             while (s.Position - startPosition < this.RopBufferSize)
             {

@@ -582,15 +582,15 @@
             {
                 this.TableRowDataSize = this.ReadUshort();
 
-                int parsingSessionID = MapiInspector.MAPIInspector.ParsingSession.id;
-                if (MapiInspector.MAPIInspector.IsFromFiddlerCore(MapiInspector.MAPIInspector.ParsingSession))
+                int parsingSessionID = MapiInspector.MAPIParser.ParsingSession.id;
+                if (MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
                 {
-                    parsingSessionID = int.Parse(MapiInspector.MAPIInspector.ParsingSession["VirtualID"]);
+                    parsingSessionID = int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"]);
                 }
                 if (DecodingContext.Notify_handlePropertyTags.Count > 0 && DecodingContext.Notify_handlePropertyTags.ContainsKey(this.notificationHandle) && DecodingContext.Notify_handlePropertyTags[this.notificationHandle].ContainsKey(parsingSessionID)
-                    && DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item1 == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders.RequestPath
-                    && DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item2 == MapiInspector.MAPIInspector.ParsingSession.LocalProcess
-                    && DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item3 == MapiInspector.MAPIInspector.ParsingSession.RequestHeaders["X-ClientInfo"])
+                    && DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item1 == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath
+                    && DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item2 == MapiInspector.MAPIParser.ParsingSession.LocalProcess
+                    && DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item3 == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
                     this.propertiesBySetColum = DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item4;
                 }
