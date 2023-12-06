@@ -2263,6 +2263,7 @@
             public string Url { get; set; }
             public string LocalProcess { get; set; }
             public string ClientRequestId { get; set; }
+            public string RequestId { get; set; }
             public object Request { get; set; }
             public object Response { get; set; }
         }
@@ -2326,6 +2327,7 @@
                             Url = session.url,
                             LocalProcess = session.LocalProcess,
                             ClientRequestId = session.RequestHeaders["Client-Request-Id"],
+                            RequestId = session.ResponseHeaders["Request-Id"],
                             Request = requestObj,
                             Response = responseObj
                         };
