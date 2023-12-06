@@ -2324,7 +2324,7 @@
                             Request = requestObj,
                             Response = responseObj
                         };
-                        JsonResult.Add(JsonConvert.SerializeObject(mapiFrame, Formatting.Indented));
+                        JsonResult.Add(JsonConvert.SerializeObject(mapiFrame, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter()));
                     }
                     catch (Exception ex)
                     {
