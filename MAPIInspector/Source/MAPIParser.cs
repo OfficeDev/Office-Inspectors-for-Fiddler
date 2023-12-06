@@ -2262,6 +2262,7 @@
             public string Time { get; set; }
             public string Url { get; set; }
             public string LocalProcess { get; set; }
+            public string ClientRequestId { get; set; }
             public object Request { get; set; }
             public object Response { get; set; }
         }
@@ -2324,6 +2325,7 @@
                             Time = session.Timers.ClientBeginRequest.ToString("yyyy-MM-dd HH:mm:ss.fff"),
                             Url = session.url,
                             LocalProcess = session.LocalProcess,
+                            ClientRequestId = session.RequestHeaders["Client-Request-Id"],
                             Request = requestObj,
                             Response = responseObj
                         };
