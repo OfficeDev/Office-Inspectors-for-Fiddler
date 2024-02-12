@@ -4113,7 +4113,7 @@
         /// <summary>
         /// The string Encoding : ASCII or Unicode
         /// </summary>
-        private Encoding Encode;
+        public Encoding Encode;
 
         /// <summary>
         /// The string Terminator. Default is "\0".

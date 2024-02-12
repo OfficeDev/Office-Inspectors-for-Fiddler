@@ -153,7 +153,7 @@
             {
                 offset = ad.Size;
                 res.Text = ad.ToString();
-                foreach(var parsedValue in ad.parsedValues)
+                foreach (var parsedValue in ad.parsedValues)
                 {
                     var alternateParsingNode = new TreeNode($"{parsedValue.Key}:{parsedValue.Value}");
                     alternateParsingNode.Tag = new Position(current, offset);
@@ -162,14 +162,12 @@
 
                 return res;
             }
-            else if (t.Name == "MAPIStringAddressBook")
+            else if (obj is MAPIStringAddressBook stringAddressBook)
             {
-                FieldInfo[] infoString = t.GetFields();
-
                 // MagicByte node
-                if (infoString[1].GetValue(obj) != null)
+                if (stringAddressBook.HasValue != null)
                 {
-                    TreeNode nodeMagic = new TreeNode(string.Format("{0}:{1}", infoString[1].Name, infoString[1].GetValue(obj)));
+                    TreeNode nodeMagic = new TreeNode($"HasValue:{stringAddressBook.HasValue}");
                     Position positionStringMagic = new Position(current, 1);
                     nodeMagic.Tag = positionStringMagic;
                     res.Nodes.Add(nodeMagic);
@@ -177,26 +175,26 @@
                 }
 
                 // value node
-                string terminator = (string)infoString[3].GetValue(obj);
+                string terminator = stringAddressBook.Terminator;
                 int os = 0;
-                TreeNode node = new TreeNode(string.Format("{0}:{1}", infoString[0].Name, infoString[0].GetValue(obj)));
+                TreeNode node = new TreeNode($"Value:{stringAddressBook.Value}");
 
                 // If the Encoding is Unicode.
-                if (infoString[2].GetValue(obj).ToString() == "System.Text.UnicodeEncoding")
+                if (stringAddressBook.Encode == Encoding.Unicode)
                 {
                     // If the StringLength is not equal 0, the StringLength will be OS value.
-                    if (infoString[4].GetValue(obj).ToString() != "0")
+                    if (stringAddressBook.StringLength != 0)
                     {
-                        os = ((int)infoString[4].GetValue(obj)) * 2;
+                        os = stringAddressBook.StringLength * 2;
                     }
                     else
                     {
-                        if (infoString[0].GetValue(obj) != null)
+                        if (stringAddressBook.Value != null)
                         {
-                            os = ((string)infoString[0].GetValue(obj)).Length * 2;
+                            os = stringAddressBook.Value.Length * 2;
                         }
 
-                        if (infoString[5].GetValue(obj).ToString() != "False")
+                        if (stringAddressBook.ReducedUnicode != false)
                         {
                             os -= 1;
                         }
@@ -207,16 +205,16 @@
                 else
                 {
                     // If the Encoding is ASCII.
-                    if (infoString[4].GetValue(obj).ToString() != "0")
+                    if (stringAddressBook.StringLength != 0)
                     {
                         // If the StringLength is not equal 0, the StringLength will be OS value.
-                        os = (int)infoString[4].GetValue(obj);
+                        os = stringAddressBook.StringLength;
                     }
                     else
                     {
-                        if (infoString[0].GetValue(obj) != null)
+                        if (stringAddressBook.Value != null)
                         {
-                            os = ((string)infoString[0].GetValue(obj)).Length;
+                            os = stringAddressBook.Value.Length;
                         }
 
                         os += terminator.Length;
@@ -227,7 +225,7 @@
                 node.Tag = positionString;
                 res.Nodes.Add(node);
 
-                if (infoString[1].GetValue(obj) != null)
+                if (stringAddressBook.HasValue != null)
                 {
                     offset = os + 1;
                 }
