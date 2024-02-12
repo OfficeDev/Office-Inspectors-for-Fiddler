@@ -153,87 +153,11 @@
             {
                 offset = ad.Size;
                 res.Text = ad.ToString();
-                foreach(var parsedValue in ad.parsedValues)
+                foreach (var parsedValue in ad.parsedValues)
                 {
                     var alternateParsingNode = new TreeNode($"{parsedValue.Key}:{parsedValue.Value}");
                     alternateParsingNode.Tag = new Position(current, offset);
                     res.Nodes.Add(alternateParsingNode);
-                }
-
-                return res;
-            }
-            else if (t.Name == "MAPIStringAddressBook")
-            {
-                FieldInfo[] infoString = t.GetFields();
-
-                // MagicByte node
-                if (infoString[1].GetValue(obj) != null)
-                {
-                    TreeNode nodeMagic = new TreeNode(string.Format("{0}:{1}", infoString[1].Name, infoString[1].GetValue(obj)));
-                    Position positionStringMagic = new Position(current, 1);
-                    nodeMagic.Tag = positionStringMagic;
-                    res.Nodes.Add(nodeMagic);
-                    current += 1;
-                }
-
-                // value node
-                string terminator = (string)infoString[3].GetValue(obj);
-                int os = 0;
-                TreeNode node = new TreeNode(string.Format("{0}:{1}", infoString[0].Name, infoString[0].GetValue(obj)));
-
-                // If the Encoding is Unicode.
-                if (infoString[2].GetValue(obj).ToString() == "System.Text.UnicodeEncoding")
-                {
-                    // If the StringLength is not equal 0, the StringLength will be OS value.
-                    if (infoString[4].GetValue(obj).ToString() != "0")
-                    {
-                        os = ((int)infoString[4].GetValue(obj)) * 2;
-                    }
-                    else
-                    {
-                        if (infoString[0].GetValue(obj) != null)
-                        {
-                            os = ((string)infoString[0].GetValue(obj)).Length * 2;
-                        }
-
-                        if (infoString[5].GetValue(obj).ToString() != "False")
-                        {
-                            os -= 1;
-                        }
-
-                        os += terminator.Length * 2;
-                    }
-                }
-                else
-                {
-                    // If the Encoding is ASCII.
-                    if (infoString[4].GetValue(obj).ToString() != "0")
-                    {
-                        // If the StringLength is not equal 0, the StringLength will be OS value.
-                        os = (int)infoString[4].GetValue(obj);
-                    }
-                    else
-                    {
-                        if (infoString[0].GetValue(obj) != null)
-                        {
-                            os = ((string)infoString[0].GetValue(obj)).Length;
-                        }
-
-                        os += terminator.Length;
-                    }
-                }
-
-                Position positionString = new Position(current, os);
-                node.Tag = positionString;
-                res.Nodes.Add(node);
-
-                if (infoString[1].GetValue(obj) != null)
-                {
-                    offset = os + 1;
-                }
-                else
-                {
-                    offset = os;
                 }
 
                 return res;

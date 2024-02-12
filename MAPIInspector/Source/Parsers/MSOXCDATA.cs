@@ -4098,7 +4098,7 @@
     /// <summary>
     /// The MAPIString class to record the related attributes of string.
     /// </summary>
-    public class MAPIStringAddressBook : BaseStructure
+    public class MAPIStringAddressBook : AnnotatedData
     {
         /// <summary>
         /// The string value
@@ -4113,7 +4113,7 @@
         /// <summary>
         /// The string Encoding : ASCII or Unicode
         /// </summary>
-        private Encoding Encode;
+        public Encoding Encode;
 
         /// <summary>
         /// The string Terminator. Default is "\0".
@@ -4131,19 +4131,12 @@
         public bool ReducedUnicode;
 
         /// <summary>
-        /// Initializes a new instance of the MAPIStringAddressBook class without parameters.
-        /// </summary>
-        public MAPIStringAddressBook()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the MAPIStringAddressBook class with parameters.
         /// </summary>
         /// <param name="encode">The encoding type</param>
         /// <param name="terminator">The string terminator</param>
         /// <param name="stringLength">The string length</param>
-        /// <param name="reducedUnicode">INdicate whether the terminator is reduced</param>
+        /// <param name="reducedUnicode">Indicate whether the terminator is reduced</param>
         public MAPIStringAddressBook(Encoding encode, string terminator = "\0", int stringLength = 0, bool reducedUnicode = false)
         {
             this.Encode = encode;
@@ -4169,6 +4162,62 @@
             }
 
             this.Value = this.ReadString(this.Encode, this.Terminator, this.StringLength, this.ReducedUnicode);
+        }
+        public override string ToString() => Value;
+        public override int Size
+        {
+            get
+            {
+                var len = 0;
+
+                if (Encode == Encoding.Unicode)
+                {
+                    // If the StringLength is not equal 0, the StringLength will be basis for size
+                    if (StringLength != 0)
+                    {
+                        len = StringLength * 2;
+                    }
+                    else
+                    {
+                        if (Value != null)
+                        {
+                            len = Value.Length * 2;
+                        }
+
+                        if (ReducedUnicode)
+                        {
+                            len -= 1;
+                        }
+
+                        len += Terminator.Length * 2;
+                    }
+                }
+                else
+                {
+                    // If the Encoding is ASCII.
+                    if (StringLength != 0)
+                    {
+                        // If the StringLength is not equal 0, the StringLength will be basis for size
+                        len = StringLength;
+                    }
+                    else
+                    {
+                        if (Value != null)
+                        {
+                            len = Value.Length;
+                        }
+
+                        len += Terminator.Length;
+                    }
+                }
+
+                if (HasValue != null)
+                {
+                    len += 1;
+                }
+
+                return len;
+            }
         }
     }
 
