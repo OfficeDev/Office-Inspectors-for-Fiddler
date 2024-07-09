@@ -203,6 +203,7 @@
         }
         /// <summary>
         /// Method to seal parse result to Json string
+        /// Used in test automation
         /// </summary>
         /// <param name="id">The id of Fiddler session</param>
         /// <param name="isRequest">Bool value indicates the session is a HttpRequest message or HttpResponse message</param>
@@ -215,10 +216,10 @@
         }
 
         /// <summary>
-        /// Converts a simple (non-flag) enum to string. If the value is not present in the underlying enum, converts to a hex string.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+                 /// Converts a simple (non-flag) enum to string. If the value is not present in the underlying enum, converts to a hex string.
+                 /// </summary>
+                 /// <param name="obj"></param>
+                 /// <returns></returns>
         public static string EnumToString(object obj)
         {
             if (Enum.IsDefined(obj.GetType(), obj))

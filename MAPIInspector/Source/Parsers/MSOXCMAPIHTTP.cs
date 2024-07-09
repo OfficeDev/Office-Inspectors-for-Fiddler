@@ -1,5 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using MapiInspector;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -4308,6 +4309,11 @@
         private CountWideEnum countWide;
 
         /// <summary>
+        /// Source property tag information
+        /// </summary>
+        public AnnotatedComment PropertyTag;
+
+        /// <summary>
         /// Initializes a new instance of the AddressBookPropertyValue class.
         /// </summary>
         /// <param name="propertyDataType">The PropertyDataType for this structure</param>
@@ -4367,12 +4373,17 @@
         /// <summary>
         /// An unsigned integer that identifies the property.
         /// </summary>
-        public ushort PropertyId;
+        public PidTagPropertyEnum PropertyId;
 
         /// <summary>
         /// An AddressBookPropertyValue structure
         /// </summary>
         public AddressBookPropertyValue PropertyValue;
+
+        /// <summary>
+        /// Source property tag information
+        /// </summary>
+        public AnnotatedComment PropertyTag;
 
         /// <summary>
         /// Parse the AddressBookTaggedPropertyValue structure.
@@ -4382,10 +4393,11 @@
         {
             base.Parse(s);
             this.PropertyType = (PropertyDataType)this.ReadUshort();
-            this.PropertyId = this.ReadUshort();
+            this.PropertyId = (PidTagPropertyEnum)this.ReadUshort();
             AddressBookPropertyValue addressBookValue = new AddressBookPropertyValue(this.PropertyType);
             addressBookValue.Parse(s);
             this.PropertyValue = addressBookValue;
+            this.PropertyTag = $"{PropertyType}:{Utilities.EnumToString(PropertyId)}";
         }
     }
     #endregion
@@ -4446,6 +4458,11 @@
         public AddressBookPropertyValue PropertyValue;
 
         /// <summary>
+        /// Source property tag information
+        /// </summary>
+        public AnnotatedComment PropertyTag;
+
+        /// <summary>
         /// Parse the AddressBookTypedPropertyValue structure.
         /// </summary>
         /// <param name="s">A stream containing AddressBookTypedPropertyValue structure.</param>
@@ -4480,6 +4497,11 @@
         /// A PropertyDataType used to initialize the constructed function
         /// </summary>
         private PropertyDataType propertyDataType;
+
+        /// <summary>
+        /// Source property tag information
+        /// </summary>
+        public AnnotatedComment PropertyTag;
 
         /// <summary>
         /// Initializes a new instance of the AddressBookFlaggedPropertyValue class.
@@ -4539,6 +4561,11 @@
         /// An AddressBookPropertyValue structure, as specified in section 2.2.1.1, unless Flag field is set to 0x01
         /// </summary>
         public AddressBookPropertyValue PropertyValue;
+
+        /// <summary>
+        /// Source property tag information
+        /// </summary>
+        public AnnotatedComment PropertyTag;
 
         /// <summary>
         /// Parse the AddressBookFlaggedPropertyValueWithType structure.
@@ -4628,12 +4655,14 @@
                         {
                             AddressBookPropertyValue propValue = new AddressBookPropertyValue(propTag.PropertyType, this.ptypMultiCountSize);
                             propValue.Parse(s);
+                            propValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId)}";
                             addrRowValue = propValue;
                         }
                         else
                         {
                             AddressBookTypedPropertyValue typePropValue = new AddressBookTypedPropertyValue();
                             typePropValue.Parse(s);
+                            typePropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId)}";
                             addrRowValue = typePropValue;
                         }
                     }
@@ -4643,12 +4672,14 @@
                         {
                             AddressBookFlaggedPropertyValue flagPropValue = new AddressBookFlaggedPropertyValue(propTag.PropertyType);
                             flagPropValue.Parse(s);
+                            flagPropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId)}";
                             addrRowValue = flagPropValue;
                         }
                         else
                         {
                             AddressBookFlaggedPropertyValueWithType flagPropValue = new AddressBookFlaggedPropertyValueWithType();
                             flagPropValue.Parse(s);
+                            flagPropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId)}";
                             addrRowValue = flagPropValue;
                         }
                     }
@@ -4750,7 +4781,7 @@
 
                     if (isCompressedXOR)
                     {
-                        MapiInspector.MAPIInspector.AuxPayLoadCompressedXOR = payloadBytes;
+                        MapiInspector.MAPIParser.AuxPayLoadCompressedXOR = payloadBytes;
                     }
 
                     Stream stream = new MemoryStream(payloadBytes);
@@ -6534,8 +6565,8 @@
             base.Parse(s);
             int index = 0;
             List<ExtendedBuffer_Input> extendedBuffer_Inputs = new List<ExtendedBuffer_Input>();
-            MapiInspector.MAPIInspector.InputPayLoadCompressedXOR = new List<byte[]>();
-            MapiInspector.MAPIInspector.BuffersIsCompressed = new List<bool>();
+            MapiInspector.MAPIParser.InputPayLoadCompressedXOR = new List<byte[]>();
+            MapiInspector.MAPIParser.BuffersIsCompressed = new List<bool>();
 
             while (this.ropBufferSize > 0)
             {
@@ -6611,38 +6642,38 @@
                 {
                     if (isCompressedXOR)
                     {
-                        if (!MapiInspector.MAPIInspector.BuffersIsCompressed.Contains(true))
+                        if (!MapiInspector.MAPIParser.BuffersIsCompressed.Contains(true))
                         {
-                            MapiInspector.MAPIInspector.InputPayLoadCompressedXOR = new List<byte[]>();
+                            MapiInspector.MAPIParser.InputPayLoadCompressedXOR = new List<byte[]>();
                         }
 
-                        MapiInspector.MAPIInspector.InputPayLoadCompressedXOR.Add(payloadBytes);
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(true);
+                        MapiInspector.MAPIParser.InputPayLoadCompressedXOR.Add(payloadBytes);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(true);
                     }
                     else
                     {
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(false);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(false);
                     }
                 }
                 else
                 {
-                    MapiInspector.MAPIInspector.BuffersIsCompressed = new List<bool>();
+                    MapiInspector.MAPIParser.BuffersIsCompressed = new List<bool>();
 
                     if (isCompressedXOR)
                     {
-                        MapiInspector.MAPIInspector.InputPayLoadCompressedXOR = new List<byte[]>();
-                        MapiInspector.MAPIInspector.InputPayLoadCompressedXOR.Add(payloadBytes);
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(true);
+                        MapiInspector.MAPIParser.InputPayLoadCompressedXOR = new List<byte[]>();
+                        MapiInspector.MAPIParser.InputPayLoadCompressedXOR.Add(payloadBytes);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(true);
                     }
                     else
                     {
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(false);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(false);
                     }
                 }
 
                 Stream stream = new MemoryStream(payloadBytes);
 
-                if (MapiInspector.MAPIInspector.IsOnlyGetServerHandle)
+                if (MapiInspector.MAPIParser.IsOnlyGetServerHandle)
                 {
                     ROPInputBuffer_WithoutCROPS inputBufferWithoutCROPS = new ROPInputBuffer_WithoutCROPS();
                     inputBufferWithoutCROPS.Parse(stream);
@@ -6721,38 +6752,38 @@
                 {
                     if (isCompressedXOR)
                     {
-                        if (!MapiInspector.MAPIInspector.BuffersIsCompressed.Contains(true))
+                        if (!MapiInspector.MAPIParser.BuffersIsCompressed.Contains(true))
                         {
-                            MapiInspector.MAPIInspector.OutputPayLoadCompressedXOR = new List<byte[]>();
+                            MapiInspector.MAPIParser.OutputPayLoadCompressedXOR = new List<byte[]>();
                         }
 
-                        MapiInspector.MAPIInspector.OutputPayLoadCompressedXOR.Add(payloadBytes);
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(true);
+                        MapiInspector.MAPIParser.OutputPayLoadCompressedXOR.Add(payloadBytes);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(true);
                     }
                     else
                     {
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(false);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(false);
                     }
                 }
                 else
                 {
-                    MapiInspector.MAPIInspector.BuffersIsCompressed = new List<bool>();
+                    MapiInspector.MAPIParser.BuffersIsCompressed = new List<bool>();
 
                     if (isCompressedXOR)
                     {
-                        MapiInspector.MAPIInspector.OutputPayLoadCompressedXOR = new List<byte[]>();
-                        MapiInspector.MAPIInspector.OutputPayLoadCompressedXOR.Add(payloadBytes);
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(true);
+                        MapiInspector.MAPIParser.OutputPayLoadCompressedXOR = new List<byte[]>();
+                        MapiInspector.MAPIParser.OutputPayLoadCompressedXOR.Add(payloadBytes);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(true);
                     }
                     else
                     {
-                        MapiInspector.MAPIInspector.BuffersIsCompressed.Add(false);
+                        MapiInspector.MAPIParser.BuffersIsCompressed.Add(false);
                     }
                 }
 
                 Stream stream = new MemoryStream(payloadBytes);
 
-                if (MapiInspector.MAPIInspector.IsOnlyGetServerHandle)
+                if (MapiInspector.MAPIParser.IsOnlyGetServerHandle)
                 {
                     ROPOutputBuffer_WithoutCROPS outputBufferWithoutCROPS = new ROPOutputBuffer_WithoutCROPS();
                     outputBufferWithoutCROPS.Parse(stream);
@@ -6811,8 +6842,8 @@
             int index = 0;
             List<RgbOutputBuffer> rgbOutputBufferList = new List<RgbOutputBuffer>();
             long startPosition = s.Position;
-            MapiInspector.MAPIInspector.OutputPayLoadCompressedXOR = new List<byte[]>();
-            MapiInspector.MAPIInspector.BuffersIsCompressed = new List<bool>();
+            MapiInspector.MAPIParser.OutputPayLoadCompressedXOR = new List<byte[]>();
+            MapiInspector.MAPIParser.BuffersIsCompressed = new List<bool>();
 
             while (s.Position - startPosition < this.RopBufferSize)
             {
