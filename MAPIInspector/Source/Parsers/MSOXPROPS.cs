@@ -659,6 +659,11 @@ namespace MAPIInspector.Parsers
         PidTagClientActions = 0x6645,
 
         /// <summary>
+        /// Specifies the date and time, in UTC, until which the client expects to be actively editing the object.
+        /// </summary>
+        PidTagClientActivelyEditingUntil = 0x3700,
+
+        /// <summary>
         /// Contains the current time, in UTC, when the email message is submitted.
         /// </summary>
         PidTagClientSubmitTime = 0x0039,
