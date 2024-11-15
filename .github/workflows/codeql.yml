@@ -87,6 +87,7 @@ jobs:
           & $path\MSBuild\Current\Bin\amd64\msbuild.exe /m /p:Configuration="Release" ./FSSHTTPWOPIInspector/Test/WOPIautomation/WOPIautomation.sln
 
       - name: Perform CodeQL Analysis
+        id: analyze
         uses: github/codeql-action/analyze@396bb3e45325a47dd9ef434068033c6d5bb0d11a # v3.27.3
         with:
           category: "/language:${{matrix.language}}"
