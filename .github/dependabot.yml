@@ -9,3 +9,23 @@ updates:
     directory: /
     schedule:
       interval: daily
+
+  - package-ecosystem: nuget
+    directory: /FSSHTTPWOPIInspector/Source
+    schedule:
+      interval: daily
+
+  - package-ecosystem: nuget
+    directory: /FSSHTTPWOPIInspector/Test/WOPIautomation/WOPIautomation
+    schedule:
+      interval: daily
+
+  - package-ecosystem: nuget
+    directory: /MAPIInspector/Source
+    schedule:
+      interval: daily
+
+  - package-ecosystem: nuget
+    directory: /MAPIInspector/Test/MAPIAutomationTest/MAPIAutomationTest
+    schedule:
+      interval: daily
