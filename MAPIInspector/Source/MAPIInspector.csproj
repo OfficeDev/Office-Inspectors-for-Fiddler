@@ -108,6 +108,15 @@
     <Compile Include="MAPIRequestInspector.cs" />
     <Compile Include="MAPIResponseInspector.cs" />
     <Compile Include="Parsers\BaseStructure.cs" />
+    <Compile Include="Parsers\BaseStructure2.cs" />
+    <Compile Include="Parsers\block\BinaryParser.cs" />
+    <Compile Include="Parsers\block\Block.cs" />
+    <Compile Include="Parsers\block\BlockBytes.cs" />
+    <Compile Include="Parsers\block\BlockPV.cs" />
+    <Compile Include="Parsers\block\BlockStringA.cs" />
+    <Compile Include="Parsers\block\BlockStringW.cs" />
+    <Compile Include="Parsers\block\BlockT.cs" />
+    <Compile Include="Parsers\block\ScratchBlock.cs" />
     <Compile Include="Parsers\MSOXCDATA.cs" />
     <Compile Include="Parsers\MSOXCFXICS.cs" />
     <Compile Include="Parsers\MSOXCFOLD.cs" />

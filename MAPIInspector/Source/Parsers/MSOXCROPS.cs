@@ -4140,7 +4140,7 @@
     /// <summary>
     ///  A class indicates the RopRelease ROP Request Buffer.
     /// </summary>
-    public class RopReleaseRequest : BaseStructure
+    public class RopReleaseRequest : BaseStructure2
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP. For this operation this field is set to 0x01.
