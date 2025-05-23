@@ -14,8 +14,8 @@
 /MAPIInspector/Test/MAPIAutomationTest/.vs/
 /MAPIInspector/Test/MAPIAutomationTest/MAPIAutomationTest/bin/
 /MAPIInspector/Test/MAPIAutomationTest/MAPIAutomationTest/obj/
-/MAPIInspector/MAPIParser/bin/
-/MAPIInspector/MAPIParser/obj/
-/MAPIInspector/BlockParserTests/bin/
-/MAPIInspector/BlockParserTests/obj/
+/MAPIInspector/Source/BlockParser/bin/
+/MAPIInspector/Source/BlockParser/obj/
+/MAPIInspector/Source/BlockParserTests/bin/
+/MAPIInspector/Source/BlockParserTests/obj/
 /MAPIInspector/Source/packages/

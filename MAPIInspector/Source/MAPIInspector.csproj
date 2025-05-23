@@ -148,7 +148,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MAPIParser\BlockParser.csproj">
+    <ProjectReference Include="BlockParser\BlockParser.csproj">
       <Project>{67f29406-30d1-4390-ae42-f08acf9e32a7}</Project>
       <Name>BlockParser</Name>
     </ProjectReference>
