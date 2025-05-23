@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Parser;
 
-namespace Parser.Tests
+namespace BlockParserTests
 {
     [TestClass]
     public class BlockTests
