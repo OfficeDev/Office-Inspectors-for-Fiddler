@@ -84,7 +84,7 @@ namespace Parser.Tests
         {
             byte[] data = { 1, 2, 3, 4 };
             var parser = new BinaryParser(4, data);
-            parser.            Offset = 3;
+            parser.Offset = 3;
             Assert.AreEqual(3, parser.Offset);
             CollectionAssert.AreEqual(new byte[] { 4 }, parser.GetAddress());
         }
