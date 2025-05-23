@@ -41,6 +41,21 @@ namespace Parser
             offset = 0;
         }
 
+        public BinaryParser(byte[] _bin)
+        {
+            if (_bin != null)
+            {
+                bin = new List<byte>(new List<byte>(_bin));
+            }
+            else
+            {
+                bin = new List<byte>();
+            }
+
+            size = bin.Count;
+            offset = 0;
+        }
+
         public BinaryParser(System.IO.Stream stream, int cb = -1)
         {
             if (stream == null)
