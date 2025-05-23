@@ -52,6 +52,7 @@
     <Compile Include="BlockStringATests.cs" />
     <Compile Include="BlockStringWTests.cs" />
     <Compile Include="BlockTests.cs" />
+    <Compile Include="BlockTTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScratchBlockTests.cs" />
     <Compile Include="StringsTests.cs" />

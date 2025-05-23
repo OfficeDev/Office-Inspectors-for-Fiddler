@@ -46,6 +46,7 @@
     <Compile Include="Block.cs" />
     <Compile Include="BlockBytes.cs" />
     <Compile Include="BlockStringW.cs" />
+    <Compile Include="BlockT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strings.cs" />
   </ItemGroup>
