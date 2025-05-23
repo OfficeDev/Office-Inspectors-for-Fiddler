@@ -98,6 +98,8 @@ namespace Parser.Tests
             CollectionAssert.AreEqual(new byte[] { 3, 4 }, parser.GetAddress());
         }
 
+        // TODO: I don't trust this logic is correct
+        // Revisit when we have a real world test case to think about
         [TestMethod]
         public void SetCap_And_ClearCap()
         {
