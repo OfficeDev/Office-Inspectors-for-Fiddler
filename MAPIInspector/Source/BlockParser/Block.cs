@@ -31,7 +31,7 @@ namespace Parser
 
         public void SetText(string text)
         {
-            Text = text;
+            Text = text??string.Empty;
         }
 
         public void SetText(string format, params object[] args)
@@ -83,7 +83,7 @@ namespace Parser
         {
             if (child != null && child.IsSet)
             {
-                child.Text = text;
+                child.Text = text??string.Empty;
                 children.Add(child);
             }
         }

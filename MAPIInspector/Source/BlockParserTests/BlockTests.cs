@@ -234,5 +234,113 @@ namespace Parser.Tests
             var b = Block.Create();
             Assert.IsInstanceOfType(b.Children, typeof(IReadOnlyList<Block>));
         }
+
+        [TestMethod]
+        public void SetText_Null_SetsEmpty()
+        {
+            var b = Block.Create();
+            b.SetText(null);
+            Assert.AreEqual(string.Empty, b.Text);
+        }
+
+        [TestMethod]
+        public void AddChild_DoesNotAddNull()
+        {
+            var b = Block.Create();
+            b.AddChild(null);
+            Assert.AreEqual(0, b.Children.Count);
+        }
+
+        [TestMethod]
+        public void AddChild_WithText_NullText_SetsEmpty()
+        {
+            var b = Block.Create();
+            var child = Block.Create();
+            b.AddChild(child, null);
+            Assert.AreEqual(string.Empty, child.Text);
+        }
+
+        [TestMethod]
+        public void AddHeader_NullText_SetsEmpty()
+        {
+            var b = Block.Create();
+            b.AddHeader(null);
+            Assert.AreEqual(string.Empty, b.Children[0].Text);
+        }
+
+        [TestMethod]
+        public void AddLabeledChild_NullLabel_SetsEmpty()
+        {
+            var b = Block.Create();
+            var child = Block.Create();
+            b.AddLabeledChild(null, child);
+            Assert.AreEqual(string.Empty, b.Children[0].Text);
+        }
+
+        [TestMethod]
+        public void AddSubHeader_NullText_SetsEmpty()
+        {
+            var b = Block.Create();
+            b.AddSubHeader(null);
+            Assert.AreEqual(string.Empty, b.Children[0].Text);
+        }
+
+        [TestMethod]
+        public void SetSource_PropagatesToNestedChildren()
+        {
+            var parent = Block.Create();
+            var child = Block.Create();
+            var grandchild = Block.Create();
+            parent.AddChild(child);
+            child.AddChild(grandchild);
+            parent.SetSource(123);
+            Assert.AreEqual((uint)123, grandchild.Source);
+        }
+
+        [TestMethod]
+        public void ShiftOffset_PropagatesToNestedChildren()
+        {
+            var parent = Block.Create();
+            var child = Block.Create();
+            var grandchild = Block.Create();
+            parent.AddChild(child);
+            child.AddChild(grandchild);
+            parent.SetOffset(1);
+            child.SetOffset(2);
+            grandchild.SetOffset(3);
+            parent.ShiftOffset(10);
+            Assert.AreEqual(11, parent.Offset);
+            Assert.AreEqual(12, child.Offset);
+            Assert.AreEqual(13, grandchild.Offset);
+        }
+
+        [TestMethod]
+        public void ToStringBlock_WithChildren()
+        {
+            var b = Block.Create();
+            var c = Block.Create();
+            c.SetText("child");
+            b.AddChild(c);
+            var s = b.ToStringBlock();
+            Assert.IsTrue(s.Contains("child"));
+        }
+
+        [TestMethod]
+        public void UsePipes_DefaultFalse()
+        {
+            var b = Block.Create();
+            var method = b.GetType().GetMethod("UsePipes", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var result = (bool)method.Invoke(b, null);
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void ParseBlocks_Virtual_NoException()
+        {
+            var b = Block.Create();
+            var method = b.GetType().GetMethod("ParseBlocks", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            method.Invoke(b, null);
+            Assert.IsTrue(true); // No exception means pass
+        }
     }
 }
