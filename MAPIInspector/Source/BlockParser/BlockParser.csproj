@@ -42,8 +42,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinaryParser.cs" />
+    <Compile Include="BlockStringA.cs" />
     <Compile Include="Block.cs" />
     <Compile Include="BlockBytes.cs" />
+    <Compile Include="BlockStringW.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Strings.cs" />
   </ItemGroup>

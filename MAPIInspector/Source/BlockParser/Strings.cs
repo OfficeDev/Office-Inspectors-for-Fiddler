@@ -166,6 +166,25 @@ namespace Parser
 
             return sb.ToString();
         }
+        public static string RemoveInvalidCharacters(string input, bool multiLine = true)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            var chars = input.ToCharArray();
+            bool nullTerminated = chars[chars.Length - 1] == '\0';
+
+            for (int i = 0; i < chars.Length; i++)
+            {
+                if (InvalidCharacter((uint)(chars[i] & 0xFF), multiLine))
+                    chars[i] = '.';
+            }
+
+            if (nullTerminated)
+                chars[chars.Length - 1] = '\0';
+
+            return new string(chars);
+        }
 
     }
 }

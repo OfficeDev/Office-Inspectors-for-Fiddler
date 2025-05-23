@@ -49,6 +49,8 @@
   <ItemGroup>
     <Compile Include="BinaryParserTests.cs" />
     <Compile Include="BlockBytesTests.cs" />
+    <Compile Include="BlockStringATests.cs" />
+    <Compile Include="BlockStringWTests.cs" />
     <Compile Include="BlockTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScratchBlockTests.cs" />

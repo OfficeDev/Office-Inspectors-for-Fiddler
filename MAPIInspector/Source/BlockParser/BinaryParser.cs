@@ -152,5 +152,16 @@ namespace Parser
         {
             return cb <= GetSize();
         }
+
+        public byte[] ReadBytes(int cb)
+        {
+            if (CheckSize(cb))
+            {
+                var bytes = bin.GetRange(offset, cb).ToArray();
+                Advance(cb);
+                return bytes;
+            }
+            return Array.Empty<byte>();
+        }
     }
 }
