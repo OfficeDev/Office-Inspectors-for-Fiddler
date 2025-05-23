@@ -97,9 +97,9 @@ namespace Parser
         public void SetOffset(int _offset) => offset = _offset;
         public byte[] GetAddress()
         {
-            if (offset >= 0 && offset < bin.Count)
+            if (offset >= 0 && GetSize() > 0)
             {
-                return bin.GetRange(offset, bin.Count - offset).ToArray();
+                return bin.GetRange(offset, GetSize()).ToArray();
             }
             return Array.Empty<byte>();
         }
@@ -107,7 +107,7 @@ namespace Parser
         public void SetCap(int cap)
         {
             sizes.Push(size);
-            if (cap != 0 && offset + cap < size)
+            if (cap != 0 && offset + cap < bin.Count)
             {
                 size = offset + cap;
             }
