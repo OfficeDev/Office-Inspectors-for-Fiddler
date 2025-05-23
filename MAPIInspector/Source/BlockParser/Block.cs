@@ -191,7 +191,7 @@ namespace Parser
         {
             if (parsed || parser == null || parser.Empty) return;
             parsed = true; // parse can unset this if needed
-            SetOffset(parser.GetOffset());
+            SetOffset(parser.Offset);
 
             Parse();
             ParseBlocks();
@@ -203,7 +203,7 @@ namespace Parser
                 AddLabeledChild(strings.FormatMessage("Unparsed data size = 0x{0:X8}!", junkData.Size), junkData);
             }
 
-            SetSize(parser.GetOffset() - Offset);
+            SetSize(parser.Offset - Offset);
         }
 
         protected abstract void Parse();

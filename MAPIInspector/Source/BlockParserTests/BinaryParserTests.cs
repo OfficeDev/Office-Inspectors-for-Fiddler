@@ -72,10 +72,10 @@ namespace Parser.Tests
             var parser = new BinaryParser(4, data);
             Assert.AreEqual(4, parser.GetSize());
             parser.Advance(2);
-            Assert.AreEqual(2, parser.GetOffset());
+            Assert.AreEqual(2, parser.Offset);
             Assert.AreEqual(2, parser.GetSize());
             parser.Rewind();
-            Assert.AreEqual(0, parser.GetOffset());
+            Assert.AreEqual(0, parser.Offset);
             Assert.AreEqual(4, parser.GetSize());
         }
 
@@ -84,8 +84,8 @@ namespace Parser.Tests
         {
             byte[] data = { 1, 2, 3, 4 };
             var parser = new BinaryParser(4, data);
-            parser.SetOffset(3);
-            Assert.AreEqual(3, parser.GetOffset());
+            parser.            Offset = 3;
+            Assert.AreEqual(3, parser.Offset);
             CollectionAssert.AreEqual(new byte[] { 4 }, parser.GetAddress());
         }
 

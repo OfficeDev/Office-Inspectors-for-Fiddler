@@ -53,7 +53,7 @@ namespace Parser
                 var bytes = parser.GetAddress();
                 for (int i = 0; i < cbBytes; i++)
                 {
-                    _data.Add(bytes[parser.GetOffset() + i]);
+                    _data.Add(bytes[parser.Offset + i]);
                 }
                 parser.Advance(cbBytes);
                 SetText(ToHexString(true));

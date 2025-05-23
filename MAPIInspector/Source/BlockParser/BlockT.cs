@@ -44,7 +44,7 @@ namespace Parser
                 return new BlockT<T>();
 
             U uData = ReadStruct<U>(parser);
-            int offset = parser.GetOffset();
+            int offset = parser.Offset;
             return Create((T)Convert.ChangeType(uData, typeof(T)), System.Runtime.InteropServices.Marshal.SizeOf(typeof(U)), offset);
         }
 

@@ -108,8 +108,8 @@ namespace Parser
         public bool Empty => offset == size;
         public void Advance(int cb) => offset += cb;
         public void Rewind() => offset = 0;
-        public int GetOffset() => offset;
-        public void SetOffset(int _offset) => offset = _offset;
+        public int Offset { get => offset; set => offset = value; }
+
         public byte[] GetAddress()
         {
             if (offset >= 0 && GetSize() > 0)
