@@ -96,6 +96,8 @@ namespace Parser.Tests
             var parser = new BinaryParser(4, data);
             parser.Advance(2);
             CollectionAssert.AreEqual(new byte[] { 3, 4 }, parser.GetAddress());
+            // GetAddress should return the same thing when called multiple times
+            CollectionAssert.AreEqual(new byte[] { 3, 4 }, parser.GetAddress());
         }
 
         // TODO: I don't trust this logic is correct
@@ -139,6 +141,45 @@ namespace Parser.Tests
             Assert.IsFalse(parser.Empty);
             parser.Advance(2);
             Assert.IsTrue(parser.Empty);
+        }
+
+        [TestMethod]
+        public void Test_StreamConstructor()
+        {
+            // have a stream and read a few bytes from it. Then set up a binary parser and read a few bytes
+            // They should read from the start of the original stream data
+            // But position in the source stream should be unchanged
+            // Finally, since we leave some bytes unread, block ToString should show junk data
+            byte[] data = { 1, 2, 3, 4, 5, 6 };
+            using (var ms = new MemoryStream(data))
+            {
+                var ms1 = ms.ReadByte();
+                Assert.AreEqual(1, ms1);
+                Assert.AreEqual(1, ms.Position);
+                var parser = new BinaryParser(ms, 3);
+                Assert.AreEqual(1, ms.Position);
+                Assert.AreEqual(3, parser.GetSize());
+                CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, parser.GetAddress());
+                Assert.AreEqual(1, ms.Position);
+                parser.Advance(2);
+                Assert.AreEqual(1, ms.Position);
+                CollectionAssert.AreEqual(new byte[] { 3 }, parser.GetAddress());
+            }
+        }
+
+        [TestMethod]
+        public void Test_ReadBytes()
+        {
+            // Test reading bytes from the parser
+            byte[] data = { 1, 2, 3, 4, 5 };
+            var parser = new BinaryParser(5, data);
+            byte[] readBytes = parser.ReadBytes(3);
+            CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, readBytes);
+            Assert.AreEqual(3, parser.Offset);
+            byte[] readBytes2 = parser.ReadBytes(2);
+            CollectionAssert.AreEqual(new byte[] { 4, 5 }, readBytes2);
+            Assert.AreEqual(5, parser.Offset);
+            Assert.AreEqual(true, parser.Empty);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Parser
 {
@@ -7,14 +8,14 @@ namespace Parser
     // worrying about whether you've run off the end of your buffer.
     public class BinaryParser
     {
-        private readonly List<byte> bin;
+        private readonly Stream bin;
         private int offset;
-        private int size; // When uncapped, this is bin.Count. When capped, this is our artificial capped size.
+        private int size; // When uncapped, this is bin.Length. When capped, this is our artificial capped size.
         private readonly Stack<int> sizes = new Stack<int>();
 
         public BinaryParser()
         {
-            bin = new List<byte>();
+            bin = new MemoryStream();
             size = 0;
             offset = 0;
         }
@@ -25,19 +26,19 @@ namespace Parser
             {
                 if (_bin.Length > cb)
                 {
-                    bin = new List<byte>(new List<byte>(new ArraySegment<byte>(_bin, 0, cb)));
+                    bin = new MemoryStream(_bin, 0, cb, false);
                 }
                 else
                 {
-                    bin = new List<byte>(new List<byte>(_bin));
+                    bin = new MemoryStream(_bin, false);
                 }
             }
             else
             {
-                bin = new List<byte>();
+                bin = new MemoryStream();
             }
 
-            size = bin.Count;
+            size = (int)bin.Length;
             offset = 0;
         }
 
@@ -45,84 +46,110 @@ namespace Parser
         {
             if (_bin != null)
             {
-                bin = new List<byte>(new List<byte>(_bin));
+                bin = new MemoryStream(_bin, false);
             }
             else
             {
-                bin = new List<byte>();
+                bin = new MemoryStream();
             }
 
-            size = bin.Count;
+            size = (int)bin.Length;
             offset = 0;
         }
 
-        public BinaryParser(System.IO.Stream stream, int cb = -1)
+        public BinaryParser(Stream sourceStream, int cb = -1)
         {
-            if (stream == null)
+            offset = 0;
+            if (sourceStream == null)
             {
-                bin = new List<byte>();
+                bin = new MemoryStream();
                 size = 0;
-                offset = 0;
                 return;
             }
 
-            long originalPosition = stream.CanSeek ? stream.Position : 0;
+            long originalPosition = sourceStream.CanSeek ? sourceStream.Position : -1;
             try
             {
-                int length = (int)(stream.Length - (stream.CanSeek ? stream.Position : 0));
-                int readLength = (cb > 0 && cb < length) ? cb : length;
-                byte[] buffer = new byte[readLength];
-                int bytesRead = 0;
-                while (bytesRead < readLength)
+                if (sourceStream.CanSeek)
                 {
-                    int n = stream.Read(buffer, bytesRead, readLength - bytesRead);
-                    if (n == 0) break;
-                    bytesRead += n;
+                    sourceStream.Position = 0;
                 }
-                if (buffer.Length > bytesRead)
+
+                bin = new MemoryStream();
+                if (cb >= 0 && cb < sourceStream.Length)
                 {
-                    bin = new List<byte>(new List<byte>(new ArraySegment<byte>(buffer, 0, bytesRead)));
+                    byte[] buffer = new byte[cb];
+                    int read = sourceStream.Read(buffer, 0, cb);
+                    bin.Write(buffer, 0, read);
                 }
                 else
                 {
-                    bin = new List<byte>(buffer);
+                    sourceStream.CopyTo(bin);
                 }
 
-                size = bin.Count;
-                offset = 0;
             }
             finally
             {
-                if (stream.CanSeek)
-                    stream.Position = originalPosition;
+                bin.Position = 0;
+                size = (int)bin.Length;
+                if (sourceStream.CanSeek) sourceStream.Position = originalPosition;
             }
         }
 
         public BinaryParser(List<byte> _bin)
         {
-            bin = _bin ?? new List<byte>();
-            size = bin.Count;
+            if (_bin != null)
+            {
+                bin = new MemoryStream(_bin.ToArray(), false);
+            }
+            else
+            {
+                bin = new MemoryStream();
+            }
+            size = (int)bin.Length;
             offset = 0;
         }
 
         public bool Empty => offset == size;
-        public void Advance(int cb) => offset += cb;
-        public void Rewind() => offset = 0;
-        public int Offset { get => offset; set => offset = value; }
+        public void Advance(int cb)
+        {
+            offset += cb;
+            bin.Position = offset;
+        }
+        public void Rewind()
+        {
+            offset = 0;
+            bin.Position = 0;
+        }
+        public int Offset
+        {
+            get => offset;
+            set
+            {
+                offset = value;
+                bin.Position = offset;
+            }
+        }
 
         public byte[] GetAddress()
         {
             if (offset >= 0 && GetSize() > 0)
             {
-                return bin.GetRange(offset, GetSize()).ToArray();
+                long oldPos = bin.Position;
+                bin.Position = offset;
+                byte[] result = new byte[GetSize()];
+                bin.Read(result, 0, result.Length);
+                bin.Position = oldPos;
+                return result;
             }
+
             return Array.Empty<byte>();
         }
 
         public void SetCap(int cap)
         {
             sizes.Push(size);
-            if (cap != 0 && offset + cap < bin.Count)
+            if (cap != 0 && offset + cap < bin.Length)
             {
                 size = offset + cap;
             }
@@ -132,7 +159,7 @@ namespace Parser
         {
             if (sizes.Count == 0)
             {
-                size = bin.Count;
+                size = (int)bin.Length;
             }
             else
             {
@@ -157,8 +184,10 @@ namespace Parser
         {
             if (CheckSize(cb))
             {
-                var bytes = bin.GetRange(offset, cb).ToArray();
-                Advance(cb);
+                byte[] bytes = new byte[cb];
+                bin.Position = offset;
+                int read = bin.Read(bytes, 0, cb);
+                Advance(read);
                 return bytes;
             }
             return Array.Empty<byte>();
