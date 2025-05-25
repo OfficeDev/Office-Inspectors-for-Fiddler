@@ -176,10 +176,10 @@ namespace Parser
         public void Parse(BinaryParser parser, int cbBin, bool enableJunk)
         {
             this.parser = parser;
-            parser.SetCap(cbBin);
+            parser.PushCap(cbBin);
             this.enableJunk = enableJunk;
             EnsureParsed();
-            parser.ClearCap();
+            parser.PopCap();
         }
 
         protected void EnsureParsed()

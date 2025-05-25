@@ -146,7 +146,7 @@ namespace Parser
             return Array.Empty<byte>();
         }
 
-        public void SetCap(int cap)
+        public void PushCap(int cap)
         {
             sizes.Push(size);
             if (cap != 0 && offset + cap < bin.Length)
@@ -155,7 +155,7 @@ namespace Parser
             }
         }
 
-        public void ClearCap()
+        public void PopCap()
         {
             if (sizes.Count == 0)
             {

@@ -108,16 +108,16 @@ namespace Parser.Tests
             var parser = new BinaryParser(5, data);
             parser.Advance(1);
             CollectionAssert.AreEqual(new byte[] { 2, 3, 4, 5 }, parser.GetAddress());
-            parser.SetCap(2);
+            parser.PushCap(2);
             Assert.AreEqual(2, parser.GetSize());
             CollectionAssert.AreEqual(new byte[] { 2, 3 }, parser.GetAddress());
-            parser.SetCap(3);
+            parser.PushCap(3);
             Assert.AreEqual(3, parser.GetSize());
             CollectionAssert.AreEqual(new byte[] { 2, 3, 4 }, parser.GetAddress());
-            parser.ClearCap();
+            parser.PopCap();
             Assert.AreEqual(2, parser.GetSize());
             CollectionAssert.AreEqual(new byte[] { 2, 3 }, parser.GetAddress());
-            parser.ClearCap();
+            parser.PopCap();
             Assert.AreEqual(4, parser.GetSize());
             CollectionAssert.AreEqual(new byte[] { 2, 3, 4, 5 }, parser.GetAddress());
         }
