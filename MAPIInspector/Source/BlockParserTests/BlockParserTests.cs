@@ -44,6 +44,14 @@ namespace BlockParserTests
             Assert.AreEqual("f2 = 0xABCD", block.Children[1].Text);
             Assert.AreEqual("Unparsed data size = 0x00000002", block.Children[2].Text);
             Assert.AreEqual("cb: 2 lpb: 0000", block.Children[2].Children[0].Text);
+            Assert.AreEqual(
+                "TestBlock\r\n" +
+                "\tf1 = 0x12345678\r\n" +
+                "\tf2 = 0xABCD\r\n" +
+                "\tUnparsed data size = 0x00000002\r\n" +
+                "\t\tcb: 2 lpb: 0000",
+                block.ToStringBlock()
+            );
         }
     }
 }
