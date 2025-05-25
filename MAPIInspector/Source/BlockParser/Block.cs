@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Xml;
 
 namespace Parser
 {
@@ -29,14 +30,9 @@ namespace Parser
             return parsedString;
         }
 
-        public void SetText(string text)
-        {
-            Text = text??string.Empty;
-        }
-
         public void SetText(string format, params object[] args)
         {
-            Text = strings.FormatMessage(format, args);
+            Text = !string.IsNullOrEmpty(format) ? string.Format(format, args) : string.Empty;
         }
 
         public IReadOnlyList<Block> Children => children.AsReadOnly();
@@ -83,7 +79,7 @@ namespace Parser
         {
             if (child != null && child.IsSet)
             {
-                child.Text = text??string.Empty;
+                child.Text = text ?? string.Empty;
                 children.Add(child);
             }
         }
@@ -92,7 +88,7 @@ namespace Parser
         {
             if (child != null && child.IsSet)
             {
-                child.Text = strings.FormatMessage(format, args);
+                child.Text = string.Format(format, args);
                 children.Add(child);
             }
         }
@@ -105,7 +101,7 @@ namespace Parser
 
         public void AddHeader(string format, params object[] args)
         {
-            AddHeader(strings.FormatMessage(format, args));
+            AddHeader(string.Format(format, args));
         }
 
         // Add a text only node with size/offset matching the child node so that it "contains" the child
@@ -134,7 +130,7 @@ namespace Parser
 
         public void AddSubHeader(string format, params object[] args)
         {
-            AddSubHeader(strings.FormatMessage(format, args));
+            AddSubHeader(string.Format(format, args));
         }
 
         // Static create functions returns a non parsing block
@@ -148,14 +144,14 @@ namespace Parser
             var ret = Create();
             ret.SetSize(size);
             ret.SetOffset(offset);
-            ret.SetText(strings.FormatMessage(format, args));
+            ret.SetText(format, args);
             return ret;
         }
 
         public static Block Create(string format, params object[] args)
         {
             var ret = Create();
-            ret.SetText(strings.FormatMessage(format, args));
+            ret.SetText(format, args);
             return ret;
         }
 
@@ -200,7 +196,7 @@ namespace Parser
             if (HasData && enableJunk && parser.GetSize() > 0)
             {
                 var junkData = BlockBytes.Parse(parser, parser.GetSize());
-                AddLabeledChild(strings.FormatMessage("Unparsed data size = 0x{0:X8}", junkData.Size), junkData);
+                AddLabeledChild(string.Format("Unparsed data size = 0x{0:X8}", junkData.Size), junkData);
             }
 
             SetSize(parser.Offset - Offset);

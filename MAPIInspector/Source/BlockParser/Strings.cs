@@ -54,12 +54,6 @@ namespace Parser
 
         public static string EmptyString => string.Empty;
 
-        public static string FormatMessage(string format, params object[] args)
-        {
-            if (string.IsNullOrEmpty(format))
-                return string.Empty;
-            return string.Format(format, args);
-        }
         public static string StripCharacter(string input, char character)
         {
             if (string.IsNullOrEmpty(input))
