@@ -52,8 +52,6 @@ namespace Parser
             }
         }
 
-        public static string EmptyString => string.Empty;
-
         public static string StripCharacter(string input, char character)
         {
             if (string.IsNullOrEmpty(input))

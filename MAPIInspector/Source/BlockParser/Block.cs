@@ -25,7 +25,7 @@ namespace Parser
         {
             EnsureParsed();
             var stringArray = ToStringsInternal();
-            var parsedString = strings.TrimWhitespace(strings.Join(stringArray, strings.EmptyString));
+            var parsedString = strings.TrimWhitespace(strings.Join(stringArray, string.Empty));
             parsedString = parsedString.Replace('\0', '.');
             return parsedString;
         }
