@@ -135,6 +135,7 @@ namespace Parser
 
             return sb.ToString();
         }
+
         public static string RemoveInvalidCharacters(string input, bool multiLine = true)
         {
             if (string.IsNullOrEmpty(input))
@@ -154,6 +155,5 @@ namespace Parser
 
             return new string(chars);
         }
-
     }
 }
