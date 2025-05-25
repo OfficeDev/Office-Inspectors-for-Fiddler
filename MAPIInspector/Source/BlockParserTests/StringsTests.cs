@@ -1,4 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace Parser.Tests
 {
@@ -32,6 +33,73 @@ namespace Parser.Tests
         public void TrimWhitespace_Null_ReturnsEmpty()
         {
             Assert.AreEqual(string.Empty, strings.TrimWhitespace(null));
+        }
+
+        [TestMethod]
+        public void Test_StripCharacter()
+        {
+            Assert.AreEqual("bcd", strings.StripCharacter("abcad", 'a'));
+            Assert.AreEqual("hello", strings.StripCharacter("hello", 'x'));
+            Assert.AreEqual("", strings.StripCharacter("", 'a'));
+            Assert.AreEqual("", strings.StripCharacter("aaaa", 'a'));
+        }
+
+        [TestMethod]
+        public void Test_InvalidCharacter()
+        {
+            Assert.IsTrue(strings.InvalidCharacter(0x81, false));
+            Assert.IsFalse(strings.InvalidCharacter(0x20, false));
+            Assert.IsFalse(strings.InvalidCharacter(0x09, true)); // Tab allowed in multiline
+            Assert.IsTrue(strings.InvalidCharacter(0x09, false)); // Tab not allowed in single line
+        }
+
+        [TestMethod]
+        public void Test_BinToTextStringW()
+        {
+            var bin = new List<byte>(System.Text.Encoding.Unicode.GetBytes("abc"));
+            Assert.AreEqual("abc", strings.BinToTextStringW(bin, false));
+
+            var binWithInvalid = new List<byte>(System.Text.Encoding.Unicode.GetBytes("a\u0081c"));
+            Assert.AreEqual("a.c", strings.BinToTextStringW(binWithInvalid, false));
+
+            var binWithWhiteSpace = new List<byte>(System.Text.Encoding.Unicode.GetBytes("a\r\nb\rc\n\td"));
+            Assert.AreEqual("a..b.c..d", strings.BinToTextStringW(binWithWhiteSpace, false));
+            Assert.AreEqual("a\r\nb\rc\n\td", strings.BinToTextStringW(binWithWhiteSpace, true));
+
+            Assert.AreEqual("", strings.BinToTextStringW(null, false));
+            Assert.AreEqual("", strings.BinToTextStringW(new List<byte>(), false));
+        }
+
+        [TestMethod]
+        public void Test_BinToTextStringA()
+        {
+            var bin = new List<byte>(System.Text.Encoding.ASCII.GetBytes("abc"));
+            Assert.AreEqual("abc", strings.BinToTextStringA(bin, false));
+
+            var binWithInvalid = new List<byte> { 97, 0x81, 99 }; // a, invalid, c
+            Assert.AreEqual("a.c", strings.BinToTextStringA(binWithInvalid, false));
+
+            Assert.AreEqual("", strings.BinToTextStringA(null, false));
+            Assert.AreEqual("", strings.BinToTextStringA(new List<byte>(), false));
+        }
+
+        [TestMethod]
+        public void Test_BinToHexString()
+        {
+            var bin = new List<byte> { 0xAB, 0xCD, 0xEF };
+            Assert.AreEqual("ABCDEF", strings.BinToHexString(bin));
+            Assert.AreEqual("cb: 3 lpb: ABCDEF", strings.BinToHexString(bin, true));
+            Assert.AreEqual("NULL", strings.BinToHexString(new List<byte>()));
+            Assert.AreEqual("cb: 0 lpb: NULL", strings.BinToHexString(new List<byte>(), true));
+        }
+
+        [TestMethod]
+        public void Test_RemoveInvalidCharacters()
+        {
+            Assert.AreEqual("abc", strings.RemoveInvalidCharacters("abc"));
+            Assert.AreEqual("a.c", strings.RemoveInvalidCharacters("a\u0081c"));
+            Assert.AreEqual("", strings.RemoveInvalidCharacters(""));
+            Assert.AreEqual("a.c\0", strings.RemoveInvalidCharacters("a\u0081c\0"));
         }
     }
 }

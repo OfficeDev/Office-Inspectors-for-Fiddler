@@ -82,7 +82,10 @@ namespace Parser
             {
                 if (!InvalidCharacter(c, multiLine))
                     sb.Append(c);
+                else
+                    sb.Append('.');
             }
+
             return sb.ToString();
         }
 
@@ -95,8 +98,13 @@ namespace Parser
             // Convert List<byte> to byte[]
             byte[] byteArray = bin.ToArray();
 
-            // Use ASCII encoding (or Encoding.Latin1 for extended characters)
-            string text = System.Text.Encoding.ASCII.GetString(byteArray);
+            // Use ASCII encoding with custom encoder fallback to replace unknown chars with '.'
+            var encoding = System.Text.Encoding.GetEncoding(
+                "ASCII",
+                new System.Text.EncoderReplacementFallback("."),
+                new System.Text.DecoderReplacementFallback("."));
+
+            string text = encoding.GetString(byteArray);
 
             // Remove invalid characters using the InvalidCharacter method
             var sb = new System.Text.StringBuilder(text.Length);
@@ -104,6 +112,8 @@ namespace Parser
             {
                 if (!InvalidCharacter(c, multiLine))
                     sb.Append(c);
+                else
+                    sb.Append('.');
             }
             return sb.ToString();
         }
