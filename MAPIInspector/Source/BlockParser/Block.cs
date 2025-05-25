@@ -192,9 +192,9 @@ namespace Parser
             ParseBlocks();
 
 
-            if (HasData && enableJunk && parser.GetSize() > 0)
+            if (HasData && enableJunk && parser.RemainingBytes > 0)
             {
-                var junkData = BlockBytes.Parse(parser, parser.GetSize());
+                var junkData = BlockBytes.Parse(parser, parser.RemainingBytes);
                 AddLabeledChild(string.Format("Unparsed data size = 0x{0:X8}", junkData.Size), junkData);
             }
 

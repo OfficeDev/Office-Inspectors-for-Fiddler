@@ -51,7 +51,7 @@ namespace Parser
                 if (parser != null)
                 {
                     var bytes = parser.GetAddress();
-                    int maxChars = parser.GetSize() / 2;
+                    int maxChars = parser.RemainingBytes / 2;
                     int charCount = 0;
                     for (int i = 0; i < maxChars; i++)
                     {

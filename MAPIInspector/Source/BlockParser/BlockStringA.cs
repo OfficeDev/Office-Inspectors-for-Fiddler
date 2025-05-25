@@ -33,7 +33,7 @@ namespace Parser
                 // Find null-terminated length
                 cchChar = 0;
                 var addr = parser.GetAddress();
-                var size = parser.GetSize();
+                var size = parser.RemainingBytes;
                 while (cchChar < size && addr[cchChar] != 0)
                     cchChar++;
             }

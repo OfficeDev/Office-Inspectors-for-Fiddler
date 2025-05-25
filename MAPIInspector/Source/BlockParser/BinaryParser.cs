@@ -133,11 +133,11 @@ namespace Parser
 
         public byte[] GetAddress()
         {
-            if (offset >= 0 && GetSize() > 0)
+            if (offset >= 0 && RemainingBytes > 0)
             {
                 long oldPos = bin.Position;
                 bin.Position = offset;
-                byte[] result = new byte[GetSize()];
+                byte[] result = new byte[RemainingBytes];
                 bin.Read(result, 0, result.Length);
                 bin.Position = oldPos;
                 return result;
@@ -170,14 +170,11 @@ namespace Parser
         // If we're before the end of the buffer, return the count of remaining bytes
         // If we're at or past the end of the buffer, return 0
         // If we're before the beginning of the buffer, return 0
-        public int GetSize()
-        {
-            return offset > size ? 0 : size - offset;
-        }
+        public int RemainingBytes => offset > size ? 0 : size - offset;
 
         public bool CheckSize(int cb)
         {
-            return cb <= GetSize();
+            return cb <= RemainingBytes;
         }
 
         /// <summary>

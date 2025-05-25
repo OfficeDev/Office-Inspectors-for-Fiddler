@@ -11,7 +11,7 @@ namespace Parser.Tests
         public void Constructor_Empty_Defaults()
         {
             var parser = new BinaryParser();
-            Assert.AreEqual(0, parser.GetSize());
+            Assert.AreEqual(0, parser.RemainingBytes);
             Assert.IsTrue(parser.Empty);
         }
 
@@ -20,7 +20,7 @@ namespace Parser.Tests
         {
             byte[] data = { 1, 2, 3, 4 };
             var parser = new BinaryParser(4, data);
-            Assert.AreEqual(4, parser.GetSize());
+            Assert.AreEqual(4, parser.RemainingBytes);
             Assert.IsFalse(parser.Empty);
         }
 
@@ -29,7 +29,7 @@ namespace Parser.Tests
         {
             byte[] data = { 1, 2, 3, 4, 5 };
             var parser = new BinaryParser(3, data);
-            Assert.AreEqual(3, parser.GetSize());
+            Assert.AreEqual(3, parser.RemainingBytes);
             CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, parser.GetAddress());
         }
 
@@ -40,7 +40,7 @@ namespace Parser.Tests
             using (var ms = new MemoryStream(data))
             {
                 var parser = new BinaryParser(ms);
-                Assert.AreEqual(4, parser.GetSize());
+                Assert.AreEqual(4, parser.RemainingBytes);
             }
         }
 
@@ -51,7 +51,7 @@ namespace Parser.Tests
             using (var ms = new MemoryStream(data))
             {
                 var parser = new BinaryParser(ms, 2);
-                Assert.AreEqual(2, parser.GetSize());
+                Assert.AreEqual(2, parser.RemainingBytes);
                 CollectionAssert.AreEqual(new byte[] { 10, 20 }, parser.GetAddress());
             }
         }
@@ -61,7 +61,7 @@ namespace Parser.Tests
         {
             var list = new List<byte> { 1, 2, 3 };
             var parser = new BinaryParser(list);
-            Assert.AreEqual(3, parser.GetSize());
+            Assert.AreEqual(3, parser.RemainingBytes);
         }
 
         [TestMethod]
@@ -69,13 +69,13 @@ namespace Parser.Tests
         {
             byte[] data = { 1, 2, 3, 4 };
             var parser = new BinaryParser(4, data);
-            Assert.AreEqual(4, parser.GetSize());
+            Assert.AreEqual(4, parser.RemainingBytes);
             parser.Advance(2);
             Assert.AreEqual(2, parser.Offset);
-            Assert.AreEqual(2, parser.GetSize());
+            Assert.AreEqual(2, parser.RemainingBytes);
             parser.Rewind();
             Assert.AreEqual(0, parser.Offset);
-            Assert.AreEqual(4, parser.GetSize());
+            Assert.AreEqual(4, parser.RemainingBytes);
         }
 
         [TestMethod]
@@ -109,16 +109,16 @@ namespace Parser.Tests
             parser.Advance(1);
             CollectionAssert.AreEqual(new byte[] { 2, 3, 4, 5 }, parser.GetAddress());
             parser.PushCap(2);
-            Assert.AreEqual(2, parser.GetSize());
+            Assert.AreEqual(2, parser.RemainingBytes);
             CollectionAssert.AreEqual(new byte[] { 2, 3 }, parser.GetAddress());
             parser.PushCap(3);
-            Assert.AreEqual(3, parser.GetSize());
+            Assert.AreEqual(3, parser.RemainingBytes);
             CollectionAssert.AreEqual(new byte[] { 2, 3, 4 }, parser.GetAddress());
             parser.PopCap();
-            Assert.AreEqual(2, parser.GetSize());
+            Assert.AreEqual(2, parser.RemainingBytes);
             CollectionAssert.AreEqual(new byte[] { 2, 3 }, parser.GetAddress());
             parser.PopCap();
-            Assert.AreEqual(4, parser.GetSize());
+            Assert.AreEqual(4, parser.RemainingBytes);
             CollectionAssert.AreEqual(new byte[] { 2, 3, 4, 5 }, parser.GetAddress());
         }
 
@@ -157,7 +157,7 @@ namespace Parser.Tests
                 Assert.AreEqual(1, ms.Position);
                 var parser = new BinaryParser(ms, 3);
                 Assert.AreEqual(1, ms.Position);
-                Assert.AreEqual(3, parser.GetSize());
+                Assert.AreEqual(3, parser.RemainingBytes);
                 CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, parser.GetAddress());
                 Assert.AreEqual(1, ms.Position);
                 parser.Advance(2);
