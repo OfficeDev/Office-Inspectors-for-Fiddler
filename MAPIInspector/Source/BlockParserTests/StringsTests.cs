@@ -34,47 +34,5 @@ namespace Parser.Tests
         {
             Assert.AreEqual(string.Empty, strings.TrimWhitespace(null));
         }
-
-        [TestMethod]
-        public void Join_NullValues_ReturnsEmptyString()
-        {
-            var result = strings.Join(null, ",");
-            Assert.AreEqual(string.Empty, result);
-        }
-
-        [TestMethod]
-        public void Join_EmptyList_ReturnsEmptyString()
-        {
-            var result = strings.Join(new List<string>(), ",");
-            Assert.AreEqual(string.Empty, result);
-        }
-
-        [TestMethod]
-        public void Join_SingleElement_ReturnsElement()
-        {
-            var result = strings.Join(new List<string> { "a" }, ",");
-            Assert.AreEqual("a", result);
-        }
-
-        [TestMethod]
-        public void Join_MultipleElements_ReturnsJoinedString()
-        {
-            var result = strings.Join(new List<string> { "a", "b", "c" }, ",");
-            Assert.AreEqual("a,b,c", result);
-        }
-
-        [TestMethod]
-        public void Join_SeparatorIsEmptyString_JoinsWithoutSeparator()
-        {
-            var result = strings.Join(new List<string> { "a", "b", "c" }, "");
-            Assert.AreEqual("abc", result);
-        }
-
-        [TestMethod]
-        public void Join_ElementsContainNulls_TreatsNullAsEmptyString()
-        {
-            var result = strings.Join(new List<string> { "a", null, "c" }, ",");
-            Assert.AreEqual("a,,c", result);
-        }
     }
 }

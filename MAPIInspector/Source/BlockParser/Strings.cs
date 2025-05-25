@@ -28,13 +28,6 @@ namespace Parser
             return input.Substring(first, last - first + 1);
         }
 
-        public static string Join(IEnumerable<string> values, string separator)
-        {
-            if (values == null)
-                return string.Empty;
-            return string.Join(separator, values);
-        }
-
         public static string StripCharacter(string input, char character)
         {
             if (string.IsNullOrEmpty(input))
@@ -48,6 +41,7 @@ namespace Parser
             }
             return sb.ToString();
         }
+
         // Determines if a character is invalid based on Unicode and multiline rules
         public static bool InvalidCharacter(uint chr, bool multiLine)
         {
