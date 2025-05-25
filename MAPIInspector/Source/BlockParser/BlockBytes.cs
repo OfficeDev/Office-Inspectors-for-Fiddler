@@ -50,12 +50,7 @@ namespace Parser
             if (cbBytes > 0 && parser.CheckSize(cbBytes) &&
                 (cbMaxBytes == -1 || cbBytes <= cbMaxBytes))
             {
-                var bytes = parser.GetAddress();
-                for (int i = 0; i < cbBytes; i++)
-                {
-                    _data.Add(bytes[parser.Offset + i]);
-                }
-                parser.Advance(cbBytes);
+                _data = new List<byte>(parser.ReadBytes(cbBytes));
                 SetText(ToHexString(true));
                 parsed = true;
             }

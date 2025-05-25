@@ -62,7 +62,6 @@ namespace Parser
             if (!parser.CheckSize(size)) return;
 
             data = ReadStruct<T>(parser);
-            parser.Advance(size);
             this.parsed = true;
         }
 
@@ -74,7 +73,8 @@ namespace Parser
             try
             {
                 IntPtr ptr = handle.AddrOfPinnedObject();
-                return (U)System.Runtime.InteropServices.Marshal.PtrToStructure(ptr, typeof(U));
+                U convert = (U)System.Runtime.InteropServices.Marshal.PtrToStructure(ptr, typeof(U));
+                return convert;
             }
             finally
             {

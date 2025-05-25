@@ -200,7 +200,7 @@ namespace Parser
             if (HasData && enableJunk && parser.GetSize() > 0)
             {
                 var junkData = BlockBytes.Parse(parser, parser.GetSize());
-                AddLabeledChild(strings.FormatMessage("Unparsed data size = 0x{0:X8}!", junkData.Size), junkData);
+                AddLabeledChild(strings.FormatMessage("Unparsed data size = 0x{0:X8}", junkData.Size), junkData);
             }
 
             SetSize(parser.Offset - Offset);

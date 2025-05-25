@@ -180,6 +180,15 @@ namespace Parser
             return cb <= GetSize();
         }
 
+        /// <summary>
+        /// Reads the specified number of bytes from the current offset in the binary stream.
+        /// Advances the offset by the number of bytes read.
+        /// If there are not enough bytes remaining, returns an empty array.
+        /// </summary>
+        /// <param name="cb">The number of bytes to read.</param>
+        /// <returns>
+        /// A byte array containing the bytes read, or an empty array if there are not enough bytes remaining.
+        /// </returns>
         public byte[] ReadBytes(int cb)
         {
             if (CheckSize(cb))
@@ -190,6 +199,7 @@ namespace Parser
                 Advance(read);
                 return bytes;
             }
+
             return Array.Empty<byte>();
         }
     }
