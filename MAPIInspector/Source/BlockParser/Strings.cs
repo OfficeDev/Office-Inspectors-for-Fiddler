@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -29,27 +28,11 @@ namespace Parser
             return input.Substring(first, last - first + 1);
         }
 
-        public static string Join(System.Collections.Generic.IEnumerable<string> values, string separator)
+        public static string Join(IEnumerable<string> values, string separator)
         {
             if (values == null)
                 return string.Empty;
-
-            using (var enumerator = values.GetEnumerator())
-            {
-                if (!enumerator.MoveNext())
-                    return string.Empty;
-
-                var sb = new System.Text.StringBuilder();
-                sb.Append(enumerator.Current);
-
-                while (enumerator.MoveNext())
-                {
-                    sb.Append(separator);
-                    sb.Append(enumerator.Current);
-                }
-
-                return sb.ToString();
-            }
+            return string.Join(separator, values);
         }
 
         public static string StripCharacter(string input, char character)
