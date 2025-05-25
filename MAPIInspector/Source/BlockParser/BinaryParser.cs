@@ -106,6 +106,7 @@ namespace Parser
             {
                 bin = new MemoryStream();
             }
+
             size = (int)bin.Length;
             offset = 0;
         }
@@ -116,11 +117,13 @@ namespace Parser
             offset += cb;
             bin.Position = offset;
         }
+
         public void Rewind()
         {
             offset = 0;
             bin.Position = 0;
         }
+
         public int Offset
         {
             get => offset;
