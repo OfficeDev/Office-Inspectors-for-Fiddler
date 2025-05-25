@@ -38,7 +38,7 @@ namespace BlockParserTests
             var block = BlockBytes.Parse(parser, 4);
             var text = block.ToTextStringA(false);
 
-            Assert.AreEqual("ABC", text);
+            Assert.AreEqual("ABC.", text);
         }
 
         [TestMethod]
