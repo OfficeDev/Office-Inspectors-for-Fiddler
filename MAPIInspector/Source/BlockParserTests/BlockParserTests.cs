@@ -111,5 +111,32 @@ namespace BlockParserTests
                 block.ToStringBlock()
             );
         }
+
+        [TestMethod]
+        public void Test_TestBlock2InsufficientData()
+        {
+            byte[] data = new byte[] { 0x09, 0x53, 0x67, 0x08, 0x68 }; // int: 0x12345678, unparsed 0x68
+            var parser = new BinaryParser(data);
+            var block = new TestBlock2();
+            block.Parse(parser, true);
+
+            Assert.AreEqual(0x08675309, block.f1.GetData());
+            Assert.AreEqual(0, block.f2.GetData());
+            Assert.AreEqual("TestBlock2", block.Text);
+            Assert.AreEqual(3, block.Children.Count);
+            Assert.AreEqual("f1 = 0x08675309", block.Children[0].Text);
+            Assert.AreEqual("TestBlock", block.Children[1].Text);
+            Assert.AreEqual("TestBlock", block.Children[1].ToStringBlock());
+            Assert.AreEqual("Unparsed data size = 0x00000001", block.Children[2].Text);
+            Assert.AreEqual("cb: 1 lpb: 68", block.Children[2].Children[0].Text);
+            Assert.AreEqual(
+                "TestBlock2\r\n" +
+                "\tf1 = 0x08675309\r\n" +
+                "\tTestBlock\r\n" +
+                "\tUnparsed data size = 0x00000001\r\n" +
+                "\t\tcb: 1 lpb: 68",
+                block.ToStringBlock()
+            );
+        }
     }
 }
