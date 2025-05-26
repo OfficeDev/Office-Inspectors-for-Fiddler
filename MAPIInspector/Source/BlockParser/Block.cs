@@ -15,6 +15,14 @@ namespace Parser
 
     public abstract class Block
     {
+        protected BinaryParser parser;
+        protected bool Parsed { get; set; } = false;
+        protected bool EnableJunk { get; set; } = true;
+        public long Size { get; set; }
+        public long Offset { get; set; }
+        protected virtual bool UsePipes() => false;
+        public string Text { get; protected set; } = string.Empty;
+
         protected Block() { }
 
         // Overrides
@@ -28,19 +36,6 @@ namespace Parser
         /// The default implementation does nothing. Override to add custom child block parsing logic.
         /// </summary>
         protected virtual void ParseBlocks() { }
-        protected virtual bool UsePipes() => false;
-
-        // Getters and setters
-        public string Text { get; protected set; } = string.Empty;
-
-        public virtual string ToStringBlock()
-        {
-            EnsureParsed();
-            var stringArray = ToStringsInternal();
-            var parsedString = strings.TrimWhitespace(string.Join(string.Empty, stringArray));
-            parsedString = parsedString.Replace('\0', '.');
-            return parsedString;
-        }
 
         public void SetText(string format, params object[] args)
         {
@@ -49,10 +44,6 @@ namespace Parser
 
         private List<Block> _children { get; set; } = new List<Block>();
         public IReadOnlyList<Block> Children => _children.AsReadOnly();
-
-        public long Size { get; set; }
-
-        public long Offset { get; set; }
 
         public void ShiftOffset(long shift)
         {
@@ -200,12 +191,21 @@ namespace Parser
             Size = parser.Offset - Offset;
         }
 
-        protected BinaryParser parser;
-        protected bool Parsed { get; set; } = false;
-        protected bool EnableJunk { get; set; } = true;
+        public virtual string ToStringBlock()
+        {
+            EnsureParsed();
+            var stringArray = ToStringsInternal();
+            var parsedString = strings.TrimWhitespace(string.Join(string.Empty, stringArray));
+            parsedString = parsedString.Replace('\0', '.');
+            return parsedString;
+        }
 
+        private List<string> _cachedStrings;
         private List<string> ToStringsInternal()
         {
+            if (_cachedStrings != null)
+                return _cachedStrings;
+
             var strings = new List<string>(Children.Count + 1);
             if (!string.IsNullOrEmpty(Text)) strings.Add(Text + "\r\n");
 
@@ -216,6 +216,7 @@ namespace Parser
                 strings.AddRange(childStrings);
             }
 
+            _cachedStrings = strings;
             return strings;
         }
     }
