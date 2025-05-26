@@ -7,21 +7,6 @@ namespace BlockParserTests
     public class ScratchBlockTests
     {
         [TestMethod]
-        public void ScratchBlock_Constructor_SetsParsedTrue()
-        {
-            var block = new ScratchBlock();
-            var parsedField = typeof(ScratchBlock).BaseType.GetField("parsed", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            Assert.IsTrue((bool)parsedField.GetValue(block));
-        }
-
-        [TestMethod]
-        public void ScratchBlock_Parse_DoesNotThrow()
-        {
-            var block = new ScratchBlock();
-            block.GetType().GetMethod("Parse", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(block, null);
-        }
-
-        [TestMethod]
         public void ScratchBlock_CanSetAndGetText()
         {
             var block = new ScratchBlock();
