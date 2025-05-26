@@ -36,7 +36,7 @@ namespace BlockParserTests
         public void SetSize_AssignsSize()
         {
             var b = Block.Create();
-            b.SetSize(123);
+            b.Size = 123;
             Assert.AreEqual(123, b.Size);
         }
 
@@ -143,7 +143,7 @@ namespace BlockParserTests
             var b = Block.Create();
             var child = Block.Create();
             child.SetOffset(5);
-            child.SetSize(10);
+            child.Size = 10;
             b.AddLabeledChild("label", child);
             Assert.AreEqual(1, b.Children.Count);
             Assert.AreEqual("label", b.Children[0].Text);
@@ -157,7 +157,7 @@ namespace BlockParserTests
         {
             var b = Block.Create();
             b.SetOffset(2);
-            b.SetSize(3);
+            b.Size = 3;
             b.AddSubHeader("sub");
             Assert.AreEqual(1, b.Children.Count);
             Assert.AreEqual("sub", b.Children[0].Text);

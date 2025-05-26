@@ -36,8 +36,7 @@ namespace Parser
 
         public IReadOnlyList<Block> Children => children.AsReadOnly();
 
-        public long Size { get; protected set; }
-        public void SetSize(long size) => Size = size;
+        public long Size { get; set; }
 
         public long Offset { get; protected set; }
         public void SetOffset(long offset) => Offset = offset;
@@ -111,7 +110,7 @@ namespace Parser
                 var node = Create();
                 node.SetText(text);
                 node.SetOffset(_block.Offset);
-                node.SetSize(_block.Size);
+                node.Size = _block.Size;
                 node.AddChild(_block);
                 AddChild(node);
             }
@@ -123,7 +122,7 @@ namespace Parser
             var node = Create();
             node.SetText(text);
             node.SetOffset(Offset);
-            node.SetSize(Size);
+            node.Size = Size;
             AddChild(node);
         }
 
@@ -141,7 +140,7 @@ namespace Parser
         public static Block Create(long size, long offset, string format, params object[] args)
         {
             var ret = Create();
-            ret.SetSize(size);
+            ret.Size = size;
             ret.SetOffset(offset);
             ret.SetText(format, args);
             return ret;
@@ -198,7 +197,7 @@ namespace Parser
                 AddLabeledChild(string.Format("Unparsed data size = 0x{0:X8}", junkData.Size), junkData);
             }
 
-            SetSize(parser.Offset - Offset);
+            Size = parser.Offset - Offset;
         }
 
         protected abstract void Parse();

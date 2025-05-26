@@ -26,7 +26,7 @@ namespace Parser
             ret.enableJunk = false;
             ret.data = data;
             ret.SetText(data);
-            ret.SetSize(size);
+            ret.Size = size;
             ret.SetOffset(offset);
             return ret;
         }
