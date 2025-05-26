@@ -198,7 +198,7 @@ namespace Parser
         }
 
         private string _stringBlock;
-        public virtual string ToStringBlock()
+        public override string ToString()
         {
             EnsureParsed();
             return _stringBlock;

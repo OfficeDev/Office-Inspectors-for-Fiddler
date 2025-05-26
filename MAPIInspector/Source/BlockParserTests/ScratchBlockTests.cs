@@ -19,8 +19,7 @@ namespace BlockParserTests
         {
             var block = new ScratchBlock();
             block.SetText("TestBlock");
-            var str = block.ToStringBlock();
-            Assert.IsTrue(str.Contains("TestBlock"));
+            Assert.IsTrue(block.ToString().Contains("TestBlock"));
         }
     }
 }

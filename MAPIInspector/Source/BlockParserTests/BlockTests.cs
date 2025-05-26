@@ -223,8 +223,7 @@ namespace BlockParserTests
         {
             var tb = new TestBlock();
             tb.SetText("abc");
-            var s = tb.ToStringBlock();
-            Assert.IsTrue(s.Contains("abc"));
+            Assert.IsTrue(tb.ToString().Contains("abc"));
         }
 
         [TestMethod]
@@ -320,8 +319,7 @@ namespace BlockParserTests
             var c = Block.Create();
             c.SetText("child");
             b.AddChild(c);
-            var s = b.ToStringBlock();
-            Assert.IsTrue(s.Contains("child"));
+            Assert.IsTrue(b.ToString().Contains("child"));
         }
 
         [TestMethod]
