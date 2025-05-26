@@ -49,13 +49,17 @@ namespace Parser
             }
         }
 
-        public uint Source { get; protected set; }
-        public void SetSource(uint source)
+        private uint _source;
+        public uint Source
         {
-            Source = source;
-            foreach (var child in children)
+            get => _source;
+            set
             {
-                child.SetSource(source);
+                _source = value;
+                foreach (var child in children)
+                {
+                    child.Source = value;
+                }
             }
         }
 

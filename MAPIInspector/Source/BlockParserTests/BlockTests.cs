@@ -67,7 +67,7 @@ namespace BlockParserTests
             var parent = Block.Create();
             var child = Block.Create();
             parent.AddChild(child);
-            parent.SetSource(99);
+            parent.Source = 99;
             Assert.AreEqual((uint)99, parent.Source);
             Assert.AreEqual((uint)99, child.Source);
         }
@@ -292,7 +292,7 @@ namespace BlockParserTests
             var grandchild = Block.Create();
             parent.AddChild(child);
             child.AddChild(grandchild);
-            parent.SetSource(123);
+            parent.Source = 123;
             Assert.AreEqual((uint)123, grandchild.Source);
         }
 
