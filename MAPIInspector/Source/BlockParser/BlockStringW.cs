@@ -23,7 +23,7 @@ namespace Parser
         {
             var ret = new BlockStringW();
             ret.Parsed = true;
-            ret.enableJunk = false;
+            ret.EnableJunk = false;
             ret.data = data;
             ret.SetText(data);
             ret.Size = size;
@@ -35,7 +35,7 @@ namespace Parser
         {
             var ret = new BlockStringW();
             ret.parser = parser;
-            ret.enableJunk = false;
+            ret.EnableJunk = false;
             ret.cchChar = cchChar;
             ret.EnsureParsed();
             return ret;

@@ -20,7 +20,7 @@ namespace Parser
         {
             var ret = new BlockBytes();
             ret.parser = parser;
-            ret.enableJunk = false;
+            ret.EnableJunk = false;
             ret.cbBytes = cbBytes;
             ret.cbMaxBytes = cbMaxBytes;
             ret.EnsureParsed();

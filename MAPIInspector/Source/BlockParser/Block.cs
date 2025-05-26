@@ -176,7 +176,7 @@ namespace Parser
         {
             this.parser = parser;
             parser.PushCap(cbBin);
-            this.enableJunk = enableJunk;
+            this.EnableJunk = enableJunk;
             EnsureParsed();
             parser.PopCap();
         }
@@ -190,7 +190,7 @@ namespace Parser
             Parse();
             ParseBlocks();
 
-            if (HasData && enableJunk && parser.RemainingBytes > 0)
+            if (HasData && EnableJunk && parser.RemainingBytes > 0)
             {
                 var junkData = BlockBytes.Parse(parser, parser.RemainingBytes);
                 AddLabeledChild(string.Format("Unparsed data size = 0x{0:X8}", junkData.Size), junkData);
@@ -201,7 +201,7 @@ namespace Parser
 
         protected BinaryParser parser;
         protected bool Parsed { get; set; } = false;
-        protected bool enableJunk = true;
+        protected bool EnableJunk { get; set; } = true;
 
         private List<Block> children = new List<Block>();
 

@@ -19,7 +19,7 @@ namespace Parser
         {
             var ret = new BlockStringA();
             ret.parser = parser;
-            ret.enableJunk = false;
+            ret.EnableJunk = false;
             ret.cchChar = cchChar;
             ret.EnsureParsed();
             return ret;
