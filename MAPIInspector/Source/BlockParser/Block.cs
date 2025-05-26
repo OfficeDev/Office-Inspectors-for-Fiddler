@@ -205,27 +205,8 @@ namespace Parser
             foreach (var child in children)
             {
                 var childStrings = child.ToStringsInternal();
-                if (!string.IsNullOrEmpty(Text)) childStrings = TabStrings(childStrings, UsePipes());
+                if (!string.IsNullOrEmpty(Text)) childStrings = Parser.strings.TabStrings(childStrings, UsePipes());
                 strings.AddRange(childStrings);
-            }
-
-            return strings;
-        }
-
-        private static List<string> TabStrings(List<string> elems, bool usePipes)
-        {
-            if (elems == null || elems.Count == 0) return new List<string>();
-            var strings = new List<string>(elems.Count);
-            foreach (var elem in elems)
-            {
-                if (usePipes)
-                {
-                    strings.Add("|\t" + elem);
-                }
-                else
-                {
-                    strings.Add("\t" + elem);
-                }
             }
 
             return strings;

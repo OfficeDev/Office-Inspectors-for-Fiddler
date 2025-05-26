@@ -165,5 +165,25 @@ namespace Parser
 
             return new string(chars);
         }
+
+        public static List<string> TabStrings(List<string> elems, bool usePipes)
+        {
+            if (elems == null || elems.Count == 0) return new List<string>();
+            var strings = new List<string>(elems.Count);
+            foreach (var elem in elems)
+            {
+                if (usePipes)
+                {
+                    strings.Add("|\t" + elem);
+                }
+                else
+                {
+                    strings.Add("\t" + elem);
+                }
+            }
+
+            return strings;
+        }
+
     }
 }
