@@ -44,7 +44,7 @@ namespace BlockParserTests
         public void SetOffset_AssignsOffset()
         {
             var b = Block.Create();
-            b.SetOffset(456);
+            b.Offset = 456;
             Assert.AreEqual(456, b.Offset);
         }
 
@@ -54,8 +54,8 @@ namespace BlockParserTests
             var parent = Block.Create();
             var child = Block.Create();
             parent.AddChild(child);
-            parent.SetOffset(10);
-            child.SetOffset(20);
+            parent.Offset = 10;
+            child.Offset = 20;
             parent.ShiftOffset(5);
             Assert.AreEqual(15, parent.Offset);
             Assert.AreEqual(25, child.Offset);
@@ -142,7 +142,7 @@ namespace BlockParserTests
         {
             var b = Block.Create();
             var child = Block.Create();
-            child.SetOffset(5);
+            child.Offset = 5;
             child.Size = 10;
             b.AddLabeledChild("label", child);
             Assert.AreEqual(1, b.Children.Count);
@@ -156,7 +156,7 @@ namespace BlockParserTests
         public void AddSubHeader_AddsNodeWithParentOffsetSize()
         {
             var b = Block.Create();
-            b.SetOffset(2);
+            b.Offset = 2;
             b.Size = 3;
             b.AddSubHeader("sub");
             Assert.AreEqual(1, b.Children.Count);
@@ -304,9 +304,9 @@ namespace BlockParserTests
             var grandchild = Block.Create();
             parent.AddChild(child);
             child.AddChild(grandchild);
-            parent.SetOffset(1);
-            child.SetOffset(2);
-            grandchild.SetOffset(3);
+            parent.Offset = 1;
+            child.Offset = 2;
+            grandchild.Offset = 3;
             parent.ShiftOffset(10);
             Assert.AreEqual(11, parent.Offset);
             Assert.AreEqual(12, child.Offset);

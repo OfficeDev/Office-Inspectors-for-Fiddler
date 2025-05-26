@@ -13,7 +13,7 @@ namespace Parser
             this.parsed = true;
             this.data = data;
             this.Size = size;
-            this.SetOffset(offset);
+            this.Offset = offset;
         }
 
         public void SetData(T data) => this.data = data;

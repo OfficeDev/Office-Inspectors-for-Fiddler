@@ -38,8 +38,7 @@ namespace Parser
 
         public long Size { get; set; }
 
-        public long Offset { get; protected set; }
-        public void SetOffset(long offset) => Offset = offset;
+        public long Offset { get; set; }
 
         public void ShiftOffset(long shift)
         {
@@ -109,7 +108,7 @@ namespace Parser
             {
                 var node = Create();
                 node.SetText(text);
-                node.SetOffset(_block.Offset);
+                node.Offset = _block.Offset;
                 node.Size = _block.Size;
                 node.AddChild(_block);
                 AddChild(node);
@@ -121,7 +120,7 @@ namespace Parser
         {
             var node = Create();
             node.SetText(text);
-            node.SetOffset(Offset);
+            node.Offset = Offset;
             node.Size = Size;
             AddChild(node);
         }
@@ -141,7 +140,7 @@ namespace Parser
         {
             var ret = Create();
             ret.Size = size;
-            ret.SetOffset(offset);
+            ret.Offset = offset;
             ret.SetText(format, args);
             return ret;
         }
@@ -185,7 +184,7 @@ namespace Parser
         {
             if (parsed || parser == null || parser.Empty) return;
             parsed = true; // parse can unset this if needed
-            SetOffset(parser.Offset);
+            Offset = parser.Offset;
 
             Parse();
             ParseBlocks();

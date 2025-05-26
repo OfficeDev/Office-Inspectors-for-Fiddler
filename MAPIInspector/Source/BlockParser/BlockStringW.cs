@@ -27,7 +27,7 @@ namespace Parser
             ret.data = data;
             ret.SetText(data);
             ret.Size = size;
-            ret.SetOffset(offset);
+            ret.Offset = offset;
             return ret;
         }
 
