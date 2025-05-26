@@ -95,15 +95,9 @@ namespace Parser
         }
 
         // Add a text only node with no size/offset and no children
-        public void AddHeader(string text)
-        {
-            AddChild(Create(text));
-        }
+        public void AddHeader(string text) => AddChild(Create(text));
 
-        public void AddHeader(string format, params object[] args)
-        {
-            AddHeader(string.Format(format, args));
-        }
+        public void AddHeader(string format, params object[] args) => AddHeader(string.Format(format, args));
 
         // Add a text only node with size/offset matching the child node so that it "contains" the child
         public void AddLabeledChild(string text, Block _block)
@@ -129,16 +123,10 @@ namespace Parser
             AddChild(node);
         }
 
-        public void AddSubHeader(string format, params object[] args)
-        {
-            AddSubHeader(string.Format(format, args));
-        }
+        public void AddSubHeader(string format, params object[] args) => AddSubHeader(string.Format(format, args));
 
         // Static create functions returns a non parsing block
-        public static Block Create()
-        {
-            return new ScratchBlock();
-        }
+        public static Block Create() => new ScratchBlock();
 
         public static Block Create(long size, long offset, string format, params object[] args)
         {
@@ -170,10 +158,7 @@ namespace Parser
         }
 
         // Non-static parse functions actually do the parsing
-        public void Parse(BinaryParser parser, bool enableJunk)
-        {
-            Parse(parser, 0, enableJunk);
-        }
+        public void Parse(BinaryParser parser, bool enableJunk) => Parse(parser, 0, enableJunk);
 
         public void Parse(BinaryParser parser, int cbBin, bool enableJunk)
         {
@@ -193,7 +178,6 @@ namespace Parser
             Parse();
             ParseBlocks();
 
-
             if (HasData && enableJunk && parser.RemainingBytes > 0)
             {
                 var junkData = BlockBytes.Parse(parser, parser.RemainingBytes);
@@ -206,9 +190,6 @@ namespace Parser
         protected abstract void Parse();
         protected virtual void ParseBlocks() { }
         protected virtual bool UsePipes() => false;
-
-        protected long OffsetInternal => Offset;
-        protected long SizeInternal => Size;
 
         protected BinaryParser parser;
         protected bool parsed = false;
@@ -246,6 +227,7 @@ namespace Parser
                     strings.Add("\t" + elem);
                 }
             }
+
             return strings;
         }
     }
