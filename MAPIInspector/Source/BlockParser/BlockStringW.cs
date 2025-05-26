@@ -22,7 +22,7 @@ namespace Parser
         public static BlockStringW Parse(string data, int size, int offset)
         {
             var ret = new BlockStringW();
-            ret.parsed = true;
+            ret.Parsed = true;
             ret.enableJunk = false;
             ret.data = data;
             ret.SetText(data);
@@ -43,7 +43,7 @@ namespace Parser
 
         protected override void Parse()
         {
-            parsed = false;
+            Parsed = false;
             if (cchChar == -1)
             {
                 // we want to walk through the data in parser (GetAddress(0)) looking for double null terminator
@@ -82,7 +82,7 @@ namespace Parser
                 var bytes = parser.ReadBytes(2 * cchChar);
                 data = strings.RemoveInvalidCharacters(Encoding.Unicode.GetString(bytes).TrimEnd('\0'));
                 SetText(data);
-                parsed = true;
+                Parsed = true;
             }
         }
 

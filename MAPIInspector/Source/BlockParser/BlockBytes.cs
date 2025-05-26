@@ -45,13 +45,13 @@ namespace Parser
 
         protected override void Parse()
         {
-            parsed = false;
+            Parsed = false;
             if (cbBytes > 0 && parser.CheckSize(cbBytes) &&
                 (cbMaxBytes == -1 || cbBytes <= cbMaxBytes))
             {
                 _data = new List<byte>(parser.ReadBytes(cbBytes));
                 SetText(ToHexString(true));
-                parsed = true;
+                Parsed = true;
             }
         }
     }

@@ -27,7 +27,7 @@ namespace Parser
 
         protected override void Parse()
         {
-            parsed = false;
+            Parsed = false;
             if (cchChar == -1)
             {
                 // Find null-terminated length
@@ -43,7 +43,7 @@ namespace Parser
                 var bytes = parser.ReadBytes(cchChar);
                 data = strings.RemoveInvalidCharacters(Encoding.ASCII.GetString(bytes, 0, cchChar));
                 SetText(data);
-                parsed = true;
+                Parsed = true;
             }
         }
 

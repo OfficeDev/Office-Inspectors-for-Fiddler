@@ -10,7 +10,7 @@ namespace Parser
 
         public BlockT(T data, int size, int offset)
         {
-            this.parsed = true;
+            this.Parsed = true;
             this.data = data;
             this.Size = size;
             this.Offset = offset;
@@ -51,18 +51,18 @@ namespace Parser
         public static BlockT<T> Create(T data, int size, int offset)
         {
             var ret = new BlockT<T>(data, size, offset);
-            ret.parsed = true;
+            ret.Parsed = true;
             return ret;
         }
 
         protected override void Parse()
         {
-            this.parsed = false;
+            this.Parsed = false;
             int size = System.Runtime.InteropServices.Marshal.SizeOf(typeof(T));
             if (!parser.CheckSize(size)) return;
 
             data = ReadStruct<T>(parser);
-            this.parsed = true;
+            this.Parsed = true;
         }
 
         private static U ReadStruct<U>(BinaryParser parser) where U : struct

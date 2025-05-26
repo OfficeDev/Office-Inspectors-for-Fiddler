@@ -5,7 +5,7 @@ namespace Parser
 	{
 		public ScratchBlock()
 		{
-			parsed = true;
+			Parsed = true;
 		}
 
 		protected override void Parse()

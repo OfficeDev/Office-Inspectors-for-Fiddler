@@ -17,6 +17,19 @@ namespace Parser
     {
         protected Block() { }
 
+        // Overrides
+        /// <summary>
+        /// When implemented in a derived class, parses the current block from the associated <see cref="BinaryParser"/>.
+        /// This method should set up the block's data and state based on the binary input.
+        /// </summary>
+        protected abstract void Parse();
+        /// <summary>
+        /// When overridden in a derived class, parses and adds any child blocks to this block.
+        /// The default implementation does nothing. Override to add custom child block parsing logic.
+        /// </summary>
+        protected virtual void ParseBlocks() { }
+        protected virtual bool UsePipes() => false;
+
         // Getters and setters
         public string Text { get; protected set; } = string.Empty;
 
@@ -63,14 +76,13 @@ namespace Parser
             }
         }
 
-        public bool IsSet => parsed;
         public bool IsHeader => Size == 0 && Offset == 0;
         public bool HasData => !string.IsNullOrEmpty(Text) || children.Count > 0;
 
         // Add child blocks of various types
         public void AddChild(Block child)
         {
-            if (child != null && child.IsSet)
+            if (child != null && child.Parsed)
             {
                 children.Add(child);
             }
@@ -78,7 +90,7 @@ namespace Parser
 
         public void AddChild(Block child, string text)
         {
-            if (child != null && child.IsSet)
+            if (child != null && child.Parsed)
             {
                 child.Text = text ?? string.Empty;
                 children.Add(child);
@@ -87,7 +99,7 @@ namespace Parser
 
         public void AddChild(Block child, string format, params object[] args)
         {
-            if (child != null && child.IsSet)
+            if (child != null && child.Parsed)
             {
                 child.Text = string.Format(format, args);
                 children.Add(child);
@@ -102,7 +114,7 @@ namespace Parser
         // Add a text only node with size/offset matching the child node so that it "contains" the child
         public void AddLabeledChild(string text, Block _block)
         {
-            if (_block != null && _block.IsSet)
+            if (_block != null && _block.Parsed)
             {
                 var node = Create();
                 node.SetText(text);
@@ -171,8 +183,8 @@ namespace Parser
 
         protected void EnsureParsed()
         {
-            if (parsed || parser == null || parser.Empty) return;
-            parsed = true; // parse can unset this if needed
+            if (Parsed || parser == null || parser.Empty) return;
+            Parsed = true; // parse can unset this if needed
             Offset = parser.Offset;
 
             Parse();
@@ -187,12 +199,8 @@ namespace Parser
             Size = parser.Offset - Offset;
         }
 
-        protected abstract void Parse();
-        protected virtual void ParseBlocks() { }
-        protected virtual bool UsePipes() => false;
-
         protected BinaryParser parser;
-        protected bool parsed = false;
+        protected bool Parsed { get; set; } = false;
         protected bool enableJunk = true;
 
         private List<Block> children = new List<Block>();
