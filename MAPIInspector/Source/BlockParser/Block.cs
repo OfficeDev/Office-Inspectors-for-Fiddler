@@ -175,37 +175,37 @@ namespace Parser
 
         protected void EnsureParsed()
         {
-            if (Parsed || parser == null || parser.Empty) return;
-            Parsed = true; // parse can unset this if needed
-            Offset = parser.Offset;
-
-            Parse();
-            ParseBlocks();
-
-            if (HasData && EnableJunk && parser.RemainingBytes > 0)
+            if (!Parsed && parser != null && !parser.Empty)
             {
-                var junkData = BlockBytes.Parse(parser, parser.RemainingBytes);
-                AddLabeledChild(string.Format("Unparsed data size = 0x{0:X8}", junkData.Size), junkData);
+                Parsed = true; // parse can unset this if needed
+                Offset = parser.Offset;
+
+                Parse();
+                ParseBlocks();
+
+                if (HasData && EnableJunk && parser.RemainingBytes > 0)
+                {
+                    var junkData = BlockBytes.Parse(parser, parser.RemainingBytes);
+                    AddLabeledChild(string.Format("Unparsed data size = 0x{0:X8}", junkData.Size), junkData);
+                }
+
+                Size = parser.Offset - Offset;
             }
 
-            Size = parser.Offset - Offset;
+            var stringArray = ToStringsInternal();
+            _stringBlock = strings.TrimWhitespace(string.Join(string.Empty, stringArray));
+            _stringBlock = _stringBlock.Replace('\0', '.');
         }
 
+        private string _stringBlock;
         public virtual string ToStringBlock()
         {
             EnsureParsed();
-            var stringArray = ToStringsInternal();
-            var parsedString = strings.TrimWhitespace(string.Join(string.Empty, stringArray));
-            parsedString = parsedString.Replace('\0', '.');
-            return parsedString;
+            return _stringBlock;
         }
 
-        private List<string> _cachedStrings;
         private List<string> ToStringsInternal()
         {
-            if (_cachedStrings != null)
-                return _cachedStrings;
-
             var strings = new List<string>(Children.Count + 1);
             if (!string.IsNullOrEmpty(Text)) strings.Add(Text + "\r\n");
 
@@ -216,7 +216,6 @@ namespace Parser
                 strings.AddRange(childStrings);
             }
 
-            _cachedStrings = strings;
             return strings;
         }
     }
