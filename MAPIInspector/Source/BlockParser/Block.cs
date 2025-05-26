@@ -47,7 +47,8 @@ namespace Parser
             Text = !string.IsNullOrEmpty(format) ? string.Format(format, args) : string.Empty;
         }
 
-        public IReadOnlyList<Block> Children => children.AsReadOnly();
+        private List<Block> _children { get; set; } = new List<Block>();
+        public IReadOnlyList<Block> Children => _children.AsReadOnly();
 
         public long Size { get; set; }
 
@@ -56,7 +57,7 @@ namespace Parser
         public void ShiftOffset(long shift)
         {
             Offset += shift;
-            foreach (var child in children)
+            foreach (var child in Children)
             {
                 child.ShiftOffset(shift);
             }
@@ -69,7 +70,7 @@ namespace Parser
             set
             {
                 _source = value;
-                foreach (var child in children)
+                foreach (var child in Children)
                 {
                     child.Source = value;
                 }
@@ -77,14 +78,14 @@ namespace Parser
         }
 
         public bool IsHeader => Size == 0 && Offset == 0;
-        public bool HasData => !string.IsNullOrEmpty(Text) || children.Count > 0;
+        public bool HasData => !string.IsNullOrEmpty(Text) || Children.Count > 0;
 
         // Add child blocks of various types
         public void AddChild(Block child)
         {
             if (child != null && child.Parsed)
             {
-                children.Add(child);
+                _children.Add(child);
             }
         }
 
@@ -93,7 +94,7 @@ namespace Parser
             if (child != null && child.Parsed)
             {
                 child.Text = text ?? string.Empty;
-                children.Add(child);
+                _children.Add(child);
             }
         }
 
@@ -102,7 +103,7 @@ namespace Parser
             if (child != null && child.Parsed)
             {
                 child.Text = string.Format(format, args);
-                children.Add(child);
+                _children.Add(child);
             }
         }
 
@@ -203,14 +204,12 @@ namespace Parser
         protected bool Parsed { get; set; } = false;
         protected bool EnableJunk { get; set; } = true;
 
-        private List<Block> children = new List<Block>();
-
         private List<string> ToStringsInternal()
         {
-            var strings = new List<string>(children.Count + 1);
+            var strings = new List<string>(Children.Count + 1);
             if (!string.IsNullOrEmpty(Text)) strings.Add(Text + "\r\n");
 
-            foreach (var child in children)
+            foreach (var child in Children)
             {
                 var childStrings = child.ToStringsInternal();
                 if (!string.IsNullOrEmpty(Text)) childStrings = Parser.strings.TabStrings(childStrings, UsePipes());
