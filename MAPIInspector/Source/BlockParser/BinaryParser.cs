@@ -134,21 +134,6 @@ namespace Parser
             }
         }
 
-        public byte[] GetAddress()
-        {
-            if (offset >= 0 && RemainingBytes > 0)
-            {
-                long oldPos = bin.Position;
-                bin.Position = offset;
-                byte[] result = new byte[RemainingBytes];
-                bin.Read(result, 0, result.Length);
-                bin.Position = oldPos;
-                return result;
-            }
-
-            return Array.Empty<byte>();
-        }
-
         public void PushCap(int cap)
         {
             sizes.Push(size);

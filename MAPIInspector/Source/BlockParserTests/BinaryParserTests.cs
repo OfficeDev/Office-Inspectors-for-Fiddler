@@ -30,7 +30,7 @@ namespace Parser.Tests
             byte[] data = { 1, 2, 3, 4, 5 };
             var parser = new BinaryParser(3, data);
             Assert.AreEqual(3, parser.RemainingBytes);
-            CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, parser.GetAddress());
+            CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, parser.ReadBytes(parser.RemainingBytes));
         }
 
         [TestMethod]
@@ -52,7 +52,7 @@ namespace Parser.Tests
             {
                 var parser = new BinaryParser(ms, 2);
                 Assert.AreEqual(2, parser.RemainingBytes);
-                CollectionAssert.AreEqual(new byte[] { 10, 20 }, parser.GetAddress());
+                CollectionAssert.AreEqual(new byte[] { 10, 20 }, parser.ReadBytes(parser.RemainingBytes));
             }
         }
 
@@ -85,18 +85,18 @@ namespace Parser.Tests
             var parser = new BinaryParser(4, data);
             parser.Offset = 3;
             Assert.AreEqual(3, parser.Offset);
-            CollectionAssert.AreEqual(new byte[] { 4 }, parser.GetAddress());
+            CollectionAssert.AreEqual(new byte[] { 4 }, parser.ReadBytes(parser.RemainingBytes));
         }
 
         [TestMethod]
-        public void GetAddress_ReturnsCorrectBytes()
+        public void ReadBytes_ReturnsCorrectBytes()
         {
             byte[] data = { 1, 2, 3, 4 };
             var parser = new BinaryParser(4, data);
             parser.Advance(2);
-            CollectionAssert.AreEqual(new byte[] { 3, 4 }, parser.GetAddress());
-            // GetAddress should return the same thing when called multiple times
-            CollectionAssert.AreEqual(new byte[] { 3, 4 }, parser.GetAddress());
+            CollectionAssert.AreEqual(new byte[] { 3, 4 }, parser.ReadBytes(parser.RemainingBytes));
+            // Shouldn't be anything left now
+            CollectionAssert.AreEqual(new byte[] { }, parser.ReadBytes(parser.RemainingBytes));
         }
 
         // TODO: I don't trust this logic is correct
@@ -107,19 +107,19 @@ namespace Parser.Tests
             byte[] data = { 1, 2, 3, 4, 5 };
             var parser = new BinaryParser(5, data);
             parser.Advance(1);
-            CollectionAssert.AreEqual(new byte[] { 2, 3, 4, 5 }, parser.GetAddress());
+            Assert.AreEqual(1, parser.Offset);
             parser.PushCap(2);
             Assert.AreEqual(2, parser.RemainingBytes);
-            CollectionAssert.AreEqual(new byte[] { 2, 3 }, parser.GetAddress());
+            Assert.AreEqual(1, parser.Offset);
             parser.PushCap(3);
             Assert.AreEqual(3, parser.RemainingBytes);
-            CollectionAssert.AreEqual(new byte[] { 2, 3, 4 }, parser.GetAddress());
+            Assert.AreEqual(1, parser.Offset);
             parser.PopCap();
             Assert.AreEqual(2, parser.RemainingBytes);
-            CollectionAssert.AreEqual(new byte[] { 2, 3 }, parser.GetAddress());
+            Assert.AreEqual(1, parser.Offset);
             parser.PopCap();
             Assert.AreEqual(4, parser.RemainingBytes);
-            CollectionAssert.AreEqual(new byte[] { 2, 3, 4, 5 }, parser.GetAddress());
+            Assert.AreEqual(1, parser.Offset);
         }
 
         [TestMethod]
@@ -158,11 +158,12 @@ namespace Parser.Tests
                 var parser = new BinaryParser(ms, 3);
                 Assert.AreEqual(1, ms.Position);
                 Assert.AreEqual(3, parser.RemainingBytes);
-                CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, parser.GetAddress());
+                CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, parser.ReadBytes(parser.RemainingBytes));
                 Assert.AreEqual(1, ms.Position);
+                parser.Rewind();
                 parser.Advance(2);
                 Assert.AreEqual(1, ms.Position);
-                CollectionAssert.AreEqual(new byte[] { 3 }, parser.GetAddress());
+                CollectionAssert.AreEqual(new byte[] { 3 }, parser.ReadBytes(parser.RemainingBytes));
             }
         }
 
