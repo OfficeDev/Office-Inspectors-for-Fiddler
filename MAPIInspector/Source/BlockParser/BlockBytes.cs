@@ -11,31 +11,26 @@ namespace Parser
 
         public BlockBytes() { }
 
-        // Mimic std::vector<BYTE>
         public IReadOnlyList<byte> Data => _data;
         public int Count => _data.Count;
         public bool IsEmpty => _data.Count == 0;
 
         public static BlockBytes Parse(BinaryParser parser, int cbBytes, int cbMaxBytes = -1)
         {
-            var ret = new BlockBytes();
-            ret.parser = parser;
-            ret.EnableJunk = false;
-            ret.cbBytes = cbBytes;
-            ret.cbMaxBytes = cbMaxBytes;
+            var ret = new BlockBytes
+            {
+                parser = parser,
+                EnableJunk = false,
+                cbBytes = cbBytes,
+                cbMaxBytes = cbMaxBytes
+            };
             ret.EnsureParsed();
             return ret;
         }
 
-        public string ToTextStringA(bool multiLine)
-        {
-            return strings.StripCharacter(strings.BinToTextStringA(_data, multiLine), '\0');
-        }
+        public string ToTextStringA(bool multiLine) => strings.StripCharacter(strings.BinToTextStringA(_data, multiLine), '\0');
 
-        public string ToHexString(bool multiLine)
-        {
-            return strings.BinToHexString(_data, multiLine);
-        }
+        public string ToHexString(bool multiLine) => strings.BinToHexString(_data, multiLine);
 
         public bool Equal(int cb, byte[] bin)
         {
