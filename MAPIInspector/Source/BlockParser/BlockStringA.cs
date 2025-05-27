@@ -2,25 +2,25 @@
 
 namespace Parser
 {
-    // Assuming 'block' is a base class in your project
     public class BlockStringA : Block
     {
         private string data = string.Empty;
         private int cchChar = -1;
 
-        private BlockStringA() { }
+        public static implicit operator string(BlockStringA block) => block.data;
 
         public string Data => data;
-        public string CStr() => data;
         public int Length => data.Length;
         public bool Empty => string.IsNullOrEmpty(data);
 
         public static BlockStringA Parse(BinaryParser parser, int cchChar = -1)
         {
-            var ret = new BlockStringA();
-            ret.parser = parser;
-            ret.EnableJunk = false;
-            ret.cchChar = cchChar;
+            var ret = new BlockStringA
+            {
+                parser = parser,
+                EnableJunk = false,
+                cchChar = cchChar
+            };
             ret.EnsureParsed();
             return ret;
         }
@@ -28,17 +28,17 @@ namespace Parser
         protected override void Parse()
         {
             Parsed = false;
-            var fixedLength = cchChar != -1;
-            var oldOffset = parser.Offset;
             var size = parser.RemainingBytes;
             if (size <= 0)
                 return;
 
+            var fixedLength = cchChar != -1;
+            var oldOffset = parser.Offset;
             var bytes = parser.ReadBytes(size);
             parser.Offset = oldOffset;
             int length = cchChar;
 
-            if (length == -1)
+            if (cchChar == -1)
             {
                 length = 0;
                 while (length < size && bytes[length] != 0)
@@ -49,7 +49,7 @@ namespace Parser
             {
                 data = strings.RemoveInvalidCharacters(Encoding.ASCII.GetString(bytes, 0, length));
                 SetText(data);
-                parser.Advance(Length);
+                parser.Advance(length);
                 // If we were given a length, that's all we read. But if we were not given a length, we read until the null terminator.
                 // So we must now skip the null terminator.
                 if (!fixedLength) parser.Advance(1);
