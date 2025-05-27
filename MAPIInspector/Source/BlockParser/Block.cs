@@ -193,7 +193,7 @@ namespace Parser
             }
 
             var stringArray = ToStringsInternal();
-            _stringBlock = strings.TrimWhitespace(string.Join(string.Empty, stringArray));
+            _stringBlock = Strings.TrimWhitespace(string.Join(string.Empty, stringArray));
             _stringBlock = _stringBlock.Replace('\0', '.');
         }
 
@@ -212,7 +212,7 @@ namespace Parser
             foreach (var child in Children)
             {
                 var childStrings = child.ToStringsInternal();
-                if (!string.IsNullOrEmpty(Text)) childStrings = Parser.strings.TabStrings(childStrings, UsePipes());
+                if (!string.IsNullOrEmpty(Text)) childStrings = Parser.Strings.TabStrings(childStrings, UsePipes());
                 strings.AddRange(childStrings);
             }
 

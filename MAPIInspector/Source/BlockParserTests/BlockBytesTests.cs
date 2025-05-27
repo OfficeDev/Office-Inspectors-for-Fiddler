@@ -16,7 +16,7 @@ namespace BlockParserTests
 
             CollectionAssert.AreEqual(data, new List<byte>(block.Data));
             Assert.AreEqual(4, block.Count);
-            Assert.IsFalse(block.IsEmpty);
+            Assert.IsFalse(block.Empty);
         }
 
         [TestMethod]
@@ -27,7 +27,7 @@ namespace BlockParserTests
             var block = BlockBytes.Parse(parser, 4);
 
             Assert.AreEqual(0, block.Count);
-            Assert.IsTrue(block.IsEmpty);
+            Assert.IsTrue(block.Empty);
         }
 
         [TestMethod]

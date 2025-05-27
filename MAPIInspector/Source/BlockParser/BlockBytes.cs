@@ -13,7 +13,7 @@ namespace Parser
 
         public IReadOnlyList<byte> Data => _data;
         public int Count => _data.Count;
-        public bool IsEmpty => _data.Count == 0;
+        public bool Empty => _data.Count == 0;
 
         public static BlockBytes Parse(BinaryParser parser, int cbBytes, int cbMaxBytes = -1)
         {
@@ -28,9 +28,9 @@ namespace Parser
             return ret;
         }
 
-        public string ToTextStringA(bool multiLine) => strings.StripCharacter(strings.BinToTextStringA(_data, multiLine), '\0');
+        public string ToTextStringA(bool multiLine) => Strings.StripCharacter(Strings.BinToTextStringA(_data, multiLine), '\0');
 
-        public string ToHexString(bool multiLine) => strings.BinToHexString(_data, multiLine);
+        public string ToHexString(bool multiLine) => Strings.BinToHexString(_data, multiLine);
 
         public bool Equal(int cb, byte[] bin)
         {

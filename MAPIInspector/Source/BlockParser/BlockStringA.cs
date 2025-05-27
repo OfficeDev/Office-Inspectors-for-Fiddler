@@ -47,7 +47,7 @@ namespace Parser
 
             if (length > 0)
             {
-                data = strings.RemoveInvalidCharacters(Encoding.ASCII.GetString(bytes, 0, length));
+                data = Strings.RemoveInvalidCharacters(Encoding.ASCII.GetString(bytes, 0, length));
                 SetText(data);
                 parser.Advance(length);
                 // If we were given a length, that's all we read. But if we were not given a length, we read until the null terminator.

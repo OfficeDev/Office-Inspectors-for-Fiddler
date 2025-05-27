@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Parser
 {
-    public static class strings
+    public static class Strings
     {
         public static string TrimWhitespace(string input)
         {
