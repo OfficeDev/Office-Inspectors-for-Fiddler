@@ -17,19 +17,10 @@ namespace BlockParserTests
         public void BlockT_SetAndGetData_Works()
         {
             var block = new BlockT<int>();
-            block.SetData(42);
-            Assert.AreEqual(42, block.GetData());
+            block.Data = 42;
+            Assert.AreEqual(42, block.Data);
             block.Data = 99;
             Assert.AreEqual(99, block.Data);
-        }
-
-        [TestMethod]
-        public void BlockT_GetDataRef_UpdatesValue()
-        {
-            var block = new BlockT<int>();
-            ref int dataRef = ref block.GetDataRef();
-            dataRef = 123;
-            Assert.AreEqual(123, block.GetData());
         }
 
         [TestMethod]

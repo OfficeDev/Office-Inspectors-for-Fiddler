@@ -20,8 +20,8 @@ namespace BlockParserTests
             protected override void ParseBlocks()
             {
                 SetText("TestBlock");
-                AddChild(f1, "f1 = 0x{0:X8}", f1.GetData());
-                AddChild(f2, "f2 = 0x{0:X4}", f2.GetData());
+                AddChild(f1, "f1 = 0x{0:X8}", f1.Data);
+                AddChild(f2, "f2 = 0x{0:X4}", f2.Data);
             }
         }
 
@@ -41,8 +41,8 @@ namespace BlockParserTests
             protected override void ParseBlocks()
             {
                 SetText("TestBlock2");
-                AddChild(f1, "f1 = 0x{0:X8}", f1.GetData());
-                AddChild(f2, "f2 = 0x{0:X4}", f2.GetData());
+                AddChild(f1, "f1 = 0x{0:X8}", f1.Data);
+                AddChild(f2, "f2 = 0x{0:X4}", f2.Data);
                 AddChild(tb);
             }
         }
@@ -57,8 +57,8 @@ namespace BlockParserTests
             var block = new TestBlock();
             block.Parse(parser, true);
 
-            Assert.AreEqual(0x12345678, block.f1.GetData());
-            Assert.AreEqual(unchecked((short)0xABCD), block.f2.GetData()); // Use 'unchecked' to allow the constant to be treated as a short
+            Assert.AreEqual(0x12345678, block.f1.Data);
+            Assert.AreEqual(unchecked((short)0xABCD), block.f2.Data); // Use 'unchecked' to allow the constant to be treated as a short
             Assert.AreEqual("TestBlock", block.Text);
             Assert.AreEqual(3, block.Children.Count);
             Assert.AreEqual("f1 = 0x12345678", block.Children[0].Text);
@@ -84,8 +84,8 @@ namespace BlockParserTests
             var block = new TestBlock2();
             block.Parse(parser, true);
 
-            Assert.AreEqual(0x08675309, block.f1.GetData());
-            Assert.AreEqual(unchecked((short)0x2468), block.f2.GetData()); // Use 'unchecked' to allow the constant to be treated as a short
+            Assert.AreEqual(0x08675309, block.f1.Data);
+            Assert.AreEqual(unchecked((short)0x2468), block.f2.Data); // Use 'unchecked' to allow the constant to be treated as a short
             Assert.AreEqual("TestBlock2", block.Text);
             Assert.AreEqual(4, block.Children.Count);
             Assert.AreEqual("f1 = 0x08675309", block.Children[0].Text);
@@ -118,8 +118,8 @@ namespace BlockParserTests
             var block = new TestBlock2();
             block.Parse(parser, true);
 
-            Assert.AreEqual(0x08675309, block.f1.GetData());
-            Assert.AreEqual(0, block.f2.GetData());
+            Assert.AreEqual(0x08675309, block.f1.Data);
+            Assert.AreEqual(0, block.f2.Data);
             Assert.AreEqual("TestBlock2", block.Text);
             Assert.AreEqual(3, block.Children.Count);
             Assert.AreEqual("f1 = 0x08675309", block.Children[0].Text);
