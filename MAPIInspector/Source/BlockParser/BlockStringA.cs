@@ -28,21 +28,29 @@ namespace Parser
         protected override void Parse()
         {
             Parsed = false;
-            if (cchChar == -1)
+            var fixedLength = cchChar != -1;
+            var oldOffset = parser.Offset;
+            var size = parser.RemainingBytes;
+            if (size <= 0)
+                return;
+
+            var bytes = parser.ReadBytes(size);
+            parser.Offset = oldOffset;
+            int length = cchChar;
+
+            if (length == -1)
             {
-                // Find null-terminated length
-                cchChar = 0;
-                var addr = parser.GetAddress();
-                var size = parser.RemainingBytes;
-                while (cchChar < size && addr[cchChar] != 0)
-                    cchChar++;
+                length = 0;
+                while (length < size && bytes[length] != 0)
+                    length++;
             }
 
-            if (cchChar > 0 && parser.CheckSize(cchChar))
+            if (length > 0)
             {
-                var bytes = parser.ReadBytes(cchChar);
-                data = strings.RemoveInvalidCharacters(Encoding.ASCII.GetString(bytes, 0, cchChar));
+                data = strings.RemoveInvalidCharacters(Encoding.ASCII.GetString(bytes, 0, length));
                 SetText(data);
+                parser.Advance(Length);
+                if (!fixedLength) parser.Advance(1);
                 Parsed = true;
             }
         }
