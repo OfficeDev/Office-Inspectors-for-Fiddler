@@ -840,18 +840,11 @@
             base.Parse(s);
             this.FolderInThisStore = this.ReadBoolean();
             this.StoreEIDSize = this.ReadUshort();
-            if (this.FolderInThisStore)
-            {
-                MAPIString storeEID = new MAPIString(Encoding.ASCII, string.Empty, this.StoreEIDSize);
-                storeEID.Parse(s);
-                this.StoreEID = storeEID;
-            }
-            else
-            {
-                StoreObjectEntryID storeEID = new StoreObjectEntryID();
-                storeEID.Parse(s);
-                this.StoreEID = storeEID;
-            }
+
+            // 2.2.5.1.2.1 OP_MOVE and OP_COPY ActionData Structure
+            // No matter the value of FolderInThisStore, the server tends to set StoreEIDSize to 0x0001.
+            // So instead of parsing it, we'll just read StoreEIDSize bytes.
+            this.StoreEID = this.ReadBytes(this.StoreEIDSize);
 
             this.FolderEIDSize = this.ReadUshort();
             if (this.FolderInThisStore)
