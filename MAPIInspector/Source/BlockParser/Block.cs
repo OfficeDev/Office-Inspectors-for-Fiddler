@@ -77,20 +77,11 @@ namespace BlockParser
             }
         }
 
-        public void AddChild(Block child, string text)
-        {
-            if (child != null && child.Parsed)
-            {
-                child.Text = text ?? string.Empty;
-                children.Add(child);
-            }
-        }
-
         public void AddChild(Block child, string format, params object[] args)
         {
             if (child != null && child.Parsed)
             {
-                child.Text = string.Format(format, args);
+                child.SetText(format, args);
                 children.Add(child);
             }
         }
