@@ -106,16 +106,14 @@ namespace BlockParser
         }
 
         // Add a text only node with size/offset matching the parent node so that it matches the parent
-        public void AddSubHeader(string text)
+        public void AddSubHeader(string format, params object[] args)
         {
             var node = Create();
-            node.SetText(text);
+            node.SetText(format, args);
             node.Offset = Offset;
             node.Size = Size;
             AddChild(node);
         }
-
-        public void AddSubHeader(string format, params object[] args) => AddSubHeader(string.Format(format, args));
 
         // Static create functions returns a non parsing block
         public static Block Create() => new ScratchBlock();
