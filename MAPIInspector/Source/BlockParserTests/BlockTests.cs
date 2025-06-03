@@ -200,7 +200,7 @@ namespace BlockParserTests
         public void Parse_StaticAndInstance_CallsParse()
         {
             var emptyParser = new BinaryParser();
-            var tbEmpty = Block.Parse<TestBlock>(emptyParser, false);
+            var tbEmpty = Block.Parse<TestBlock>(emptyParser);
             Assert.IsFalse(tbEmpty.ParseCalled);
             emptyParser.Rewind();
 
@@ -209,7 +209,7 @@ namespace BlockParserTests
             Assert.IsFalse(tbEmpty2.ParseCalled);
 
             var fullParser = new BinaryParser(new byte[] { 1, 2, 3, 4 });
-            var tbFull = Block.Parse<TestBlock>(fullParser, false);
+            var tbFull = Block.Parse<TestBlock>(fullParser);
             Assert.IsTrue(tbFull.ParseCalled);
             fullParser.Rewind();
 

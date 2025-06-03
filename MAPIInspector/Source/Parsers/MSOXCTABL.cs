@@ -1,5 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -462,52 +463,61 @@
     /// <summary>
     /// The RopQueryRows ROP ([MS-OXCROPS] section 2.2.5.4) returns zero or more rows from a table, beginning from the current table cursor position.
     /// </summary>
-    public class RopQueryRowsRequest : BaseStructure
+    public class RopQueryRowsRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// A flags structure that contains flags that control this operation.
         /// </summary>
-        public QueryRowsFlags QueryRowsFlags;
+        public BlockT<QueryRowsFlags> QueryRowsFlags;
 
         /// <summary>
         /// A Boolean that specifies the direction to read rows.
         /// </summary>
-        public bool ForwardRead;
+        public BlockT<bool> ForwardRead;
 
         /// <summary>
         /// An unsigned integer that specifies the number of requested rows.
         /// </summary>
-        public ushort RowCount;
+        public BlockT<ushort> RowCount;
 
         /// <summary>
         /// Parse the RopQueryRowsRequest structure.
         /// </summary>
         /// <param name="s">A stream containing RopQueryRowsRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = BlockT<RopIdType>.Parse(parser);
+            LogonId = BlockT<byte>.Parse(parser);
+            InputHandleIndex = BlockT<byte>.Parse(parser);
+            QueryRowsFlags = BlockT<QueryRowsFlags>.Parse(parser);
+            ForwardRead = BlockT<bool>.Parse<byte>(parser);
+            RowCount = BlockT<ushort>.Parse(parser);
+        }
 
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.QueryRowsFlags = (QueryRowsFlags)this.ReadByte();
-            this.ForwardRead = this.ReadBoolean();
-            this.RowCount = this.ReadUshort();
+        protected override void ParseBlocks()
+        {
+            SetText("RopSeekRowRequest");
+            AddChild(RopId, "RopId:{0}", RopId.Data);
+            AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
+            AddChild(InputHandleIndex, "InputHandleIndex:0x{0:X2}", InputHandleIndex.Data);
+            AddChild(QueryRowsFlags, "QueryRowsFlags:{0}", QueryRowsFlags.Data);
+            AddChild(ForwardRead, "ForwardRead:{0}", ForwardRead.Data);
+            AddChild(RowCount, "RowCount:{0}", RowCount.Data);
         }
     }
 
@@ -848,52 +858,61 @@
     /// <summary>
     /// The RopSeekRow ROP ([MS-OXCROPS] section 2.2.5.8) moves the table cursor to a specific location in the table. 
     /// </summary>
-    public class RopSeekRowRequest : BaseStructure
+    public class RopSeekRowRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An enumeration that specifies the origin of this seek operation. 
         /// </summary>
-        public Bookmarks Origin;
+        public BlockT<Bookmarks> Origin;
 
         /// <summary>
         /// A signed integer that specifies the direction and the number of rows to seek.
         /// </summary>
-        public int RowCount;
+        public BlockT<int> RowCount;
 
         /// <summary>
         /// A Boolean that specifies whether the server returns the actual number of rows moved in the response.
         /// </summary>
-        public bool WantRowMovedCount;
+        public BlockT<bool> WantRowMovedCount;
 
         /// <summary>
         /// Parse the RopSeekRowRequest structure.
         /// </summary>
         /// <param name="s">A stream containing RopSeekRowRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = BlockT<RopIdType>.Parse(parser);
+            LogonId = BlockT<byte>.Parse(parser);
+            InputHandleIndex = BlockT<byte>.Parse(parser);
+            Origin = BlockT<Bookmarks>.Parse(parser);
+            RowCount = BlockT<int>.Parse(parser);
+            WantRowMovedCount = BlockT<bool>.Parse<byte>(parser);
+        }
 
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.Origin = (Bookmarks)this.ReadByte();
-            this.RowCount = this.ReadINT32();
-            this.WantRowMovedCount = this.ReadBoolean();
+        protected override void ParseBlocks()
+        {
+            SetText("RopSeekRowRequest");
+            AddChild(RopId, "RopId:{0}", RopId.Data);
+            AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
+            AddChild(InputHandleIndex, "InputHandleIndex:0x{0:X2}", InputHandleIndex.Data);
+            AddChild(Origin, "Origin:{0}", Origin.Data);
+            AddChild(RowCount, "RowCount:{0}", RowCount.Data);
+            AddChild(WantRowMovedCount, "WantRowMovedCount:{0}", WantRowMovedCount.Data);
         }
     }
 

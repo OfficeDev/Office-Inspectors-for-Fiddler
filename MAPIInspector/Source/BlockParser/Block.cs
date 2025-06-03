@@ -149,22 +149,24 @@ namespace BlockParser
             return ret;
         }
 
-        // Static parse functions return a parsing block based on a stream
+        // Static parse function returns a parsing block based on a stream at it's current position
         // Advance the stream by the size of the block after parsing
-        public static T Parse<T>(Stream stream, bool enableJunk) where T : Block, new()
+        public static T Parse<T>(Stream stream, bool enableJunk = false) where T : Block, new()
         {
-            var block = Parse<T>(new BinaryParser(stream), enableJunk);
+            var block = Parse<T>(new BinaryParser(stream, stream.Position), enableJunk);
+            block.parser.Advance((int)stream.Position);
             stream.Seek(block.Size, SeekOrigin.Current);
             return block;
         }
 
-        // Static parse functions return a parsing block based on a BinaryParser
-        public static T Parse<T>(BinaryParser parser, bool enableJunk) where T : Block, new()
+        // Static parse function returns a parsing block based on a BinaryParser
+        public static T Parse<T>(BinaryParser parser, bool enableJunk = false) where T : Block, new()
         {
             return Parse<T>(parser, 0, enableJunk);
         }
 
-        public static T Parse<T>(BinaryParser parser, int cbBin, bool enableJunk) where T : Block, new()
+        // TODO: If we don't start using this while converting, remove it
+        public static T Parse<T>(BinaryParser parser, int cbBin, bool enableJunk = false) where T : Block, new()
         {
             var ret = new T();
             ret.Parse(parser, cbBin, enableJunk);
@@ -172,9 +174,9 @@ namespace BlockParser
         }
 
         // Non-static parse functions actually do the parsing
-        public void Parse(BinaryParser parser, bool enableJunk) => Parse(parser, 0, enableJunk);
+        public void Parse(BinaryParser parser, bool enableJunk = false) => Parse(parser, 0, enableJunk);
 
-        public void Parse(BinaryParser parser, int cbBin, bool enableJunk)
+        public void Parse(BinaryParser parser, int cbBin, bool enableJunk = false)
         {
             this.parser = parser;
             parser.PushCap(cbBin);
@@ -228,5 +230,7 @@ namespace BlockParser
 
             return strings;
         }
+
+        public byte[] PeekBytes => parser.PeekBytes;
     }
 }

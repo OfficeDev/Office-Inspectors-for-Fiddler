@@ -1,12 +1,13 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
+    using Fiddler;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Text;
     using System.Xml;
-    using Fiddler;
 
     #region Enums defined in MS-OXOMSG
 
@@ -1026,10 +1027,9 @@
                                 ropsList.Add(ropOptionsDataRequest);
                                 break;
                             case RopIdType.RopRelease:
-                                RopReleaseRequest ropReleaseRequest = new RopReleaseRequest();
-                                ropReleaseRequest.Parse(s);
+                                RopReleaseRequest ropReleaseRequest = Block.Parse<RopReleaseRequest>(s);
                                 ropsList.Add(ropReleaseRequest);
-                                uint handle_Release = tempServerObjectHandleTable[ropReleaseRequest.InputHandleIndex];
+                                uint handle_Release = tempServerObjectHandleTable[ropReleaseRequest.InputHandleIndex.Data];
                                 string serverRequestPath = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
 
                                 if (DecodingContext.RowRops_handlePropertyTags.ContainsKey(handle_Release))
@@ -1121,7 +1121,7 @@
                                         }
                                     }
                                 }
-                                else if(MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
+                                else if (MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
                                 {
                                     if (MapiInspector.MAPIParser.ParsingSession["X-ResponseCode"] == "0")
                                     {
@@ -1266,9 +1266,7 @@
                                 break;
 
                             case RopIdType.RopQueryRows:
-                                RopQueryRowsRequest ropQueryRowsRequest = new RopQueryRowsRequest();
-                                ropQueryRowsRequest.Parse(s);
-                                ropsList.Add(ropQueryRowsRequest);
+                                ropsList.Add(Block.Parse<RopQueryRowsRequest>(s));
                                 break;
 
                             case RopIdType.RopAbort:
@@ -1290,9 +1288,7 @@
                                 break;
 
                             case RopIdType.RopSeekRow:
-                                RopSeekRowRequest ropSeekRowRequest = new RopSeekRowRequest();
-                                ropSeekRowRequest.Parse(s);
-                                ropsList.Add(ropSeekRowRequest);
+                                ropsList.Add(Block.Parse<RopSeekRowRequest>(s));
                                 break;
 
                             case RopIdType.RopSeekRowBookmark:
@@ -4140,33 +4136,39 @@
     /// <summary>
     ///  A class indicates the RopRelease ROP Request Buffer.
     /// </summary>
-    public class RopReleaseRequest : BaseStructure
+    public class RopReleaseRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP. For this operation this field is set to 0x01.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the RopLogon associated with this operation.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// Parse the RopReleaseResquest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopReleaseResquest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
+            RopId = BlockT<RopIdType>.Parse(parser);
+            LogonId = BlockT<byte>.Parse(parser);
+            InputHandleIndex = BlockT<byte>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopReleaseResquest");
+            AddChild(RopId, "RopId:{0}", RopId.Data);
+            AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
+            AddChild(InputHandleIndex, "InputHandleIndex:0x{0:X2}", InputHandleIndex.Data);
         }
     }
 

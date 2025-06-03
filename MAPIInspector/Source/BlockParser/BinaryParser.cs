@@ -9,7 +9,6 @@ namespace BlockParser
     public class BinaryParser
     {
         private readonly Stream bin;
-        private int offset;
         private int size; // When uncapped, this is bin.Length. When capped, this is our artificial capped size.
         private readonly Stack<int> sizes = new Stack<int>();
 
@@ -17,7 +16,7 @@ namespace BlockParser
         {
             bin = new MemoryStream();
             size = 0;
-            offset = 0;
+            Offset = 0;
         }
 
         public BinaryParser(int cb, byte[] _bin)
@@ -39,7 +38,7 @@ namespace BlockParser
             }
 
             size = (int)bin.Length;
-            offset = 0;
+            Offset = 0;
         }
 
         public BinaryParser(byte[] _bin)
@@ -54,29 +53,26 @@ namespace BlockParser
             }
 
             size = (int)bin.Length;
-            offset = 0;
+            Offset = 0;
         }
 
-        public BinaryParser(Stream sourceStream, int cb = -1)
+        public BinaryParser(Stream sourceStream, long position, int cb = -1)
         {
-            offset = 0;
-            if (sourceStream == null)
+            Offset = 0;
+            if (sourceStream == null || !sourceStream.CanSeek)
             {
                 bin = new MemoryStream();
                 size = 0;
                 return;
             }
 
-            long originalPosition = sourceStream.CanSeek ? sourceStream.Position : -1;
+            long originalPosition = sourceStream.Position;
             try
             {
-                if (sourceStream.CanSeek)
-                {
-                    sourceStream.Position = 0;
-                }
+                sourceStream.Position = position;
 
                 bin = new MemoryStream();
-                if (cb >= 0 && cb < sourceStream.Length)
+                if (cb >= 0 && cb + position < sourceStream.Length)
                 {
                     byte[] buffer = new byte[cb];
                     int read = sourceStream.Read(buffer, 0, cb);
@@ -90,11 +86,12 @@ namespace BlockParser
             }
             finally
             {
-                bin.Position = 0;
                 size = (int)bin.Length;
                 if (sourceStream.CanSeek) sourceStream.Position = originalPosition;
             }
         }
+
+        public BinaryParser(Stream sourceStream, int cb = -1) : this(sourceStream, 0, cb) { }
 
         public BinaryParser(List<byte> _bin)
         {
@@ -108,38 +105,22 @@ namespace BlockParser
             }
 
             size = (int)bin.Length;
-            offset = 0;
+            Offset = 0;
         }
 
-        public bool Empty => offset == size;
-        public void Advance(int cb)
-        {
-            offset += cb;
-            bin.Position = offset;
-        }
+        public bool Empty => Offset == size;
+        public void Advance(int cb) => Offset += cb;
 
-        public void Rewind()
-        {
-            offset = 0;
-            bin.Position = 0;
-        }
+        public void Rewind() => Offset = 0;
 
-        public int Offset
-        {
-            get => offset;
-            set
-            {
-                offset = value;
-                bin.Position = offset;
-            }
-        }
+        public int Offset { get; set; }
 
         public void PushCap(int cap)
         {
             sizes.Push(size);
-            if (cap != 0 && offset + cap < bin.Length)
+            if (cap != 0 && Offset + cap < bin.Length)
             {
-                size = offset + cap;
+                size = Offset + cap;
             }
         }
 
@@ -158,12 +139,9 @@ namespace BlockParser
         // If we're before the end of the buffer, return the count of remaining bytes
         // If we're at or past the end of the buffer, return 0
         // If we're before the beginning of the buffer, return 0
-        public int RemainingBytes => offset > size ? 0 : size - offset;
+        public int RemainingBytes => Offset > size ? 0 : size - Offset;
 
-        public bool CheckSize(int cb)
-        {
-            return cb <= RemainingBytes;
-        }
+        public bool CheckSize(int cb) => cb <= RemainingBytes;
 
         /// <summary>
         /// Reads the specified number of bytes from the current offset in the binary stream.
@@ -179,13 +157,26 @@ namespace BlockParser
             if (CheckSize(cb))
             {
                 byte[] bytes = new byte[cb];
-                bin.Position = offset;
+                bin.Position = Offset;
                 int read = bin.Read(bytes, 0, cb);
                 Advance(read);
                 return bytes;
             }
 
             return Array.Empty<byte>();
+        }
+
+        // Only used for debugging purposes, returns the entire binary stream as a byte array
+        public byte[] PeekBytes
+        {
+            get
+            {
+                var offset = Offset; // Save current offset
+                Rewind(); // Rewind to the start
+                var bytes = ReadBytes((int)bin.Length); // Read the bytes
+                Offset = offset; // Restore offset
+                return bytes;
+            }
         }
     }
 }
