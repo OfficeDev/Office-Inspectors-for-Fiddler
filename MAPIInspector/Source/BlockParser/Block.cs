@@ -23,8 +23,10 @@ namespace BlockParser
         public long Offset { get; set; }
         protected virtual bool UsePipes() => false;
         public string Text { get; protected set; } = string.Empty;
-
-        protected Block() { }
+        private List<Block> children { get; } = new List<Block>();
+        public IReadOnlyList<Block> Children => children.AsReadOnly();
+        public bool IsHeader => Size == 0 && Offset == 0;
+        public bool HasData => !string.IsNullOrEmpty(Text) || Children.Count > 0;
 
         // Overrides
         /// <summary>
@@ -42,9 +44,6 @@ namespace BlockParser
         {
             Text = !string.IsNullOrEmpty(format) ? string.Format(format, args) : string.Empty;
         }
-
-        private List<Block> _children { get; set; } = new List<Block>();
-        public IReadOnlyList<Block> Children => _children.AsReadOnly();
 
         public void ShiftOffset(long shift)
         {
@@ -69,15 +68,12 @@ namespace BlockParser
             }
         }
 
-        public bool IsHeader => Size == 0 && Offset == 0;
-        public bool HasData => !string.IsNullOrEmpty(Text) || Children.Count > 0;
-
         // Add child blocks of various types
         public void AddChild(Block child)
         {
             if (child != null && child.Parsed)
             {
-                _children.Add(child);
+                children.Add(child);
             }
         }
 
@@ -86,7 +82,7 @@ namespace BlockParser
             if (child != null && child.Parsed)
             {
                 child.Text = text ?? string.Empty;
-                _children.Add(child);
+                children.Add(child);
             }
         }
 
@@ -95,7 +91,7 @@ namespace BlockParser
             if (child != null && child.Parsed)
             {
                 child.Text = string.Format(format, args);
-                _children.Add(child);
+                children.Add(child);
             }
         }
 
