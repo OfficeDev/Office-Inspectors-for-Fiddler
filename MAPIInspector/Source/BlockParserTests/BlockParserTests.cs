@@ -1,5 +1,6 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using BlockParser;
+﻿using BlockParser;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.IO;
 
 namespace BlockParserTests
 {
@@ -133,6 +134,69 @@ namespace BlockParserTests
                 "\tTestBlock\r\n" +
                 "\tUnparsed data size = 0x00000001\r\n" +
                 "\t\tcb: 1 lpb: 68",
+                block.ToString());
+        }
+
+        [TestMethod]
+        public void Parse_Stream_AdvancesStreamByBlockSize()
+        {
+            var data = new byte[] { 0x09, 0x53, 0x67, 0x08, 0x68, 0x24, 0x78, 0x56, 0x34, 0x12, 0xCD, 0xAB, 0xBE, 0xEF }; // int: 0x08675309, short: 0x2468
+            using (var ms = new MemoryStream(data))
+            {
+                var block = Block.Parse<TestBlock2>(ms, enableJunk: false);
+
+                Assert.IsInstanceOfType(block, typeof(TestBlock2));
+                Assert.AreEqual(12, block.Size, "Size of TestBlock is 12");
+                Assert.AreEqual(block.Size, ms.Position, "Stream position should advance by block size");
+            }
+        }
+
+        public enum TestEnum : short
+        {
+            Value1 = 0xBCD,
+            Value2 = 0x1234
+        }
+        public enum TestEnumNoType
+        {
+            Value1 = 0xBCDEF,
+            Value2 = 0x12345
+        }
+
+        internal class TestEnumBlock : Block
+        {
+            public BlockT<TestEnum> f1;
+            public BlockT<TestEnumNoType> f2;
+            protected override void Parse()
+            {
+                f1 = BlockT<TestEnum>.Parse(parser);
+                f2 = BlockT<TestEnumNoType>.Parse(parser);
+            }
+            protected override void ParseBlocks()
+            {
+                SetText("TestBlock");
+                AddChild(f1, "f1 = {0}", f1.Data);
+                AddChild(f2, "f2 = {0}", f2.Data);
+            }
+        }
+
+        [TestMethod]
+        public void TestEnumParsing()
+        {
+            // TestEnum : short (2 bytes), TestEnumNoType : int (4 bytes)
+            // TestEnum.Value1 = 0x0BCD (little endian: CD 0B)
+            // TestEnumNoType.Value1 = 0x0BCDEF (little endian: EF CD 0B 00)
+            var data = new byte[] { 0xCD, 0x0B, 0xEF, 0xCD, 0x0B, 0x00 };
+
+            var parser = new BinaryParser(data);
+            var block = new TestEnumBlock();
+            block.Parse(parser, true);
+
+            Assert.AreEqual(TestEnum.Value1, block.f1.Data);
+            Assert.AreEqual(TestEnumNoType.Value1, block.f2.Data);
+            Assert.AreEqual("TestBlock", block.Text);
+            Assert.AreEqual("TestBlock\r\n" +
+                "\tf1 = Value1\r\n" +
+                "\tf2 = Value1",
                 block.ToString());
         }
     }

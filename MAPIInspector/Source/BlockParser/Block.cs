@@ -149,6 +149,15 @@ namespace BlockParser
             return ret;
         }
 
+        // Static parse functions return a parsing block based on a stream
+        // Advance the stream by the size of the block after parsing
+        public static T Parse<T>(Stream stream, bool enableJunk) where T : Block, new()
+        {
+            var block = Parse<T>(new BinaryParser(stream), enableJunk);
+            stream.Seek(block.Size, SeekOrigin.Current);
+            return block;
+        }
+
         // Static parse functions return a parsing block based on a BinaryParser
         public static T Parse<T>(BinaryParser parser, bool enableJunk) where T : Block, new()
         {
