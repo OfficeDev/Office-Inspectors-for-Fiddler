@@ -4154,7 +4154,7 @@
         public BlockT<byte> InputHandleIndex;
 
         /// <summary>
-        /// Parse the RopReleaseResquest structure.
+        /// Parse the RopReleaseRequest structure.
         /// </summary>
         protected override void Parse()
         {
@@ -4165,7 +4165,7 @@
 
         protected override void ParseBlocks()
         {
-            SetText("RopReleaseResquest");
+            SetText("RopReleaseRequest");
             AddChild(RopId, "RopId:{0}", RopId.Data);
             AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
             AddChild(InputHandleIndex, "InputHandleIndex:0x{0:X2}", InputHandleIndex.Data);
