@@ -16,17 +16,21 @@ namespace BlockParser
 
     public abstract class Block
     {
-        protected BinaryParser parser;
-        protected bool Parsed { get; set; } = false;
-        protected bool EnableJunk { get; set; } = true;
         public long Size { get; set; }
         public long Offset { get; set; }
-        protected virtual bool UsePipes() => false;
         public string Text { get; protected set; } = string.Empty;
-        private List<Block> children { get; } = new List<Block>();
         public IReadOnlyList<Block> Children => children.AsReadOnly();
         public bool IsHeader => Size == 0 && Offset == 0;
         public bool HasData => !string.IsNullOrEmpty(Text) || Children.Count > 0;
+
+        protected BinaryParser parser;
+        protected bool Parsed { get; set; } = false;
+        protected bool EnableJunk { get; set; } = true;
+        protected virtual bool UsePipes() => false;
+
+        private List<Block> children { get; } = new List<Block>();
+        private string _stringBlock;
+        private uint _source;
 
         // Overrides
         /// <summary>
@@ -54,7 +58,6 @@ namespace BlockParser
             }
         }
 
-        private uint _source;
         public uint Source
         {
             get => _source;
@@ -194,7 +197,6 @@ namespace BlockParser
             _stringBlock = _stringBlock.Replace('\0', '.');
         }
 
-        private string _stringBlock;
         public override string ToString()
         {
             EnsureParsed();
@@ -216,6 +218,7 @@ namespace BlockParser
             return strings;
         }
 
+        // Only used for debugging purposes, returns the entire binary stream as a byte array
         public byte[] PeekBytes => parser.PeekBytes;
     }
 }

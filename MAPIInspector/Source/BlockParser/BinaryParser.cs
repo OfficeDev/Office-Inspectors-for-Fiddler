@@ -8,6 +8,13 @@ namespace BlockParser
     // worrying about whether you've run off the end of your buffer.
     public class BinaryParser
     {
+        public bool Empty => Offset == size;
+        public int Offset { get; set; }
+        // If we're before the end of the buffer, return the count of remaining bytes
+        // If we're at or past the end of the buffer, return 0
+        // If we're before the beginning of the buffer, return 0
+        public int RemainingBytes => Offset > size ? 0 : size - Offset;
+
         private readonly Stream bin;
         private int size; // When uncapped, this is bin.Length. When capped, this is our artificial capped size.
         private readonly Stack<int> sizes = new Stack<int>();
@@ -108,12 +115,9 @@ namespace BlockParser
             Offset = 0;
         }
 
-        public bool Empty => Offset == size;
         public void Advance(int cb) => Offset += cb;
 
         public void Rewind() => Offset = 0;
-
-        public int Offset { get; set; }
 
         public void PushCap(int cap)
         {
@@ -135,11 +139,6 @@ namespace BlockParser
                 size = sizes.Pop();
             }
         }
-
-        // If we're before the end of the buffer, return the count of remaining bytes
-        // If we're at or past the end of the buffer, return 0
-        // If we're before the beginning of the buffer, return 0
-        public int RemainingBytes => Offset > size ? 0 : size - Offset;
 
         public bool CheckSize(int cb) => cb <= RemainingBytes;
 
