@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Parser
+namespace BlockParser
 {
     public class BlockT<T> : Block where T : struct
     {

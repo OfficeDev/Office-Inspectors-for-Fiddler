@@ -1,5 +1,5 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Parser;
+using BlockParser;
 using System.Text;
 
 namespace BlockParserTests

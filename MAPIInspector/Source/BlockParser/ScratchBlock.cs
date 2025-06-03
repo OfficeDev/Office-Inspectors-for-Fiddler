@@ -1,4 +1,4 @@
-namespace Parser
+namespace BlockParser
 {
 	// A non-parsing block used as a placeholder or for text-only nodes
 	public class ScratchBlock : Block

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
-namespace Parser
+namespace BlockParser
 {
     public static class Constants
     {
@@ -212,7 +213,7 @@ namespace Parser
             foreach (var child in Children)
             {
                 var childStrings = child.ToStringsInternal();
-                if (!string.IsNullOrEmpty(Text)) childStrings = Parser.Strings.TabStrings(childStrings, UsePipes());
+                if (!string.IsNullOrEmpty(Text)) childStrings = Strings.TabStrings(childStrings, UsePipes());
                 strings.AddRange(childStrings);
             }
 

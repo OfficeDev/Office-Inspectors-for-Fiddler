@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Parser
+namespace BlockParser
 {
     public static class Strings
     {
