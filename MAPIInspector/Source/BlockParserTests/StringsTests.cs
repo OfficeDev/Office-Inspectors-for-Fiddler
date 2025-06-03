@@ -1,7 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
-namespace Parser.Tests
+namespace BlockParser.Tests
 {
     [TestClass]
     public class StringsTests

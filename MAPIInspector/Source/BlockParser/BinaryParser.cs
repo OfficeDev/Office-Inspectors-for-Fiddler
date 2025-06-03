@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Parser
+namespace BlockParser
 {
     // binaryParser - helper class for parsing binary data without
     // worrying about whether you've run off the end of your buffer.

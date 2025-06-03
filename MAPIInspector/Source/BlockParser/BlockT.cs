@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Parser
+namespace BlockParser
 {
     public class BlockT<T> : Block where T : struct
     {
@@ -41,18 +41,24 @@ namespace Parser
         // Build and return object of type T, reading from type U
         public static BlockT<T> Parse<U>(BinaryParser parser) where U : struct
         {
-            if (!parser.CheckSize(System.Runtime.InteropServices.Marshal.SizeOf(typeof(U))))
+            Type type = typeof(U);
+            if (type.IsEnum)
+                type = Enum.GetUnderlyingType(type);
+            if (!parser.CheckSize(System.Runtime.InteropServices.Marshal.SizeOf(type)))
                 return new BlockT<T>();
 
             U uData = ReadStruct<U>(parser);
             int offset = parser.Offset;
-            return Create((T)Convert.ChangeType(uData, typeof(T)), System.Runtime.InteropServices.Marshal.SizeOf(typeof(U)), offset);
+            return Create((T)Convert.ChangeType(uData, typeof(T)), System.Runtime.InteropServices.Marshal.SizeOf(type), offset);
         }
 
         protected override void Parse()
         {
             Parsed = false;
-            int size = System.Runtime.InteropServices.Marshal.SizeOf(typeof(T));
+            Type type = typeof(T);
+            if (type.IsEnum)
+                type = Enum.GetUnderlyingType(type);
+            int size = System.Runtime.InteropServices.Marshal.SizeOf(type);
             if (!parser.CheckSize(size)) return;
 
             Data = ReadStruct<T>(parser);
@@ -61,13 +67,16 @@ namespace Parser
 
         private static U ReadStruct<U>(BinaryParser parser) where U : struct
         {
-            int size = System.Runtime.InteropServices.Marshal.SizeOf(typeof(U));
+            Type type = typeof(U);
+            if (type.IsEnum)
+                type = Enum.GetUnderlyingType(type);
+            int size = System.Runtime.InteropServices.Marshal.SizeOf(type);
             byte[] bytes = parser.ReadBytes(size);
             var handle = System.Runtime.InteropServices.GCHandle.Alloc(bytes, System.Runtime.InteropServices.GCHandleType.Pinned);
             try
             {
                 IntPtr ptr = handle.AddrOfPinnedObject();
-                U convert = (U)System.Runtime.InteropServices.Marshal.PtrToStructure(ptr, typeof(U));
+                U convert = (U)System.Runtime.InteropServices.Marshal.PtrToStructure(ptr, type);
                 return convert;
             }
             finally

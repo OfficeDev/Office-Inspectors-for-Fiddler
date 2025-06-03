@@ -149,6 +149,18 @@
             int current = startIndex;
             TreeNode res = new TreeNode(t.Name);
 
+            if (obj is BlockParser.Block block)
+            {
+                offset = (int)block.Size;
+                res.Text = block.Text;
+                res.Tag = new Position(startIndex, (int)block.Size);
+                foreach(var child in block.Children)
+                {
+                    res.Nodes.Add(AddNodesForTree(child.Text, child, (int)(startIndex +child.Offset), out int _));
+                }
+                return res;
+            }
+
             if (obj is AnnotatedData ad)
             {
                 offset = ad.Size;

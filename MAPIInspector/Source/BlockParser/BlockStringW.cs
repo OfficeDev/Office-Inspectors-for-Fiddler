@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Parser
+namespace BlockParser
 {
     public class BlockStringW : Block
     {

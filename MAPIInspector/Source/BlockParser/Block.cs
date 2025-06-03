@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 
-namespace Parser
+namespace BlockParser
 {
     public static class Constants
     {
@@ -148,6 +149,15 @@ namespace Parser
             return ret;
         }
 
+        // Static parse functions return a parsing block based on a stream
+        // Advance the stream by the size of the block after parsing
+        public static T Parse<T>(Stream stream, bool enableJunk) where T : Block, new()
+        {
+            var block = Parse<T>(new BinaryParser(stream), enableJunk);
+            stream.Seek(block.Size, SeekOrigin.Current);
+            return block;
+        }
+
         // Static parse functions return a parsing block based on a BinaryParser
         public static T Parse<T>(BinaryParser parser, bool enableJunk) where T : Block, new()
         {
@@ -212,7 +222,7 @@ namespace Parser
             foreach (var child in Children)
             {
                 var childStrings = child.ToStringsInternal();
-                if (!string.IsNullOrEmpty(Text)) childStrings = Parser.Strings.TabStrings(childStrings, UsePipes());
+                if (!string.IsNullOrEmpty(Text)) childStrings = BlockParser.Strings.TabStrings(childStrings, UsePipes());
                 strings.AddRange(childStrings);
             }
 

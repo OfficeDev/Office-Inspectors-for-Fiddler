@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Parser.Tests
+namespace BlockParser.Tests
 {
     [TestClass]
     public class BinaryParserTests

@@ -1,6 +1,6 @@
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Parser;
+using BlockParser;
 
 namespace BlockParserTests
 {
