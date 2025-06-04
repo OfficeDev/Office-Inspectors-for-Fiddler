@@ -4872,14 +4872,14 @@
                             PropertyValue propValue = new PropertyValue(tempPropTag.PropertyType.Data);
                             propValue.Parse(s);
                             //todo
-                            propValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId)}";
+                            propValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
                             rowPropValue = propValue;
                         }
                         else
                         {
                             TypedPropertyValue typePropValue = new TypedPropertyValue();
                             typePropValue.Parse(s);
-                            typePropValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId)}";
+                            typePropValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
                             rowPropValue = typePropValue;
                         }
                     }
@@ -4889,14 +4889,14 @@
                         {
                             FlaggedPropertyValue flagPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType.Data);
                             flagPropValue.Parse(s);
-                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId)}";
+                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
                             rowPropValue = flagPropValue;
                         }
                         else
                         {
                             FlaggedPropertyValueWithType flagPropValue = new FlaggedPropertyValueWithType();
                             flagPropValue.Parse(s);
-                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId)}";
+                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
                             rowPropValue = flagPropValue;
                         }
                     }

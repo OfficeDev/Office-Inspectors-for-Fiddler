@@ -4655,14 +4655,14 @@
                         {
                             AddressBookPropertyValue propValue = new AddressBookPropertyValue(propTag.PropertyType.Data, this.ptypMultiCountSize);
                             propValue.Parse(s);
-                            propValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId)}";
+                            propValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId.Data)}";
                             addrRowValue = propValue;
                         }
                         else
                         {
                             AddressBookTypedPropertyValue typePropValue = new AddressBookTypedPropertyValue();
                             typePropValue.Parse(s);
-                            typePropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId)}";
+                            typePropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId.Data)}";
                             addrRowValue = typePropValue;
                         }
                     }
@@ -4672,14 +4672,14 @@
                         {
                             AddressBookFlaggedPropertyValue flagPropValue = new AddressBookFlaggedPropertyValue(propTag.PropertyType.Data);
                             flagPropValue.Parse(s);
-                            flagPropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId)}";
+                            flagPropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId.Data)}";
                             addrRowValue = flagPropValue;
                         }
                         else
                         {
                             AddressBookFlaggedPropertyValueWithType flagPropValue = new AddressBookFlaggedPropertyValueWithType();
                             flagPropValue.Parse(s);
-                            flagPropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId)}";
+                            flagPropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId.Data)}";
                             addrRowValue = flagPropValue;
                         }
                     }
