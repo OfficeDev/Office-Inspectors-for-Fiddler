@@ -1,5 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -645,8 +646,7 @@
 
                     for (int i = 0; i < this.TagCount; i++)
                     {
-                        PropertyTag tempTag = new PropertyTag();
-                        tempTag.Parse(s);
+                        PropertyTag tempTag = Block.Parse<PropertyTag>(s);
                         listTags.Add(tempTag);
                     }
 

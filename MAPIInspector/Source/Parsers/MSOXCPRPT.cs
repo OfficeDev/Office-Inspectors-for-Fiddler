@@ -1,5 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -123,8 +124,7 @@
 
             for (int i = 0; i < this.PropertyTagCount; i++)
             {
-                PropertyTag tmppropertytag = new PropertyTag();
-                tmppropertytag.Parse(s);
+                PropertyTag tmppropertytag = Block.Parse<PropertyTag>(s);
                 tmpPropertyTags.Add(tmppropertytag);
             }
 
@@ -375,8 +375,7 @@
 
                 for (int i = 0; i < this.PropertyTagCount; i++)
                 {
-                    interTag[i] = new PropertyTag();
-                    interTag[i].Parse(s);
+                    interTag[i] = Block.Parse<PropertyTag>(s);
                 }
 
                 this.PropertyTags = interTag;
@@ -670,8 +669,7 @@
 
             for (int i = 0; i < this.PropertyTagCount; i++)
             {
-                PropertyTag tmppropertytag = new PropertyTag();
-                tmppropertytag.Parse(s);
+                PropertyTag tmppropertytag = Block.Parse<PropertyTag>(s);
                 tmpPropertyTags.Add(tmppropertytag);
             }
 
@@ -784,8 +782,7 @@
 
             for (int i = 0; i < this.PropertyTagCount; i++)
             {
-                PropertyTag tmppropertytag = new PropertyTag();
-                tmppropertytag.Parse(s);
+                PropertyTag tmppropertytag = Block.Parse<PropertyTag>(s);
                 tmpPropertyTags.Add(tmppropertytag);
             }
 
@@ -1040,8 +1037,7 @@
 
             for (int i = 0; i < this.PropertyTagCount; i++)
             {
-                this.PropertyTags[i] = new PropertyTag();
-                this.PropertyTags[i].Parse(s);
+                this.PropertyTags[i] = Block.Parse<PropertyTag>(s);
             }
         }
     }
@@ -1184,8 +1180,7 @@
 
             for (int i = 0; i < this.ExcludedTagCount; i++)
             {
-                this.ExcludedTags[i] = new PropertyTag();
-                this.ExcludedTags[i].Parse(s);
+                this.ExcludedTags[i] = Block.Parse<PropertyTag>(s);
             }
         }
     }
@@ -1527,8 +1522,7 @@
             this.LogonId = this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            this.PropertyTag = new PropertyTag();
-            this.PropertyTag.Parse(s);
+            this.PropertyTag = Block.Parse<PropertyTag>(s);
             this.OpenModeFlags = (OpenModeFlags)this.ReadByte();
         }
     }

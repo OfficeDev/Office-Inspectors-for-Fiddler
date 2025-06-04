@@ -1,5 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using MapiInspector;
     using System;
     using System.Collections.Generic;
@@ -4791,8 +4792,7 @@
         {
             base.Parse(s);
             this.Index = this.ReadUshort();
-            this.PropertyTag = new PropertyTag();
-            this.PropertyTag.Parse(s);
+            this.PropertyTag = Block.Parse<PropertyTag>(s);
             this.ErrorCode = (PropertyErrorCodes)this.ReadUint();
         }
     }
@@ -4863,13 +4863,13 @@
                 foreach (PropertyTag tempPropTag in this.propTags)
                 {
                     object rowPropValue = null;
-                    tempPropTag.PropertyType = this.ConvertToPropType((ushort)tempPropTag.PropertyType);
+                    tempPropTag.PropertyType.Data = ConvertToPropType((ushort)tempPropTag.PropertyType.Data);
 
                     if (this.Flag == 0x00)
                     {
-                        if (tempPropTag.PropertyType != PropertyDataType.PtypUnspecified)
+                        if (tempPropTag.PropertyType.Data != PropertyDataType.PtypUnspecified)
                         {
-                            PropertyValue propValue = new PropertyValue(tempPropTag.PropertyType);
+                            PropertyValue propValue = new PropertyValue(tempPropTag.PropertyType.Data);
                             propValue.Parse(s);
                             //todo
                             propValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId)}";
@@ -4885,9 +4885,9 @@
                     }
                     else if (this.Flag == 0x01)
                     {
-                        if (tempPropTag.PropertyType != PropertyDataType.PtypUnspecified)
+                        if (tempPropTag.PropertyType.Data != PropertyDataType.PtypUnspecified)
                         {
-                            FlaggedPropertyValue flagPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType);
+                            FlaggedPropertyValue flagPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType.Data);
                             flagPropValue.Parse(s);
                             flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId)}";
                             rowPropValue = flagPropValue;
@@ -5193,17 +5193,19 @@
     /// <summary>
     /// 2.9 PropertyTag Structure
     /// </summary>
-    public class PropertyTag : BaseStructure
+    public class PropertyTag : Block
     {
         /// <summary>
         /// An unsigned integer that identifies the data type of the property value, as specified by the table in section 2.11.1.
         /// </summary>
-        public PropertyDataType PropertyType;
+        public BlockT<PropertyDataType> PropertyType;
 
         /// <summary>
         /// An unsigned integer that identifies the property.
         /// </summary>
-        public PidTagPropertyEnum PropertyId;
+        public BlockT<PidTagPropertyEnum> PropertyId;
+
+        public PropertyTag() { }
 
         /// <summary>
         /// Initializes a new instance of the PropertyTag class with parameters.
@@ -5212,26 +5214,26 @@
         /// <param name="pId">The Id of the PropertyTag.</param>
         public PropertyTag(PropertyDataType ptype, PidTagPropertyEnum pId)
         {
-            this.PropertyType = ptype;
-            this.PropertyId = pId;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the PropertyTag class without parameters.
-        /// </summary>
-        public PropertyTag()
-        {
+            // TODO: Vet these params
+            PropertyType = BlockT<PropertyDataType>.Create(ptype, 0, 0);
+            PropertyId = BlockT<PidTagPropertyEnum>.Create(pId, 0, 0);
         }
 
         /// <summary>
         /// Parse the PropertyTag structure.
         /// </summary>
         /// <param name="s">A stream containing the PropertyTag structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.PropertyType = (PropertyDataType)ReadUshort();
-            this.PropertyId = (PidTagPropertyEnum)ReadUshort();
+            PropertyType = BlockT<PropertyDataType>.Parse(parser);
+            PropertyId = BlockT<PidTagPropertyEnum>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("PropertyTag");
+            AddChild(PropertyType, "PropertyType:{0}", PropertyType.Data);
+            AddChild(PropertyId, "PropertyId:{0}", PropertyId.Data);
         }
     }
     #endregion
@@ -6951,21 +6953,20 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.PropertyTag = new PropertyTag();
-            this.PropertyTag.Parse(s);
+            this.PropertyTag = Block.Parse<PropertyTag>(s);
             PropertyValue propertyValue = new PropertyValue();
             if (this.tagInRestriction != null)
             {
-                if (((ushort)this.tagInRestriction.PropertyType & 0x1000) == 0x1000)
+                if (((ushort)this.tagInRestriction.PropertyType.Data & 0x1000) == 0x1000)
                 {
-                    this.tagInRestriction.PropertyType = (PropertyDataType)((ushort)this.tagInRestriction.PropertyType & 0xfff);
+                    this.tagInRestriction.PropertyType.Data = (PropertyDataType)((ushort)this.tagInRestriction.PropertyType.Data & 0xfff);
                 }
 
-                this.PropertyValue = propertyValue.ReadPropertyValue(this.tagInRestriction.PropertyType, s, this.countWide);
+                this.PropertyValue = propertyValue.ReadPropertyValue(this.tagInRestriction.PropertyType.Data, s, this.countWide);
             }
             else
             {
-                this.PropertyValue = propertyValue.ReadPropertyValue(this.PropertyTag.PropertyType, s, this.countWide);
+                this.PropertyValue = propertyValue.ReadPropertyValue(this.PropertyTag.PropertyType.Data, s, this.countWide);
             }
         }
     }
@@ -7517,8 +7518,7 @@
             this.RestrictType = (RestrictTypeEnum)ReadByte();
             this.FuzzyLevelLow = (FuzzyLevelLowEnum)ReadUshort();
             this.FuzzyLevelHigh = (FuzzyLevelHighEnum)ReadUshort();
-            this.PropertyTag = new PropertyTag();
-            this.PropertyTag.Parse(s);
+            this.PropertyTag = Block.Parse<PropertyTag>(s);
             this.TaggedValue = new TaggedPropertyValue(this.countWide, this.PropertyTag);
             this.TaggedValue.Parse(s);
         }
@@ -7574,8 +7574,7 @@
             this.RelOp = (RelOpType)this.ReadByte();
             this.PropTag = this.ReadUint();
             s.Position -= 4;
-            PropertyTag propertyTag = new PropertyTag();
-            propertyTag.Parse(s);
+            PropertyTag propertyTag = Block.Parse<PropertyTag>(s);
             this.TaggedValue = new TaggedPropertyValue(this.countWide, propertyTag);
             this.TaggedValue.Parse(s);
         }

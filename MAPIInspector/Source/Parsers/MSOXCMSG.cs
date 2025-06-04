@@ -1,5 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -343,8 +344,7 @@
 
                 for (int i = 0; i < this.ColumnCount; i++)
                 {
-                    PropertyTag propertyTag = new PropertyTag();
-                    propertyTag.Parse(s);
+                    PropertyTag propertyTag = Block.Parse<PropertyTag>(s);
                     propertyTags.Add(propertyTag);
                 }
 
@@ -774,8 +774,7 @@
 
             for (int i = 0; i < this.ColumnCount; i++)
             {
-                PropertyTag propertyTag = new PropertyTag();
-                propertyTag.Parse(s);
+                PropertyTag propertyTag = Block.Parse<PropertyTag>(s);
                 propertyTags.Add(propertyTag);
             }
 
@@ -1170,8 +1169,7 @@
 
                 for (int i = 0; i < this.ColumnCount; i++)
                 {
-                    PropertyTag propertyTag = new PropertyTag();
-                    propertyTag.Parse(s);
+                    PropertyTag propertyTag = Block.Parse<PropertyTag>(s);
                     propertyTags.Add(propertyTag);
                 }
 
@@ -2089,8 +2087,7 @@
 
                 for (int i = 0; i < this.ColumnCount; i++)
                 {
-                    PropertyTag propertyTag = new PropertyTag();
-                    propertyTag.Parse(s);
+                    PropertyTag propertyTag = Block.Parse<PropertyTag>(s);
                     propertyTags.Add(propertyTag);
                 }
 

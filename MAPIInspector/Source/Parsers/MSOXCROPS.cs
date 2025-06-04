@@ -1065,10 +1065,9 @@
 
                             // MSOXCTABL ROPs
                             case RopIdType.RopSetColumns:
-                                RopSetColumnsRequest ropSetColumnsRequest = new RopSetColumnsRequest();
-                                ropSetColumnsRequest.Parse(s);
+                                RopSetColumnsRequest ropSetColumnsRequest = Block.Parse<RopSetColumnsRequest>(s);
                                 ropsList.Add(ropSetColumnsRequest);
-                                uint handle_SetColumns = tempServerObjectHandleTable[ropSetColumnsRequest.InputHandleIndex];
+                                uint handle_SetColumns = tempServerObjectHandleTable[ropSetColumnsRequest.InputHandleIndex.Data];
                                 string serverUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
 
                                 if (handle_SetColumns != 0xFFFFFFFF)
@@ -1130,7 +1129,7 @@
                                         try
                                         {
                                             MapiInspector.MAPIParser.IsOnlyGetServerHandle = true;
-                                            outputHandle = MapiInspector.MAPIParser.ParseResponseMessageSimplely(MapiInspector.MAPIParser.ParsingSession, ropSetColumnsRequest.InputHandleIndex);
+                                            outputHandle = MapiInspector.MAPIParser.ParseResponseMessageSimplely(MapiInspector.MAPIParser.ParsingSession, ropSetColumnsRequest.InputHandleIndex.Data);
                                         }
                                         finally
                                         {
@@ -1194,7 +1193,7 @@
                                     try
                                     {
                                         MapiInspector.MAPIParser.IsOnlyGetServerHandle = true;
-                                        outputHandle = MapiInspector.MAPIParser.ParseResponseMessageSimplely(MapiInspector.MAPIParser.ParsingSession, ropSetColumnsRequest.InputHandleIndex);
+                                        outputHandle = MapiInspector.MAPIParser.ParseResponseMessageSimplely(MapiInspector.MAPIParser.ParsingSession, ropSetColumnsRequest.InputHandleIndex.Data);
                                     }
                                     finally
                                     {

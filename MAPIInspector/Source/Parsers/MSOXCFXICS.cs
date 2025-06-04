@@ -1,5 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -1442,8 +1443,7 @@
             PropertyTag[] interTag = new PropertyTag[(int)this.PropertyTagCount];
             for (int i = 0; i < this.PropertyTagCount; i++)
             {
-                interTag[i] = new PropertyTag();
-                interTag[i].Parse(s);
+                interTag[i] = Block.Parse<PropertyTag>(s);
             }
 
             this.PropertyTags = interTag;
@@ -1556,8 +1556,7 @@
             PropertyTag[] interTag = new PropertyTag[(int)this.PropertyTagCount];
             for (int i = 0; i < this.PropertyTagCount; i++)
             {
-                interTag[i] = new PropertyTag();
-                interTag[i].Parse(s);
+                interTag[i] = Block.Parse<PropertyTag>(s);
             }
 
             this.PropertyTags = interTag;
@@ -2508,8 +2507,7 @@
 
             for (int i = 0; i < this.PropertyTagCount; i++)
             {
-                interTag[i] = new PropertyTag();
-                interTag[i].Parse(s);
+                interTag[i] = Block.Parse<PropertyTag>(s);
             }
 
             this.PropertyTags = interTag;
@@ -2594,8 +2592,7 @@
             this.RopId = (RopIdType)this.ReadByte();
             this.LogonId = this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.StateProperty = new PropertyTag();
-            this.StateProperty.Parse(s);
+            this.StateProperty = Block.Parse<PropertyTag>(s);
 
             this.TransferBufferSize = this.ReadUint();
         }

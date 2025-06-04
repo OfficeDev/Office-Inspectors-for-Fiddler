@@ -136,6 +136,26 @@
         }
 
         /// <summary>
+        /// Recursively adds a BlockParser.Block and its children to a TreeNode structure.
+        /// </summary>
+        /// <param name="block">The block to add as a node.</param>
+        /// <param name="blockRootOffset">The root offset to calculate the absolute position of the block.</param>
+        /// <returns>The TreeNode representing the block and its children.</returns>
+        private static TreeNode AddBlock(BlockParser.Block block, int blockRootOffset)
+        {
+            TreeNode node = new TreeNode(block.Text);
+            var blockOffset = blockRootOffset + (int)block.Offset;
+            //node.Text = $"{block.Text}::{blockOffset}::{block.Size}"; // Enable this when troubleshooting highlight issues
+            node.Tag = new Position(blockOffset, (int)block.Size);
+            foreach (var child in block.Children)
+            {
+                node.Nodes.Add(AddBlock(child, blockRootOffset));
+            }
+
+            return node;
+        }
+
+        /// <summary>
         /// Add the object to TreeNode and calculate the byte number it consumed
         /// </summary>
         /// <param name="nodeName">Best guess at current node name for debugging - not currently used for display</param>
@@ -145,21 +165,15 @@
         /// <returns>The TreeNode with object value information</returns>
         public static TreeNode AddNodesForTree(string nodeName, object obj, int startIndex, out int offset)
         {
-            Type t = obj.GetType();
-            int current = startIndex;
-            TreeNode res = new TreeNode(t.Name);
-
             if (obj is BlockParser.Block block)
             {
                 offset = (int)block.Size;
-                res.Text = block.Text;
-                res.Tag = new Position(startIndex, (int)block.Size);
-                foreach (var child in block.Children)
-                {
-                    res.Nodes.Add(AddNodesForTree(child.Text, child, (int)(startIndex + child.Offset), out int _));
-                }
-                return res;
+                return AddBlock(block, startIndex);
             }
+
+            Type t = obj.GetType();
+            int current = startIndex;
+            TreeNode res = new TreeNode(t.Name);
 
             if (obj is AnnotatedData ad)
             {

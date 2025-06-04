@@ -133,32 +133,32 @@
     /// <summary>
     /// The RopSetColumns ROP ([MS-OXCROPS] section 2.2.5.1) sets the properties that the client requests to be included in the table. 
     /// </summary>
-    public class RopSetColumnsRequest : BaseStructure
+    public class RopSetColumnsRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// A flags structure that contains flags that control this operation. 
         /// </summary>
-        public AsynchronousFlags SetColumnsFlags;
+        public BlockT<AsynchronousFlags> SetColumnsFlags;
 
         /// <summary>
         /// An unsigned integer that specifies the number of tags present in the PropertyTags field.
         /// </summary>
-        public ushort PropertyTagCount;
+        public BlockT<ushort> PropertyTagCount;
 
         /// <summary>
         /// An array of PropertyTag structures that specifies the property values that are visible in table rows. 
@@ -169,24 +169,34 @@
         /// Parse the RopSetColumnsRequest structure.
         /// </summary>
         /// <param name="s">A stream containing RopSetColumnsRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = BlockT<RopIdType>.Parse(parser);
+            LogonId = BlockT<byte>.Parse(parser);
+            InputHandleIndex = BlockT<byte>.Parse(parser);
+            SetColumnsFlags = BlockT<AsynchronousFlags>.Parse(parser);
+            PropertyTagCount = BlockT<ushort>.Parse(parser);
 
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.SetColumnsFlags = (AsynchronousFlags)this.ReadByte();
-            this.PropertyTagCount = this.ReadUshort();
             List<PropertyTag> tempPropertyTags = new List<PropertyTag>();
-            for (int i = 0; i < this.PropertyTagCount; i++)
+            for (int i = 0; i < this.PropertyTagCount.Data; i++)
             {
                 PropertyTag tempPropertyTag = new PropertyTag();
-                tempPropertyTag.Parse(s);
+                tempPropertyTag.Parse(parser);
                 tempPropertyTags.Add(tempPropertyTag);
             }
 
             this.PropertyTags = tempPropertyTags.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopSetColumnsRequest");
+            AddChild(RopId, "RopId:{0}", RopId.Data);
+            AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
+            AddChild(InputHandleIndex, "InputHandleIndex:0x{0:X2}", InputHandleIndex.Data);
+            AddChild(SetColumnsFlags, "SetColumnsFlags:{0}", SetColumnsFlags.Data);
+            AddChild(PropertyTagCount, "PropertyTagCount:{0}", PropertyTagCount.Data);
+            AddLabeledChildren("PropertyTags", PropertyTags);
         }
     }
 
@@ -1339,8 +1349,7 @@
                 List<PropertyTag> tempPropertyTags = new List<PropertyTag>();
                 for (int i = 0; i < this.PropertyTagCount; i++)
                 {
-                    PropertyTag tempPropertyTag = new PropertyTag();
-                    tempPropertyTag.Parse(s);
+                    PropertyTag tempPropertyTag = Block.Parse<PropertyTag>(s);
                     tempPropertyTags.Add(tempPropertyTag);
                 }
 

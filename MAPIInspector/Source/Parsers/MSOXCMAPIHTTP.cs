@@ -1,5 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using MapiInspector;
     using System;
     using System.Collections.Generic;
@@ -2563,8 +2564,7 @@
         {
             base.Parse(s);
             this.Flags = this.ReadUint();
-            this.PropertyTag = new PropertyTag();
-            this.PropertyTag.Parse(s);
+            this.PropertyTag = Block.Parse<PropertyTag>(s);
             this.MinimalId = new MinimalEntryID();
             this.MinimalId.Parse(s);
             this.HasEntryIds = this.ReadBoolean();
@@ -4651,9 +4651,9 @@
 
                     if (this.Flags == 0x00)
                     {
-                        if (propTag.PropertyType != PropertyDataType.PtypUnspecified)
+                        if (propTag.PropertyType.Data != PropertyDataType.PtypUnspecified)
                         {
-                            AddressBookPropertyValue propValue = new AddressBookPropertyValue(propTag.PropertyType, this.ptypMultiCountSize);
+                            AddressBookPropertyValue propValue = new AddressBookPropertyValue(propTag.PropertyType.Data, this.ptypMultiCountSize);
                             propValue.Parse(s);
                             propValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId)}";
                             addrRowValue = propValue;
@@ -4668,9 +4668,9 @@
                     }
                     else if (this.Flags == 0x01)
                     {
-                        if (propTag.PropertyType != PropertyDataType.PtypUnspecified)
+                        if (propTag.PropertyType.Data != PropertyDataType.PtypUnspecified)
                         {
-                            AddressBookFlaggedPropertyValue flagPropValue = new AddressBookFlaggedPropertyValue(propTag.PropertyType);
+                            AddressBookFlaggedPropertyValue flagPropValue = new AddressBookFlaggedPropertyValue(propTag.PropertyType.Data);
                             flagPropValue.Parse(s);
                             flagPropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId)}";
                             addrRowValue = flagPropValue;
@@ -4721,9 +4721,7 @@
 
             for (int i = 0; i < this.PropertyTagCount; i++)
             {
-                PropertyTag p = new PropertyTag();
-                p.Parse(s);
-                tempPT.Add(p);
+                tempPT.Add(Block.Parse<PropertyTag>(s));
             }
 
             this.PropertyTags = tempPT.ToArray();

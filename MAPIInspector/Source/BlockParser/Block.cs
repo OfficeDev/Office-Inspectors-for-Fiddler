@@ -19,6 +19,7 @@ namespace BlockParser
         public long Size { get; set; }
         public long Offset { get; set; }
         public string Text { get; protected set; } = string.Empty;
+
         public IReadOnlyList<Block> Children => children.AsReadOnly();
         public bool IsHeader => Size == 0 && Offset == 0;
         public bool HasData => !string.IsNullOrEmpty(Text) || Children.Count > 0;
@@ -95,15 +96,40 @@ namespace BlockParser
         public void AddHeader(string format, params object[] args) => AddHeader(string.Format(format, args));
 
         // Add a text only node with size/offset matching the child node so that it "contains" the child
-        public void AddLabeledChild(string text, Block _block)
+        public void AddLabeledChild(string text, Block block)
         {
-            if (_block != null && _block.Parsed)
+            if (block != null && block.Parsed)
             {
                 var node = Create();
                 node.SetText(text);
-                node.Offset = _block.Offset;
-                node.Size = _block.Size;
-                node.AddChild(_block);
+                node.Offset = block.Offset;
+                node.Size = block.Size;
+                node.AddChild(block);
+                AddChild(node);
+            }
+        }
+
+        // Add a text only node with size/offset matching the children node so that it "contains" the children
+        public void AddLabeledChildren(string text, Block[] blocks)
+        {
+            if (blocks != null)
+            {
+                var node = Create();
+                node.SetText(text);
+
+                if (blocks.Length > 0)
+                {
+                    long size = 0;
+                    foreach (var block in blocks)
+                    {
+                        node.AddChild(block);
+                        size += block.Size;
+                    }
+
+                    node.Offset = blocks[0].Offset;
+                    node.Size = size;
+                }
+
                 AddChild(node);
             }
         }
