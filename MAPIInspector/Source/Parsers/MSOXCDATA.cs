@@ -5396,25 +5396,25 @@
     /// <summary>
     /// 1 byte; restricted to 1 or 0.
     /// </summary>
-    public class PtypBoolean : AnnotatedData
+    public class PtypBoolean : Block
     {
         /// <summary>
         /// 1 byte; restricted to 1 or 0.
         /// </summary>
-        public bool Value;
+        public BlockT<bool> Value;
 
         /// <summary>
         /// Parse the PtypBoolean structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypBoolean structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Value = this.ReadBoolean();
-            this.ParsedValue = Value.ToString();
+            Value = BlockT<bool>.Parse<byte>(parser);
         }
 
-        public override int Size { get; } = 1;
+        protected override void ParseBlocks()
+        {
+            Text = $"{Value.Data}";
+        }
     }
 
     /// <summary>
@@ -6640,9 +6640,7 @@
 
                 case PropertyDataType.PtypBoolean:
                     {
-                        PtypBoolean tempPropertyValue = new PtypBoolean();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypBoolean>(s);
                         break;
                     }
 
