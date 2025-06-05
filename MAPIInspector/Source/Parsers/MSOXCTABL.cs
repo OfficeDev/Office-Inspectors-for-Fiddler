@@ -193,7 +193,7 @@
             SetText("RopSetColumnsRequest");
             AddChild(RopId, "RopId:{0}", RopId.Data);
             AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
-            AddChild(InputHandleIndex, "InputHandleIndex:0x{0:X2}", InputHandleIndex.Data);
+            AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
             AddChild(SetColumnsFlags, "SetColumnsFlags:{0}", SetColumnsFlags.Data);
             AddChild(PropertyTagCount, "PropertyTagCount:{0}", PropertyTagCount.Data);
             AddLabeledChildren("PropertyTags", PropertyTags);
@@ -241,7 +241,7 @@
         {
             SetText("RopSetColumnsResponse");
             AddChild(RopId, "RopId:{0}", RopId.Data);
-            AddChild(InputHandleIndex, "InputHandleIndex:0x{0:X2}", InputHandleIndex.Data);
+            AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
             var returnValue = HelpMethod.FormatErrorCode(ReturnValue.Data);
             AddChild(ReturnValue, "ReturnValue:{0}", returnValue);
             if (TableStatus.Parsed)
@@ -528,7 +528,7 @@
             SetText("RopSeekRowRequest");
             AddChild(RopId, "RopId:{0}", RopId.Data);
             AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
-            AddChild(InputHandleIndex, "InputHandleIndex:0x{0:X2}", InputHandleIndex.Data);
+            AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
             AddChild(QueryRowsFlags, "QueryRowsFlags:{0}", QueryRowsFlags.Data);
             AddChild(ForwardRead, "ForwardRead:{0}", ForwardRead.Data);
             AddChild(RowCount, "RowCount:{0}", RowCount.Data);
@@ -919,7 +919,7 @@
             SetText("RopSeekRowRequest");
             AddChild(RopId, "RopId:{0}", RopId.Data);
             AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
-            AddChild(InputHandleIndex, "InputHandleIndex:0x{0:X2}", InputHandleIndex.Data);
+            AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
             AddChild(Origin, "Origin:{0}", Origin.Data);
             AddChild(RowCount, "RowCount:{0}", RowCount.Data);
             AddChild(WantRowMovedCount, "WantRowMovedCount:{0}", WantRowMovedCount.Data);
@@ -975,7 +975,7 @@
         {
             SetText("RopSeekRowResponse");
             AddChild(RopId, "RopId:{0}", RopId.Data);
-            AddChild(InputHandleIndex, "InputHandleIndex:0x{0:X2}", InputHandleIndex.Data);
+            AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
             var returnValue = HelpMethod.FormatErrorCode(ReturnValue.Data);
             AddChild(ReturnValue, "ReturnValue:{0}", returnValue);
             if (HasSoughtLess != null) AddChild(HasSoughtLess, "HasSoughtLess:{0}", HasSoughtLess.Data);

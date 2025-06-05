@@ -4156,7 +4156,7 @@
             SetText("RopReleaseRequest");
             AddChild(RopId, "RopId:{0}", RopId.Data);
             AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
-            AddChild(InputHandleIndex, "InputHandleIndex:0x{0:X2}", InputHandleIndex.Data);
+            AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
         }
     }
 

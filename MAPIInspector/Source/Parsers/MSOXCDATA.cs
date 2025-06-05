@@ -5260,8 +5260,7 @@
 
         protected override void ParseBlocks()
         {
-            SetText("PtypInteger16");
-            AddChild(Value, "Value:{0}", Value.Data);
+            Text = $"{Value.Data}";
         }
     }
 
@@ -5285,8 +5284,7 @@
 
         protected override void ParseBlocks()
         {
-            SetText("PtypInteger32");
-            AddChild(Value, "Value:{0}", Value.Data);
+            Text = $"{Value.Data}";
         }
     }
 
@@ -5422,21 +5420,25 @@
     /// <summary>
     /// 8 bytes; a 64-bit integer.[MS-DTYP]: LONGLONG.
     /// </summary>
-    public class PtypInteger64 : BaseStructure
+    public class PtypInteger64 : Block
     {
         /// <summary>
         /// 64-bit integer.
         /// </summary>
-        public long Value;
+        public BlockT<long> Value;
 
         /// <summary>
         /// Parse the PtypInteger64 structure.
         /// </summary>
         /// <param name="s">A stream containing the PtypInteger64 structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Value = this.ReadINT64();
+            Value = BlockT<long>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            Text = $"{Value.Data} = 0x{Value.Data:X}";
         }
     }
 
@@ -6646,9 +6648,7 @@
 
                 case PropertyDataType.PtypInteger64:
                     {
-                        PtypInteger64 tempPropertyValue = new PtypInteger64();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypInteger64>(s);
                         break;
                     }
 
