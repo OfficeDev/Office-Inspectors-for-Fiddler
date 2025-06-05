@@ -5291,105 +5291,129 @@
     /// <summary>
     /// 4 bytes; a 32-bit floating point number. [MS-DTYP]: FLOAT
     /// </summary>
-    public class PtypFloating32 : BaseStructure
+    public class PtypFloating32 : Block
     {
         /// <summary>
         /// 32-bit floating point number.
         /// </summary>
-        public float Value;
+        public BlockT<float> Value;
 
         /// <summary>
         /// Parse the PtypFloating32 structure.
         /// </summary>
         /// <param name="s">A stream containing the PtypFloating32 structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Value = (float)this.ReadINT32();
+            Value = BlockT<float>.Parse(parser);
         }
+
+        protected override void ParseBlocks()
+        {
+            Text = $"{Value.Data}";
+        }
+
     }
 
     /// <summary>
     /// 8 bytes; a 64-bit floating point number. [MS-DTYP]: DOUBLE
     /// </summary>
-    public class PtypFloating64 : BaseStructure
+    public class PtypFloating64 : Block
     {
         /// <summary>
         /// 64-bit floating point number. 
         /// </summary>
-        public double Value;
+        public BlockT<double> Value;
 
         /// <summary>
         /// Parse the PtypFloating64 structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypFloating64 structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Value = (double)this.ReadINT64();
+            Value = BlockT<double>.Parse(parser);
         }
+
+        protected override void ParseBlocks()
+        {
+            Text = $"{Value.Data}";
+        }
+
     }
 
     /// <summary>
     /// 8 bytes; a 64-bit signed, scaled integer representation of a decimal currency value, with four places to the right of the decimal point. [MS-DTYP]: LONGLONG, [MS-OAUT]: CURRENCY
     /// </summary>
-    public class PtypCurrency : BaseStructure
+    public class PtypCurrency : Block
     {
         /// <summary>
         /// 64-bit signed, scaled integer representation of a decimal currency value
         /// </summary>
-        public long Value;
+        public BlockT<long> Value;
 
         /// <summary>
         /// Parse the PtypCurrency structure.
         /// </summary>
         /// <param name="s">A stream containing the PtypCurrency structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Value = this.ReadINT64();
+            Value = BlockT<long>.Parse(parser);
         }
+
+        protected override void ParseBlocks()
+        {
+            Text = $"{Value.Data}";
+        }
+
     }
 
     /// <summary>
     /// 8 bytes; a 64-bit floating point number. 
     /// </summary>
-    public class PtypFloatingTime : BaseStructure
+    public class PtypFloatingTime : Block
     {
         /// <summary>
         /// 64-bit floating point number. 
         /// </summary>
-        public double Value;
+        public BlockT<double> Value;
 
         /// <summary>
         /// Parse the PtypFloatingTime structure.
         /// </summary>
         /// <param name="s">A stream containing the PtypFloatingTime structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Value = (double)this.ReadINT64();
+            Value = BlockT<double>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            // TODO: Display as time
+            Text = $"{Value.Data}";
         }
     }
 
     /// <summary>
     /// 4 bytes; a 32-bit integer encoding error information as specified in section 2.4.1.
     /// </summary>
-    public class PtypErrorCode : BaseStructure
+    public class PtypErrorCode : Block
     {
         /// <summary>
         /// 32-bit integer encoding error information.
         /// </summary>
-        public AdditionalErrorCodes Value;
+        public BlockT<AdditionalErrorCodes> Value;
 
         /// <summary>
         /// Parse the PtypErrorCode structure.
         /// </summary>
         /// <param name="s">A stream containing the PtypErrorCode structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Value = (AdditionalErrorCodes)this.ReadUint();
+            Value = BlockT<AdditionalErrorCodes>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            // TODO: Map the error
+            Text = $"{Value.Data}";
         }
     }
 
@@ -5558,21 +5582,24 @@
     /// <summary>
     /// 16 bytes; a GUID with Data1, Data2, and Data3 fields in little-endian format.[MS-DTYP]: GUID.
     /// </summary>
-    public class PtypGuid : BaseStructure
+    public class PtypGuid : Block
     {
         /// <summary>
         /// A GUID value.
         /// </summary>
-        public Guid Value;
+        public BlockT<Guid> Value;
 
         /// <summary>
         /// Parse the PtypGuid structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypGuid structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Value = this.ReadGuid();
+            Value = BlockT<Guid>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            Text = $"{Value.Data}";
         }
     }
 
@@ -6600,41 +6627,31 @@
 
                 case PropertyDataType.PtypFloating32:
                     {
-                        PtypFloating32 tempPropertyValue = new PtypFloating32();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypFloating32>(s);
                         break;
                     }
 
                 case PropertyDataType.PtypFloating64:
                     {
-                        PtypFloating64 tempPropertyValue = new PtypFloating64();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypFloating64>(s);
                         break;
                     }
 
                 case PropertyDataType.PtypCurrency:
                     {
-                        PtypCurrency tempPropertyValue = new PtypCurrency();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypCurrency>(s);
                         break;
                     }
 
                 case PropertyDataType.PtypFloatingTime:
                     {
-                        PtypFloatingTime tempPropertyValue = new PtypFloatingTime();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypFloatingTime>(s);
                         break;
                     }
 
                 case PropertyDataType.PtypErrorCode:
                     {
-                        PtypErrorCode tempPropertyValue = new PtypErrorCode();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypErrorCode>(s);
                         break;
                     }
 
@@ -6676,9 +6693,7 @@
 
                 case PropertyDataType.PtypGuid:
                     {
-                        PtypGuid tempPropertyValue = new PtypGuid();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypGuid>(s);
                         break;
                     }
 
