@@ -2388,13 +2388,12 @@
 
                             // MSOXCTABL ROPs
                             case RopIdType.RopSetColumns:
-                                RopSetColumnsResponse ropSetColumnsResponse = new RopSetColumnsResponse();
-                                ropSetColumnsResponse.Parse(s);
+                                RopSetColumnsResponse ropSetColumnsResponse = Block.Parse<RopSetColumnsResponse>(s);
                                 ropsList.Add(ropSetColumnsResponse);
 
-                                if (!(DecodingContext.SetColumn_InputHandles_InResponse.Count > 0 && DecodingContext.SetColumn_InputHandles_InResponse.Contains(tempServerObjectHandleTable[ropSetColumnsResponse.InputHandleIndex])))
+                                if (!(DecodingContext.SetColumn_InputHandles_InResponse.Count > 0 && DecodingContext.SetColumn_InputHandles_InResponse.Contains(tempServerObjectHandleTable[ropSetColumnsResponse.InputHandleIndex.Data])))
                                 {
-                                    DecodingContext.SetColumn_InputHandles_InResponse.Add(tempServerObjectHandleTable[ropSetColumnsResponse.InputHandleIndex]);
+                                    DecodingContext.SetColumn_InputHandles_InResponse.Add(tempServerObjectHandleTable[ropSetColumnsResponse.InputHandleIndex.Data]);
                                 }
 
                                 break;
@@ -2461,9 +2460,7 @@
                                 break;
 
                             case RopIdType.RopSeekRow:
-                                RopSeekRowResponse ropSeekRowResponse = new RopSeekRowResponse();
-                                ropSeekRowResponse.Parse(s);
-                                ropsList.Add(ropSeekRowResponse);
+                                ropsList.Add(Block.Parse<RopSeekRowResponse>(s));
                                 break;
 
                             case RopIdType.RopSeekRowBookmark:

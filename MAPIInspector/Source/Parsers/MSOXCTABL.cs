@@ -203,44 +203,51 @@
     /// <summary>
     /// A class indicates the RopSetColumns ROP Response Buffer.
     /// </summary>
-    public class RopSetColumnsResponse : BaseStructure
+    public class RopSetColumnsResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
-        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<uint> ReturnValue;
 
         /// <summary>
-        /// An enumeration that specifies the status of the table. 
+        /// An enumeration that specifies the status of the table.
         /// </summary>
-        public TableStatus? TableStatus;
+        public BlockT<TableStatus> TableStatus;
 
-        /// <summary>
-        /// Parse the RopSetColumns structure.
-        /// </summary>
-        /// <param name="s">A stream containing RopSetColumns structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = BlockT<RopIdType>.Parse(parser);
+            InputHandleIndex = BlockT<byte>.Parse(parser);
+            ReturnValue = BlockT<uint>.Parse(parser);
 
-            this.RopId = (RopIdType)this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
-
-            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
+            if (ReturnValue.Data == (uint)ErrorCodes.Success)
             {
-                this.TableStatus = (TableStatus)this.ReadByte();
+                TableStatus = BlockT<TableStatus>.Parse(parser);
+            }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopSetColumnsResponse");
+            AddChild(RopId, "RopId:{0}", RopId.Data);
+            AddChild(InputHandleIndex, "InputHandleIndex:0x{0:X2}", InputHandleIndex.Data);
+            HelpMethod help = new HelpMethod();
+            var returnValue = help.FormatErrorCode(ReturnValue.Data);
+            AddChild(ReturnValue, "ReturnValue:{0}", returnValue);
+            if (TableStatus.Parsed)
+            {
+                AddChild(TableStatus, "TableStatus:{0}", TableStatus.Data);
             }
         }
     }
@@ -929,51 +936,58 @@
     /// <summary>
     ///  A class indicates the RopSeekRow ROP Response Buffer.
     /// </summary>
-    public class RopSeekRowResponse : BaseStructure
+    public class RopSeekRowResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<uint> ReturnValue;
 
         /// <summary>
         /// A Boolean that specifies whether the full number of rows sought past was less than the number that was requested.
         /// </summary>
-        public bool? HasSoughtLess;
+        public BlockT<bool> HasSoughtLess;
 
         /// <summary>
         /// A signed integer that specifies the direction and number of rows sought.
         /// </summary>
-        public int? RowsSought;
+        public BlockT<int> RowsSought;
 
         /// <summary>
         /// Parse the RopSeekRowResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSeekRowResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
-            this.RopId = (RopIdType)this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
-
-            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
+            RopId = BlockT<RopIdType>.Parse(parser);
+            InputHandleIndex = BlockT<byte>.Parse(parser);
+            ReturnValue = BlockT<uint>.Parse(parser);
+            if (ReturnValue.Data == (uint)ErrorCodes.Success)
             {
-                this.HasSoughtLess = this.ReadBoolean();
-                this.RowsSought = this.ReadINT32();
+                HasSoughtLess = BlockT<bool>.Parse<byte>(parser);
+                RowsSought = BlockT<int>.Parse(parser);
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopSeekRowResponse");
+            AddChild(RopId, "RopId:{0}", RopId.Data);
+            AddChild(InputHandleIndex, "InputHandleIndex:0x{0:X2}", InputHandleIndex.Data);
+            HelpMethod help = new HelpMethod();
+            var returnValue = help.FormatErrorCode(ReturnValue.Data);
+            AddChild(ReturnValue, "ReturnValue:{0}", returnValue);
+            if (HasSoughtLess != null) AddChild(HasSoughtLess, "HasSoughtLess:{0}", HasSoughtLess.Data);
+            if (RowsSought != null) AddChild(RowsSought, "RowsSought:{0}", RowsSought.Data);
         }
     }
     #endregion

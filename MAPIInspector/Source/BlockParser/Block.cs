@@ -25,7 +25,7 @@ namespace BlockParser
         public bool HasData => !string.IsNullOrEmpty(Text) || Children.Count > 0;
 
         protected BinaryParser parser;
-        protected bool Parsed { get; set; } = false;
+        public bool Parsed { get; protected set; } = false;
         protected bool EnableJunk { get; set; } = true;
         protected virtual bool UsePipes() => false;
 

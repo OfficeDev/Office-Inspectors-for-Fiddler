@@ -1,7 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using MapiInspector;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -3936,8 +3935,8 @@
             base.Parse(s);
             var offset = (int)s.Position;
             this.bytes = this.ReadBytes(this.size);
-            this.ParsedValue = Utilities.ConvertArrayToHexString(this.bytes);
-            this["string"] = Utilities.ConvertByteArrayToString(this.bytes);
+            this.ParsedValue = MapiInspector.Utilities.ConvertArrayToHexString(this.bytes);
+            this["string"] = MapiInspector.Utilities.ConvertByteArrayToString(this.bytes);
         }
 
         public override int Size { get { return this.bytes.Length; } }
@@ -4872,14 +4871,14 @@
                             PropertyValue propValue = new PropertyValue(tempPropTag.PropertyType.Data);
                             propValue.Parse(s);
                             //todo
-                            propValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
+                            propValue.PropertyTag = $"{tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
                             rowPropValue = propValue;
                         }
                         else
                         {
                             TypedPropertyValue typePropValue = new TypedPropertyValue();
                             typePropValue.Parse(s);
-                            typePropValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
+                            typePropValue.PropertyTag = $"{tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
                             rowPropValue = typePropValue;
                         }
                     }
@@ -4889,14 +4888,14 @@
                         {
                             FlaggedPropertyValue flagPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType.Data);
                             flagPropValue.Parse(s);
-                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
+                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
                             rowPropValue = flagPropValue;
                         }
                         else
                         {
                             FlaggedPropertyValueWithType flagPropValue = new FlaggedPropertyValueWithType();
                             flagPropValue.Parse(s);
-                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
+                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
                             rowPropValue = flagPropValue;
                         }
                     }
@@ -5244,49 +5243,51 @@
     /// <summary>
     /// 2 bytes; a 16-bit integer. [MS-DTYP]: INT16
     /// </summary>
-    public class PtypInteger16 : AnnotatedData
+    public class PtypInteger16 : Block
     {
         /// <summary>
-        /// 16-bit integer. 
+        /// 16-bit integer.
         /// </summary>
-        public short Value;
+        public BlockT<short> Value;
 
         /// <summary>
         /// Parse the PtypInteger16 structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypInteger16 structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Value = this.ReadINT16();
-            this.ParsedValue = $"{Value}";
+            Value = BlockT<short>.Parse(parser);
         }
 
-        public override int Size { get; } = 2;
+        protected override void ParseBlocks()
+        {
+            SetText("PtypInteger16");
+            AddChild(Value, "Value:{0}", Value.Data);
+        }
     }
 
     /// <summary>
     /// 4 bytes; a 32-bit integer. [MS-DTYP]: INT32
     /// </summary>
-    public class PtypInteger32 : AnnotatedData
+    public class PtypInteger32 : Block
     {
         /// <summary>
-        /// 32-bit integer. 
+        /// 32-bit integer.
         /// </summary>
-        public int Value;
+        public BlockT<int> Value;
 
         /// <summary>
         /// Parse the PtypInteger32 structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypInteger32 structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Value = this.ReadINT32();
-            this.ParsedValue = $"{Value}";
+            Value = BlockT<int>.Parse(parser);
         }
 
-        public override int Size { get; } = 4;
+        protected override void ParseBlocks()
+        {
+            SetText("PtypInteger32");
+            AddChild(Value, "Value:{0}", Value.Data);
+        }
     }
 
     /// <summary>
@@ -6585,17 +6586,13 @@
             {
                 case PropertyDataType.PtypInteger16:
                     {
-                        PtypInteger16 tempPropertyValue = new PtypInteger16();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypInteger16>(s);
                         break;
                     }
 
                 case PropertyDataType.PtypInteger32:
                     {
-                        PtypInteger32 tempPropertyValue = new PtypInteger32();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypInteger32>(s);
                         break;
                     }
 
@@ -7653,8 +7650,7 @@
             base.Parse(s);
             this.RestrictType = (RestrictTypeEnum)ReadByte();
             this.BitmapRelOp = (BitmapRelOpType)ReadByte();
-            this.PropTag = new PtypInteger32();
-            this.PropTag.Parse(s);
+            this.PropTag = Block.Parse<PtypInteger32>(s);
             this.Mask = this.ReadUint();
         }
     }
