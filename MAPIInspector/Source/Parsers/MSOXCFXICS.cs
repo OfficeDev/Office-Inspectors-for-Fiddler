@@ -1480,8 +1480,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -1593,8 +1592,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -1703,8 +1701,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -1792,8 +1789,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -1913,8 +1909,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -2052,8 +2047,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -2141,8 +2135,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -2270,8 +2263,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             this.TransferStatus = this.ReadUshort();
             this.InProgressCount = this.ReadUshort();
             this.TotalStepCount = this.ReadUshort();
@@ -2401,8 +2393,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             this.TransferStatus = this.ReadUshort();
             this.InProgressCount = this.ReadUint();
             this.TotalStepCount = this.ReadUint();
@@ -2544,8 +2535,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -2628,8 +2618,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -2711,8 +2700,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -2782,8 +2770,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -2859,8 +2846,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -2895,7 +2881,7 @@
         /// A Boolean that specifies whether this synchronization upload context is for contents or for hierarchy.
         /// </summary>
         public bool IsContentsCollector;
-        
+
         /// <summary>
         /// Parse the RopSynchronizationOpenCollectorRequest structure.
         /// </summary>
@@ -2942,8 +2928,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -3050,8 +3035,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -3172,8 +3156,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -3314,8 +3297,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -3417,8 +3399,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -3511,8 +3492,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
 
@@ -3632,8 +3612,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -3735,8 +3714,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
 
@@ -4058,7 +4036,7 @@
                         MapiInspector.MAPIParser.PartialGetRemainSize = remainLength;
                         MapiInspector.MAPIParser.PartialGetServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
                         MapiInspector.MAPIParser.PartialGetProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
-						MapiInspector.MAPIParser.PartialGetClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
+                        MapiInspector.MAPIParser.PartialGetClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
                         break;
                     }
                 }
@@ -4070,7 +4048,7 @@
                         MapiInspector.MAPIParser.PartialPutRemainSize = remainLength;
                         MapiInspector.MAPIParser.PartialPutServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
                         MapiInspector.MAPIParser.PartialPutProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
-						MapiInspector.MAPIParser.PartialPutClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
+                        MapiInspector.MAPIParser.PartialPutClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
                         break;
                     }
                 }
@@ -4082,7 +4060,7 @@
                         MapiInspector.MAPIParser.PartialPutExtendRemainSize = remainLength;
                         MapiInspector.MAPIParser.PartialPutExtendServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
                         MapiInspector.MAPIParser.PartialPutExtendProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
-						MapiInspector.MAPIParser.PartialPutExtendClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
+                        MapiInspector.MAPIParser.PartialPutExtendClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
                         break;
                     }
                 }
@@ -5845,7 +5823,7 @@
                     {
                         this.Length = stream.ReadInt32();
                     }
-                    
+
                     // clear
                     MapiInspector.MAPIParser.PartialPutType = 0;
 
@@ -6249,7 +6227,7 @@
                 {
                     typeValue = this.ptype;
                 }
-                
+
                 switch ((PropertyDataType)this.PropType)
                 {
                     case PropertyDataType.PtypMultipleInteger16:
@@ -6335,7 +6313,7 @@
                 {
                     this.ptype = MapiInspector.MAPIParser.PartialPutExtendType;
                     this.pid = (PidTagPropertyEnum)MapiInspector.MAPIParser.PartialPutExtendId;
-                    
+
                     // clear
                     MapiInspector.MAPIParser.PartialPutExtendType = 0;
                     MapiInspector.MAPIParser.PartialPutExtendId = 0;

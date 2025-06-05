@@ -433,8 +433,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.LogonFlags = (LogonFlags)this.ReadByte();
@@ -530,8 +529,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.LogonFlags = (LogonFlags)this.ReadByte();
@@ -639,8 +637,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.FolderId = new FolderID();
@@ -731,8 +728,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -813,8 +809,7 @@
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
             List<PropertyRow> tmpRows = new List<PropertyRow>();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.RowCount = this.ReadUint();
@@ -910,8 +905,7 @@
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
             List<PropertyRow> tmpRows = new List<PropertyRow>();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.StoreState = this.ReadUint();
@@ -1007,8 +1001,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.OwningServersCount = this.ReadUshort();
@@ -1120,8 +1113,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.IsGhosted = this.ReadBoolean();
@@ -1220,8 +1212,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.LongTermId = new LongTermID();
@@ -1308,8 +1299,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.ObjectId = this.ConvertArray(this.ReadBytes(8));
@@ -1399,8 +1389,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.LongTermIdCount = this.ReadUshort();
@@ -1492,8 +1481,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.DatabaseGuid = this.ReadGuid();
@@ -1607,8 +1595,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.HasFinished = this.ReadBoolean();
@@ -1687,7 +1674,7 @@
             this.DataOffset = this.ReadUint();
             this.DataSize = this.ReadUshort();
             this.Data = this.ReadBytes((int)this.DataSize);
-            if(!MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
+            if (!MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
             {
                 if (this.DataOffset == 0 && (((byte)DecodingContext.SessionLogonFlagMapLogId[MapiInspector.MAPIParser.ParsingSession.id][this.LogonId] & (byte)LogonFlags.Private) == (byte)LogonFlags.Private))
                 {
@@ -1734,8 +1721,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion

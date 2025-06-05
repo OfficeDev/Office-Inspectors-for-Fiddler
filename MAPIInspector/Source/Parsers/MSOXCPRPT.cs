@@ -166,8 +166,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -273,8 +272,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
                 this.PropertyValueCount = this.ReadUshort();
@@ -365,8 +363,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -484,8 +481,7 @@
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
             List<PropertyRow> tmpRows = new List<PropertyRow>();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -603,8 +599,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -716,8 +711,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -829,8 +823,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -949,8 +942,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -1086,8 +1078,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.SourceHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -1229,8 +1220,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.SourceHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -1350,8 +1340,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -1457,8 +1446,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -1561,8 +1549,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -1661,8 +1648,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             this.DataSize = this.ReadUshort();
             this.Data = this.ReadBytes((int)this.DataSize);
         }
@@ -1749,8 +1735,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             this.WrittenSize = this.ReadUshort();
         }
     }
@@ -1836,8 +1821,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             this.WrittenSize = this.ReadUint();
         }
     }
@@ -1906,8 +1890,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -1980,8 +1963,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -2060,8 +2042,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -2146,8 +2127,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -2247,8 +2227,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.SourceHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((AdditionalErrorCodes)this.ReturnValue == AdditionalErrorCodes.NullDestinationObject)
             {
@@ -2345,8 +2324,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -2440,8 +2418,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -2527,8 +2504,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion
@@ -2613,8 +2589,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
             this.WrittenSize = this.ReadUshort();
         }
     }
@@ -2689,8 +2664,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            HelpMethod help = new HelpMethod();
-            this.ReturnValue = help.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
         }
     }
     #endregion

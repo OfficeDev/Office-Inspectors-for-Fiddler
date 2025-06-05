@@ -5701,7 +5701,7 @@
         /// </summary>
         /// <param name="errorCodeUint">The UInt error code</param>
         /// <returns>The enum error code name.</returns>
-        public object FormatErrorCode(uint errorCodeUint)
+        public static object FormatErrorCode(uint errorCodeUint)
         {
             object errorCode = null;
             if (Enum.IsDefined(typeof(ErrorCodes), errorCodeUint))
