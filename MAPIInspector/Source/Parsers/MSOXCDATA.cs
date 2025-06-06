@@ -5565,6 +5565,26 @@
         }
     }
 
+    public class PtypString8Block : Block
+    {
+        /// <summary>
+        /// A string of multibyte characters in externally specified encoding with terminating null character (single 0 byte).
+        /// </summary>
+        public BlockStringA Value;
+
+        /// <summary>
+        /// Parse the PtypString structure.
+        /// </summary>
+        protected override void Parse()
+        {
+            Value = BlockStringA.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            Text = $"\"{Value.Text}\"";
+        }
+    }
     /// <summary>
     /// 8 bytes; a 64-bit integer representing the number of 100-nanosecond intervals since January 1, 1601.[MS-DTYP]: FILETIME.
     /// </summary>
@@ -6696,9 +6716,7 @@
 
                 case PropertyDataType.PtypString8:
                     {
-                        PtypString8 tempPropertyValue = new PtypString8();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypString8Block>(s);
                         break;
                     }
 
