@@ -47,6 +47,21 @@ namespace BlockParserTests
         }
 
         [TestMethod]
+        public void NullTerminator_ParsesCorrectly()
+        {
+            var rawData = new byte[] { 0x00, 0x00, 0x12, 0x34 };
+            var parser = new BinaryParser(rawData);
+            var block = BlockStringA.Parse(parser);
+            Assert.AreEqual("", block.Data);
+            Assert.AreEqual(0, block.Length); // Excluding null terminator
+            Assert.AreEqual(1, block.Size); // Including null terminator
+            Assert.IsTrue(block.Empty);
+            Assert.IsTrue(block.Parsed);
+            Assert.AreEqual(1, parser.Offset);
+            Assert.AreEqual(3, parser.RemainingBytes);
+        }
+
+        [TestMethod]
         public void RawBinaryData_ParsesCorrectly()
         {
             var rawData = new byte[] { 0x66, 0x6F, 0x6F, 0x00, 0xAA, 0xBB }; // "foo" + null terminator

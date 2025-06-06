@@ -45,7 +45,7 @@ namespace BlockParser
                     length++;
             }
 
-            if (length > 0)
+            if (length >= 0)
             {
                 data = Strings.RemoveInvalidCharacters(Encoding.ASCII.GetString(bytes, 0, length));
                 SetText(data);

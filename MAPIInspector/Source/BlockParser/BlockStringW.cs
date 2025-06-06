@@ -72,7 +72,7 @@ namespace BlockParser
                 }
             }
 
-            if (length > 0)
+            if (length >= 0)
             {
                 data = Strings.RemoveInvalidCharacters(Encoding.Unicode.GetString(bytes, 0, length));
                 SetText(data);
