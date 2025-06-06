@@ -5508,6 +5508,27 @@
         }
     }
 
+    public class PtypStringBlock : Block
+    {
+        /// <summary>
+        /// A string of Unicode characters in UTF-16LE format encoding with terminating null character (0x0000).
+        /// </summary>
+        public BlockStringW Value;
+
+        /// <summary>
+        /// Parse the PtypString structure.
+        /// </summary>
+        protected override void Parse()
+        {
+            Value = BlockStringW.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            Text = $"\"{Value.Text}\"";
+        }
+    }
+
     /// <summary>
     /// Variable size; a string of multibyte characters in externally specified encoding with terminating null character (single 0 byte).
     /// </summary>
@@ -6669,9 +6690,7 @@
 
                 case PropertyDataType.PtypString:
                     {
-                        PtypString tempPropertyValue = new PtypString();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypStringBlock>(s);
                         break;
                     }
 
