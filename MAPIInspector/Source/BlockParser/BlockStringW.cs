@@ -55,21 +55,8 @@ namespace BlockParser
             if (cchChar == -1)
             {
                 length = 0;
-                int maxChars = bytes.Length / 2;
-                for (int i = 0; i < maxChars; i++)
-                {
-                    // Each char is 2 bytes (UTF-16LE)
-                    int byteIndex = i * 2;
-                    if (byteIndex + 2 > bytes.Length)
-                        break;
-                    ushort ch = (ushort)(bytes[byteIndex] | (bytes[byteIndex + 1] << 8));
-                    if (ch == 0)
-                    {
-                        // Found null terminator
-                        length = byteIndex;
-                        break;
-                    }
-                }
+                while (length + 1 < size && !(bytes[length] == 0 && bytes[length + 1] == 0))
+                    length+=2;
             }
 
             if (length >= 0)
@@ -79,7 +66,7 @@ namespace BlockParser
                 parser.Advance(length);
                 // If we were given a length, that's all we read. But if we were not given a length, we read until the null terminator.
                 // So we must now skip the null terminator.
-                if (!fixedLength) parser.Advance(2);
+                if (!fixedLength && parser.RemainingBytes >= 2) parser.Advance(2);
                 Parsed = true;
             }
         }

@@ -52,7 +52,7 @@ namespace BlockParser
                 parser.Advance(length);
                 // If we were given a length, that's all we read. But if we were not given a length, we read until the null terminator.
                 // So we must now skip the null terminator.
-                if (!fixedLength) parser.Advance(1);
+                if (!fixedLength && parser.RemainingBytes >= 1) parser.Advance(1);
                 Parsed = true;
             }
         }
