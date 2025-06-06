@@ -675,7 +675,7 @@
         /// The reserved bit.
         /// </summary>
         [BitAttribute(4)]
-        public int Reservedbits0;
+        public byte Reservedbits0;
 
         /// <summary>
         /// Indicates that the message SHOULD be forwarded as a Short Message Service (SMS) text message. 
