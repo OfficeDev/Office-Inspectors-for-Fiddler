@@ -5588,36 +5588,27 @@
     /// <summary>
     /// 8 bytes; a 64-bit integer representing the number of 100-nanosecond intervals since January 1, 1601.[MS-DTYP]: FILETIME.
     /// </summary>
-    public class PtypTime : AnnotatedData
+    public class PtypTime : Block
     {
         /// <summary>
         /// 64-bit integer representing the number of 100-nanosecond intervals since January 1, 1601.[MS-DTYP]: FILETIME.
         /// </summary>
-        private DateTime Value;
+        private BlockT<ulong> Value;
+        private DateTime dateTime;
 
         /// <summary>
         /// Parse the PtypTime structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypTime structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            try
-            {
-                ulong temp = this.ReadUlong();
-                DateTime startdate = new DateTime(1601, 1, 1).AddMilliseconds(temp / 10000);
-                this.Value = startdate.ToLocalTime();
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                // Used to deal special date of PidTagMessageDeliveryTime property
-                this.Value = new DateTime();
-            }
-
-            this.ParsedValue = Value.ToString();
+            Value = BlockT<ulong>.Parse(parser);
+            dateTime = new DateTime(1601, 1, 1).AddMilliseconds(Value.Data / 10000).ToLocalTime();
         }
 
-        public override int Size { get; } = 8; // sizeof(DateTime)
+        protected override void ParseBlocks()
+        {
+            Text = dateTime.ToString();
+        }
     }
 
     /// <summary>
@@ -6779,9 +6770,7 @@
 
                 case PropertyDataType.PtypTime:
                     {
-                        PtypTime tempPropertyValue = new PtypTime();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypTime>(s);
                         break;
                     }
 
