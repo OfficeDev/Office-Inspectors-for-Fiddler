@@ -168,9 +168,16 @@ namespace BlockParser
         public static T Parse<T>(Stream stream, bool enableJunk = false) where T : Block, new()
         {
             var block = Parse<T>(new BinaryParser(stream, stream.Position), enableJunk);
-            block.parser.Advance((int)stream.Position);
             stream.Seek(block.Size, SeekOrigin.Current);
             return block;
+        }
+
+        public void Parse(Stream stream, bool enableJunk = false) => Parse(stream, 0, enableJunk);
+        private void Parse(Stream stream, int cbBin, bool enableJunk = false)
+        {
+            var parser = new BinaryParser(stream, stream.Position);
+            Parse(parser, 0, enableJunk);
+            stream.Seek(Size, SeekOrigin.Current);
         }
 
         // Static parse function returns a parsing block based on a BinaryParser
@@ -217,11 +224,16 @@ namespace BlockParser
             _stringBlock = _stringBlock.Replace('\0', '.');
         }
 
-        public override string ToString()
+        public string FullString
         {
-            EnsureParsed();
-            return _stringBlock;
+            get
+            {
+                EnsureParsed();
+                return _stringBlock;
+            }
         }
+
+        public override string ToString() => Text;
 
         private List<string> ToStringsInternal()
         {
