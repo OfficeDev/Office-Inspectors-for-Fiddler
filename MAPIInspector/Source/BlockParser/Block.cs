@@ -176,21 +176,15 @@ namespace BlockParser
         // Static parse function returns a parsing block based on a BinaryParser
         public static T Parse<T>(BinaryParser parser, bool enableJunk = false) where T : Block, new()
         {
-            return Parse<T>(parser, 0, enableJunk);
-        }
-
-        // TODO: If we don't start using this while converting, remove it
-        public static T Parse<T>(BinaryParser parser, int cbBin, bool enableJunk = false) where T : Block, new()
-        {
             var ret = new T();
-            ret.Parse(parser, cbBin, enableJunk);
+            ret.Parse(parser, 0, enableJunk);
             return ret;
         }
 
         // Non-static parse functions actually do the parsing
         public void Parse(BinaryParser parser, bool enableJunk = false) => Parse(parser, 0, enableJunk);
 
-        public void Parse(BinaryParser parser, int cbBin, bool enableJunk = false)
+        private void Parse(BinaryParser parser, int cbBin, bool enableJunk = false)
         {
             this.parser = parser;
             parser.PushCap(cbBin);
