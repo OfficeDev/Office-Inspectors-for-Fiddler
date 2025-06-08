@@ -6,6 +6,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
+    using System.Windows.Forms;
 
     /// <summary>
     /// The enum of StoreObject type.
@@ -5673,7 +5674,7 @@
         protected override void Parse()
         {
             Count = BlockT<ushort>.Parse(parser);
-            ServerId = Parse< PtypServerIdStruct>(parser, Count.Data);
+            ServerId = Parse<PtypServerIdStruct>(parser, Count.Data);
         }
 
         protected override void ParseBlocks()
@@ -7894,22 +7895,22 @@
     /// <summary>
     /// 2.13.2 SortOrderSet Structure
     /// </summary>
-    public class SortOrderSet : BaseStructure
+    public class SortOrderSet : Block
     {
         /// <summary>
         /// An unsigned integer. This value specifies how many sortOrder structures are present in the SortOrders field.
         /// </summary>
-        public ushort SortOrderCount;
+        public BlockT<ushort> SortOrderCount;
 
         /// <summary>
         /// An unsigned integer. This value specifies that the first CategorizedCount columns are categorized. 
         /// </summary>
-        public ushort CategorizedCount;
+        public BlockT<ushort> CategorizedCount;
 
         /// <summary>
         /// An unsigned integer. This value specifies that the first ExpandedCount field in the categorized columns starts in an expanded state in which all of the rows that apply to the category are visible in the table view. 
         /// </summary>
-        public ushort ExpandedCount;
+        public BlockT<ushort> ExpandedCount;
 
         /// <summary>
         /// An array of sortOrder structures. This field MUST contain the number of structures indicated by the value of the SortOrderCount field. 
@@ -7920,21 +7921,27 @@
         /// Parse the SortOrderSet structure.
         /// </summary>
         /// <param name="s">A stream containing the SortOrderSet structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.SortOrderCount = this.ReadUshort();
-            this.CategorizedCount = this.ReadUshort();
-            this.ExpandedCount = this.ReadUshort();
-            List<SortOrder> tempSortOrders = new List<SortOrder>();
-            for (int i = 0; i < this.SortOrderCount; i++)
+            SortOrderCount = BlockT<ushort>.Parse(parser);
+            CategorizedCount = BlockT<ushort>.Parse(parser);
+            ExpandedCount = BlockT<ushort>.Parse(parser);
+            var tempSortOrders = new List<SortOrder>();
+            for (int i = 0; i < SortOrderCount.Data; i++)
             {
-                SortOrder sortOrder = new SortOrder();
-                sortOrder.Parse(s);
-                tempSortOrders.Add(sortOrder);
+                tempSortOrders.Add(Parse<SortOrder>(parser));
             }
 
-            this.SortOrders = tempSortOrders.ToArray();
+            SortOrders = tempSortOrders.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("SortOrderSet");
+            AddChild(SortOrderCount, $"SortOrderCount:{SortOrderCount.Data}");
+            AddChild(CategorizedCount, $"CategorizedCount:{CategorizedCount.Data}");
+            AddChild(ExpandedCount, $"ExpandedCount:{ExpandedCount.Data}");
+            AddLabeledChildren("SortOrders", SortOrders);
         }
     }
     #endregion
