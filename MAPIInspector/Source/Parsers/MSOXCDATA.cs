@@ -1,7 +1,7 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using Fiddler;
+    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -6441,48 +6441,48 @@
     /// <summary>
     /// Any: this property type value matches any type; 
     /// </summary>
-    public class PtypUnspecified : BaseStructure
+    public class PtypUnspecified : Block
     {
         /// <summary>
-        /// Initializes a new instance of the PtypUnspecified class
+        /// Parse the PtypUnspecified structure.
         /// </summary>
-        public PtypUnspecified()
+        protected override void Parse() { }
+
+        protected override void ParseBlocks()
         {
-            throw new Exception("MSOXCDATA: Not implemented type definition - PtypUnspecified");
+            SetText("MSOXCDATA: Not implemented type definition - PtypUnspecified");
         }
     }
 
     /// <summary>
     /// None: This property is a placeholder.
     /// </summary>
-    public class PtypNull : BaseStructure
+    public class PtypNull : Block
     {
-        /// <summary>
-        /// The null value.
-        /// </summary>
-        public MAPIString Value;
-
         /// <summary>
         /// Parse the PtypNull structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypNull structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse() { }
+
+        protected override void ParseBlocks()
         {
-            this.Value = null;
+            SetText("MSOXCDATA: PtypNull placeholder");
         }
     }
 
     /// <summary>
     /// IN FUTURE: How to distinguish PtypObject from PtypEmbeddedTable since they share the same value
     /// </summary>
-    public class PtypObject_Or_PtypEmbeddedTable : BaseStructure
+    public class PtypObject_Or_PtypEmbeddedTable : Block
     {
         /// <summary>
-        /// Initializes a new instance of the PtypObject_Or_PtypEmbeddedTable class
+        /// Parse the PtypUnspecified structure.
         /// </summary>
-        public PtypObject_Or_PtypEmbeddedTable()
+        protected override void Parse() { }
+
+        protected override void ParseBlocks()
         {
-            throw new Exception("MSOXCDATA: Not implemented type definition - PtypObject_Or_PtypEmbeddedTable");
+            SetText("MSOXCDATA: Not implemented type definition - PtypObject_Or_PtypEmbeddedTable");
         }
     }
 
@@ -6669,17 +6669,13 @@
 
                 case PropertyDataType.PtypUnspecified:
                     {
-                        PtypUnspecified tempPropertyValue = new PtypUnspecified();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypUnspecified>(s);
                         break;
                     }
 
                 case PropertyDataType.PtypNull:
                     {
-                        PtypNull tempPropertyValue = new PtypNull();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypNull>(s);
                         break;
                     }
 
