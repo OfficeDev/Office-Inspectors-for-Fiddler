@@ -5889,10 +5889,21 @@
 
         protected override void ParseBlocks()
         {
+            SetText("PtypBinary");
             AddChild(_count, $"Count:{Count}");
             AddChild(Value, $"Value:{Value.ToHexString(false)}");
         }
     }
+
+    // There is one variation in the width of count fields.In the context of ROP buffers,
+    // such as the RopGetPropertiesSpecific ROP([MS-OXCROPS] section 2.2.8.3), byte counts
+    // for PtypBinary property values are 16 bits wide and value counts for all PtypMultiple
+    // property values are 32 bits wide.However, in the context of extended rules, as
+    // specified in [MS - OXORULE] section 2.2.4, and in the context of the MAPI extensions
+    // for HTTP, as specified in [MS - OXCMAPIHTTP] section 2.2.5, byte counts for PtypBinary
+    // property values and value counts for PtypMultiple property values are 32 bits wide.
+    // Such count fields have a width designation of COUNT, as specified in section 2.11.1.1,
+    // rather than an explicit width, as throughout section 2.11.
 
     /// <summary>
     /// Variable size; a COUNT field followed by that many PtypInteger16 values.
@@ -6512,22 +6523,17 @@
     /// <summary>
     /// Variable size; a COUNT field followed by that many PtypBinary values.
     /// </summary>
-    public class PtypMultipleBinary : BaseStructure
+    public class PtypMultipleBinary : Block
     {
         /// <summary>
         /// COUNT values are typically used to specify the size of an associated field.
         /// </summary>
-        public object Count;
-
-        /// <summary>
-        /// Workaround, need to update once the COUNT wide of PtypMultipleBinary is confirmed.
-        /// </summary>
-        public object UndefinedCount;
+        private BlockT<uint> Count;
 
         /// <summary>
         /// The array of binary value.
         /// </summary>
-        public PtypBinary[] Value;
+        public PtypBinaryBlock[] Value;
 
         /// <summary>
         /// The Count wide size.
@@ -6540,38 +6546,31 @@
         /// <param name="wide">The Count wide size of PtypMultipleBinary type.</param>
         public PtypMultipleBinary(CountWideEnum wide)
         {
-            this.countWide = wide;
+            countWide = wide;
         }
 
         /// <summary>
         /// Parse the PtypMultipleBinary structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypMultipleBinary structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.Count = help.ReadCount(this.countWide, s);
-            byte nextbyte = ReadByte();
-            s.Position -= 1;
-            if (nextbyte == 0xff)
-            {
-                this.UndefinedCount = this.ReadByte();
-            }
-            else
-            {
-                this.UndefinedCount = this.ReadUshort();
-            }
+            Count = BlockT<uint>.Parse(parser);
 
-            List<PtypBinary> tempvalue = new List<PtypBinary>();
-            for (int i = 0; i < this.Count.GetHashCode(); i++)
+            List<PtypBinaryBlock> tempvalue = new List<PtypBinaryBlock>();
+            for (int i = 0; i < Count.Data; i++)
             {
-                PtypBinary binary = new PtypBinary(this.countWide);
-                binary.Parse(s);
+                PtypBinaryBlock binary = new PtypBinaryBlock(countWide);
+                binary.Parse(parser);
                 tempvalue.Add(binary);
             }
 
-            this.Value = tempvalue.ToArray();
+            Value = tempvalue.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Count, $"Count:{Count.Data}");
+            AddLabeledChildren("Value", Value);
         }
     }
 
