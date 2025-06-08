@@ -4836,12 +4836,7 @@
                         this.ValueArray = pstring8;
                         break;
                     case PropertyDataType.PtypServerId:
-                        PtypServerId pserverId = new PtypServerId(CountWideEnum.fourBytes);
-
-                        // PtypServerId in MSOXCFXICS does not contain Length element
-                        stream.Position -= 4;
-                        pserverId.Parse(stream);
-                        this.ValueArray = pserverId;
+                        this.ValueArray = Block.Parse<PtypServerId>(stream);
                         break;
                     case PropertyDataType.PtypObject_Or_PtypEmbeddedTable:
                         this.ValueArray = stream.ReadBlock(this.Length);

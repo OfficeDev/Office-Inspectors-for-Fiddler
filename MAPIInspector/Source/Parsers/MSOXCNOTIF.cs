@@ -513,12 +513,12 @@
         /// <returns>Indicates if messageID is empty</returns>
         public bool IsEmptyMessageID(MessageID messageId)
         {
-            if (messageId.ReplicaId != 0)
+            if (messageId.ReplicaId.Data != 0)
             {
                 return false;
             }
 
-            foreach (var item in messageId.GlobalCounter)
+            foreach (var item in messageId.GlobalCounter.Data)
             {
                 if (item != 0)
                 {

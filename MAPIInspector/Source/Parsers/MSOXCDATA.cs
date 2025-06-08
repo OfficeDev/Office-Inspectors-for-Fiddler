@@ -4302,54 +4302,63 @@
     /// <summary>
     /// 2.2.1.1 Folder ID Structure
     /// </summary>
-    public class FolderID : BaseStructure
+    public class FolderID : Block
     {
         /// <summary>
         /// An unsigned integer identifying a Store object.
         /// </summary>
-        public ushort ReplicaId;
+        public BlockT<ushort> ReplicaId;
 
         /// <summary>
         /// An unsigned integer identifying the folder within its Store object. 6 bytes
         /// </summary>
-        public byte[] GlobalCounter;
+        public BlockBytes GlobalCounter;
 
         /// <summary>
         /// Parse the FolderID structure.
         /// </summary>
-        /// <param name="s">A stream containing the FolderID structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.ReplicaId = this.ReadUshort();
-            this.GlobalCounter = this.ReadBytes(6);
+            ReplicaId = BlockT<ushort>.Parse(parser);
+            GlobalCounter = BlockBytes.Parse(parser, 6);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(ReplicaId, $"ReplicaId:{ReplicaId.Data}");
+            AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
         }
     }
 
     /// <summary>
     /// 2.2.1.2 Message ID Structure
     /// </summary>
-    public class MessageID : BaseStructure
+    public class MessageID : Block
     {
         /// <summary>
         /// An unsigned integer identifying a Store object.
         /// </summary>
-        public ushort ReplicaId;
+        public BlockT<ushort> ReplicaId;
 
         /// <summary>
         /// An unsigned integer identifying the message within its Store object. 6 bytes
         /// </summary>
-        public byte[] GlobalCounter;
+        public BlockBytes GlobalCounter;
 
         /// <summary>
         /// Parse the MessageID structure.
         /// </summary>
         /// <param name="s">A stream containing the MessageID structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.ReplicaId = this.ReadUshort();
-            this.GlobalCounter = this.ReadBytes(6);
+            ReplicaId = BlockT<ushort>.Parse(parser);
+            GlobalCounter = BlockBytes.Parse(parser, 6);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(ReplicaId, $"ReplicaId:{ReplicaId.Data}");
+            AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
         }
     }
 
@@ -5646,17 +5655,43 @@
     /// <summary>
     /// Variable size; a 16-bit COUNT field followed by a structure as specified in section 2.11.1.4.
     /// </summary>
-    public class PtypServerId : BaseStructure
+    public class PtypServerId : Block
     {
         /// <summary>
         /// The COUNT values are typically used to specify the size of an associated field.
         /// </summary>
-        public object Count;
+        public BlockT<ushort> Count;
 
+        /// <summary>
+        /// A structure as specified in section 2.11.1.4.
+        /// </summary>
+        public PtypServerIdStruct ServerId;
+
+        /// <summary>
+        /// Parse the PtypServerId structure.
+        /// </summary>
+        protected override void Parse()
+        {
+            Count = BlockT<ushort>.Parse(parser);
+            ServerId = Parse< PtypServerIdStruct>(parser, Count.Data);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Count, $"Count:{Count.Data}");
+            AddLabeledChild("ServerId", ServerId);
+        }
+    }
+
+    /// <summary>
+    /// Structure as specified in section 2.11.1.4.
+    /// </summary>
+    public class PtypServerIdStruct : Block
+    {
         /// <summary>
         /// The value 0x01 indicates the remaining bytes conform to this structure; 
         /// </summary>
-        public byte Ours;
+        public BlockT<byte> Ours;
 
         /// <summary>
         /// A Folder ID structure, as specified in section 2.2.1.1.
@@ -5671,48 +5706,43 @@
         /// <summary>
         /// An unsigned instance number within an array of server IDs to compare against. 
         /// </summary>
-        public uint? Instance;
+        public BlockT<uint> Instance;
 
         /// <summary>
         /// The Ours value 0x00 indicates this is a client-defined value and has whatever size and structure the client has defined.
         /// </summary>
-        public byte?[] ClientData;
-
-        /// <summary>
-        /// The Count wide size.
-        /// </summary>
-        private CountWideEnum countWide;
-
-        /// <summary>
-        /// Initializes a new instance of the PtypServerId class
-        /// </summary>
-        /// <param name="wide">The Count wide size of PtypBinary type.</param>
-        public PtypServerId(CountWideEnum wide)
-        {
-            this.countWide = wide;
-        }
+        public BlockBytes ClientData;
 
         /// <summary>
         /// Parse the PtypServerId structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypServerId structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.Count = help.ReadCount(this.countWide, s);
-            this.Ours = this.ReadByte();
-            if (this.Ours == 0x01)
+            Ours = BlockT<byte>.Parse(parser);
+            if (Ours.Data == 0x01)
             {
-                this.FolderID = new FolderID();
-                this.FolderID.Parse(s);
-                this.MessageID = new MessageID();
-                this.MessageID.Parse(s);
-                this.Instance = this.ReadUint();
+                FolderID = Parse<FolderID>(parser);
+                MessageID = Parse<MessageID>(parser);
+                Instance = BlockT<uint>.Parse(parser);
             }
             else
             {
-                this.ClientData = this.ConvertArray(this.ReadBytes(this.Count.GetHashCode() - 1));
+                ClientData = BlockBytes.Parse(parser, parser.RemainingBytes);
+            }
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Ours, $"Count:{Ours.Data}");
+            if (Ours.Data == 0x01)
+            {
+                AddLabeledChild("FolderID", FolderID);
+                AddLabeledChild("MessageID", MessageID);
+                AddLabeledChild("Instance", Instance);
+            }
+            else
+            {
+                AddLabeledChild("ClientData", ClientData);
             }
         }
     }
@@ -6645,9 +6675,7 @@
 
                 case PropertyDataType.PtypServerId:
                     {
-                        PtypServerId tempPropertyValue = new PtypServerId(ptypMultiCountSize);
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypServerId>(s);
                         break;
                     }
 
