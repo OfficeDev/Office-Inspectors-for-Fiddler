@@ -7855,33 +7855,39 @@
     /// <summary>
     /// 2.13.1 sortOrder Structure
     /// </summary>
-    public class SortOrder : BaseStructure
+    public class SortOrder : Block
     {
         /// <summary>
         /// This value identifies the data type of the column to be used for sorting.
         /// </summary>
-        public PropertyDataType PropertyType;
+        public BlockT<PropertyDataType> PropertyType;
 
         /// <summary>
         /// This value identifies the column to be used for sorting.
         /// </summary>
-        public PidTagPropertyEnum PropertyId;
+        public BlockT<PidTagPropertyEnum> PropertyId;
 
         /// <summary>
         /// The order type.
         /// </summary>
-        public OrderType Order;
+        public BlockT<OrderType> Order;
 
         /// <summary>
         /// Parse the sortOrder structure.
         /// </summary>
-        /// <param name="s">A stream containing the sortOrder structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.PropertyType = (PropertyDataType)ReadUshort();
-            this.PropertyId = (PidTagPropertyEnum)ReadUshort();
-            this.Order = (OrderType)ReadByte();
+            PropertyType = BlockT<PropertyDataType>.Parse(parser);
+            PropertyId = BlockT<PidTagPropertyEnum>.Parse(parser);
+            Order = BlockT<OrderType>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("SortOrder");
+            AddChild(PropertyType, $"PropertyType:{PropertyType.Data}");
+            AddChild(PropertyId, $"PropertyId:{PropertyId.Data}");
+            AddChild(Order, $"Order:{Order.Data}");
         }
     }
 

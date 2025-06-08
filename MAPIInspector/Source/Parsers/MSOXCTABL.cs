@@ -256,42 +256,42 @@
     /// <summary>
     /// The RopSortTable ROP ([MS-OXCROPS] section 2.2.5.2) orders the rows of a contents table based on sort criteria. 
     /// </summary>
-    public class RopSortTableRequest : BaseStructure
+    public class RopSortTableRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// A flags structure that contains flags that control this operation.
         /// </summary>
-        public AsynchronousFlags SortTableFlags;
+        public BlockT<AsynchronousFlags> SortTableFlags;
 
         /// <summary>
         /// An unsigned integer that specifies how many SortOrder structures are present in the SortOrders field.
         /// </summary>
-        public ushort SortOrderCount;
+        public BlockT<ushort> SortOrderCount;
 
         /// <summary>
         /// An unsigned integer that specifies the number of category SortOrder structures in the SortOrders field.
         /// </summary>
-        public ushort CategoryCount;
+        public BlockT<ushort> CategoryCount;
 
         /// <summary>
         /// An unsigned integer that specifies the number of expanded categories in the SortOrders field.
         /// </summary>
-        public ushort ExpandedCount;
+        public BlockT<ushort> ExpandedCount;
 
         /// <summary>
         /// An array of SortOrder structures that specifies the sort order for the rows in the table. 
@@ -301,27 +301,35 @@
         /// <summary>
         /// Parse the RopSortTableRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSortTableRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.SortTableFlags = (AsynchronousFlags)this.ReadByte();
-            this.SortOrderCount = this.ReadUshort();
-            this.CategoryCount = this.ReadUshort();
-            this.ExpandedCount = this.ReadUshort();
-            List<SortOrder> tempSortOrders = new List<SortOrder>();
-            for (int i = 0; i < this.SortOrderCount; i++)
+            RopId = BlockT<RopIdType>.Parse(parser);
+            LogonId = BlockT<byte>.Parse(parser);
+            InputHandleIndex = BlockT<byte>.Parse(parser);
+            SortTableFlags = BlockT<AsynchronousFlags>.Parse(parser);
+            SortOrderCount = BlockT<ushort>.Parse(parser);
+            CategoryCount = BlockT<ushort>.Parse(parser);
+            ExpandedCount = BlockT<ushort>.Parse(parser);
+            var tempSortOrders = new List<SortOrder>();
+            for (int i = 0; i < SortOrderCount.Data; i++)
             {
-                SortOrder tempSortOrder = new SortOrder();
-                tempSortOrder.Parse(s);
-                tempSortOrders.Add(tempSortOrder);
+                tempSortOrders.Add(Parse<SortOrder>(parser));
             }
 
-            this.SortOrders = tempSortOrders.ToArray();
+            SortOrders = tempSortOrders.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopSortTableRequest");
+            AddChild(RopId, "RopId:{0}", RopId.Data);
+            AddChild(LogonId, "LogonId:{0}", LogonId.Data);
+            AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
+            AddChild(SortTableFlags, "SortTableFlags:{0}", SortTableFlags.Data);
+            AddChild(SortOrderCount, "SortOrderCount:{0}", SortOrderCount.Data);
+            AddChild(SortOrderCount, "CategoryCount:{0}", CategoryCount.Data);
+            AddChild(ExpandedCount, "ExpandedCount :{0}", ExpandedCount.Data);
+            AddLabeledChildren("SortOrders", SortOrders);
         }
     }
 
