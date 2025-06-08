@@ -5573,7 +5573,7 @@
         public BlockStringA Value;
 
         /// <summary>
-        /// Parse the PtypString structure.
+        /// Parse the PtypString8 structure.
         /// </summary>
         protected override void Parse()
         {
@@ -6215,48 +6215,38 @@
     /// <summary>
     /// Variable size; a COUNT field followed by that many PtypInteger64 values.
     /// </summary>
-    public class PtypMultipleInteger64 : BaseStructure
+    public class PtypMultipleInteger64 : Block
     {
         /// <summary>
         /// COUNT values are typically used to specify the size of an associated field.
         /// </summary>
-        public object Count;
+        private BlockT<uint> Count;
 
         /// <summary>
         /// The array of Int64 value.
         /// </summary>
-        public long[] Value;
-
-        /// <summary>
-        /// The Count wide size.
-        /// </summary>
-        private CountWideEnum countWide;
-
-        /// <summary>
-        /// Initializes a new instance of the PtypMultipleInteger64 class
-        /// </summary>
-        /// <param name="wide">The Count wide size of PtypMultipleInteger64 type.</param>
-        public PtypMultipleInteger64(CountWideEnum wide)
-        {
-            this.countWide = wide;
-        }
+        public PtypInteger64[] Value;
 
         /// <summary>
         /// Parse the PtypMultipleInteger64 structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypMultipleInteger64 structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.Count = help.ReadCount(this.countWide, s);
-            List<long> tempvalue = new List<long>();
-            for (int i = 0; i < this.Count.GetHashCode(); i++)
+            Count = BlockT<uint>.Parse(parser);
+
+            var tempvalue = new List<PtypInteger64>();
+            for (int i = 0; i < Count.Data; i++)
             {
-                tempvalue.Add(this.ReadINT64());
+                tempvalue.Add(Parse<PtypInteger64>(parser));
             }
 
-            this.Value = tempvalue.ToArray();
+            Value = tempvalue.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Count, $"Count:{Count.Data}");
+            AddLabeledChildren("Value", Value);
         }
     }
 
@@ -6482,48 +6472,39 @@
     /// <summary>
     /// Variable size; a COUNT field followed by that many PtypGuid values.
     /// </summary>
-    public class PtypMultipleGuid : BaseStructure
+    public class PtypMultipleGuid : Block
     {
         /// <summary>
         /// COUNT values are typically used to specify the size of an associated field.
         /// </summary>
-        public object Count;
+        private BlockT<uint> Count;
 
         /// <summary>
         /// The array of GUID value.
         /// </summary>
-        public Guid[] Value;
-
-        /// <summary>
-        /// The Count wide size.
-        /// </summary>
-        private CountWideEnum countWide;
-
-        /// <summary>
-        /// Initializes a new instance of the PtypMultipleGuid class
-        /// </summary>
-        /// <param name="wide">The Count wide size of PtypMultipleGuid type.</param>
-        public PtypMultipleGuid(CountWideEnum wide)
-        {
-            this.countWide = wide;
-        }
+        public PtypGuid[] Value;
 
         /// <summary>
         /// Parse the PtypMultipleGuid structure.
         /// </summary>
         /// <param name="s">A stream containing the PtypMultipleGuid structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.Count = help.ReadCount(this.countWide, s);
-            List<Guid> tempvalue = new List<Guid>();
-            for (int i = 0; i < this.Count.GetHashCode(); i++)
+            Count = BlockT<uint>.Parse(parser);
+
+            var tempvalue = new List<PtypGuid>();
+            for (int i = 0; i < Count.Data; i++)
             {
-                tempvalue.Add(this.ReadGuid());
+                tempvalue.Add(Parse< PtypGuid>(parser));
             }
 
-            this.Value = tempvalue.ToArray();
+            Value = tempvalue.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Count, $"Count:{Count.Data}");
+            AddLabeledChildren("Value", Value);
         }
     }
 
@@ -6566,7 +6547,7 @@
             List<PtypBinaryBlock> tempvalue = new List<PtypBinaryBlock>();
             for (int i = 0; i < Count.Data; i++)
             {
-                PtypBinaryBlock binary = new PtypBinaryBlock(countWide);
+                var binary = new PtypBinaryBlock(countWide);
                 binary.Parse(parser);
                 tempvalue.Add(binary);
             }
@@ -6884,9 +6865,7 @@
 
                 case PropertyDataType.PtypMultipleInteger64:
                     {
-                        PtypMultipleInteger64 tempPropertyValue = new PtypMultipleInteger64(ptypMultiCountSize);
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypMultipleInteger64>(s);
                         break;
                     }
 
@@ -6926,9 +6905,7 @@
 
                 case PropertyDataType.PtypMultipleGuid:
                     {
-                        PtypMultipleGuid tempPropertyValue = new PtypMultipleGuid(ptypMultiCountSize);
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypMultipleGuid>(s);
                         break;
                     }
 
