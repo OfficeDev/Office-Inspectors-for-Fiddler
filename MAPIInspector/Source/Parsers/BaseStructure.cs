@@ -144,6 +144,7 @@
         private static TreeNode AddBlock(BlockParser.Block block, int blockRootOffset)
         {
             TreeNode node = new TreeNode(block.Text);
+            node.BackColor = System.Drawing.Color.LightPink; // TODO: This is just for debugging
             var blockOffset = blockRootOffset + (int)block.Offset;
             //node.Text = $"{block.Text}::{blockOffset}::{block.Size}"; // Enable this when troubleshooting highlight issues
             node.Tag = new Position(blockOffset, (int)block.Size);

@@ -870,7 +870,7 @@
                                                             if ((rop is RopGetRulesTableRequest && ((rop as RopGetRulesTableRequest).OutputHandleIndex == handleIndex)) ||
                                                             (rop is RopGetAttachmentTableRequest && ((rop as RopGetAttachmentTableRequest).OutputHandleIndex == handleIndex)) ||
                                                             (rop is RopGetPermissionsTableRequest && ((rop as RopGetAttachmentTableRequest).OutputHandleIndex == handleIndex)) ||
-                                                            (rop is RopGetContentsTableRequest && ((rop as RopGetContentsTableRequest).OutputHandleIndex == handleIndex)) ||
+                                                            (rop is RopGetContentsTableRequest && ((rop as RopGetContentsTableRequest).OutputHandleIndex.Data == handleIndex)) ||
                                                             (rop is RopGetHierarchyTableRequest && ((rop as RopGetHierarchyTableRequest).OutputHandleIndex == handleIndex)))
                                                             {
                                                                 // Update the fourth parameter of Notify_handlePropertyTags
@@ -893,7 +893,7 @@
                                                             }
 
                                                             if ((parameters[0] != 0 && rop is RopGetContentsTableRequest &&
-                                                                (rop as RopGetContentsTableRequest).OutputHandleIndex == handleIndex) ||
+                                                                (rop as RopGetContentsTableRequest).OutputHandleIndex.Data == handleIndex) ||
                                                                 (parameters[0] == 0 && rop is RopGetHierarchyTableRequest &&
                                                                 (rop as RopGetHierarchyTableRequest).OutputHandleIndex == handleIndex))
                                                             {

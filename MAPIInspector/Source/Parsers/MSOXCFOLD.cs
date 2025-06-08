@@ -1,5 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -1781,46 +1782,53 @@
     /// <summary>
     /// The RopGetContentsTable ROP ([MS-OXCROPS] section 2.2.4.14) is used to retrieve the contents table for a folder. 
     /// </summary>
-    public class RopGetContentsTableRequest : BaseStructure
+    public class RopGetContentsTableRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
         /// </summary>
-        public byte OutputHandleIndex;
+        public BlockT<byte> OutputHandleIndex;
 
         /// <summary>
         /// These flags control the type of table.
         /// </summary>
-        public HierarchyTableFlags TableFlags;
+        public BlockT<HierarchyTableFlags> TableFlags;
 
         /// <summary>
         /// Parse the RopGetContentsTableRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopGetContentsTableRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = BlockT<RopIdType>.Parse(parser);
+            LogonId = BlockT<byte>.Parse(parser);
+            InputHandleIndex = BlockT<byte>.Parse(parser);
+            OutputHandleIndex = BlockT<byte>.Parse(parser);
+            TableFlags = BlockT<HierarchyTableFlags>.Parse(parser);
+        }
 
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.OutputHandleIndex = this.ReadByte();
-            this.TableFlags = (HierarchyTableFlags)this.ReadByte();
+        protected override void ParseBlocks()
+        {
+            SetText("RopGetContentsTableRequest");
+            AddChild(RopId, "RopId:{0}", RopId.Data);
+            AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
+            AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
+            AddChild(OutputHandleIndex, "OutputHandleIndex:{0}", OutputHandleIndex.Data);
+            AddChild(TableFlags, "TableFlags:{0}", TableFlags.Data);
         }
     }
 
