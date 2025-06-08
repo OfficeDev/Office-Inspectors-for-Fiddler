@@ -5602,7 +5602,14 @@
         protected override void Parse()
         {
             Value = BlockT<ulong>.Parse(parser);
-            dateTime = new DateTime(1601, 1, 1).AddMilliseconds(Value.Data / 10000).ToLocalTime();
+            try
+            {
+                dateTime = new DateTime(1601, 1, 1).AddMilliseconds(Value.Data / 10000).ToLocalTime();
+            }
+            catch
+            {
+                dateTime = new DateTime();
+            }
         }
 
         protected override void ParseBlocks()
