@@ -5751,22 +5751,6 @@
     }
 
     /// <summary>
-    /// Variable size; a byte array representing one or more Restriction structures as specified in section 2.12.
-    /// </summary>
-    public class PtypRestriction : RestrictionType
-    {
-        // None, class PtypRestriction is same as RestrictionType.
-    }
-
-    /// <summary>
-    /// Variable size; a 16-bit COUNT field followed by that many rule action structures, as specified in [MS-OXORULE] section 2.2.5.
-    /// </summary>
-    public class PtypRuleAction : RuleAction
-    {
-        // None, class PtypRuleAction is same as RuleAction.
-    }
-
-    /// <summary>
     /// The help method to read the Count of Ptyp data type
     /// </summary>
     public class HelpMethod : BaseStructure
@@ -6684,7 +6668,7 @@
 
                 case PropertyDataType.PtypRestriction:
                     {
-                        PtypRestriction tempPropertyValue = new PtypRestriction();
+                        RestrictionType tempPropertyValue = new RestrictionType();
                         tempPropertyValue.Parse(s);
                         propertyValue = tempPropertyValue;
                         break;
@@ -6692,7 +6676,7 @@
 
                 case PropertyDataType.PtypRuleAction:
                     {
-                        PtypRuleAction tempPropertyValue = new PtypRuleAction();
+                        RuleAction tempPropertyValue = new RuleAction();
                         tempPropertyValue.Parse(s);
                         propertyValue = tempPropertyValue;
                         break;
