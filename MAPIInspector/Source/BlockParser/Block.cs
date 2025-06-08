@@ -47,7 +47,21 @@ namespace BlockParser
 
         public void SetText(string format, params object[] args)
         {
-            Text = !string.IsNullOrEmpty(format) ? string.Format(format, args) : string.Empty;
+            if (!string.IsNullOrEmpty(format))
+            {
+                if (args.Length > 0)
+                {
+                    Text = string.Format(format, args);
+                }
+                else
+                {
+                    Text = format;
+                }
+            }
+            else
+            {
+                Text = string.Empty;
+            }
         }
 
         public void ShiftOffset(long shift)
