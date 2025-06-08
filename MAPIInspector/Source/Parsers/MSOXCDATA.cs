@@ -1,6 +1,7 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
+    using Fiddler;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -5915,300 +5916,229 @@
     /// <summary>
     /// Variable size; a COUNT field followed by that many PtypInteger16 values.
     /// </summary>
-    public class PtypMultipleInteger16 : BaseStructure
+    public class PtypMultipleInteger16 : Block
     {
         /// <summary>
         /// COUNT values are typically used to specify the size of an associated field.
         /// </summary>
-        public object Count;
-
-        /// <summary>
-        /// Workaround, need to update once the COUNT wide of PtypMultipleBinary is confirmed.
-        /// </summary>
-        public ushort UndefinedCount;
+        private BlockT<uint> Count;
 
         /// <summary>
         /// The Int16 value.
         /// </summary>
-        public short[] Value;
-
-        /// <summary>
-        /// The Count wide size.
-        /// </summary>
-        private CountWideEnum countWide;
-
-        /// <summary>
-        /// Initializes a new instance of the PtypMultipleInteger16 class
-        /// </summary>
-        /// <param name="wide">The Count wide size of PtypMultipleInteger16 type.</param>
-        public PtypMultipleInteger16(CountWideEnum wide)
-        {
-            this.countWide = wide;
-        }
+        public PtypInteger16[] Value;
 
         /// <summary>
         /// Parse the PtypMultipleInteger16 structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypMultipleInteger16 structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.Count = help.ReadCount(this.countWide, s);
-            this.UndefinedCount = this.ReadUshort();
-            List<short> tempvalue = new List<short>();
-            for (int i = 0; i < this.Count.GetHashCode(); i++)
+            Count = BlockT<uint>.Parse(parser);
+
+            var tempvalue = new List<PtypInteger16>();
+            for (int i = 0; i < Count.Data; i++)
             {
-                tempvalue.Add(this.ReadINT16());
+                tempvalue.Add(Parse<PtypInteger16>(parser));
             }
 
-            this.Value = tempvalue.ToArray();
+            Value = tempvalue.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Count, $"Count:{Count.Data}");
+            AddLabeledChildren("Value", Value);
         }
     }
 
     /// <summary>
     /// Variable size; a COUNT field followed by that many PtypInteger32 values.
     /// </summary>
-    public class PtypMultipleInteger32 : BaseStructure
+    public class PtypMultipleInteger32 : Block
     {
         /// <summary>
         /// COUNT values are typically used to specify the size of an associated field.
         /// </summary>
-        public object Count;
-
-        /// <summary>
-        /// Workaround, need to update once the COUNT wide of PtypMultipleBinary is confirmed.
-        /// </summary>
-        public ushort UndefinedCount;
+        private BlockT<uint> Count;
 
         /// <summary>
         ///  The Int32 value.
         /// </summary>
-        public int[] Value;
-
-        /// <summary>
-        /// The Count wide size.
-        /// </summary>
-        private CountWideEnum countWide;
-
-        /// <summary>
-        /// Initializes a new instance of the PtypMultipleInteger32 class
-        /// </summary>
-        /// <param name="wide">The Count wide size of PtypMultipleInteger32 type.</param>
-        public PtypMultipleInteger32(CountWideEnum wide)
-        {
-            this.countWide = wide;
-        }
+        public PtypInteger32[] Value;
 
         /// <summary>
         /// Parse the PtypMultipleInteger32 structure.
         /// </summary>
         /// <param name="s">A stream containing the PtypMultipleInteger32 structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.Count = help.ReadCount(this.countWide, s);
-            this.UndefinedCount = this.ReadUshort();
-            List<int> tempvalue = new List<int>();
-            for (int i = 0; i < this.Count.GetHashCode(); i++)
+            Count = BlockT<uint>.Parse(parser);
+
+            var tempvalue = new List<PtypInteger32>();
+            for (int i = 0; i < Count.Data; i++)
             {
-                tempvalue.Add(this.ReadINT32());
+                tempvalue.Add(Parse<PtypInteger32>(parser));
             }
 
-            this.Value = tempvalue.ToArray();
+            Value = tempvalue.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Count, $"Count:{Count.Data}");
+            AddLabeledChildren("Value", Value);
         }
     }
 
     /// <summary>
     /// Variable size; a COUNT field followed by that many PtypFloating32 values.
     /// </summary>
-    public class PtypMultipleFloating32 : BaseStructure
+    public class PtypMultipleFloating32 : Block
     {
         /// <summary>
         /// COUNT values are typically used to specify the size of an associated field.
         /// </summary>
-        public object Count;
+        private BlockT<uint> Count;
 
         /// <summary>
         /// The float value.
         /// </summary>
-        public float[] Value;
-
-        /// <summary>
-        /// The Count wide size.
-        /// </summary>
-        private CountWideEnum countWide;
-
-        /// <summary>
-        /// Initializes a new instance of the PtypMultipleFloating32 class
-        /// </summary>
-        /// <param name="wide">The Count wide size of PtypMultipleFloating32 type.</param>
-        public PtypMultipleFloating32(CountWideEnum wide)
-        {
-            this.countWide = wide;
-        }
+        public PtypFloating32[] Value;
 
         /// <summary>
         /// Parse the PtypMultipleFloating32 structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypMultipleFloating32 structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.Count = help.ReadCount(this.countWide, s);
-            List<float> tempvalue = new List<float>();
-            for (int i = 0; i < this.Count.GetHashCode(); i++)
+            Count = BlockT<uint>.Parse(parser);
+
+            var tempvalue = new List<PtypFloating32>();
+            for (int i = 0; i < Count.Data; i++)
             {
-                tempvalue.Add(this.ReadINT32());
+                tempvalue.Add(Parse<PtypFloating32>(parser));
             }
 
-            this.Value = tempvalue.ToArray();
+            Value = tempvalue.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Count, $"Count:{Count.Data}");
+            AddLabeledChildren("Value", Value);
         }
     }
 
     /// <summary>
     /// Variable size; a COUNT field followed by that many PtypFloating64 values.
     /// </summary>
-    public class PtypMultipleFloating64 : BaseStructure
+    public class PtypMultipleFloating64 : Block
     {
         /// <summary>
         /// COUNT values are typically used to specify the size of an associated field.
         /// </summary>
-        public object Count;
+        private BlockT<uint> Count;
 
         /// <summary>
         /// The array of double value.
         /// </summary>
-        public double[] Value;
-
-        /// <summary>
-        /// The Count wide size.
-        /// </summary>
-        private CountWideEnum countWide;
-
-        /// <summary>
-        /// Initializes a new instance of the PtypMultipleFloating64 class
-        /// </summary>
-        /// <param name="wide">The Count wide size of PtypMultipleFloating64 type.</param>
-        public PtypMultipleFloating64(CountWideEnum wide)
-        {
-            this.countWide = wide;
-        }
+        public PtypFloating64[] Value;
 
         /// <summary>
         /// Parse the PtypMultipleFloating64 structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypMultipleFloating64 structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.Count = help.ReadCount(this.countWide, s);
-            List<double> tempvalue = new List<double>();
-            for (int i = 0; i < this.Count.GetHashCode(); i++)
+            Count = BlockT<uint>.Parse(parser);
+
+            var tempvalue = new List<PtypFloating64>();
+            for (int i = 0; i < Count.Data; i++)
             {
-                tempvalue.Add(this.ReadINT64());
+                tempvalue.Add(Parse<PtypFloating64>(parser));
             }
 
-            this.Value = tempvalue.ToArray();
+            Value = tempvalue.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Count, $"Count:{Count.Data}");
+            AddLabeledChildren("Value", Value);
         }
     }
 
     /// <summary>
     /// Variable size; a COUNT field followed by that many PtypCurrency values.
     /// </summary>
-    public class PtypMultipleCurrency : BaseStructure
+    public class PtypMultipleCurrency : Block
     {
         /// <summary>
         /// COUNT values are typically used to specify the size of an associated field.
         /// </summary>
-        public object Count;
+        private BlockT<uint> Count;
 
         /// <summary>
         /// The array of Int64 value.
         /// </summary>
-        public long[] Value;
-
-        /// <summary>
-        /// The Count wide size.
-        /// </summary>
-        private CountWideEnum countWide;
-
-        /// <summary>
-        ///  Initializes a new instance of the PtypMultipleCurrency class
-        /// </summary>
-        /// <param name="wide">The Count wide size of PtypMultipleCurrency type.</param>
-        public PtypMultipleCurrency(CountWideEnum wide)
-        {
-            this.countWide = wide;
-        }
+        public PtypCurrency[] Value;
 
         /// <summary>
         /// Parse the PtypMultipleCurrency structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypMultipleCurrency structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.Count = help.ReadCount(this.countWide, s);
-            List<long> tempvalue = new List<long>();
-            for (int i = 0; i < this.Count.GetHashCode(); i++)
+            Count = BlockT<uint>.Parse(parser);
+
+            var tempvalue = new List<PtypCurrency>();
+            for (int i = 0; i < Count.Data; i++)
             {
-                tempvalue.Add(this.ReadINT64());
+                tempvalue.Add(Parse<PtypCurrency>(parser));
             }
 
-            this.Value = tempvalue.ToArray();
+            Value = tempvalue.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Count, $"Count:{Count.Data}");
+            AddLabeledChildren("Value", Value);
         }
     }
 
     /// <summary>
     /// Variable size; a COUNT field followed by that many PtypFloatingTime values.
     /// </summary>
-    public class PtypMultipleFloatingTime : BaseStructure
+    public class PtypMultipleFloatingTime : Block
     {
         /// <summary>
         /// COUNT values are typically used to specify the size of an associated field.
         /// </summary>
-        public object Count;
+        private BlockT<uint> Count;
 
         /// <summary>
         /// The array of double value.
         /// </summary>
-        public double[] Value;
-
-        /// <summary>
-        /// The Count wide size.
-        /// </summary>
-        private CountWideEnum countWide;
-
-        /// <summary>
-        /// Initializes a new instance of the PtypMultipleFloatingTime class
-        /// </summary>
-        /// <param name="wide">The Count wide size of PtypMultipleFloatingTime type.</param>
-        public PtypMultipleFloatingTime(CountWideEnum wide)
-        {
-            this.countWide = wide;
-        }
+        public PtypFloatingTime[] Value;
 
         /// <summary>
         /// Parse the PtypMultipleFloatingTime structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypMultipleFloatingTime structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.Count = help.ReadCount(this.countWide, s);
-            List<double> tempvalue = new List<double>();
-            for (int i = 0; i < this.Count.GetHashCode(); i++)
+            Count = BlockT<uint>.Parse(parser);
+
+            var tempvalue = new List<PtypFloatingTime>();
+            for (int i = 0; i < Count.Data; i++)
             {
-                tempvalue.Add(this.ReadINT64());
+                tempvalue.Add(Parse<PtypFloatingTime>(parser));
             }
 
-            this.Value = tempvalue.ToArray();
+            Value = tempvalue.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Count, $"Count:{Count.Data}");
+            AddLabeledChildren("Value", Value);
         }
     }
 
@@ -6253,67 +6183,38 @@
     /// <summary>
     /// Variable size; a COUNT field followed by that many PtypString values.
     /// </summary>
-    public class PtypMultipleString : BaseStructure
+    public class PtypMultipleString : Block
     {
         /// <summary>
         /// Count values are typically used to specify the size of an associated field.
         /// </summary>
-        public object Count;
-
-        /// <summary>
-        /// The undefined count field
-        /// </summary>
-        public object UndefinedCount;
+        private BlockT<uint> Count;
 
         /// <summary>
         /// The array of string value.
         /// </summary>
-        public MAPIString[] Value;
-
-        /// <summary>
-        /// The Count wide size.
-        /// </summary>
-        private CountWideEnum countWide;
-
-        /// <summary>
-        /// Initializes a new instance of the PtypMultipleString class
-        /// </summary>
-        /// <param name="wide">The Count wide size of PtypMultipleString type.</param>
-        public PtypMultipleString(CountWideEnum wide)
-        {
-            this.countWide = wide;
-        }
+        public PtypStringBlock[] Value;
 
         /// <summary>
         /// Parse the PtypMultipleString structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypMultipleString structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.Count = help.ReadCount(this.countWide, s);
-            byte temp = this.ReadByte();
-            if (temp == 0xff)
+            Count = BlockT<uint>.Parse(parser);
+
+            var tempvalue = new List<PtypStringBlock>();
+            for (int i = 0; i < Count.Data; i++)
             {
-                this.UndefinedCount = 0xff;
-            }
-            else
-            {
-                s.Position -= 1;
-                this.UndefinedCount = this.ReadUshort();
+                tempvalue.Add(Parse<PtypStringBlock>(parser));
             }
 
-            List<MAPIString> tempvalue = new List<MAPIString>();
-            MAPIString str;
-            for (int i = 0; i < this.Count.GetHashCode(); i++)
-            {
-                str = new MAPIString(Encoding.Unicode);
-                str.Parse(s);
-                tempvalue.Add(str);
-            }
+            Value = tempvalue.ToArray();
+        }
 
-            this.Value = tempvalue.ToArray();
+        protected override void ParseBlocks()
+        {
+            AddChild(Count, $"Count:{Count.Data}");
+            AddLabeledChildren("Value", Value);
         }
     }
 
@@ -6371,63 +6272,50 @@
     /// <summary>
     /// Variable size; a COUNT field followed by that many PtypString8 values.
     /// </summary>
-    public class PtypMultipleString8 : BaseStructure
+    public class PtypMultipleString8 : Block
     {
         /// <summary>
         /// COUNT values are typically used to specify the size of an associated field.
         /// </summary>
-        public object Count;
+        private BlockT<uint> Count;
 
         /// <summary>
         /// The array of string value.
         /// </summary>
-        public MAPIString[] Value;
-
-        /// <summary>
-        /// The Count wide size.
-        /// </summary>
-        private CountWideEnum countWide;
-
-        /// <summary>
-        /// Initializes a new instance of the PtypMultipleString8 class
-        /// </summary>
-        /// <param name="wide">The Count wide size of PtypMultipleString8 type.</param>
-        public PtypMultipleString8(CountWideEnum wide)
-        {
-            this.countWide = wide;
-        }
+        public PtypString8Block[] Value;
 
         /// <summary>
         /// Parse the PtypMultipleString8 structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypMultipleString8 structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.Count = help.ReadCount(this.countWide, s);
-            List<MAPIString> tempvalue = new List<MAPIString>();
-            MAPIString str;
-            for (int i = 0; i < this.Count.GetHashCode(); i++)
+            Count = BlockT<uint>.Parse(parser);
+
+            var tempvalue = new List<PtypString8Block>();
+            for (int i = 0; i < Count.Data; i++)
             {
-                str = new MAPIString(Encoding.ASCII);
-                str.Parse(s);
-                tempvalue.Add(str);
+                tempvalue.Add(Parse<PtypString8Block>(parser));
             }
 
-            this.Value = tempvalue.ToArray();
+            Value = tempvalue.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Count, $"Count:{Count.Data}");
+            AddLabeledChildren("Value", Value);
         }
     }
 
     /// <summary>
     /// Variable size; a COUNT field followed by that many PtypTime values.
     /// </summary>
-    public class PtypMultipleTime : BaseStructure
+    public class PtypMultipleTime : Block
     {
         /// <summary>
         /// COUNT values are typically used to specify the size of an associated field.
         /// </summary>
-        public object Count;
+        private BlockT<uint> Count;
 
         /// <summary>
         /// The array of time value.
@@ -6435,37 +6323,25 @@
         public PtypTime[] Value;
 
         /// <summary>
-        /// The Count wide size.
-        /// </summary>
-        private CountWideEnum countWide;
-
-        /// <summary>
-        /// Initializes a new instance of the PtypMultipleTime class
-        /// </summary>
-        /// <param name="wide">The Count wide size of PtypMultipleTime type.</param>
-        public PtypMultipleTime(CountWideEnum wide)
-        {
-            this.countWide = wide;
-        }
-
-        /// <summary>
         /// Parse the PtypMultipleTime structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypMultipleTime structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.Count = help.ReadCount(this.countWide, s);
-            List<PtypTime> tempvalue = new List<PtypTime>();
-            for (int i = 0; i < this.Count.GetHashCode(); i++)
+            Count = BlockT<uint>.Parse(parser);
+
+            var tempvalue = new List<PtypTime>();
+            for (int i = 0; i < Count.Data; i++)
             {
-                PtypTime time = new PtypTime();
-                time.Parse(s);
-                tempvalue.Add(time);
+                tempvalue.Add(Parse<PtypTime>(parser));
             }
 
-            this.Value = tempvalue.ToArray();
+            Value = tempvalue.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Count, $"Count:{Count.Data}");
+            AddLabeledChildren("Value", Value);
         }
     }
 
@@ -6495,7 +6371,7 @@
             var tempvalue = new List<PtypGuid>();
             for (int i = 0; i < Count.Data; i++)
             {
-                tempvalue.Add(Parse< PtypGuid>(parser));
+                tempvalue.Add(Parse<PtypGuid>(parser));
             }
 
             Value = tempvalue.ToArray();
@@ -6817,49 +6693,37 @@
 
                 case PropertyDataType.PtypMultipleInteger16:
                     {
-                        PtypMultipleInteger16 tempPropertyValue = new PtypMultipleInteger16(ptypMultiCountSize);
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypMultipleInteger16>(s);
                         break;
                     }
 
                 case PropertyDataType.PtypMultipleInteger32:
                     {
-                        PtypMultipleInteger32 tempPropertyValue = new PtypMultipleInteger32(ptypMultiCountSize);
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypMultipleInteger32>(s);
                         break;
                     }
 
                 case PropertyDataType.PtypMultipleFloating32:
                     {
-                        PtypMultipleFloating32 tempPropertyValue = new PtypMultipleFloating32(ptypMultiCountSize);
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypMultipleFloating32>(s);
                         break;
                     }
 
                 case PropertyDataType.PtypMultipleFloating64:
                     {
-                        PtypMultipleFloating64 tempPropertyValue = new PtypMultipleFloating64(ptypMultiCountSize);
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypMultipleFloating64>(s);
                         break;
                     }
 
                 case PropertyDataType.PtypMultipleCurrency:
                     {
-                        PtypMultipleCurrency tempPropertyValue = new PtypMultipleCurrency(ptypMultiCountSize);
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypMultipleCurrency>(s);
                         break;
                     }
 
                 case PropertyDataType.PtypMultipleFloatingTime:
                     {
-                        PtypMultipleFloatingTime tempPropertyValue = new PtypMultipleFloatingTime(ptypMultiCountSize);
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypMultipleFloatingTime>(s);
                         break;
                     }
 
@@ -6879,9 +6743,7 @@
                         }
                         else
                         {
-                            PtypMultipleString tempPropertyValue = new PtypMultipleString(ptypMultiCountSize);
-                            tempPropertyValue.Parse(s);
-                            propertyValue = tempPropertyValue;
+                            propertyValue = Block.Parse<PtypMultipleString>(s);
                         }
 
                         break;
@@ -6889,17 +6751,13 @@
 
                 case PropertyDataType.PtypMultipleString8:
                     {
-                        PtypMultipleString8 tempPropertyValue = new PtypMultipleString8(ptypMultiCountSize);
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypMultipleString8>(s);
                         break;
                     }
 
                 case PropertyDataType.PtypMultipleTime:
                     {
-                        PtypMultipleTime tempPropertyValue = new PtypMultipleTime(ptypMultiCountSize);
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
+                        propertyValue = Block.Parse<PtypMultipleTime>(s);
                         break;
                     }
 
