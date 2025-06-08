@@ -1,12 +1,10 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Text;
-    using System.Windows.Forms;
 
     /// <summary>
     /// The enum of StoreObject type.
@@ -4349,7 +4347,6 @@
         /// <summary>
         /// Parse the MessageID structure.
         /// </summary>
-        /// <param name="s">A stream containing the MessageID structure</param>
         protected override void Parse()
         {
             ReplicaId = BlockT<ushort>.Parse(parser);
@@ -4366,33 +4363,38 @@
     /// <summary>
     /// 2.2.1.3.1 LongTermID Structure
     /// </summary>
-    public class LongTermID : BaseStructure
+    public class LongTermID : Block
     {
         /// <summary>
         /// An unsigned integer identifying a Store object.
         /// </summary>
-        public Guid DatabaseGuid;
+        public BlockT<Guid> DatabaseGuid;
 
         /// <summary>
         /// An unsigned integer identifying the folder or message within its Store object. 6 bytes
         /// </summary>
-        public byte[] GlobalCounter;
+        public BlockBytes GlobalCounter;
 
         /// <summary>
-        /// A 2-byte Pad field. 
+        /// A 2-byte Pad field.
         /// </summary>
-        public ushort Pad;
+        public BlockT<ushort> Pad;
 
         /// <summary>
         /// Parse the LongTermID structure.
         /// </summary>
-        /// <param name="s">A stream containing the LongTermID structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.DatabaseGuid = this.ReadGuid();
-            this.GlobalCounter = this.ReadBytes(6);
-            this.Pad = this.ReadUshort();
+            DatabaseGuid = BlockT<Guid>.Parse(parser);
+            GlobalCounter = BlockBytes.Parse(parser, 6);
+            Pad = BlockT<ushort>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(DatabaseGuid, $"DatabaseGuid:{DatabaseGuid.Data}");
+            AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
+            AddChild(Pad, $"Pad:{Pad.Data}");
         }
     }
     #endregion
