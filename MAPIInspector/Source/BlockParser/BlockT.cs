@@ -8,7 +8,7 @@ namespace BlockParser
 
         public BlockT() { }
 
-        public BlockT(T _data, int size, int offset)
+        public BlockT(T _data, long size, long offset)
         {
             Parsed = true;
             Data = _data;
@@ -16,7 +16,7 @@ namespace BlockParser
             Offset = offset;
         }
 
-        public static BlockT<T> Create(T data, int size, int offset)
+        public static BlockT<T> Create(T data, long size, long offset)
         {
             var ret = new BlockT<T>(data, size, offset)
             {
