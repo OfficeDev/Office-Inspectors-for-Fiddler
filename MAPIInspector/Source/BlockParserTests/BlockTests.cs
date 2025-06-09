@@ -14,6 +14,10 @@ namespace BlockParserTests
             {
                 ParseCalled = true;
             }
+            protected override void ParseBlocks()
+            {
+                // No blocks to parse in TestBlock
+            }
         }
 
         [TestMethod]
