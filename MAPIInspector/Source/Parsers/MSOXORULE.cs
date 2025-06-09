@@ -1,9 +1,9 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Text;
 
     /// <summary>
     /// The enum value of RuleDataFlags
@@ -189,32 +189,36 @@
     /// <summary>
     /// A class indicates the ModifyRulesFlags ROP Response Buffer.
     /// </summary>
-    public class ModifyRulesFlags : BaseStructure
+    public class ModifyRulesFlags : Block
     {
+        public BlockT<byte> Byte0;
+
         /// <summary>
         /// Unused. This bit MUST be set to zero (0) when sent.
         /// </summary>
-        [BitAttribute(7)]
-        public byte X;
+        public BlockT<byte> X;
 
         /// <summary>
         /// If this bit is set, the rules (2) in this request are to replace the existing set of rules (2) in the folder.
         /// </summary>
-        [BitAttribute(1)]
-        public byte R;
+        public BlockT<byte> R;
 
         /// <summary>
         /// Parse the ModifyRulesFlags structure.
         /// </summary>
-        /// <param name="s">A stream containing ModifyRulesFlags structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s); // TODO: need to modify the AddTreeNode method about the position and length.  
-            byte tempByte = this.ReadByte();
+            Byte0 = BlockT<byte>.Parse(parser);
             int index = 0;
-            this.X = this.GetBits(tempByte, index, 7);
+            X = BlockT<byte>.Create(BaseStructure.GetBits(Byte0.Data, index, 7), Byte0.Size, Byte0.Offset);
             index = index + 7;
-            this.R = this.GetBits(tempByte, index, 1);
+            R = BlockT<byte>.Create(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(X, $"X:{X.Data}");
+            AddChild(R, $"R:{R.Data}");
         }
     }
 
@@ -474,12 +478,13 @@
     /// <summary>
     /// 2.2.5 RuleAction Structure
     /// </summary>
-    public class RuleAction : BaseStructure
+    public class RuleAction : Block
     {
         /// <summary>
         /// Specifies the number of structures that are contained in the ActionBlocks field. For extended rules, the size of the NoOfActions field is 4 bytes instead of 2 bytes.
         /// </summary>
-        public object NoOfActions;
+        private Block _noOfActions;
+        public uint NoOfActions;
 
         /// <summary>
         /// An array of ActionBlock structures, each of which specifies an action (2) of the rule (2), as specified in section 2.2.5.1.
@@ -497,59 +502,75 @@
         /// <param name="wide">The wide size of NoOfActions.</param>
         public RuleAction(CountWideEnum wide = CountWideEnum.twoBytes)
         {
-            this.countWide = wide;
+            countWide = wide;
         }
 
         /// <summary>
         /// Parse the RuleAction structure.
         /// </summary>
-        /// <param name="s">A stream containing the RuleAction structure</param>
-        public override void Parse(System.IO.Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.NoOfActions = help.ReadCount(this.countWide, s);
-            List<ActionBlock> tempActionBlocks = new List<ActionBlock>();
-            for (int i = 0; i < this.NoOfActions.GetHashCode(); i++)
+            switch (countWide)
             {
-                ActionBlock tempActionBlock = new ActionBlock(CountWideEnum.twoBytes);
-                tempActionBlock.Parse(s);
+                case CountWideEnum.twoBytes:
+                    _noOfActions = BlockT<ushort>.Parse(parser);
+                    NoOfActions = (_noOfActions as BlockT<ushort>).Data;
+                    break;
+                default:
+                case CountWideEnum.fourBytes:
+                    _noOfActions = BlockT<uint>.Parse(parser);
+                    NoOfActions = (_noOfActions as BlockT<uint>).Data;
+                    break;
+            }
+            var tempActionBlocks = new List<ActionBlock>();
+            for (int i = 0; i < NoOfActions; i++)
+            {
+                var tempActionBlock = new ActionBlock(CountWideEnum.twoBytes);
+                tempActionBlock.Parse(parser);
                 tempActionBlocks.Add(tempActionBlock);
             }
 
-            this.ActionBlocks = tempActionBlocks.ToArray();
+            ActionBlocks = tempActionBlocks.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RuleAction");
+            AddChild(_noOfActions, $"NoOfActions{NoOfActions}");
+            AddLabeledChildren("ActionBlocks", ActionBlocks);
         }
     }
 
     /// <summary>
     /// 2.2.5.1 ActionBlock Structure
     /// </summary>
-    public class ActionBlock : BaseStructure
+    public class ActionBlock : Block
     {
         /// <summary>
         /// An integer that specifies the cumulative length, in bytes, of the subsequent fields in this ActionBlock structure. For extended rules, the size of the ActionLength field is 4 bytes instead of 2 bytes.
         /// </summary>
-        public object ActionLength;
+        private Block _actionLength;
+        public uint ActionLength;
 
         /// <summary>
         /// An integer that specifies the type of action (2). 
         /// </summary>
-        public ActionType ActionType;
+        public BlockT<ActionType> _actionType;
 
         /// <summary>
         /// The flags that are associated with a particular type of action (2). 
         /// </summary>
-        public object ActionFlavor;
+        public Block ActionFlavor;
 
         /// <summary>
         /// Client-defined flags. The ActionFlags field is used solely by the client
         /// </summary>
-        public uint ActionFlags;
+        public BlockT<uint> ActionFlags;
 
         /// <summary>
         /// An ActionData structure, as specified in section 2.2.5.1.2, that specifies data related to the particular action (2).
         /// </summary>
-        public object ActionData;
+        public Block ActionData;
 
         /// <summary>
         /// The wide size of NoOfActions.
@@ -562,105 +583,115 @@
         /// <param name="wide">The wide size of ActionLength.</param>
         public ActionBlock(CountWideEnum wide = CountWideEnum.twoBytes)
         {
-            this.countWide = wide;
+            countWide = wide;
         }
 
         /// <summary>
         /// Parse the ActionBlock structure.
         /// </summary>
-        /// <param name="s">A stream containing the ActionBlock structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.ActionLength = help.ReadCount(this.countWide, s);
-            this.ActionType = (ActionType)ReadByte();
-            switch (this.ActionType)
+            switch (countWide)
+            {
+                case CountWideEnum.twoBytes:
+                    _actionLength = BlockT<ushort>.Parse(parser);
+                    ActionLength = (_actionLength as BlockT<ushort>).Data;
+                    break;
+                default:
+                case CountWideEnum.fourBytes:
+                    _actionLength = BlockT<uint>.Parse(parser);
+                    ActionLength = (_actionLength as BlockT<uint>).Data;
+                    break;
+            }
+
+            _actionType = BlockT<ActionType>.Parse(parser);
+            switch (_actionType.Data)
             {
                 case ActionType.OP_REPLY:
                     {
-                        ActionFlavor_Reply action = new ActionFlavor_Reply();
-                        action.Parse(s);
-                        this.ActionFlavor = action;
+                        ActionFlavor = new ActionFlavor_Reply();
+                        ActionFlavor.Parse(parser);
                         break;
                     }
 
                 case ActionType.OP_OOF_REPLY:
                     {
-                        ActionFlavor_Reply action = new ActionFlavor_Reply();
-                        action.Parse(s);
-                        this.ActionFlavor = action;
+                        ActionFlavor = new ActionFlavor_Reply();
+                        ActionFlavor.Parse(parser);
                         break;
                     }
 
                 case ActionType.OP_FORWARD:
                     {
-                        ActionFlavor_Forward action = new ActionFlavor_Forward();
-                        action.Parse(s);
-                        this.ActionFlavor = action;
+                        ActionFlavor = new ActionFlavor_Forward();
+                        ActionFlavor.Parse(parser);
                         break;
                     }
 
                 default:
                     {
-                        ActionFlavor_Reserved action = new ActionFlavor_Reserved();
-                        action.Parse(s);
-                        this.ActionFlavor = action;
+                        ActionFlavor = new ActionFlavor_Reserved();
+                        ActionFlavor.Parse(parser);
                         break;
                     }
             }
 
-            this.ActionFlags = this.ReadUint();
-            if (this.ActionLength.GetHashCode() > 9)
+            ActionFlags = BlockT<uint>.Parse(parser);
+            if (ActionLength > 9)
             {
-                if ((ActionType.OP_MOVE == this.ActionType || ActionType.OP_COPY == this.ActionType) && this.countWide.Equals(CountWideEnum.twoBytes))
+                if ((ActionType.OP_MOVE == _actionType.Data || ActionType.OP_COPY == _actionType.Data) && countWide.Equals(CountWideEnum.twoBytes))
                 {
-                    OP_MOVE_and_OP_COPY_ActionData_forStandard actionData = new OP_MOVE_and_OP_COPY_ActionData_forStandard();
-                    actionData.Parse(s);
-                    this.ActionData = actionData;
+                    ActionData = new OP_MOVE_and_OP_COPY_ActionData_forStandard();
+                    ActionData.Parse(parser);
                 }
-                else if ((ActionType.OP_MOVE == this.ActionType || ActionType.OP_COPY == this.ActionType) && this.countWide.Equals(CountWideEnum.fourBytes))
+                else if ((ActionType.OP_MOVE == _actionType.Data || ActionType.OP_COPY == _actionType.Data) && countWide.Equals(CountWideEnum.fourBytes))
                 {
-                    OP_MOVE_and_OP_COPY_ActionData_forExtended actionData = new OP_MOVE_and_OP_COPY_ActionData_forExtended();
-                    actionData.Parse(s);
-                    this.ActionData = actionData;
+                    ActionData = new OP_MOVE_and_OP_COPY_ActionData_forExtended();
+                    ActionData.Parse(parser);
                 }
-                else if ((ActionType.OP_REPLY == this.ActionType || ActionType.OP_OOF_REPLY == this.ActionType) && this.countWide.Equals(CountWideEnum.twoBytes))
+                else if ((ActionType.OP_REPLY == _actionType.Data || ActionType.OP_OOF_REPLY == _actionType.Data) && countWide.Equals(CountWideEnum.twoBytes))
                 {
-                    OP_REPLY_and_OP_OOF_REPLY_ActionData_forStandard actionData = new OP_REPLY_and_OP_OOF_REPLY_ActionData_forStandard();
-                    actionData.Parse(s);
-                    this.ActionData = actionData;
+                    ActionData = new OP_REPLY_and_OP_OOF_REPLY_ActionData_forStandard();
+                    ActionData.Parse(parser);
                 }
-                else if ((ActionType.OP_REPLY == this.ActionType || ActionType.OP_OOF_REPLY == this.ActionType) && this.countWide.Equals(CountWideEnum.fourBytes))
+                else if ((ActionType.OP_REPLY == _actionType.Data || ActionType.OP_OOF_REPLY == _actionType.Data) && countWide.Equals(CountWideEnum.fourBytes))
                 {
-                    OP_REPLY_and_OP_OOF_REPLY_ActionData_forExtended actionData = new OP_REPLY_and_OP_OOF_REPLY_ActionData_forExtended();
-                    actionData.Parse(s);
-                    this.ActionData = actionData;
+                    ActionData = new OP_REPLY_and_OP_OOF_REPLY_ActionData_forExtended();
+                    ActionData.Parse(parser);
                 }
-                else if (ActionType.OP_FORWARD == this.ActionType || ActionType.OP_DELEGATE == this.ActionType)
+                else if (ActionType.OP_FORWARD == _actionType.Data || ActionType.OP_DELEGATE == _actionType.Data)
                 {
-                    OP_FORWARD_and_OP_DELEGATE_ActionData actionData = new OP_FORWARD_and_OP_DELEGATE_ActionData();
-                    actionData.Parse(s);
-                    this.ActionData = actionData;
+                    ActionData = new OP_FORWARD_and_OP_DELEGATE_ActionData();
+                    ActionData.Parse(parser);
                 }
-                else if (ActionType.OP_BOUNCE == this.ActionType)
+                else if (ActionType.OP_BOUNCE == _actionType.Data)
                 {
-                    OP_BOUNCE_ActionData actionData = new OP_BOUNCE_ActionData();
-                    actionData.Parse(s);
-                    this.ActionData = actionData;
+                    ActionData = new OP_BOUNCE_ActionData();
+                    ActionData.Parse(parser);
                 }
-                else if (ActionType.OP_TAG == this.ActionType)
+                else if (ActionType.OP_TAG == _actionType.Data)
                 {
-                    OP_TAG_ActionData actionData = new OP_TAG_ActionData();
-                    actionData.Parse(s);
-                    this.ActionData = actionData;
+                    ActionData = new TaggedPropertyValue(CountWideEnum.twoBytes);
+                    ActionData.Parse(parser);
                 }
-                else if (ActionType.OP_DEFER_ACTION == this.ActionType)
+                else if (ActionType.OP_DEFER_ACTION == _actionType.Data)
                 {
-                    OP_DEFER_ACTION actionData = new OP_DEFER_ACTION(this.ActionLength.GetHashCode());
-                    actionData.Parse(s);
-                    this.ActionData = actionData;
+                    ActionData = new OP_DEFER_ACTION((int)ActionLength);
+                    ActionData.Parse(parser);
                 }
+            }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ActionBlock");
+            AddChild(_actionLength, $"ActionLength:{ActionLength}");
+            AddChild(_actionType, $"ActionType:{_actionType.Data}");
+            AddChild(ActionFlavor, "ActionFlavor");
+            AddChild(ActionFlags, $"ActionFlags:{ActionFlags.Data}");
+            if (ActionData != null)
+            {
+                AddChild(ActionData, "ActionData");
             }
         }
     }
@@ -669,130 +700,146 @@
     /// <summary>
     /// This type is specified in MS-OXORULE section 2.2.5.1.1 ActionFlavor structure when ActionType is relate to FORWARD
     /// </summary>
-    public class ActionFlavor_Forward : BaseStructure
+    public class ActionFlavor_Forward : Block
     {
+        public BlockT<byte> Byte0;
+
         /// <summary>
         /// The reserved bit.
         /// </summary>
-        [BitAttribute(4)]
-        public byte Reservedbits0;
+        public BlockT<byte> Reservedbits0;
 
         /// <summary>
         /// Indicates that the message SHOULD be forwarded as a Short Message Service (SMS) text message. 
         /// </summary>
-        [BitAttribute(1)]
-        public byte TM;
+        public BlockT<byte> TM;
 
         /// <summary>
         /// Forwards the message as an attachment. This value MUST NOT be combined with other ActionFlavor flags.
         /// </summary>
-        [BitAttribute(1)]
-        public byte AT;
+        public BlockT<byte> AT;
 
         /// <summary>
         /// Forwards the message without making any changes to the message. 
         /// </summary>
-        [BitAttribute(1)]
-        public byte NC;
+        public BlockT<byte> NC;
 
         /// <summary>
         /// Preserves the sender information and indicates that the message was auto forwarded. 
         /// </summary>
-        [BitAttribute(1)]
-        public byte PR;
+        public BlockT<byte> PR;
 
         /// <summary>
         /// The reserved bit.3 bytes.
         /// </summary>
-        public byte[] Reservedbits1;
+        public BlockBytes Reservedbits1;
 
         /// <summary>
         /// Parse the ActionFlavor_Forward structure.
         /// </summary>
-        /// <param name="s">A stream containing the ActionFlavor_Forward structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            byte tempbyte = this.ReadByte();
+            Byte0 = BlockT<byte>.Parse(parser);
             int index = 0;
-            this.Reservedbits0 = this.GetBits(tempbyte, index, 4);
+            Reservedbits0 = BlockT<byte>.Create(BaseStructure.GetBits(Byte0.Data, index, 4), Byte0.Size, Byte0.Offset);
             index += 4;
-            this.TM = this.GetBits(tempbyte, index, 1);
+            TM = BlockT<byte>.Create(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
-            this.AT = this.GetBits(tempbyte, index, 1);
+            AT = BlockT<byte>.Create(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
-            this.NC = this.GetBits(tempbyte, index, 1);
+            NC = BlockT<byte>.Create(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
-            this.PR = this.GetBits(tempbyte, index, 1);
+            PR = BlockT<byte>.Create(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
 
-            this.Reservedbits1 = this.ReadBytes(3);
+            Reservedbits1 = BlockBytes.Parse(parser, 3);
         }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Reservedbits0, $"Reservedbits0:{Reservedbits0.Data}");
+            AddChild(TM, $"TM:{TM.Data}");
+            AddChild(AT, $"AT:{AT.Data}");
+            AddChild(NC, $"NC:{NC.Data}");
+            AddChild(PR, $"PR:{PR.Data}");
+            AddChild(Reservedbits1,$"Reservedbits1:{Reservedbits1.ToHexString(false)}");
+            Reservedbits1.AddHeader($"cb:{Reservedbits1.Count}");
+        }
+
     }
 
     /// <summary>
     ///  This type is specified in MS-OXORULE section 2.2.5.1.1 ActionFlavor structure when ActionType is relate to REPLY
     /// </summary>
-    public class ActionFlavor_Reply : BaseStructure
+    public class ActionFlavor_Reply : Block
     {
         /// <summary>
         /// The reserved bit.
         /// </summary>
-        [BitAttribute(6)]
-        public byte Reservedbits0;
+        public BlockT<byte> Byte0;
+
+        public BlockT<byte> Reservedbits0;
 
         /// <summary>
         /// Server will use fixed, server-defined text in the reply message and ignore the text in the reply template. 
         /// </summary>
-        [BitAttribute(1)]
-        public byte ST;
+        public BlockT<byte> ST;
 
         /// <summary>
         /// The server SHOULD not send the message to the message sender (the reply template MUST contain recipients (2) in this case).
         /// </summary>
-        [BitAttribute(1)]
-        public byte NS;
+        public BlockT<byte> NS;
 
         /// <summary>
         /// The reserved bit.3 bytes
         /// </summary>
-        public byte[] Reservedbits1;
+        public BlockBytes Reservedbits1;
 
         /// <summary>
         /// Parse the ActionFlavor_Reply structure.
         /// </summary>
-        /// <param name="s">A stream containing the ActionFlavor_Reply structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            byte tempbyte = this.ReadByte();
+            Byte0 = BlockT<byte>.Parse(parser);
             int index = 0;
-            this.Reservedbits0 = this.GetBits(tempbyte, index, 6);
+            Reservedbits0 = BlockT<byte>.Create(BaseStructure.GetBits(Byte0.Data, index, 6), Byte0.Size, Byte0.Offset);
             index += 6;
-            this.ST = this.GetBits(tempbyte, index, 1);
+            ST = BlockT<byte>.Create(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
-            this.NS = this.GetBits(tempbyte, index, 1);
-            this.Reservedbits1 = this.ReadBytes(3);
+            NS = BlockT<byte>.Create(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+            Reservedbits1 = BlockBytes.Parse(parser, 3);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Reservedbits0, $"Reservedbits0:{Reservedbits0.Data}");
+            AddChild(ST, $"ST:{ST.Data}");
+            AddChild(NS, $"NS:{NS.Data}");
+            AddChild(Reservedbits1, $"Reservedbits1:{Reservedbits1.ToHexString(false)}");
+            Reservedbits1.AddHeader($"cb:{Reservedbits1.Count}");
         }
     }
 
     /// <summary>
     ///  This type is specified in MS-OXORULE section 2.2.5.1.1 ActionFlavor structure when ActionType is not related to REPLY or FORWARD 
     /// </summary>
-    public class ActionFlavor_Reserved : BaseStructure
+    public class ActionFlavor_Reserved : Block
     {
         /// <summary>
         /// The reserved bits.
         /// </summary>
-        public int Reservedbits;
+        public BlockT<int> Reservedbits;
 
         /// <summary>
         /// Parse the ActionFlavor_Reserved structure.
         /// </summary>
-        /// <param name="s">A stream containing the ActionFlavor_Reserved structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Reservedbits = this.ReadINT32();
+            Reservedbits = BlockT<int>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Reservedbits, $"Reservedbits:{Reservedbits.Data}");
         }
     }
     #endregion
@@ -801,81 +848,88 @@
     /// <summary>
     /// This type is specified in MS-OXORULE section 2.2.5.1.2.1 OP_MOVE and OP_COPY ActionData Structure for Standard Rules
     /// </summary>
-    public class OP_MOVE_and_OP_COPY_ActionData_forStandard : BaseStructure
+    public class OP_MOVE_and_OP_COPY_ActionData_forStandard : Block
     {
         /// <summary>
         /// A Boolean value that indicates whether the folder is in the user's mailbox or a different mailbox.
         /// </summary>
-        public bool FolderInThisStore;
+        public BlockT<bool> FolderInThisStore;
 
         /// <summary>
         /// An integer that specifies the size, in bytes, of the StoreEID field.
         /// </summary>
-        public ushort StoreEIDSize;
+        public BlockT<ushort> StoreEIDSize;
 
         /// <summary>
         /// A Store Object EntryID structure, as specified in [MS-OXCDATA] section 2.2.4.3, that identifies the message store. 
         /// </summary>
-        public object StoreEID;
+        public BlockBytes StoreEID;
 
         /// <summary>
         /// An integer that specifies the size, in bytes, of the FolderEID field.
         /// </summary>
-        public ushort FolderEIDSize;
+        public BlockT<ushort> FolderEIDSize;
 
         /// <summary>
         /// A structure that identifies the destination folder.
         /// </summary>
-        public object FolderEID;
+        public Block FolderEID;
 
         /// <summary>
         /// Parse the OP_MOVE_and_OP_COPY_ActionData_forStandard structure.
         /// </summary>
-        /// <param name="s">A stream containing the OP_MOVE_and_OP_COPY_ActionData_forStandard structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.FolderInThisStore = this.ReadBoolean();
-            this.StoreEIDSize = this.ReadUshort();
+            FolderInThisStore = BlockT<bool>.Parse<byte>(parser);
+            StoreEIDSize = BlockT<ushort>.Parse(parser);
 
             // 2.2.5.1.2.1 OP_MOVE and OP_COPY ActionData Structure
             // No matter the value of FolderInThisStore, the server tends to set StoreEIDSize to 0x0001.
             // So instead of parsing it, we'll just read StoreEIDSize bytes.
-            this.StoreEID = this.ReadBytes(this.StoreEIDSize);
+            StoreEID = BlockBytes.Parse(parser, StoreEIDSize.Data);
 
-            this.FolderEIDSize = this.ReadUshort();
-            if (this.FolderInThisStore)
+            FolderEIDSize = BlockT<ushort>.Parse(parser);
+            if (FolderInThisStore.Data)
             {
-                ServerEid folderEID = new ServerEid();
-                folderEID.Parse(s);
-                this.FolderEID = folderEID;
+                FolderEID = new ServerEid();
+                FolderEID.Parse(parser);
             }
             else
             {
-                this.FolderEID = this.ReadBytes(this.FolderEIDSize);
+                FolderEID = BlockBytes.Parse(parser, FolderEIDSize.Data);
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(FolderInThisStore, $"FolderInThisStore:{FolderInThisStore.Data}");
+            AddChild(StoreEIDSize, $"StoreEIDSize:{StoreEIDSize.Data}");
+            AddChild(StoreEID, $"StoreEID:{StoreEID.ToHexString(false)}");
+            StoreEID.AddHeader($"cb:{StoreEID.Count}");
+            AddChild(FolderEIDSize, $"FolderEIDSize:{FolderEIDSize.Data}");
+            AddChild(FolderEID, "FolderEID");
         }
     }
 
     /// <summary>
     /// This type is specified in MS-OXORULE section 2.2.5.1.2.1 OP_MOVE and OP_COPY ActionData Structure for Extended Rules
     /// </summary>
-    public class OP_MOVE_and_OP_COPY_ActionData_forExtended : BaseStructure
+    public class OP_MOVE_and_OP_COPY_ActionData_forExtended : Block
     {
         /// <summary>
         /// An integer that specifies the size, in bytes, of the StoreEID field.
         /// </summary>
-        public uint StoreEIDSize;
+        public BlockT<uint> StoreEIDSize;
 
         /// <summary>
         /// This field is not used and can be set to any non-null value by the client and the server. 
         /// </summary>
-        public MAPIString StoreEID;
+        public BlockBytes StoreEID;
 
         /// <summary>
         /// An integer that specifies the size, in bytes, of the FolderEID field.
         /// </summary>
-        public uint FolderEIDSize;
+        public BlockT<uint> FolderEIDSize;
 
         /// <summary>
         /// A Folder EntryID structure, as specified in [MS-OXCDATA] section 2.2.4.1, that identifies the destination folder. 
@@ -885,29 +939,33 @@
         /// <summary>
         /// Parse the OP_MOVE_and_OP_COPY_ActionData_forExtended structure.
         /// </summary>
-        /// <param name="s">A stream containing the OP_MOVE_and_OP_COPY_ActionData_forExtended structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.StoreEIDSize = this.ReadUint();
-            this.StoreEID = new MAPIString(Encoding.ASCII, string.Empty, (int)this.StoreEIDSize);
-            this.StoreEID.Parse(s);
-            this.FolderEIDSize = this.ReadUint();
-            FolderEntryID folderEID = new FolderEntryID();
-            this.FolderEID = folderEID;
-            this.FolderEID.Parse(s);
+            StoreEIDSize = BlockT<uint>.Parse<byte>(parser);
+            StoreEID = BlockBytes.Parse(parser, (int)StoreEIDSize.Data);
+            FolderEIDSize = BlockT<uint>.Parse<byte>(parser);
+            FolderEID = Parse<FolderEntryID>(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(StoreEIDSize, $"StoreEIDSize:{StoreEIDSize.Data}");
+            AddChild(StoreEID, $"StoreEID:{StoreEID.ToHexString(false)}");
+            StoreEID.AddHeader($"cb:{StoreEID.Count}");
+            AddChild(FolderEIDSize, $"FolderEIDSize:{FolderEIDSize.Data}");
+            AddChild(FolderEID, "FolderEID");
         }
     }
 
     /// <summary>
     ///  This type is specified in MS-OXORULE Section 2.2.5.1.2.1.1 ServerEid Structure
     /// </summary>
-    public class ServerEid : BaseStructure
+    public class ServerEid : Block
     {
         /// <summary>
         /// The value 0x01 indicates that the remaining bytes conform to this structure; 
         /// </summary>
-        public byte Ours;
+        public BlockT<byte> Ours;
 
         /// <summary>
         /// A Folder ID structure, as specified in [MS-OXCDATA] section 2.2.1.1, that identifies the destination folder.
@@ -917,33 +975,37 @@
         /// <summary>
         /// This field is not used and MUST be set to all zeros.
         /// </summary>
-        public ulong MessageId;
+        public BlockT<ulong> MessageId;
 
         /// <summary>
         /// This field is not used and MUST be set to all zeros.
         /// </summary>
-        public int Instance;
+        public BlockT<int> Instance;
 
         /// <summary>
         /// Parse the ServerEid structure.
         /// </summary>
-        /// <param name="s">A stream containing the ServerEid structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Ours = this.ReadByte();
-            FolderID folderId = new FolderID();
-            this.FolderId = folderId;
-            this.FolderId.Parse(s);
-            this.MessageId = this.ReadUlong();
-            this.Instance = this.ReadINT32();
+            Ours = BlockT<byte>.Parse(parser);
+            FolderId = Parse<FolderID>(parser);
+            MessageId = BlockT<ulong>.Parse(parser);
+            Instance = BlockT<int>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Ours, $"Ours:{Ours.Data}");
+            AddChild(FolderId, "FolderId");
+            AddChild(MessageId, $"MessageId:{MessageId.Data}");
+            AddChild(Instance, $"Instance:{Instance.Data}");
         }
     }
 
     /// <summary>
     /// This type is specified in MS-OXORULE section 2.2.5.1.2.2 OP_REPLY and OP_OOF_REPLY ActionData Structure for Standard Rules
     /// </summary>
-    public class OP_REPLY_and_OP_OOF_REPLY_ActionData_forStandard : BaseStructure
+    public class OP_REPLY_and_OP_OOF_REPLY_ActionData_forStandard : Block
     {
         /// <summary>
         /// A Folder ID structure, as specified in [MS-OXCDATA] section 2.2.1.1, that identifies the folder that contains the reply template.
@@ -958,34 +1020,35 @@
         /// <summary>
         /// A GUID that is generated by the client in the process of creating a reply template. 
         /// </summary>
-        public Guid ReplyTemplateGUID;
+        public BlockT<Guid> ReplyTemplateGUID;
 
         /// <summary>
         /// Parse the OP_REPLY_and_OP_OOF_REPLY_ActionData_forStandard structure.
         /// </summary>
-        /// <param name="s">A stream containing the OP_REPLY_and_OP_OOF_REPLY_ActionData_forStandard structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            FolderID replyTemplateFID = new FolderID();
-            this.ReplyTemplateFID = replyTemplateFID;
-            this.ReplyTemplateFID.Parse(s);
-            MessageID replyTemplateMID = new MessageID();
-            this.ReplyTemplateMID = replyTemplateMID;
-            this.ReplyTemplateMID.Parse(s);
-            this.ReplyTemplateGUID = this.ReadGuid();
+            ReplyTemplateFID = Parse<FolderID>(parser);
+            ReplyTemplateMID = Parse<MessageID>(parser);
+            ReplyTemplateGUID = BlockT<Guid>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddLabeledChild("ReplyTemplateFID", ReplyTemplateFID);
+            AddLabeledChild("ReplyTemplateMID", ReplyTemplateMID);
+            AddChild(ReplyTemplateGUID, $"ReplyTemplateGUID:{ReplyTemplateGUID.Data}");
         }
     }
 
     /// <summary>
     /// This type is specified in MS-OXORULE section 2.2.5.1.2.2 OP_REPLY and OP_OOF_REPLY ActionData Structure for Extended Rules
     /// </summary>
-    public class OP_REPLY_and_OP_OOF_REPLY_ActionData_forExtended : BaseStructure
+    public class OP_REPLY_and_OP_OOF_REPLY_ActionData_forExtended : Block
     {
         /// <summary>
         /// An integer that specifies the size, in bytes, of the ReplyTemplateMessageEID field.
         /// </summary>
-        public uint MessageEIDSize;
+        public BlockT<uint> MessageEIDSize;
 
         /// <summary>
         /// A Message EntryID structure, as specified in [MS-OXCDATA] section 2.2.4.2, that contains the entry ID of the reply template.
@@ -995,32 +1058,35 @@
         /// <summary>
         /// A GUID that is generated by the client in the process of creating a reply template. 
         /// </summary>
-        public Guid ReplyTemplateGUID;
+        public BlockT<Guid> ReplyTemplateGUID;
 
         /// <summary>
         /// Parse the OP_REPLY_and_OP_OOF_REPLY_ActionData_forExtended structure.
         /// </summary>
-        /// <param name="s">A stream containing the OP_REPLY_and_OP_OOF_REPLY_ActionData_forExtended structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.MessageEIDSize = this.ReadUint();
-            MessageEntryID replyTemplateMessageEID = new MessageEntryID();
-            this.ReplyTemplateMessageEID = replyTemplateMessageEID;
-            this.ReplyTemplateMessageEID.Parse(s);
-            this.ReplyTemplateGUID = this.ReadGuid();
+            MessageEIDSize = BlockT<uint>.Parse<byte>(parser);
+            ReplyTemplateMessageEID = Parse<MessageEntryID>(parser);
+            ReplyTemplateGUID = BlockT<Guid>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(MessageEIDSize, $"MessageEIDSize:{MessageEIDSize.Data}");
+            AddLabeledChild("ReplyTemplateMessageEID", ReplyTemplateMessageEID);
+            AddChild(ReplyTemplateGUID, $"ReplyTemplateGUID:{ReplyTemplateGUID.Data}");
         }
     }
 
     /// <summary>
     /// This type is specified in MS-OXORULE section 2.2.5.1.2.4 OP_FORWARD and OP_DELEGATE ActionData Structure
     /// </summary>
-    public class OP_FORWARD_and_OP_DELEGATE_ActionData : BaseStructure
+    public class OP_FORWARD_and_OP_DELEGATE_ActionData : Block
     {
         /// <summary>
         /// An integer that specifies the number of RecipientBlockData structures, as specified in section 2.2.5.1.2.4.1, contained in the RecipientBlocks field.
         /// </summary>
-        public ushort RecipientCount;
+        public BlockT<ushort> RecipientCount;
 
         /// <summary>
         /// An array of RecipientBlockData structures, each of which specifies information about one recipient (2). 
@@ -1030,37 +1096,41 @@
         /// <summary>
         /// Parse the OP_FORWARD_and_OP_DELEGATE_ActionData structure.
         /// </summary>
-        /// <param name="s">A stream containing the OP_FORWARD_and_OP_DELEGATE_ActionData structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.RecipientCount = this.ReadUshort();
-            List<RecipientBlockData> recipientBlocks = new List<RecipientBlockData>();
-            for (int i = 0; i < this.RecipientCount; i++)
+            RecipientCount = BlockT<ushort>.Parse(parser);
+            var recipientBlocks = new List<RecipientBlockData>();
+            for (int i = 0; i < RecipientCount.Data; i++)
             {
-                RecipientBlockData recipientBlock = new RecipientBlockData();
-                recipientBlock.Parse(s);
+                var recipientBlock = new RecipientBlockData();
+                recipientBlock.Parse(parser);
                 recipientBlocks.Add(recipientBlock);
             }
 
             this.RecipientBlocks = recipientBlocks.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(RecipientCount, $"RecipientCount:{RecipientCount.Data}");
+            AddLabeledChildren("RecipientBlocks", RecipientBlocks);
         }
     }
 
     /// <summary>
     /// This type is specified in MS-OXORULE section 2.2.5.1.2.4.1 RecipientBlockData Structure
     /// </summary>
-    public class RecipientBlockData : BaseStructure
+    public class RecipientBlockData : Block
     {
         /// <summary>
         /// This value is implementation-specific and not required for interoperability
         /// </summary>
-        public byte Reserved;
+        public BlockT<byte> Reserved;
 
         /// <summary>
         /// An integer that specifies the number of structures present in the PropertyValues field. This number MUST be greater than zero.
         /// </summary>
-        public ushort NoOfProperties;
+        public BlockT<ushort> NoOfProperties;
 
         /// <summary>
         /// An array of TaggedPropertyValue structures, each of which contains a property that provides some information about the recipient (2). 
@@ -1070,54 +1140,63 @@
         /// <summary>
         /// Parse the RecipientBlockData structure.
         /// </summary>
-        /// <param name="s">A stream containing the RecipientBlockData structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Reserved = this.ReadByte();
-            this.NoOfProperties = this.ReadUshort();
-            List<TaggedPropertyValue> propertyValues = new List<TaggedPropertyValue>();
-            for (int i = 0; i < this.NoOfProperties; i++)
+            Reserved = BlockT<byte>.Parse(parser);
+            NoOfProperties = BlockT<ushort>.Parse(parser);
+            var propertyValues = new List<TaggedPropertyValue>();
+            for (int i = 0; i < NoOfProperties.Data; i++)
             {
                 TaggedPropertyValue propertyValue = new TaggedPropertyValue();
-                propertyValue.Parse(s);
+                propertyValue.Parse(parser);
                 propertyValues.Add(propertyValue);
             }
 
-            this.PropertyValues = propertyValues.ToArray();
+            PropertyValues = propertyValues.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RecipientBlockData");
+            AddChild(Reserved, $"Reserved:{Reserved.Data}");
+            AddChild(NoOfProperties, $"NoOfProperties:{NoOfProperties.Data}");
+            AddLabeledChildren("PropertyValues", PropertyValues);
         }
     }
 
     /// <summary>
     /// This type is specified in MS-OXORULE section 2.2.5.1.2.5 OP_BOUNCE ActionData Structure
     /// </summary>
-    public class OP_BOUNCE_ActionData : BaseStructure
+    public class OP_BOUNCE_ActionData : Block
     {
         /// <summary>
         /// An integer that specifies a bounce code.
         /// </summary>
-        public BounceCodeEnum BounceCode;
+        public BlockT<BounceCodeEnum> BounceCode;
 
         /// <summary>
         /// Parse the OP_BOUNCE_ActionData structure.
         /// </summary>
-        /// <param name="s">A stream containing the OP_BOUNCE_ActionData structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.BounceCode = (BounceCodeEnum)this.ReadUint();
+            BounceCode = BlockT<BounceCodeEnum>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(BounceCode, $"BounceCode:{BounceCode.Data}");
         }
     }
 
     /// <summary>
     /// This type is specified in MS-OXORULE section 2.2.5.1.2.3 OP_DEFER_ACTION ActionData Structure
     /// </summary>
-    public class OP_DEFER_ACTION : BaseStructure
+    public class OP_DEFER_ACTION : Block
     {
         /// <summary>
         /// The defer Action data.
         /// </summary>
-        public byte[] DeferActionData;
+        public BlockBytes DeferActionData;
 
         /// <summary>
         /// The length of DeferActionData
@@ -1130,26 +1209,22 @@
         /// <param name="size">The size.</param>
         public OP_DEFER_ACTION(int size)
         {
-            this.length = size - 9;
+            length = size - 9; // 9 is the size of OP_DEFER_ACTION header, which includes RopId, LogonId, InputHandleIndex, OutputHandleIndex, and TableFlags.
         }
 
         /// <summary>
         /// Parse the OP_DEFER_ACTION structure.
         /// </summary>
-        /// <param name="s">A stream containing the OP_DEFER_ACTION structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.DeferActionData = this.ReadBytes(this.length);
+            DeferActionData = BlockBytes.Parse(parser, length);
         }
-    }
 
-    /// <summary>
-    /// An OP_TAG ActionData structure is a TaggedPropertyValue structure, packaged as specified in [MS-OXCDATA] section 2.11.4.
-    /// </summary>
-    public class OP_TAG_ActionData : TaggedPropertyValue
-    {
-        // None, class OP_TAG_ActionData is same as TaggedPropertyValue.
+        protected override void ParseBlocks()
+        {
+            AddChild(DeferActionData, $"DeferActionData:{DeferActionData.ToHexString(false)}");
+            DeferActionData.AddHeader($"cb:{DeferActionData.Count}");
+        }
     }
 
     #endregion

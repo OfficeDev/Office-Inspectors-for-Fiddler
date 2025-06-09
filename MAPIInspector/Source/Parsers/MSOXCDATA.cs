@@ -83,7 +83,7 @@
         Privatedistributionlist = 0x00000005,
 
         /// <summary>
-        /// Remote mail user 
+        /// Remote mail user
         /// </summary>
         Remotemailuser = 0x00000006,
 
@@ -93,7 +93,7 @@
         Container = 0x00000100,
 
         /// <summary>
-        /// A Template 
+        /// A Template
         /// </summary>
         Template = 0x00000101,
 
@@ -181,7 +181,7 @@
         StorageInvalidParameter = 0x80030057,
 
         /// <summary>
-        /// There is insufficient disk space to complete the operation. 
+        /// There is insufficient disk space to complete the operation.
         /// </summary>
         StreamSizeError = 0x80030070,
 
@@ -441,7 +441,7 @@
         NoParentFolder = 0x80040803,
 
         /// <summary>
-        /// An operation would create a cycle (for instance, by copying a parent folder to one of its subfolders). 
+        /// An operation would create a cycle (for instance, by copying a parent folder to one of its subfolders).
         /// </summary>
         CycleDetected = 0x80040804,
 
@@ -1107,7 +1107,7 @@
         Paused = 0x0000060E,
 
         /// <summary>
-        /// Attempt to unpause a server that is not paused. 
+        /// Attempt to unpause a server that is not paused.
         /// </summary>
         NotPaused = 0x0000060F,
 
@@ -1332,12 +1332,12 @@
         RpcServerTooBusy = 0x00000973,
 
         /// <summary>
-        /// An external RPC failed because the local server was out of memory. 
+        /// An external RPC failed because the local server was out of memory.
         /// </summary>
         RpcOutOfMemory = 0x00000974,
 
         /// <summary>
-        /// An external RPC failed because the remote server was out of memory. 
+        /// An external RPC failed because the remote server was out of memory.
         /// </summary>
         RpcServerOutOfMemory = 0x00000975,
 
@@ -1507,92 +1507,92 @@
         IsamErrorDatabaseBufferDependenciesCorrupted = 0xFFFFFF01,
 
         /// <summary>
-        /// The version already existed and there was a recovery failure. 
+        /// The version already existed and there was a recovery failure.
         /// </summary>
         IsamErrorPreviousVersion = 0xFFFFFEBE,
 
         /// <summary>
-        /// The page boundary has been reached. 
+        /// The page boundary has been reached.
         /// </summary>
         IsamErrorPageBoundary = 0xFFFFFEBD,
 
         /// <summary>
-        /// The key boundary has been reached. 
+        /// The key boundary has been reached.
         /// </summary>
         IsamErrorKeyBoundary = 0xFFFFFEBC,
 
         /// <summary>
-        /// The database is corrupt. 
+        /// The database is corrupt.
         /// </summary>
         IsamErrorBadPageLink = 0xFFFFFEB9,
 
         /// <summary>
-        /// The bookmark has no corresponding address in the database. 
+        /// The bookmark has no corresponding address in the database.
         /// </summary>
         IsamErrorBadBookmark = 0xFFFFFEB8,
 
         /// <summary>
-        /// The call to the operating system failed. 
+        /// The call to the operating system failed.
         /// </summary>
         IsamErrorNTSystemCallFailed = 0xFFFFFEB2,
 
         /// <summary>
-        /// A parent database is corrupt. 
+        /// A parent database is corrupt.
         /// </summary>
         IsamErrorBadParentPageLink = 0xFFFFFEAE,
 
         /// <summary>
-        /// The AvailExt cache does not match the B+ tree. 
+        /// The AvailExt cache does not match the B+ tree.
         /// </summary>
         IsamErrorSPAvailExtCacheOutOfSync = 0xFFFFFEAC,
 
         /// <summary>
-        /// The AllAvailExt space tree is corrupt. 
+        /// The AllAvailExt space tree is corrupt.
         /// </summary>
         IsamErrorSPAvailExtCorrupted = 0xFFFFFEAB,
 
         /// <summary>
-        /// An out of memory error occurred while allocating an AvailExt cache node. 
+        /// An out of memory error occurred while allocating an AvailExt cache node.
         /// </summary>
         IsamErrorSPAvailExtCacheOutOfMemory = 0xFFFFFEAA,
 
         /// <summary>
-        /// The OwnExt space tree is corrupt. 
+        /// The OwnExt space tree is corrupt.
         /// </summary>
         IsamErrorSPOwnExtCorrupted = 0xFFFFFEA9,
 
         /// <summary>
-        /// The Dbtime on the current page is greater than the global database dbtime. 
+        /// The Dbtime on the current page is greater than the global database dbtime.
         /// </summary>
         IsamErrorDbTimeCorrupted = 0xFFFFFEA8,
 
         /// <summary>
-        /// An attempt to create a key for an index entry failed because the key would have been truncated and the index definition disallows key truncation. 
+        /// An attempt to create a key for an index entry failed because the key would have been truncated and the index definition disallows key truncation.
         /// </summary>
         IsamErrorKeyTruncated = 0xFFFFFEA6,
 
         /// <summary>
-        /// The key is too large. 
+        /// The key is too large.
         /// </summary>
         IsamErrorKeyTooBig = 0xFFFFFE68,
 
         /// <summary>
-        /// The logged operation cannot be redone. 
+        /// The logged operation cannot be redone.
         /// </summary>
         IsamErrorInvalidLoggedOperation = 0xFFFFFE0C,
 
         /// <summary>
-        /// The log file is corrupt. 
+        /// The log file is corrupt.
         /// </summary>
         IsamErrorLogFileCorrupt = 0xFFFFFE0B,
 
         /// <summary>
-        /// A backup directory was not given. 
+        /// A backup directory was not given.
         /// </summary>
         IsamErrorNoBackupDirectory = 0xFFFFFE09,
 
         /// <summary>
-        /// The backup directory is not empty. 
+        /// The backup directory is not empty.
         /// </summary>
         IsamErrorBackupDirectoryNotEmpty = 0xFFFFFE08,
 
@@ -1722,12 +1722,12 @@
         IsamErrorCheckpointCorrupt = 0xFFFFFDEB,
 
         /// <summary>
-        /// The database patch file page was not found during recovery. 
+        /// The database patch file page was not found during recovery.
         /// </summary>
         IsamErrorMissingPatchPage = 0xFFFFFDEA,
 
         /// <summary>
-        /// The database patch file page is not valid. 
+        /// The database patch file page is not valid.
         /// </summary>
         IsamErrorBadPatchPage = 0xFFFFFDE9,
 
@@ -1767,172 +1767,172 @@
         IsamErrorCheckpointFileNotFound = 0xFFFFFDE2,
 
         /// <summary>
-        /// The required log files for recovery are missing. (JET_errRequiredLogFilesMissing) 
+        /// The required log files for recovery are missing. (JET_errRequiredLogFilesMissing)
         /// </summary>
         IsamErrorRequiredLogFilesMissing = 0xFFFFFDE1,
 
         /// <summary>
-        /// A soft recovery is about to be used on a backup database when a restore is supposed to be used instead. 
+        /// A soft recovery is about to be used on a backup database when a restore is supposed to be used instead.
         /// </summary>
         IsamErrorSoftRecoveryOnBackupDatabase = 0xFFFFFDE0,
 
         /// <summary>
-        /// The databases have been recovered, but the log file size used during recovery does not match JET_paramLogFileSize. 
+        /// The databases have been recovered, but the log file size used during recovery does not match JET_paramLogFileSize.
         /// </summary>
         IsamErrorLogFileSizeMismatchDatabasesConsistent = 0xFFFFFDDF,
 
         /// <summary>
-        /// The log file sector size does not match the sector size of the current volume. 
+        /// The log file sector size does not match the sector size of the current volume.
         /// </summary>
         IsamErrorLogSectorSizeMismatch = 0xFFFFFDDE,
 
         /// <summary>
-        /// The databases have been recovered, but the log file sector size (used during recovery) does not match the sector size of the current volume. 
+        /// The databases have been recovered, but the log file sector size (used during recovery) does not match the sector size of the current volume.
         /// </summary>
         IsamErrorLogSectorSizeMismatchDatabasesConsistent = 0xFFFFFDDD,
 
         /// <summary>
-        /// The databases have been recovered, but all possible log generations in the current sequence have been used. All log files and the checkpoint file is required to be deleted and databases are required to be backed up before continuing. 
+        /// The databases have been recovered, but all possible log generations in the current sequence have been used. All log files and the checkpoint file is required to be deleted and databases are required to be backed up before continuing.
         /// </summary>
         IsamErrorLogSequenceEndDatabasesConsistent = 0xFFFFFDDC,
 
         /// <summary>
-        /// There was an illegal attempt to replay a streaming file operation where the data was not logged. This is probably caused by an attempt to roll forward with circular logging enabled. 
+        /// There was an illegal attempt to replay a streaming file operation where the data was not logged. This is probably caused by an attempt to roll forward with circular logging enabled.
         /// </summary>
         IsamErrorStreamingDataNotLogged = 0xFFFFFDDB,
 
         /// <summary>
-        /// The database was not shut down cleanly. A recovery is required first be run to properly complete database operations for the previous shutdown. 
+        /// The database was not shut down cleanly. A recovery is required first be run to properly complete database operations for the previous shutdown.
         /// </summary>
         IsamErrorDatabaseDirtyShutdown = 0xFFFFFDDA,
 
         /// <summary>
-        /// The last consistent time for the database has not been matched. 
+        /// The last consistent time for the database has not been matched.
         /// </summary>
         IsamErrorConsistentTimeMismatch = 0xFFFFFDD9,
 
         /// <summary>
-        /// The database patch file is not generated from this backup. 
+        /// The database patch file is not generated from this backup.
         /// </summary>
         IsamErrorDatabasePatchFileMismatch = 0xFFFFFDD8,
 
         /// <summary>
-        /// The starting log number is too low for the restore. 
+        /// The starting log number is too low for the restore.
         /// </summary>
         IsamErrorEndingRestoreLogTooLow = 0xFFFFFDD7,
 
         /// <summary>
-        /// The starting log number is too high for the restore. 
+        /// The starting log number is too high for the restore.
         /// </summary>
         IsamErrorStartingRestoreLogTooHigh = 0xFFFFFDD6,
 
         /// <summary>
-        /// The restore log file has a bad signature. 
+        /// The restore log file has a bad signature.
         /// </summary>
         IsamErrorGivenLogFileHasBadSignature = 0xFFFFFDD5,
 
         /// <summary>
-        /// The restore log file is not contiguous. 
+        /// The restore log file is not contiguous.
         /// </summary>
         IsamErrorGivenLogFileIsNotContiguous = 0xFFFFFDD4,
 
         /// <summary>
-        /// Some restore log files are missing. 
+        /// Some restore log files are missing.
         /// </summary>
         IsamErrorMissingRestoreLogFiles = 0xFFFFFDD3,
 
         /// <summary>
-        /// The database missed a previous full backup before attempting to perform an incremental backup. 
+        /// The database missed a previous full backup before attempting to perform an incremental backup.
         /// </summary>
         IsamErrorMissingFullBackup = 0xFFFFFDD0,
 
         /// <summary>
-        /// The backup database size is not a multiple of the database page size. 
+        /// The backup database size is not a multiple of the database page size.
         /// </summary>
         IsamErrorBadBackupDatabaseSize = 0xFFFFFDCF,
 
         /// <summary>
-        /// The current attempt to upgrade a database has been stopped because the database is already current. 
+        /// The current attempt to upgrade a database has been stopped because the database is already current.
         /// </summary>
         IsamErrorDatabaseAlreadyUpgraded = 0xFFFFFDCE,
 
         /// <summary>
-        /// The database was only partially converted to the current format. The database is required to be restored from backup. 
+        /// The database was only partially converted to the current format. The database is required to be restored from backup.
         /// </summary>
         IsamErrorDatabaseIncompleteUpgrade = 0xFFFFFDCD,
 
         /// <summary>
-        /// Some current log files are missing for continuous restore. 
+        /// Some current log files are missing for continuous restore.
         /// </summary>
         IsamErrorMissingCurrentLogFiles = 0xFFFFFDCB,
 
         /// <summary>
-        /// The dbtime on a page is smaller than the dbtimeBefore that is in the record. 
+        /// The dbtime on a page is smaller than the dbtimeBefore that is in the record.
         /// </summary>
         IsamErrorDbTimeTooOld = 0xFFFFFDCA,
 
         /// <summary>
-        /// The dbtime on a page is in advance of the dbtimeBefore that is in the record. 
+        /// The dbtime on a page is in advance of the dbtimeBefore that is in the record.
         /// </summary>
         IsamErrorDbTimeTooNew = 0xFFFFFDC9,
 
         /// <summary>
-        /// Some log or database patch files were missing during the backup. 
+        /// Some log or database patch files were missing during the backup.
         /// </summary>
         IsamErrorMissingFileToBackup = 0xFFFFFDC7,
 
         /// <summary>
-        /// A torn write was detected in a backup that was set during a hard restore. 
+        /// A torn write was detected in a backup that was set during a hard restore.
         /// </summary>
         IsamErrorLogTornWriteDuringHardRestore = 0xFFFFFDC6,
 
         /// <summary>
-        /// A torn write was detected during a hard recovery (the log was not part of a backup set). 
+        /// A torn write was detected during a hard recovery (the log was not part of a backup set).
         /// </summary>
         IsamErrorLogTornWriteDuringHardRecovery = 0xFFFFFDC5,
 
         /// <summary>
-        /// Corruption was detected in a backup set during a hard restore. 
+        /// Corruption was detected in a backup set during a hard restore.
         /// </summary>
         IsamErrorLogCorruptDuringHardRestore = 0xFFFFFDC3,
 
         /// <summary>
-        /// Corruption was detected during hard recovery (the log was not part of a backup set). 
+        /// Corruption was detected during hard recovery (the log was not part of a backup set).
         /// </summary>
         IsamErrorLogCorruptDuringHardRecovery = 0xFFFFFDC2,
 
         /// <summary>
-        /// Logging cannot be enabled while attempting to upgrade a database. 
+        /// Logging cannot be enabled while attempting to upgrade a database.
         /// </summary>
         IsamErrorMustDisableLoggingForDbUpgrade = 0xFFFFFDC1,
 
         /// <summary>
-        /// Either the TargetInstance that was specified for restore has not been found or the log files do not match. 
+        /// Either the TargetInstance that was specified for restore has not been found or the log files do not match.
         /// </summary>
         IsamErrorBadRestoreTargetInstance = 0xFFFFFDBF,
 
         /// <summary>
-        /// The database engine successfully replayed all operations in the transaction log to perform a crash recovery but the caller elected to stop recovery without rolling back uncommitted updates. 
+        /// The database engine successfully replayed all operations in the transaction log to perform a crash recovery but the caller elected to stop recovery without rolling back uncommitted updates.
         /// </summary>
         IsamErrorRecoveredWithoutUndo = 0xFFFFFDBD,
 
         /// <summary>
-        /// The databases to be restored are not from the same shadow copy backup. 
+        /// The databases to be restored are not from the same shadow copy backup.
         /// </summary>
         IsamErrorDatabasesNotFromSameSnapshot = 0xFFFFFDBC,
 
         /// <summary>
-        /// There is a soft recovery on a database from a shadow copy backup set. 
+        /// There is a soft recovery on a database from a shadow copy backup set.
         /// </summary>
         IsamErrorSoftRecoveryOnSnapshot = 0xFFFFFDBB,
 
         /// <summary>
-        /// One or more logs that were committed to this database are missing. 
+        /// One or more logs that were committed to this database are missing.
         /// </summary>
         IsamErrorCommittedLogFilesMissing = 0xFFFFFDBA,
 
         /// <summary>
-        /// One or more logs were found to be corrupt during recovery. 
+        /// One or more logs were found to be corrupt during recovery.
         /// </summary>
         IsamErrorCommittedLogFilesCorrupt = 0xFFFFFDB6,
 
@@ -1942,267 +1942,267 @@
         IsamErrorUnicodeTranslationBufferTooSmall = 0xFFFFFDA7,
 
         /// <summary>
-        /// The Unicode normalization failed. 
+        /// The Unicode normalization failed.
         /// </summary>
         IsamErrorUnicodeTranslationFail = 0xFFFFFDA6,
 
         /// <summary>
-        /// The operating system does not provide support for Unicode normalization and a normalization callback was not specified. 
+        /// The operating system does not provide support for Unicode normalization and a normalization callback was not specified.
         /// </summary>
         IsamErrorUnicodeNormalizationNotSupported = 0xFFFFFDA5,
 
         /// <summary>
-        /// The existing log file has a bad signature. 
+        /// The existing log file has a bad signature.
         /// </summary>
         IsamErrorExistingLogFileHasBadSignature = 0xFFFFFD9E,
 
         /// <summary>
-        /// An existing log file is not contiguous. 
+        /// An existing log file is not contiguous.
         /// </summary>
         IsamErrorExistingLogFileIsNotContiguous = 0xFFFFFD9D,
 
         /// <summary>
-        /// A checksum error was found in the log file during backup. 
+        /// A checksum error was found in the log file during backup.
         /// </summary>
         IsamErrorLogReadVerifyFailure = 0xFFFFFD9C,
 
         /// <summary>
-        /// A checksum error was found in the SLV file during backup. 
+        /// A checksum error was found in the SLV file during backup.
         /// </summary>
         IsamErrorSLVReadVerifyFailure = 0xFFFFFD9B,
 
         /// <summary>
-        /// There are too many outstanding generations between the checkpoint and the current generation. 
+        /// There are too many outstanding generations between the checkpoint and the current generation.
         /// </summary>
         IsamErrorCheckpointDepthTooDeep = 0xFFFFFD9A,
 
         /// <summary>
-        /// A hard recovery was attempted on a database that was not a backup database. 
+        /// A hard recovery was attempted on a database that was not a backup database.
         /// </summary>
         IsamErrorRestoreOfNonBackupDatabase = 0xFFFFFD99,
 
         /// <summary>
-        /// There is an invalid grbit parameter. 
+        /// There is an invalid grbit parameter.
         /// </summary>
         IsamErrorInvalidGrbit = 0xFFFFFC7C,
 
         /// <summary>
-        /// Termination is in progress. 
+        /// Termination is in progress.
         /// </summary>
         IsamErrorTermInProgress = 0xFFFFFC18,
 
         /// <summary>
-        /// This API element is not supported. 
+        /// This API element is not supported.
         /// </summary>
         IsamErrorFeatureNotAvailable = 0xFFFFFC17,
 
         /// <summary>
-        /// An invalid name is being used. 
+        /// An invalid name is being used.
         /// </summary>
         IsamErrorInvalidName = 0xFFFFFC16,
 
         /// <summary>
-        /// An invalid API parameter is being used. 
+        /// An invalid API parameter is being used.
         /// </summary>
         IsamErrorInvalidParameter = 0xFFFFFC15,
 
         /// <summary>
-        /// There was an attempt to attach to a read-only database file for read/write operations. 
+        /// There was an attempt to attach to a read-only database file for read/write operations.
         /// </summary>
         IsamErrorDatabaseFileReadOnly = 0xFFFFFC10,
 
         /// <summary>
-        /// There is an invalid database ID. 
+        /// There is an invalid database ID.
         /// </summary>
         IsamErrorInvalidDatabaseId = 0xFFFFFC0E,
 
         /// <summary>
-        /// The system is out of memory. 
+        /// The system is out of memory.
         /// </summary>
         IsamErrorOutOfMemory = 0xFFFFFC0D,
 
         /// <summary>
-        /// The maximum database size has been reached. 
+        /// The maximum database size has been reached.
         /// </summary>
         IsamErrorOutOfDatabaseSpace = 0xFFFFFC0C,
 
         /// <summary>
-        /// The table is out of cursors. 
+        /// The table is out of cursors.
         /// </summary>
         IsamErrorOutOfCursors = 0xFFFFFC0B,
 
         /// <summary>
-        /// The database is out of page buffers. 
+        /// The database is out of page buffers.
         /// </summary>
         IsamErrorOutOfBuffers = 0xFFFFFC0A,
 
         /// <summary>
-        /// There are too many indexes. 
+        /// There are too many indexes.
         /// </summary>
         IsamErrorTooManyIndexes = 0xFFFFFC09,
 
         /// <summary>
-        /// There are too many columns in an index. 
+        /// There are too many columns in an index.
         /// </summary>
         IsamErrorTooManyKeys = 0xFFFFFC08,
 
         /// <summary>
-        /// The record has been deleted. 
+        /// The record has been deleted.
         /// </summary>
         IsamErrorRecordDeleted = 0xFFFFFC07,
 
         /// <summary>
-        /// There is a checksum error on a database page. 
+        /// There is a checksum error on a database page.
         /// </summary>
         IsamErrorReadVerifyFailure = 0xFFFFFC06,
 
         /// <summary>
-        /// There is a blank database page. 
+        /// There is a blank database page.
         /// </summary>
         IsamErrorPageNotInitialized = 0xFFFFFC05,
 
         /// <summary>
-        /// There are no file handles. 
+        /// There are no file handles.
         /// </summary>
         IsamErrorOutOfFileHandles = 0xFFFFFC04,
 
         /// <summary>
-        /// There is a disk I/O error. 
+        /// There is a disk I/O error.
         /// </summary>
         IsamErrorDiskIO = 0xFFFFFC02,
 
         /// <summary>
-        /// A file path is invalid. 
+        /// A file path is invalid.
         /// </summary>
         IsamErrorInvalidPath = 0xFFFFFC01,
 
         /// <summary>
-        /// A system path is invalid. 
+        /// A system path is invalid.
         /// </summary>
         IsamErrorInvalidSystemPath = 0xFFFFFC00,
 
         /// <summary>
-        /// A log directory is invalid. 
+        /// A log directory is invalid.
         /// </summary>
         IsamErrorInvalidLogDirectory = 0xFFFFFBFF,
 
         /// <summary>
-        /// The record is larger than maximum size. 
+        /// The record is larger than maximum size.
         /// </summary>
         IsamErrorRecordTooBig = 0xFFFFFBFE,
 
         /// <summary>
-        /// Too many databases are open. 
+        /// Too many databases are open.
         /// </summary>
         IsamErrorTooManyOpenDatabases = 0xFFFFFBFD,
 
         /// <summary>
-        /// This is not a database file. 
+        /// This is not a database file.
         /// </summary>
         IsamErrorInvalidDatabase = 0xFFFFFBFC,
 
         /// <summary>
-        /// The database engine has not been initialized. 
+        /// The database engine has not been initialized.
         /// </summary>
         IsamErrorNotInitialized = 0xFFFFFBFB,
 
         /// <summary>
-        /// The database engine is already initialized. 
+        /// The database engine is already initialized.
         /// </summary>
         IsamErrorAlreadyInitialized = 0xFFFFFBFA,
 
         /// <summary>
-        /// The database engine is being initialized. 
+        /// The database engine is being initialized.
         /// </summary>
         IsamErrorInitInProgress = 0xFFFFFBF9,
 
         /// <summary>
-        /// The file cannot be accessed because the file is locked or in use. 
+        /// The file cannot be accessed because the file is locked or in use.
         /// </summary>
         IsamErrorFileAccessDenied = 0xFFFFFBF8,
 
         /// <summary>
-        /// The buffer is too small. 
+        /// The buffer is too small.
         /// </summary>
         IsamErrorBufferTooSmall = 0xFFFFFBF2,
 
         /// <summary>
-        /// Too many columns are defined. 
+        /// Too many columns are defined.
         /// </summary>
         IsamErrorTooManyColumns = 0xFFFFFBF0,
 
         /// <summary>
-        /// The container is not empty. 
+        /// The container is not empty.
         /// </summary>
         IsamErrorContainerNotEmpty = 0xFFFFFBED,
 
         /// <summary>
-        /// The file name is invalid. 
+        /// The file name is invalid.
         /// </summary>
         IsamErrorInvalidFilename = 0xFFFFFBEC,
 
         /// <summary>
-        /// A bookmark is invalid. 
+        /// A bookmark is invalid.
         /// </summary>
         IsamErrorInvalidBookmark = 0xFFFFFBEB,
 
         /// <summary>
-        /// The column used is in an index. 
+        /// The column used is in an index.
         /// </summary>
         IsamErrorColumnInUse = 0xFFFFFBEA,
 
         /// <summary>
-        /// The data buffer does not match the column size. 
+        /// The data buffer does not match the column size.
         /// </summary>
         IsamErrorInvalidBufferSize = 0xFFFFFBE9,
 
         /// <summary>
-        /// The column value cannot be set. 
+        /// The column value cannot be set.
         /// </summary>
         IsamErrorColumnNotUpdatable = 0xFFFFFBE8,
 
         /// <summary>
-        /// The index is in use. 
+        /// The index is in use.
         /// </summary>
         IsamErrorIndexInUse = 0xFFFFFBE5,
 
         /// <summary>
-        /// The link support is unavailable. 
+        /// The link support is unavailable.
         /// </summary>
         IsamErrorLinkNotSupported = 0xFFFFFBE4,
 
         /// <summary>
-        /// Null keys are not allowed on an index. 
+        /// Null keys are not allowed on an index.
         /// </summary>
         IsamErrorNullKeyDisallowed = 0xFFFFFBE3,
 
         /// <summary>
-        /// The operation has to occur within a transaction. 
+        /// The operation has to occur within a transaction.
         /// </summary>
         IsamErrorNotInTransaction = 0xFFFFFBE2,
 
         /// <summary>
-        /// There are too many active database users. 
+        /// There are too many active database users.
         /// </summary>
         IsamErrorTooManyActiveUsers = 0xFFFFFBDD,
 
         /// <summary>
-        /// A country/region code is invalid or unknown. 
+        /// A country/region code is invalid or unknown.
         /// </summary>
         IsamErrorInvalidCountry = 0xFFFFFBDB,
 
         /// <summary>
-        /// A language ID is invalid or unknown. 
+        /// A language ID is invalid or unknown.
         /// </summary>
         IsamErrorInvalidLanguageId = 0xFFFFFBDA,
 
         /// <summary>
-        /// A code page is invalid or unknown. 
+        /// A code page is invalid or unknown.
         /// </summary>
         IsamErrorInvalidCodePage = 0xFFFFFBD9,
 
         /// <summary>
-        /// Invalid flags are being used for LCMapString. 
+        /// Invalid flags are being used for LCMapString.
         /// </summary>
         IsamErrorInvalidLCMapStringFlags = 0xFFFFFBD8,
 
@@ -2227,87 +2227,87 @@
         IsamErrorCannotIndex = 0xFFFFFBD1,
 
         /// <summary>
-        /// The record has not been deleted. 
+        /// The record has not been deleted.
         /// </summary>
         IsamErrorRecordNotDeleted = 0xFFFFFBD0,
 
         /// <summary>
-        /// Too many mempool entries have been requested. 
+        /// Too many mempool entries have been requested.
         /// </summary>
         IsamErrorTooManyMempoolEntries = 0xFFFFFBCF,
 
         /// <summary>
-        /// The database is out of B+ tree ObjectIDs so an offline defragmentation has to be performed to reclaim freed or unused ObjectIDs. 
+        /// The database is out of B+ tree ObjectIDs so an offline defragmentation has to be performed to reclaim freed or unused ObjectIDs.
         /// </summary>
         IsamErrorOutOfObjectIDs = 0xFFFFFBCE,
 
         /// <summary>
-        /// The Long-value ID counter has reached the maximum value. An offline defragmentation has to be performed to reclaim free or unused LongValueIDs. 
+        /// The Long-value ID counter has reached the maximum value. An offline defragmentation has to be performed to reclaim free or unused LongValueIDs.
         /// </summary>
         IsamErrorOutOfLongValueIDs = 0xFFFFFBCD,
 
         /// <summary>
-        /// The automatic increment counter has reached the maximum value. An offline defragmentation will not be able to reclaim free or unused automatically increment values. 
+        /// The automatic increment counter has reached the maximum value. An offline defragmentation will not be able to reclaim free or unused automatically increment values.
         /// </summary>
         IsamErrorOutOfAutoincrementValues = 0xFFFFFBCC,
 
         /// <summary>
-        /// The Dbtime counter has reached the maximum value. An offline defragmentation is required to be performed to reclaim free or unused Dbtime values. 
+        /// The Dbtime counter has reached the maximum value. An offline defragmentation is required to be performed to reclaim free or unused Dbtime values.
         /// </summary>
         IsamErrorOutOfDbtimeValues = 0xFFFFFBCB,
 
         /// <summary>
-        /// A sequential index counter has reached the maximum value. An offline defragmentation has to  be performed to reclaim Free or unused SequentialIndex values. 
+        /// A sequential index counter has reached the maximum value. An offline defragmentation has to  be performed to reclaim Free or unused SequentialIndex values.
         /// </summary>
         IsamErrorOutOfSequentialIndexValues = 0xFFFFFBCA,
 
         /// <summary>
-        /// This multi-instance call has the single-instance mode enabled. 
+        /// This multi-instance call has the single-instance mode enabled.
         /// </summary>
         IsamErrorRunningInOneInstanceMode = 0xFFFFFBC8,
 
         /// <summary>
-        /// This single-instance call has the multi-instance mode enabled. 
+        /// This single-instance call has the multi-instance mode enabled.
         /// </summary>
         IsamErrorRunningInMultiInstanceMode = 0xFFFFFBC7,
 
         /// <summary>
-        /// The global system parameters have already been set. 
+        /// The global system parameters have already been set.
         /// </summary>
         IsamErrorSystemParamsAlreadySet = 0xFFFFFBC6,
 
         /// <summary>
-        /// The system path is already being used by another database instance. 
+        /// The system path is already being used by another database instance.
         /// </summary>
         IsamErrorSystemPathInUse = 0xFFFFFBC5,
 
         /// <summary>
-        /// The log file path is already being used by another database instance. 
+        /// The log file path is already being used by another database instance.
         /// </summary>
         IsamErrorLogFilePathInUse = 0xFFFFFBC4,
 
         /// <summary>
-        /// The path to the temporary database is already being used by another database instance. 
+        /// The path to the temporary database is already being used by another database instance.
         /// </summary>
         IsamErrorTempPathInUse = 0xFFFFFBC3,
 
         /// <summary>
-        /// The instance name is already in use. 
+        /// The instance name is already in use.
         /// </summary>
         IsamErrorInstanceNameInUse = 0xFFFFFBC2,
 
         /// <summary>
-        /// This instance cannot be used because it encountered a fatal error. 
+        /// This instance cannot be used because it encountered a fatal error.
         /// </summary>
         IsamErrorInstanceUnavailable = 0xFFFFFBBE,
 
         /// <summary>
-        /// This database cannot be used because it encountered a fatal error. 
+        /// This database cannot be used because it encountered a fatal error.
         /// </summary>
         IsamErrorDatabaseUnavailable = 0xFFFFFBBD,
 
         /// <summary>
-        /// This instance cannot be used because it encountered a log-disk-full error while performing an operation (such as a transaction rollback) that could not tolerate failure. 
+        /// This instance cannot be used because it encountered a log-disk-full error while performing an operation (such as a transaction rollback) that could not tolerate failure.
         /// </summary>
         IsamErrorInstanceUnavailableDueToFatalLogDiskFull = 0xFFFFFBBC,
 
@@ -2317,272 +2317,272 @@
         IsamErrorOutOfSessions = 0xFFFFFBB3,
 
         /// <summary>
-        /// The write lock failed due to the existence of an outstanding write lock. 
+        /// The write lock failed due to the existence of an outstanding write lock.
         /// </summary>
         IsamErrorWriteConflict = 0xFFFFFBB2,
 
         /// <summary>
-        /// The transactions are nested too deeply. 
+        /// The transactions are nested too deeply.
         /// </summary>
         IsamErrorTransTooDeep = 0xFFFFFBB1,
 
         /// <summary>
-        /// A session handle is invalid. 
+        /// A session handle is invalid.
         /// </summary>
         IsamErrorInvalidSesid = 0xFFFFFBB0,
 
         /// <summary>
-        /// An update was attempted on an uncommitted primary index. 
+        /// An update was attempted on an uncommitted primary index.
         /// </summary>
         IsamErrorWriteConflictPrimaryIndex = 0xFFFFFBAF,
 
         /// <summary>
-        /// The operation is not allowed within a transaction. 
+        /// The operation is not allowed within a transaction.
         /// </summary>
         IsamErrorInTransaction = 0xFFFFFBAC,
 
         /// <summary>
-        /// The current transaction is required to be rolled back. It cannot be committed and a new one cannot be started. 
+        /// The current transaction is required to be rolled back. It cannot be committed and a new one cannot be started.
         /// </summary>
         IsamErrorRollbackRequired = 0xFFFFFBAB,
 
         /// <summary>
-        /// A read-only transaction tried to modify the database. 
+        /// A read-only transaction tried to modify the database.
         /// </summary>
         IsamErrorTransReadOnly = 0xFFFFFBAA,
 
         /// <summary>
-        /// Two different cursors attempted to replace the same record in the same session. 
+        /// Two different cursors attempted to replace the same record in the same session.
         /// </summary>
         IsamErrorSessionWriteConflict = 0xFFFFFBA9,
 
         /// <summary>
-        /// The record would be too big if represented in a database format from a previous version of Jet. 
+        /// The record would be too big if represented in a database format from a previous version of Jet.
         /// </summary>
         IsamErrorRecordTooBigForBackwardCompatibility = 0xFFFFFBA8,
 
         /// <summary>
-        /// The temporary table could not be created due to parameters that conflict with JET_bitTTForwardOnly. 
+        /// The temporary table could not be created due to parameters that conflict with JET_bitTTForwardOnly.
         /// </summary>
         IsamErrorCannotMaterializeForwardOnlySort = 0xFFFFFBA7,
 
         /// <summary>
-        /// The session handle cannot be used with the table id because it was not used to create it. 
+        /// The session handle cannot be used with the table id because it was not used to create it.
         /// </summary>
         IsamErrorSesidTableIdMismatch = 0xFFFFFBA6,
 
         /// <summary>
-        /// The instance handle is invalid or refers to an instance that has been shut down. 
+        /// The instance handle is invalid or refers to an instance that has been shut down.
         /// </summary>
         IsamErrorInvalidInstance = 0xFFFFFBA5,
 
         /// <summary>
-        /// The database already exists. 
+        /// The database already exists.
         /// </summary>
         IsamErrorDatabaseDuplicate = 0xFFFFFB4F,
 
         /// <summary>
-        /// The database in use. 
+        /// The database in use.
         /// </summary>
         IsamErrorDatabaseInUse = 0xFFFFFB4E,
 
         /// <summary>
-        /// No such database exists. 
+        /// No such database exists.
         /// </summary>
         IsamErrorDatabaseNotFound = 0xFFFFFB4D,
 
         /// <summary>
-        /// The database name is invalid. 
+        /// The database name is invalid.
         /// </summary>
         IsamErrorDatabaseInvalidName = 0xFFFFFB4C,
 
         /// <summary>
-        /// The number of pages is invalid. 
+        /// The number of pages is invalid.
         /// </summary>
         IsamErrorDatabaseInvalidPages = 0xFFFFFB4B,
 
         /// <summary>
-        /// There is a nondatabase file or corrupt database. 
+        /// There is a nondatabase file or corrupt database.
         /// </summary>
         IsamErrorDatabaseCorrupted = 0xFFFFFB4A,
 
         /// <summary>
-        /// The database is exclusively locked. 
+        /// The database is exclusively locked.
         /// </summary>
         IsamErrorDatabaseLocked = 0xFFFFFB49,
 
         /// <summary>
-        /// The versioning for this database cannot be disabled. 
+        /// The versioning for this database cannot be disabled.
         /// </summary>
         IsamErrorCannotDisableVersioning = 0xFFFFFB48,
 
         /// <summary>
-        /// The database engine is incompatible with the database. 
+        /// The database engine is incompatible with the database.
         /// </summary>
         IsamErrorInvalidDatabaseVersion = 0xFFFFFB47,
 
         /// <summary>
-        /// The database is in an older (200) format.  
+        /// The database is in an older (200) format.
         /// </summary>
         IsamErrorDatabase200Format = 0xFFFFFB46,
 
         /// <summary>
-        /// The database is in an older (400) format. 
+        /// The database is in an older (400) format.
         /// </summary>
         IsamErrorDatabase400Format = 0xFFFFFB45,
 
         /// <summary>
-        /// The database is in an older (500) format. 
+        /// The database is in an older (500) format.
         /// </summary>
         IsamErrorDatabase500Format = 0xFFFFFB44,
 
         /// <summary>
-        /// The database page size does not match the engine. 
+        /// The database page size does not match the engine.
         /// </summary>
         IsamErrorPageSizeMismatch = 0xFFFFFB43,
 
         /// <summary>
-        /// No more database instances can be started. 
+        /// No more database instances can be started.
         /// </summary>
         IsamErrorTooManyInstances = 0xFFFFFB42,
 
         /// <summary>
-        /// A different database instance is using this database. 
+        /// A different database instance is using this database.
         /// </summary>
         IsamErrorDatabaseSharingViolation = 0xFFFFFB41,
 
         /// <summary>
-        /// An outstanding database attachment has been detected at the start or end of the recovery, but the database is missing or does not match attachment info. 
+        /// An outstanding database attachment has been detected at the start or end of the recovery, but the database is missing or does not match attachment info.
         /// </summary>
         IsamErrorAttachedDatabaseMismatch = 0xFFFFFB40,
 
         /// <summary>
-        /// The specified path to the database file is illegal. 
+        /// The specified path to the database file is illegal.
         /// </summary>
         IsamErrorDatabaseInvalidPath = 0xFFFFFB3F,
 
         /// <summary>
-        /// A database is being assigned an ID that is already in use. 
+        /// A database is being assigned an ID that is already in use.
         /// </summary>
         IsamErrorDatabaseIdInUse = 0xFFFFFB3E,
 
         /// <summary>
-        /// The forced detach is allowed only after the normal detach was stopped due to an error. 
+        /// The forced detach is allowed only after the normal detach was stopped due to an error.
         /// </summary>
         IsamErrorForceDetachNotAllowed = 0xFFFFFB3D,
 
         /// <summary>
-        /// Corruption was detected in the catalog. 
+        /// Corruption was detected in the catalog.
         /// </summary>
         IsamErrorCatalogCorrupted = 0xFFFFFB3C,
 
         /// <summary>
-        /// The database is only partially attached and the attach operation cannot be completed. 
+        /// The database is only partially attached and the attach operation cannot be completed.
         /// </summary>
         IsamErrorPartiallyAttachedDB = 0xFFFFFB3B,
 
         /// <summary>
-        /// The database with the same signature is already in use. 
+        /// The database with the same signature is already in use.
         /// </summary>
         IsamErrorDatabaseSignInUse = 0xFFFFFB3A,
 
         /// <summary>
-        /// The database is corrupted but a repair is not allowed. 
+        /// The database is corrupted but a repair is not allowed.
         /// </summary>
         IsamErrorDatabaseCorruptedNoRepair = 0xFFFFFB38,
 
         /// <summary>
-        /// The database engine attempted to replay a Create Database operation from the transaction log but failed due to an incompatible version of that operation. 
+        /// The database engine attempted to replay a Create Database operation from the transaction log but failed due to an incompatible version of that operation.
         /// </summary>
         IsamErrorInvalidCreateDbVersion = 0xFFFFFB37,
 
         /// <summary>
-        /// The table is exclusively locked. 
+        /// The table is exclusively locked.
         /// </summary>
         IsamErrorTableLocked = 0xFFFFFAEA,
 
         /// <summary>
-        /// The table already exists. 
+        /// The table already exists.
         /// </summary>
         IsamErrorTableDuplicate = 0xFFFFFAE9,
 
         /// <summary>
-        /// The table is in use and cannot be locked. 
+        /// The table is in use and cannot be locked.
         /// </summary>
         IsamErrorTableInUse = 0xFFFFFAE8,
 
         /// <summary>
-        /// There is no such table or object. 
+        /// There is no such table or object.
         /// </summary>
         IsamErrorObjectNotFound = 0xFFFFFAE7,
 
         /// <summary>
-        /// There is a bad file or index density. 
+        /// There is a bad file or index density.
         /// </summary>
         IsamErrorDensityInvalid = 0xFFFFFAE5,
 
         /// <summary>
-        /// The table is not empty. 
+        /// The table is not empty.
         /// </summary>
         IsamErrorTableNotEmpty = 0xFFFFFAE4,
 
         /// <summary>
-        /// The table ID is invalid. 
+        /// The table ID is invalid.
         /// </summary>
         IsamErrorInvalidTableId = 0xFFFFFAE2,
 
         /// <summary>
-        /// No more tables can be opened, even after the internal cleanup task has run. 
+        /// No more tables can be opened, even after the internal cleanup task has run.
         /// </summary>
         IsamErrorTooManyOpenTables = 0xFFFFFAE1,
 
         /// <summary>
-        /// The operation is not supported on the table. 
+        /// The operation is not supported on the table.
         /// </summary>
         IsamErrorIllegalOperation = 0xFFFFFAE0,
 
         /// <summary>
-        /// No more tables can be opened because the cleanup attempt failed to complete. 
+        /// No more tables can be opened because the cleanup attempt failed to complete.
         /// </summary>
         IsamErrorTooManyOpenTablesAndCleanupTimedOut = 0xFFFFFADF,
 
         /// <summary>
-        /// The table or object name is in use. 
+        /// The table or object name is in use.
         /// </summary>
         IsamErrorObjectDuplicate = 0xFFFFFADE,
 
         /// <summary>
-        /// The object is invalid for operation. 
+        /// The object is invalid for operation.
         /// </summary>
         IsamErrorInvalidObject = 0xFFFFFADC,
 
         /// <summary>
-        /// JetCloseTable is required to be used instead of JetDeleteTable to delete a temporary table. 
+        /// JetCloseTable is required to be used instead of JetDeleteTable to delete a temporary table.
         /// </summary>
         IsamErrorCannotDeleteTempTable = 0xFFFFFADB,
 
         /// <summary>
-        /// There was an illegal attempt to delete a system table. 
+        /// There was an illegal attempt to delete a system table.
         /// </summary>
         IsamErrorCannotDeleteSystemTable = 0xFFFFFADA,
 
         /// <summary>
-        /// There was an illegal attempt to delete a template table. 
+        /// There was an illegal attempt to delete a template table.
         /// </summary>
         IsamErrorCannotDeleteTemplateTable = 0xFFFFFAD9,
 
         /// <summary>
-        /// There has to be an exclusive lock on the table. 
+        /// There has to be an exclusive lock on the table.
         /// </summary>
         IsamErrorExclusiveTableLockRequired = 0xFFFFFAD6,
 
         /// <summary>
-        /// DDL operations are prohibited on this table. 
+        /// DDL operations are prohibited on this table.
         /// </summary>
         IsamErrorFixedDDL = 0xFFFFFAD5,
 
         /// <summary>
-        /// On a derived table, DDL operations are prohibited on the inherited portion of the DDL. 
+        /// On a derived table, DDL operations are prohibited on the inherited portion of the DDL.
         /// </summary>
         IsamErrorFixedInheritedDDL = 0xFFFFFAD4,
 
@@ -2592,462 +2592,462 @@
         IsamErrorCannotNestDDL = 0xFFFFFAD3,
 
         /// <summary>
-        /// There was an attempt to inherit a DDL from a table that is not marked as a template table. 
+        /// There was an attempt to inherit a DDL from a table that is not marked as a template table.
         /// </summary>
         IsamErrorDDLNotInheritable = 0xFFFFFAD2,
 
         /// <summary>
-        /// The system parameters were set improperly. 
+        /// The system parameters were set improperly.
         /// </summary>
         IsamErrorInvalidSettings = 0xFFFFFAD0,
 
         /// <summary>
-        /// The client has requested that the service be stopped. 
+        /// The client has requested that the service be stopped.
         /// </summary>
         IsamErrorClientRequestToStopJetService = 0xFFFFFACF,
 
         /// <summary>
-        /// The template table was created with the NoFixedVarColumnsInDerivedTables flag set. 
+        /// The template table was created with the NoFixedVarColumnsInDerivedTables flag set.
         /// </summary>
         IsamErrorCannotAddFixedVarColumnToDerivedTable = 0xFFFFFACE,
 
         /// <summary>
-        /// The index build failed. 
+        /// The index build failed.
         /// </summary>
         IsamErrorIndexCantBuild = 0xFFFFFA87,
 
         /// <summary>
-        /// The primary index is already defined. 
+        /// The primary index is already defined.
         /// </summary>
         IsamErrorIndexHasPrimary = 0xFFFFFA86,
 
         /// <summary>
-        /// The index is already defined. 
+        /// The index is already defined.
         /// </summary>
         IsamErrorIndexDuplicate = 0xFFFFFA85,
 
         /// <summary>
-        /// There is no such index. 
+        /// There is no such index.
         /// </summary>
         IsamErrorIndexNotFound = 0xFFFFFA84,
 
         /// <summary>
-        /// The clustered index cannot be deleted. 
+        /// The clustered index cannot be deleted.
         /// </summary>
         IsamErrorIndexMustStay = 0xFFFFFA83,
 
         /// <summary>
-        /// The index definition is invalid. 
+        /// The index definition is invalid.
         /// </summary>
         IsamErrorIndexInvalidDef = 0xFFFFFA82,
 
         /// <summary>
-        /// The creation of the index description was invalid. 
+        /// The creation of the index description was invalid.
         /// </summary>
         IsamErrorInvalidCreateIndex = 0xFFFFFA7F,
 
         /// <summary>
-        /// The database is out of index description blocks. 
+        /// The database is out of index description blocks.
         /// </summary>
         IsamErrorTooManyOpenIndexes = 0xFFFFFA7E,
 
         /// <summary>
-        /// Non-unique inter-record index keys have been generated for a multivalued index. 
+        /// Non-unique inter-record index keys have been generated for a multivalued index.
         /// </summary>
         IsamErrorMultiValuedIndexViolation = 0xFFFFFA7D,
 
         /// <summary>
-        /// A secondary index that properly reflects the primary index failed to build. 
+        /// A secondary index that properly reflects the primary index failed to build.
         /// </summary>
         IsamErrorIndexBuildCorrupted = 0xFFFFFA7C,
 
         /// <summary>
-        /// The primary index is corrupt and the database is required be defragmented. 
+        /// The primary index is corrupt and the database is required be defragmented.
         /// </summary>
         IsamErrorPrimaryIndexCorrupted = 0xFFFFFA7B,
 
         /// <summary>
-        /// The secondary index is corrupt and the database is required to be defragmented. 
+        /// The secondary index is corrupt and the database is required to be defragmented.
         /// </summary>
         IsamErrorSecondaryIndexCorrupted = 0xFFFFFA7A,
 
         /// <summary>
-        /// The index ID is invalid. 
+        /// The index ID is invalid.
         /// </summary>
         IsamErrorInvalidIndexId = 0xFFFFFA78,
 
         /// <summary>
-        /// The tuple index can only be set on a secondary index. 
+        /// The tuple index can only be set on a secondary index.
         /// </summary>
         IsamErrorIndexTuplesSecondaryIndexOnly = 0xFFFFFA6A,
 
         /// <summary>
-        /// The index definition for the tuple index contains more key columns that the database engine can support. 
+        /// The index definition for the tuple index contains more key columns that the database engine can support.
         /// </summary>
         IsamErrorIndexTuplesTooManyColumns = 0xFFFFFA69,
 
         /// <summary>
-        /// The tuple index cannot be a unique index. 
+        /// The tuple index cannot be a unique index.
         /// </summary>
         IsamErrorIndexTuplesNonUniqueOnly = 0xFFFFFA68,
 
         /// <summary>
-        /// A tuple index definition can only contain key columns that have text or binary column types. 
+        /// A tuple index definition can only contain key columns that have text or binary column types.
         /// </summary>
         IsamErrorIndexTuplesTextBinaryColumnsOnly = 0xFFFFFA67,
 
         /// <summary>
-        /// The tuple index does not allow setting cbVarSegMac. 
+        /// The tuple index does not allow setting cbVarSegMac.
         /// </summary>
         IsamErrorIndexTuplesVarSegMacNotAllowed = 0xFFFFFA66,
 
         /// <summary>
-        /// The minimum/maximum tuple length or the maximum number of characters that are specified for an index is invalid. 
+        /// The minimum/maximum tuple length or the maximum number of characters that are specified for an index is invalid.
         /// </summary>
         IsamErrorIndexTuplesInvalidLimits = 0xFFFFFA65,
 
         /// <summary>
-        /// JetRetrieveColumn cannot be called with the JET_bitRetrieveFromIndex flag set while retrieving a column on a tuple index. 
+        /// JetRetrieveColumn cannot be called with the JET_bitRetrieveFromIndex flag set while retrieving a column on a tuple index.
         /// </summary>
         IsamErrorIndexTuplesCannotRetrieveFromIndex = 0xFFFFFA64,
 
         /// <summary>
-        /// The specified key does not meet the minimum tuple length. 
+        /// The specified key does not meet the minimum tuple length.
         /// </summary>
         IsamErrorIndexTuplesKeyTooSmall = 0xFFFFFA63,
 
         /// <summary>
-        /// The column value is long. 
+        /// The column value is long.
         /// </summary>
         IsamErrorColumnLong = 0xFFFFFA23,
 
         /// <summary>
-        /// There is no such chunk in a long value. 
+        /// There is no such chunk in a long value.
         /// </summary>
         IsamErrorColumnNoChunk = 0xFFFFFA22,
 
         /// <summary>
-        /// The field will not fit in the record. 
+        /// The field will not fit in the record.
         /// </summary>
         IsamErrorColumnDoesNotFit = 0xFFFFFA21,
 
         /// <summary>
-        /// Null is not valid. 
+        /// Null is not valid.
         /// </summary>
         IsamErrorNullInvalid = 0xFFFFFA20,
 
         /// <summary>
-        /// The column is indexed and cannot be deleted. 
+        /// The column is indexed and cannot be deleted.
         /// </summary>
         IsamErrorColumnIndexed = 0xFFFFFA1F,
 
         /// <summary>
-        /// The field length is greater than the maximum allowed length. 
+        /// The field length is greater than the maximum allowed length.
         /// </summary>
         IsamErrorColumnTooBig = 0xFFFFFA1E,
 
         /// <summary>
-        /// No such column exists. 
+        /// No such column exists.
         /// </summary>
         IsamErrorColumnNotFound = 0xFFFFFA1D,
 
         /// <summary>
-        /// This field is already defined. 
+        /// This field is already defined.
         /// </summary>
         IsamErrorColumnDuplicate = 0xFFFFFA1C,
 
         /// <summary>
-        /// An attempt was made to create a multivalued column, but the column was not tagged. 
+        /// An attempt was made to create a multivalued column, but the column was not tagged.
         /// </summary>
         IsamErrorMultiValuedColumnMustBeTagged = 0xFFFFFA1B,
 
         /// <summary>
-        /// There is a second automatic increment or version column. 
+        /// There is a second automatic increment or version column.
         /// </summary>
         IsamErrorColumnRedundant = 0xFFFFFA1A,
 
         /// <summary>
-        /// The column data type is invalid. 
+        /// The column data type is invalid.
         /// </summary>
         IsamErrorInvalidColumnType = 0xFFFFFA19,
 
         /// <summary>
-        /// There are no non-NULL tagged columns. 
+        /// There are no non-NULL tagged columns.
         /// </summary>
         IsamErrorTaggedNotNULL = 0xFFFFFA16,
 
         /// <summary>
-        /// The database is invalid because it does not contain a current index. 
+        /// The database is invalid because it does not contain a current index.
         /// </summary>
         IsamErrorNoCurrentIndex = 0xFFFFFA15,
 
         /// <summary>
-        /// The key is completely made. 
+        /// The key is completely made.
         /// </summary>
         IsamErrorKeyIsMade = 0xFFFFFA14,
 
         /// <summary>
-        /// The column ID is incorrect. 
+        /// The column ID is incorrect.
         /// </summary>
         IsamErrorBadColumnId = 0xFFFFFA13,
 
         /// <summary>
-        /// There is a bad itagSequence for the tagged column. 
+        /// There is a bad itagSequence for the tagged column.
         /// </summary>
         IsamErrorBadItagSequence = 0xFFFFFA12,
 
         /// <summary>
-        /// A column cannot be deleted because it is part of a relationship. 
+        /// A column cannot be deleted because it is part of a relationship.
         /// </summary>
         IsamErrorColumnInRelationship = 0xFFFFFA11,
 
         /// <summary>
-        /// The automatic increment and version cannot be tagged. 
+        /// The automatic increment and version cannot be tagged.
         /// </summary>
         IsamErrorCannotBeTagged = 0xFFFFFA0F,
 
         /// <summary>
-        /// The default value exceeds the maximum size. 
+        /// The default value exceeds the maximum size.
         /// </summary>
         IsamErrorDefaultValueTooBig = 0xFFFFFA0C,
 
         /// <summary>
-        /// A duplicate value was detected on a unique multivalued column. 
+        /// A duplicate value was detected on a unique multivalued column.
         /// </summary>
         IsamErrorMultiValuedDuplicate = 0xFFFFFA0B,
 
         /// <summary>
-        /// Corruption was encountered in a long-value tree. 
+        /// Corruption was encountered in a long-value tree.
         /// </summary>
         IsamErrorLVCorrupted = 0xFFFFFA0A,
 
         /// <summary>
-        /// A duplicate value was detected on a unique multivalued column after the data was normalized, and it is normalizing truncated data before comparison. 
+        /// A duplicate value was detected on a unique multivalued column after the data was normalized, and it is normalizing truncated data before comparison.
         /// </summary>
         IsamErrorMultiValuedDuplicateAfterTruncation = 0xFFFFFA08,
 
         /// <summary>
-        /// There is an invalid column in a derived table. 
+        /// There is an invalid column in a derived table.
         /// </summary>
         IsamErrorDerivedColumnCorruption = 0xFFFFFA07,
 
         /// <summary>
-        /// An attempt was made to convert a column to a primary index placeholder, but the column does not meet the necessary criteria. 
+        /// An attempt was made to convert a column to a primary index placeholder, but the column does not meet the necessary criteria.
         /// </summary>
         IsamErrorInvalidPlaceholderColumn = 0xFFFFFA06,
 
         /// <summary>
-        /// The key was not found. 
+        /// The key was not found.
         /// </summary>
         IsamErrorRecordNotFound = 0xFFFFF9BF,
 
         /// <summary>
-        /// There is no working buffer. 
+        /// There is no working buffer.
         /// </summary>
         IsamErrorRecordNoCopy = 0xFFFFF9BE,
 
         /// <summary>
-        /// There is no current record. 
+        /// There is no current record.
         /// </summary>
         IsamErrorNoCurrentRecord = 0xFFFFF9BD,
 
         /// <summary>
-        /// The primary key might not change. 
+        /// The primary key might not change.
         /// </summary>
         IsamErrorRecordPrimaryChanged = 0xFFFFF9BC,
 
         /// <summary>
-        /// There is an illegal duplicate key. 
+        /// There is an illegal duplicate key.
         /// </summary>
         IsamErrorKeyDuplicate = 0xFFFFF9BB,
 
         /// <summary>
-        /// An attempt was made to update a record while a record update was already in progress. 
+        /// An attempt was made to update a record while a record update was already in progress.
         /// </summary>
         IsamErrorAlreadyPrepared = 0xFFFFF9B9,
 
         /// <summary>
-        /// A call was not made to JetMakeKey. 
+        /// A call was not made to JetMakeKey.
         /// </summary>
         IsamErrorKeyNotMade = 0xFFFFF9B8,
 
         /// <summary>
-        /// A call was not made to JetPrepareUpdate. 
+        /// A call was not made to JetPrepareUpdate.
         /// </summary>
         IsamErrorUpdateNotPrepared = 0xFFFFF9B7,
 
         /// <summary>
-        /// The data has changed and the operation was aborted. 
+        /// The data has changed and the operation was aborted.
         /// </summary>
         IsamErrorDataHasChanged = 0xFFFFF9B5,
 
         /// <summary>
-        /// The operating system does not support the selected language. 
+        /// The operating system does not support the selected language.
         /// </summary>
         IsamErrorLanguageNotSupported = 0xFFFFF9AD,
 
         /// <summary>
-        /// There are too many sort processes. 
+        /// There are too many sort processes.
         /// </summary>
         IsamErrorTooManySorts = 0xFFFFF95B,
 
         /// <summary>
-        /// An invalid operation occurred during a sort. 
+        /// An invalid operation occurred during a sort.
         /// </summary>
         IsamErrorInvalidOnSort = 0xFFFFF95A,
 
         /// <summary>
-        /// The temporary file could not be opened. 
+        /// The temporary file could not be opened.
         /// </summary>
         IsamErrorTempFileOpenError = 0xFFFFF8F5,
 
         /// <summary>
-        /// Too many databases are open. 
+        /// Too many databases are open.
         /// </summary>
         IsamErrorTooManyAttachedDatabases = 0xFFFFF8F3,
 
         /// <summary>
-        /// There is no space left on disk. 
+        /// There is no space left on disk.
         /// </summary>
         IsamErrorDiskFull = 0xFFFFF8F0,
 
         /// <summary>
-        /// Permission is denied. 
+        /// Permission is denied.
         /// </summary>
         IsamErrorPermissionDenied = 0xFFFFF8EF,
 
         /// <summary>
-        /// The file was not found. 
+        /// The file was not found.
         /// </summary>
         IsamErrorFileNotFound = 0xFFFFF8ED,
 
         /// <summary>
-        /// The file type is invalid. 
+        /// The file type is invalid.
         /// </summary>
         IsamErrorFileInvalidType = 0xFFFFF8EC,
 
         /// <summary>
-        /// A restore cannot be started after initialization. 
+        /// A restore cannot be started after initialization.
         /// </summary>
         IsamErrorAfterInitialization = 0xFFFFF8C6,
 
         /// <summary>
-        /// The logs could not be interpreted. 
+        /// The logs could not be interpreted.
         /// </summary>
         IsamErrorLogCorrupted = 0xFFFFF8C4,
 
         /// <summary>
-        /// The operation is invalid. 
+        /// The operation is invalid.
         /// </summary>
         IsamErrorInvalidOperation = 0xFFFFF88E,
 
         /// <summary>
-        /// Access is denied. 
+        /// Access is denied.
         /// </summary>
         IsamErrorAccessDenied = 0xFFFFF88D,
 
         /// <summary>
-        /// An infinite split. 
+        /// An infinite split.
         /// </summary>
         IsamErrorTooManySplits = 0xFFFFF88B,
 
         /// <summary>
-        /// Multiple threads are using the same session. 
+        /// Multiple threads are using the same session.
         /// </summary>
         IsamErrorSessionSharingViolation = 0xFFFFF88A,
 
         /// <summary>
-        /// An entry point in a required DLL could not be found. 
+        /// An entry point in a required DLL could not be found.
         /// </summary>
         IsamErrorEntryPointNotFound = 0xFFFFF889,
 
         /// <summary>
-        /// The specified session already has a session context set. 
+        /// The specified session already has a session context set.
         /// </summary>
         IsamErrorSessionContextAlreadySet = 0xFFFFF888,
 
         /// <summary>
-        /// An attempt was made to reset the session context, but the current thread was not the original one that set the session context. 
+        /// An attempt was made to reset the session context, but the current thread was not the original one that set the session context.
         /// </summary>
         IsamErrorSessionContextNotSetByThisThread = 0xFFFFF887,
 
         /// <summary>
-        /// An attempt was made to terminate the session currently in use. 
+        /// An attempt was made to terminate the session currently in use.
         /// </summary>
         IsamErrorSessionInUse = 0xFFFFF886,
 
         /// <summary>
-        /// An internal error occurred during a dynamic record format conversion. 
+        /// An internal error occurred during a dynamic record format conversion.
         /// </summary>
         IsamErrorRecordFormatConversionFailed = 0xFFFFF885,
 
         /// <summary>
-        /// Only one open user database per session is allowed. 
+        /// Only one open user database per session is allowed.
         /// </summary>
         IsamErrorOneDatabasePerSession = 0xFFFFF884,
 
         /// <summary>
-        /// There was an error during rollback. 
+        /// There was an error during rollback.
         /// </summary>
         IsamErrorRollbackError = 0xFFFFF883,
 
         /// <summary>
-        /// A callback function call failed. 
+        /// A callback function call failed.
         /// </summary>
         IsamErrorCallbackFailed = 0xFFFFF7CB,
 
         /// <summary>
-        /// A callback function could not be found. 
+        /// A callback function could not be found.
         /// </summary>
         IsamErrorCallbackNotResolved = 0xFFFFF7CA,
 
         /// <summary>
-        /// The operating system shadow copy API was used in an invalid sequence. 
+        /// The operating system shadow copy API was used in an invalid sequence.
         /// </summary>
         IsamErrorOSSnapshotInvalidSequence = 0xFFFFF69F,
 
         /// <summary>
-        /// The operating system shadow copy ended with a time-out. 
+        /// The operating system shadow copy ended with a time-out.
         /// </summary>
         IsamErrorOSSnapshotTimeOut = 0xFFFFF69E,
 
         /// <summary>
-        /// The operating system shadow copy is not allowed because a backup or recovery in is progress. 
+        /// The operating system shadow copy is not allowed because a backup or recovery in is progress.
         /// </summary>
         IsamErrorOSSnapshotNotAllowed = 0xFFFFF69D,
 
         /// <summary>
-        /// The operation failed because the specified operating system shadow copy handle was invalid. 
+        /// The operation failed because the specified operating system shadow copy handle was invalid.
         /// </summary>
         IsamErrorOSSnapshotInvalidSnapId = 0xFFFFF69C,
 
         /// <summary>
-        /// An attempt was made to use local storage without a callback function being specified. 
+        /// An attempt was made to use local storage without a callback function being specified.
         /// </summary>
         IsamErrorLSCallbackNotSpecified = 0xFFFFF448,
 
         /// <summary>
-        /// An attempt was made to set the local storage for an object that already had it set. 
+        /// An attempt was made to set the local storage for an object that already had it set.
         /// </summary>
         IsamErrorLSAlreadySet = 0xFFFFF447,
 
         /// <summary>
-        /// An attempt was made to retrieve local storage from an object that did not have it set. 
+        /// An attempt was made to retrieve local storage from an object that did not have it set.
         /// </summary>
         IsamErrorLSNotSet = 0xFFFFF446,
 
         /// <summary>
-        /// An I/O operation failed because it was attempted against an unallocated region of a file. 
+        /// An I/O operation failed because it was attempted against an unallocated region of a file.
         /// </summary>
         IsamErrorFileIOSparse = 0xFFFFF060,
 
         /// <summary>
-        /// A read was issued to a location beyond the EOF (writes will expand the file). 
+        /// A read was issued to a location beyond the EOF (writes will expand the file).
         /// </summary>
         IsamErrorFileIOBeyondEOF = 0xFFFFF05F,
 
         /// <summary>
-        /// Read/write access is not supported on compressed files. 
+        /// Read/write access is not supported on compressed files.
         /// </summary>
         IsamErrorFileCompressed = 0xFFFFF05B
     }
@@ -3139,187 +3139,187 @@
         NewerClientChange = 0x00040821,
 
         /// <summary>
-        /// The version store is still active. 
+        /// The version store is still active.
         /// </summary>
         IsamWarningRemainingVersions = 0x00000141,
 
         /// <summary>
-        /// A seek on an index that is not unique yielded a unique key. 
+        /// A seek on an index that is not unique yielded a unique key.
         /// </summary>
         IsamWarningUniqueKey = 0x00000159,
 
         /// <summary>
-        /// A database column is a separated long value. 
+        /// A database column is a separated long value.
         /// </summary>
         IsamWarningSeparateLongValue = 0x00000196,
 
         /// <summary>
-        /// The existing log file has a bad signature. 
+        /// The existing log file has a bad signature.
         /// </summary>
         IsamWarningExistingLogFileHasBadSignature = 0x0000022E,
 
         /// <summary>
-        /// The existing log file is not contiguous. 
+        /// The existing log file is not contiguous.
         /// </summary>
         IsamWarningExistingLogFileIsNotContiguous = 0x0000022F,
 
         /// <summary>
-        /// This error is for internal use only. 
+        /// This error is for internal use only.
         /// </summary>
         IsamWarningSkipThisRecord = 0x00000234,
 
         /// <summary>
-        /// The TargetInstance specified for the restore is running. 
+        /// The TargetInstance specified for the restore is running.
         /// </summary>
         IsamWarningTargetInstanceRunning = 0x00000242,
 
         /// <summary>
-        /// The database corruption has been repaired. 
+        /// The database corruption has been repaired.
         /// </summary>
         IsamWarningDatabaseRepaired = 0x00000253,
 
         /// <summary>
-        /// The column has a null value. 
+        /// The column has a null value.
         /// </summary>
         IsamWarningColumnNull = 0x000003EC,
 
         /// <summary>
-        /// The buffer is too small for the data. 
+        /// The buffer is too small for the data.
         /// </summary>
         IsamWarningBufferTruncated = 0x000003EE,
 
         /// <summary>
-        /// The database is already attached. 
+        /// The database is already attached.
         /// </summary>
         IsamWarningDatabaseAttached = 0x000003EF,
 
         /// <summary>
-        /// The sort that is being attempted does not have enough memory to complete. 
+        /// The sort that is being attempted does not have enough memory to complete.
         /// </summary>
         IsamWarningSortOverflow = 0x000003F1,
 
         /// <summary>
-        /// An exact match was not found during a seek. 
+        /// An exact match was not found during a seek.
         /// </summary>
         IsamWarningSeekNotEqual = 0x0000040F,
 
         /// <summary>
-        /// There is no extended error information. 
+        /// There is no extended error information.
         /// </summary>
         IsamWarningNoErrorInfo = 0x0000041F,
 
         /// <summary>
-        /// No idle activity occurred. 
+        /// No idle activity occurred.
         /// </summary>
         IsamWarningNoIdleActivity = 0x00000422,
 
         /// <summary>
-        /// There is a no write lock at transaction level 0. 
+        /// There is a no write lock at transaction level 0.
         /// </summary>
         IsamWarningNoWriteLock = 0x0000042B,
 
         /// <summary>
-        /// The column is set to a null value. 
+        /// The column is set to a null value.
         /// </summary>
         IsamWarningColumnSetNull = 0x0000042C,
 
         /// <summary>
-        /// An empty table was opened. 
+        /// An empty table was opened.
         /// </summary>
         IsamWarningTableEmpty = 0x00000515,
 
         /// <summary>
-        /// The system cleanup has a cursor open on the table. 
+        /// The system cleanup has a cursor open on the table.
         /// </summary>
         IsamWarningTableInUseBySystem = 0x0000052F,
 
         /// <summary>
-        /// The out-of-date index is required to be removed. 
+        /// The out-of-date index is required to be removed.
         /// </summary>
         IsamWarningCorruptIndexDeleted = 0x00000587,
 
         /// <summary>
-        /// The maximum length is too large and has been truncated. 
+        /// The maximum length is too large and has been truncated.
         /// </summary>
         IsamWarningColumnMaxTruncated = 0x000005E8,
 
         /// <summary>
-        /// A binary large object (BLOB) value has been moved from the record into a separate storage of BLOBs. 
+        /// A binary large object (BLOB) value has been moved from the record into a separate storage of BLOBs.
         /// </summary>
         IsamWarningCopyLongValue = 0x000005F0,
 
         /// <summary>
-        /// The column values were not returned because the corresponding column ID or itagSequence member from the JET_ENUMCOLUMNVALUE structure that was requested for enumeration was null. 
+        /// The column values were not returned because the corresponding column ID or itagSequence member from the JET_ENUMCOLUMNVALUE structure that was requested for enumeration was null.
         /// </summary>
         IsamWarningColumnSkipped = 0x000005FB,
 
         /// <summary>
-        /// The column values were not returned because they could not be reconstructed from the existing data. 
+        /// The column values were not returned because they could not be reconstructed from the existing data.
         /// </summary>
         IsamWarningColumnNotLocal = 0x000005FC,
 
         /// <summary>
-        /// The existing column values were not requested for enumeration. 
+        /// The existing column values were not requested for enumeration.
         /// </summary>
         IsamWarningColumnMoreTags = 0x000005FD,
 
         /// <summary>
-        /// The column value was truncated at the requested size limit during enumeration. 
+        /// The column value was truncated at the requested size limit during enumeration.
         /// </summary>
         IsamWarningColumnTruncated = 0x000005FE,
 
         /// <summary>
-        /// The column values exist but were not returned by the request. 
+        /// The column values exist but were not returned by the request.
         /// </summary>
         IsamWarningColumnPresent = 0x000005FF,
 
         /// <summary>
-        /// The column value was returned in JET_COLUMNENUM as a result of the JET_bitEnumerateCompressOutput being set. 
+        /// The column value was returned in JET_COLUMNENUM as a result of the JET_bitEnumerateCompressOutput being set.
         /// </summary>
         IsamWarningColumnSingleValue = 0x00000600,
 
         /// <summary>
-        /// The column value is set to the default value of the column. 
+        /// The column value is set to the default value of the column.
         /// </summary>
         IsamWarningColumnDefault = 0x00000601,
 
         /// <summary>
-        /// The data has changed. 
+        /// The data has changed.
         /// </summary>
         IsamWarningDataHasChanged = 0x0000064A,
 
         /// <summary>
-        /// A new key is being used. 
+        /// A new key is being used.
         /// </summary>
         IsamWarningKeyChanged = 0x00000652,
 
         /// <summary>
-        /// The database file is read-only. 
+        /// The database file is read-only.
         /// </summary>
         IsamWarningFileOpenReadOnly = 0x00000715,
 
         /// <summary>
-        /// The idle registry is full. 
+        /// The idle registry is full.
         /// </summary>
         IsamWarningIdleFull = 0x00000774,
 
         /// <summary>
-        /// An online defragmentation was already running on the specified database. 
+        /// An online defragmentation was already running on the specified database.
         /// </summary>
         IsamWarningDefragAlreadyRunning = 0x000007D0,
 
         /// <summary>
-        /// An online defragmentation is not running on the specified database. 
+        /// An online defragmentation is not running on the specified database.
         /// </summary>
         IsamWarningDefragNotRunning = 0x000007D1,
 
         /// <summary>
-        /// A nonexistent callback function was unregistered. 
+        /// A nonexistent callback function was unregistered.
         /// </summary>
         IsamWarningCallbackNotRegistered = 0x00000834,
 
         /// <summary>
-        /// The function is not yet implemented. 
+        /// The function is not yet implemented.
         /// </summary>
         IsamWarningNotYetImplemented = 0xFFFFFFFF,
 
@@ -3341,7 +3341,7 @@
     public enum KindEnum : byte
     {
         /// <summary>
-        /// The property is identified by the LID field. 
+        /// The property is identified by the LID field.
         /// </summary>
         LID = 0x00,
 
@@ -3357,12 +3357,12 @@
     }
 
     /// <summary>
-    /// The enumeration specifies the type of address. 
+    /// The enumeration specifies the type of address.
     /// </summary>
     public enum AddressTypeEnum : int
     {
         /// <summary>
-        /// There is no type 
+        /// There is no type
         /// </summary>
         NoType = 0x0,
 
@@ -3657,17 +3657,17 @@
         Empty = 0x01,
 
         /// <summary>
-        /// Null-terminated 8-bit character string. 
+        /// Null-terminated 8-bit character string.
         /// </summary>
         CharacterString = 0x02,
 
         /// <summary>
-        /// Null-terminated reduced Unicode character string. 
+        /// Null-terminated reduced Unicode character string.
         /// </summary>
         ReducedUnicodeCharacterString = 0x03,
 
         /// <summary>
-        /// Null-terminated Unicode character string. 
+        /// Null-terminated Unicode character string.
         /// </summary>
         UnicodeCharacterString = 0x04
     }
@@ -3853,7 +3853,7 @@
         RelationalOperatorNotEqual = 0x5,
 
         /// <summary>
-        /// TRUE if the value of the object's property is in the DL membership of the specified property value. 
+        /// TRUE if the value of the object's property is in the DL membership of the specified property value.
         /// </summary>
         RelationalOperatorMemberOfDL = 0x64
     }
@@ -4098,17 +4098,17 @@
     /// <summary>
     /// The MAPIString class to record the related attributes of string.
     /// </summary>
-    public class MAPIStringAddressBook : AnnotatedData
+    public class MAPIStringAddressBook : Block
     {
         /// <summary>
         /// The string value
         /// </summary>
-        public string Value;
+        public Block Value;
 
         /// <summary>
         /// TDI#76879 tell us the real MapiHttp traffic will add the magic byte 'FF' for the string or binary based property value.
         /// </summary>
-        public byte? HasValue;
+        public BlockT<byte> HasValue;
 
         /// <summary>
         /// The string Encoding : ASCII or Unicode
@@ -4116,108 +4116,33 @@
         public Encoding Encode;
 
         /// <summary>
-        /// The string Terminator. Default is "\0".
-        /// </summary>
-        public string Terminator;
-
-        /// <summary>
-        /// If the StringLength is not 0, The StringLength will be as the string length.
-        /// </summary>
-        public int StringLength;
-
-        /// <summary>
-        /// If the Encoding is Unicode, and it is reduced Unicode, it is true.
-        /// </summary>
-        public bool ReducedUnicode;
-
-        /// <summary>
         /// Initializes a new instance of the MAPIStringAddressBook class with parameters.
         /// </summary>
         /// <param name="encode">The encoding type</param>
-        /// <param name="terminator">The string terminator</param>
-        /// <param name="stringLength">The string length</param>
-        /// <param name="reducedUnicode">Indicate whether the terminator is reduced</param>
-        public MAPIStringAddressBook(Encoding encode, string terminator = "\0", int stringLength = 0, bool reducedUnicode = false)
+        public MAPIStringAddressBook(Encoding encode)
         {
-            this.Encode = encode;
-            this.Terminator = terminator;
-            this.StringLength = stringLength;
-            this.ReducedUnicode = reducedUnicode;
+            Encode = encode;
         }
 
         /// <summary>
         /// The Parse method
         /// </summary>
-        /// <param name="s">The stream to parse</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            if (this.ReadByte() == 0xff)
+            if (Encode == Encoding.Unicode)
             {
-                this.HasValue = 0xff;
+                Value = BlockStringW.Parse(parser);
             }
-            else
+            else if (Encode == Encoding.ASCII)
             {
-                s.Position -= 1;
+                Value = BlockStringA.Parse(parser);
             }
-
-            this.Value = this.ReadString(this.Encode, this.Terminator, this.StringLength, this.ReducedUnicode);
         }
-        public override string ToString() => Value;
-        public override int Size
+
+        protected override void ParseBlocks()
         {
-            get
-            {
-                var len = 0;
-
-                if (Encode == Encoding.Unicode)
-                {
-                    // If the StringLength is not equal 0, the StringLength will be basis for size
-                    if (StringLength != 0)
-                    {
-                        len = StringLength * 2;
-                    }
-                    else
-                    {
-                        if (Value != null)
-                        {
-                            len = Value.Length * 2;
-                        }
-
-                        if (ReducedUnicode)
-                        {
-                            len -= 1;
-                        }
-
-                        len += Terminator.Length * 2;
-                    }
-                }
-                else
-                {
-                    // If the Encoding is ASCII.
-                    if (StringLength != 0)
-                    {
-                        // If the StringLength is not equal 0, the StringLength will be basis for size
-                        len = StringLength;
-                    }
-                    else
-                    {
-                        if (Value != null)
-                        {
-                            len = Value.Length;
-                        }
-
-                        len += Terminator.Length;
-                    }
-                }
-
-                if (HasValue != null)
-                {
-                    len += 1;
-                }
-
-                return len;
-            }
+            AddChild(HasValue, $"HasValue:{HasValue.Data}");
+            AddChild(Value, $"Value:{Value}");
         }
     }
 
@@ -4229,7 +4154,7 @@
     public class AddressEntry : BaseStructure
     {
         /// <summary>
-        /// An unsigned integer whose value is equal to the number of associated TaggedPropertyValue structures, as specified in section 2.11.4. 
+        /// An unsigned integer whose value is equal to the number of associated TaggedPropertyValue structures, as specified in section 2.11.4.
         /// </summary>
         public uint PropertyCount;
 
@@ -4325,7 +4250,8 @@
         protected override void ParseBlocks()
         {
             AddChild(ReplicaId, $"ReplicaId:{ReplicaId.Data}");
-            AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
+            AddChild(GlobalCounter, $"GlobalCounter:{GlobalCounter.ToHexString(false)}");
+            GlobalCounter.AddHeader($"cb:{GlobalCounter.Count}");
         }
     }
 
@@ -4355,6 +4281,7 @@
 
         protected override void ParseBlocks()
         {
+            SetText("MessageID");
             AddChild(ReplicaId, $"ReplicaId:{ReplicaId.Data}");
             AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
         }
@@ -4404,139 +4331,153 @@
     /// <summary>
     /// 2.2.4.1 Folder EntryID Structure
     /// </summary>
-    public class FolderEntryID : BaseStructure
+    public class FolderEntryID : Block
     {
         /// <summary>
-        /// This value MUST be set to 0x00000000. Bits in this field indicate under what circumstances a short-term EntryID is valid. 
+        /// This value MUST be set to 0x00000000. Bits in this field indicate under what circumstances a short-term EntryID is valid.
         /// </summary>
-        public uint Flags;
+        public BlockT<uint> Flags;
 
         /// <summary>
-        /// The value of this field is determined by where the folder is located. 
+        /// The value of this field is determined by where the folder is located.
         /// </summary>
-        public object ProviderUID;
+        public BlockT<Guid> ProviderUID;
 
         /// <summary>
         /// One of several Store object types specified in the table in section 2.2.4.
         /// </summary>
-        public StoreObjectType FolderType;
+        public BlockT<StoreObjectType> FolderType;
 
         /// <summary>
         /// A GUID associated with the Store object and corresponding to the ReplicaId field of the Folder ID structure.
         /// </summary>
-        public Guid DatabaseGuid;
+        public BlockT<Guid> DatabaseGuid;
 
         /// <summary>
         /// An unsigned integer identifying the folder. 6 bytes
         /// </summary>
-        public byte[] GlobalCounter;
+        public BlockBytes GlobalCounter;
 
         /// <summary>
         /// This value MUST be set to zero.
         /// </summary>
-        public ushort Pad;
+        public BlockT<ushort> Pad;
 
         /// <summary>
         /// Parse the FolderEntryID structure.
         /// </summary>
-        /// <param name="s">A stream containing the FolderEntryID structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Flags = this.ReadUint();
-            byte[] tempProviderUID = this.ReadBytes(16);
-            byte[] verifyProviderUID = { 0x1A, 0x44, 0x73, 0x90, 0xAA, 0x66, 0x11, 0xCD, 0x9B, 0xC8, 0x00, 0xAA, 0x00, 0x2F, 0xC4, 0x5A };
-            if (tempProviderUID == verifyProviderUID)
-            {
-                this.ProviderUID = tempProviderUID;
-            }
-            else
-            {
-                this.ProviderUID = new Guid(tempProviderUID);
-            }
+            Flags = BlockT<uint>.Parse(parser);
+            ProviderUID = BlockT<Guid>.Parse(parser);
+            // Original implementation looked for this but didn't appear to do anything with it.
+            // Provider UID (16 bytes): The value of this field is determined by where the folder is located. For a folder in a
+            // private mailbox, this value MUST be set to value of the MailboxGuid field from the RopLogon ROP response buffer
+            // ([MS-OXCROPS] section 2.2.3.1.2). For a folder in the public message store, this value MUST be set to
+            // %x1A.44.73.90.AA.66.11.CD.9B.C8.00.AA.00.2F.C4.5A.
+            // byte[] verifyProviderUID = { 0x1A, 0x44, 0x73, 0x90, 0xAA, 0x66, 0x11, 0xCD, 0x9B, 0xC8, 0x00, 0xAA, 0x00, 0x2F, 0xC4, 0x5A };
 
-            this.FolderType = (StoreObjectType)this.ReadUshort();
-            this.DatabaseGuid = this.ReadGuid();
-            this.GlobalCounter = this.ReadBytes(6);
-            this.Pad = this.ReadUshort();
+            FolderType = BlockT<StoreObjectType>.Parse(parser);
+            DatabaseGuid = BlockT<Guid>.Parse(parser);
+            GlobalCounter = BlockBytes.Parse(parser, 6);
+            Pad = BlockT<ushort>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Flags, $"Flags:{Flags.Data}");
+            AddChild(ProviderUID, $"ProviderUID:{ProviderUID.Data}");
+            AddChild(FolderType, $"FolderType:{FolderType.Data}");
+            AddChild(DatabaseGuid, $"DatabaseGuid:{DatabaseGuid.Data}");
+            AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
+            AddChild(Pad, $"Pad:{Pad.Data}");
         }
     }
 
     /// <summary>
     /// 2.2.4.2 Message EntryID Structure
     /// </summary>
-    public class MessageEntryID : BaseStructure
+    public class MessageEntryID : Block
     {
         /// <summary>
-        /// This value MUST be set to 0x00000000. Bits in this field indicate under what circumstances a short-term EntryID is valid. 
+        /// This value MUST be set to 0x00000000. Bits in this field indicate under what circumstances a short-term EntryID is valid.
         /// </summary>
-        public uint Flags;
+        public BlockT<uint> Flags;
 
         /// <summary>
         /// The value of this field is determined by where the folder is located.
         /// </summary>
-        public object ProviderUID;
+        public BlockT<Guid> ProviderUID;
 
         /// <summary>
         /// One of several Store object types specified in the table in section 2.2.4.
         /// </summary>
-        public StoreObjectType MessageType;
+        public BlockT<StoreObjectType> MessageType;
 
         /// <summary>
         /// A GUID associated with the Store object of the folder in which the message resides and corresponding to the ReplicaId field in the folder ID structure, as specified in section 2.2.1.1.
         /// </summary>
-        public Guid FolderDatabaseGuid;
+        public BlockT<Guid> FolderDatabaseGuid;
 
         /// <summary>
         /// An unsigned integer identifying the folder in which the message resides. 6 bytes
         /// </summary>
-        public byte[] FolderGlobalCounter;
+        public BlockBytes FolderGlobalCounter;
 
         /// <summary>
         /// This value MUST be set to zero.
         /// </summary>
-        public ushort Pad1;
+        public BlockT<ushort> Pad1;
 
         /// <summary>
         /// A GUID associated with the Store object of the message and corresponding to the ReplicaId field of the Message ID structure, as specified in section 2.2.1.2.
         /// </summary>
-        public Guid MessageDatabaseGuid;
+        public BlockT<Guid> MessageDatabaseGuid;
 
         /// <summary>
         /// An unsigned integer identifying the message. 6 bytes
         /// </summary>
-        public byte[] MessageGlobalCounter;
+        public BlockBytes MessageGlobalCounter;
 
         /// <summary>
         /// This value MUST be set to zero.
         /// </summary>
-        public ushort Pad2;
+        public BlockT<ushort> Pad2;
 
         /// <summary>
         /// Parse the MessageEntryID structure.
         /// </summary>
-        /// <param name="s">A stream containing the MessageEntryID structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Flags = this.ReadUint();
-            byte[] tempProviderUID = this.ReadBytes(16);
-            if (tempProviderUID.ToString() == "%x1A.44.73.90.AA.66.11.CD.9B.C8.00.AA.00.2F.C4.5A")
-            {
-                this.ProviderUID = tempProviderUID;
-            }
-            else
-            {
-                this.ProviderUID = new Guid(tempProviderUID);
-            }
+            Flags = BlockT<uint>.Parse(parser);
+            ProviderUID = BlockT<Guid>.Parse(parser);
+            // Original implementation looked for this but didn't appear to do anything with it.
+            // Provider UID (16 bytes): The value of this field is determined by where the folder is located. For a folder in a
+            // private mailbox, this value MUST be set to value of the MailboxGuid field from the RopLogon ROP response buffer
+            // ([MS-OXCROPS] section 2.2.3.1.2). For a folder in the public message store, this value MUST be set to
+            // %x1A.44.73.90.AA.66.11.CD.9B.C8.00.AA.00.2F.C4.5A.
+            // if (tempProviderUID.ToString() == "%x1A.44.73.90.AA.66.11.CD.9B.C8.00.AA.00.2F.C4.5A")
 
-            this.MessageType = (StoreObjectType)this.ReadUshort();
-            this.FolderDatabaseGuid = this.ReadGuid();
-            this.FolderGlobalCounter = this.ReadBytes(6);
-            this.Pad1 = this.ReadUshort();
-            this.MessageDatabaseGuid = this.ReadGuid();
-            this.MessageGlobalCounter = this.ReadBytes(6);
-            this.Pad2 = this.ReadUshort();
+            MessageType = BlockT<StoreObjectType>.Parse(parser);
+            FolderDatabaseGuid = BlockT<Guid>.Parse(parser);
+            FolderGlobalCounter = BlockBytes.Parse(parser, 6);
+            Pad1 = BlockT<ushort>.Parse(parser);
+            MessageDatabaseGuid = BlockT<Guid>.Parse(parser);
+            MessageGlobalCounter = BlockBytes.Parse(parser, 6);
+            Pad2 = BlockT<ushort>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Flags, $"Flags:{Flags.Data}");
+            AddChild(ProviderUID, $"ProviderUID:{ProviderUID.Data}");
+            AddChild(MessageType, $"MessageType:{MessageType.Data}");
+            AddChild(FolderDatabaseGuid, $"FolderDatabaseGuid:{FolderDatabaseGuid.Data}");
+            AddChild(FolderGlobalCounter, $"FolderGlobalCounter :{FolderGlobalCounter.ToHexString(false)}");
+            AddChild(Pad1, $"Pad1:{Pad1.Data}");
+            AddChild(MessageDatabaseGuid, $"MessageDatabaseGuid:{MessageDatabaseGuid.Data}");
+            AddChild(MessageGlobalCounter, $"MessageGlobalCounter :{MessageGlobalCounter.ToHexString(false)}");
+            AddChild(Pad2, $"Pad2:{Pad2.Data}");
         }
     }
 
@@ -4546,12 +4487,12 @@
     public class StoreObjectEntryID : BaseStructure
     {
         /// <summary>
-        /// This value MUST be set to 0x00000000. Bits in this field indicate under what circumstances a short-term EntryID is valid. 
+        /// This value MUST be set to 0x00000000. Bits in this field indicate under what circumstances a short-term EntryID is valid.
         /// </summary>
         public uint Flags;
 
         /// <summary>
-        /// The identifier for the provider that created the EntryID. 
+        /// The identifier for the provider that created the EntryID.
         /// </summary>
         public byte[] ProviderUID;
 
@@ -4581,7 +4522,7 @@
         public byte[] WrappedProviderUID;
 
         /// <summary>
-        /// The value of this field is determined by where the folder is located. 
+        /// The value of this field is determined by where the folder is located.
         /// </summary>
         public uint WrappedType;
 
@@ -4591,7 +4532,7 @@
         public MAPIString ServerShortname;
 
         /// <summary>
-        /// A string of single-byte characters terminated by a single zero byte and representing the X500 DN of the mailbox, as specified in [MS-OXOAB]. 
+        /// A string of single-byte characters terminated by a single zero byte and representing the X500 DN of the mailbox, as specified in [MS-OXOAB].
         /// </summary>
         public MAPIString MailboxDN;
 
@@ -4630,7 +4571,7 @@
         public uint Flags;
 
         /// <summary>
-        /// The identifier for the provider that created the EntryID. 
+        /// The identifier for the provider that created the EntryID.
         /// </summary>
         public byte[] ProviderUID;
 
@@ -4640,12 +4581,12 @@
         public uint Version;
 
         /// <summary>
-        /// An integer representing the type of the object. 
+        /// An integer representing the type of the object.
         /// </summary>
         public AddressbookEntryIDtype Type;
 
         /// <summary>
-        /// The X500 DN of the Address Book object. 
+        /// The X500 DN of the Address Book object.
         /// </summary>
         public MAPIString X500DN;
 
@@ -4676,7 +4617,7 @@
     public class PropertyName : BaseStructure
     {
         /// <summary>
-        /// The Kind field. 
+        /// The Kind field.
         /// </summary>
         public KindEnum Kind;
 
@@ -4691,7 +4632,7 @@
         public AnnotatedUint LID;
 
         /// <summary>
-        /// The value of this field is equal to the number of bytes in the Name string that follows it. 
+        /// The value of this field is equal to the number of bytes in the Name string that follows it.
         /// </summary>
         public byte? NameSize;
 
@@ -4787,7 +4728,7 @@
         public ushort Index;
 
         /// <summary>
-        /// A PropertyTag structure, as specified in section 2.9. 
+        /// A PropertyTag structure, as specified in section 2.9.
         /// </summary>
         public PropertyTag PropertyTag;
 
@@ -4881,17 +4822,16 @@
                     {
                         if (tempPropTag.PropertyType.Data != PropertyDataType.PtypUnspecified)
                         {
-                            PropertyValue propValue = new PropertyValue(tempPropTag.PropertyType.Data);
+                            var propValue = new PropertyValue(tempPropTag.PropertyType.Data);
                             propValue.Parse(s);
-                            //todo
-                            propValue.PropertyTag = $"{tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
+                            propValue.AddHeader($"PropertyTag: {tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}");
                             rowPropValue = propValue;
                         }
                         else
                         {
-                            TypedPropertyValue typePropValue = new TypedPropertyValue();
+                            var typePropValue = new TypedPropertyValue();
                             typePropValue.Parse(s);
-                            typePropValue.PropertyTag = $"{tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
+                            typePropValue.AddHeader($"PropertyTag: {tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}");
                             rowPropValue = typePropValue;
                         }
                     }
@@ -4899,16 +4839,16 @@
                     {
                         if (tempPropTag.PropertyType.Data != PropertyDataType.PtypUnspecified)
                         {
-                            FlaggedPropertyValue flagPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType.Data);
+                            var flagPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType.Data);
                             flagPropValue.Parse(s);
-                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
+                            flagPropValue.AddHeader($"PropertyTag: {tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}");
                             rowPropValue = flagPropValue;
                         }
                         else
                         {
-                            FlaggedPropertyValueWithType flagPropValue = new FlaggedPropertyValueWithType();
+                            var flagPropValue = new FlaggedPropertyValueWithType();
                             flagPropValue.Parse(s);
-                            flagPropValue.PropertyTag = $"{tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}";
+                            flagPropValue.AddHeader($"PropertyTag: {tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}");
                             rowPropValue = flagPropValue;
                         }
                     }
@@ -4961,7 +4901,7 @@
         public byte E;
 
         /// <summary>
-        /// This enumeration specifies the type of address. 
+        /// This enumeration specifies the type of address.
         /// </summary>
         [BitAttribute(3)]
         public AddressTypeEnum Type;
@@ -5005,29 +4945,29 @@
             base.Parse(s);
             byte tempByte = ReadByte();
             int index = 0;
-            this.R = this.GetBits(tempByte, index, 1);
+            this.R = BaseStructure.GetBits(tempByte, index, 1);
             index = index + 1;
-            this.S = this.GetBits(tempByte, index, 1);
+            this.S = BaseStructure.GetBits(tempByte, index, 1);
             index = index + 1;
-            this.T = this.GetBits(tempByte, index, 1);
+            this.T = BaseStructure.GetBits(tempByte, index, 1);
             index = index + 1;
-            this.D = this.GetBits(tempByte, index, 1);
+            this.D = BaseStructure.GetBits(tempByte, index, 1);
             index = index + 1;
-            this.E = this.GetBits(tempByte, index, 1);
+            this.E = BaseStructure.GetBits(tempByte, index, 1);
             index = index + 1;
             this.Type = (AddressTypeEnum)GetBits(tempByte, index, 3);
 
             tempByte = this.ReadByte();
             index = 0;
-            this.O = this.GetBits(tempByte, index, 1);
+            this.O = BaseStructure.GetBits(tempByte, index, 1);
             index = index + 1;
-            this.Reserved = this.GetBits(tempByte, index, 4);
+            this.Reserved = BaseStructure.GetBits(tempByte, index, 4);
             index = index + 4;
-            this.I = this.GetBits(tempByte, index, 1);
+            this.I = BaseStructure.GetBits(tempByte, index, 1);
             index = index + 1;
-            this.U = this.GetBits(tempByte, index, 1);
+            this.U = BaseStructure.GetBits(tempByte, index, 1);
             index = index + 1;
-            this.N = this.GetBits(tempByte, index, 1);
+            this.N = BaseStructure.GetBits(tempByte, index, 1);
         }
     }
 
@@ -5037,32 +4977,32 @@
     public class RecipientRow : BaseStructure
     {
         /// <summary>
-        /// A RecipientFlags structure, as specified in section 2.8.3.1. 
+        /// A RecipientFlags structure, as specified in section 2.8.3.1.
         /// </summary>
         public RecipientFlags RecipientFlags;
 
         /// <summary>
-        /// Unsigned integer. This field MUST be present when the Type field of the RecipientFlags field is set to X500DN (0x1) and MUST NOT be present otherwise. 
+        /// Unsigned integer. This field MUST be present when the Type field of the RecipientFlags field is set to X500DN (0x1) and MUST NOT be present otherwise.
         /// </summary>
         public byte? AddressPrefixUsed;
 
         /// <summary>
-        /// An enumeration. This field MUST be present when the Type field of the RecipientFlags field is set to X500DN (0x1) and MUST NOT be present otherwise. 
+        /// An enumeration. This field MUST be present when the Type field of the RecipientFlags field is set to X500DN (0x1) and MUST NOT be present otherwise.
         /// </summary>
         public DisplayType? DisplayType;
 
         /// <summary>
-        /// A null-terminated ASCII string. 
+        /// A null-terminated ASCII string.
         /// </summary>
         public MAPIString X500DN;
 
         /// <summary>
-        /// An unsigned integer. This field MUST be present when the Type field of the RecipientFlags field is set to PersonalDistributionList1 (0x6) or PersonalDistributionList2 (0x7). 
+        /// An unsigned integer. This field MUST be present when the Type field of the RecipientFlags field is set to PersonalDistributionList1 (0x6) or PersonalDistributionList2 (0x7).
         /// </summary>
         public ushort? EntryIdSize;
 
         /// <summary>
-        /// An array of bytes. This field MUST be present when the Type field of the RecipientFlags field is set to PersonalDistributionList1 (0x6) or PersonalDistributionList2 (0x7). 
+        /// An array of bytes. This field MUST be present when the Type field of the RecipientFlags field is set to PersonalDistributionList1 (0x6) or PersonalDistributionList2 (0x7).
         /// </summary>
         public AddressBookEntryID EntryID;
 
@@ -5102,7 +5042,7 @@
         public MAPIString TransmittableDisplayName;
 
         /// <summary>
-        /// This value specifies the number of columns from the RecipientColumns field([MS-OXCROPS] section 2.2.6.16.2) that are included in the RecipientProperties field. 
+        /// This value specifies the number of columns from the RecipientColumns field([MS-OXCROPS] section 2.2.6.16.2) that are included in the RecipientProperties field.
         /// </summary>
         public ushort? RecipientColumnCount;
 
@@ -5244,8 +5184,8 @@
         protected override void ParseBlocks()
         {
             SetText("PropertyTag");
-            AddChild(PropertyType, "PropertyType:{0}", PropertyType.Data);
-            AddChild(PropertyId, "PropertyId:{0}", PropertyId.Data);
+            AddChild(PropertyType, $"PropertyType:{PropertyType.Data}");
+            AddChild(PropertyId, $"PropertyId:{PropertyId.Data}");
         }
     }
     #endregion
@@ -5333,7 +5273,7 @@
     public class PtypFloating64 : Block
     {
         /// <summary>
-        /// 64-bit floating point number. 
+        /// 64-bit floating point number.
         /// </summary>
         public BlockT<double> Value;
 
@@ -5379,12 +5319,12 @@
     }
 
     /// <summary>
-    /// 8 bytes; a 64-bit floating point number. 
+    /// 8 bytes; a 64-bit floating point number.
     /// </summary>
     public class PtypFloatingTime : Block
     {
         /// <summary>
-        /// 64-bit floating point number. 
+        /// 64-bit floating point number.
         /// </summary>
         public BlockT<double> Value;
 
@@ -5692,7 +5632,7 @@
     public class PtypServerIdStruct : Block
     {
         /// <summary>
-        /// The value 0x01 indicates the remaining bytes conform to this structure; 
+        /// The value 0x01 indicates the remaining bytes conform to this structure;
         /// </summary>
         public BlockT<byte> Ours;
 
@@ -5702,12 +5642,12 @@
         public FolderID FolderID;
 
         /// <summary>
-        /// A Message ID structure, as specified in section 2.2.1.2, identifying a message in a folder identified by an associated folder ID. 
+        /// A Message ID structure, as specified in section 2.2.1.2, identifying a message in a folder identified by an associated folder ID.
         /// </summary>
         public MessageID MessageID;
 
         /// <summary>
-        /// An unsigned instance number within an array of server IDs to compare against. 
+        /// An unsigned instance number within an array of server IDs to compare against.
         /// </summary>
         public BlockT<uint> Instance;
 
@@ -5741,7 +5681,7 @@
             {
                 AddLabeledChild("FolderID", FolderID);
                 AddLabeledChild("MessageID", MessageID);
-                AddLabeledChild("Instance", Instance);
+                AddChild(Instance, $"Instance:{Instance.Data}");
             }
             else
             {
@@ -5914,7 +5854,6 @@
 
         protected override void ParseBlocks()
         {
-            SetText("PtypBinary");
             AddChild(_count, $"Count:{Count}");
             AddChild(Value, $"Value:{Value.ToHexString(false)}");
         }
@@ -6238,12 +6177,13 @@
     /// <summary>
     /// Variable size; a COUNT field followed by that many PtypString values.
     /// </summary>
-    public class PtypMultipleString_AddressBook : BaseStructure
+    public class PtypMultipleString_AddressBook : Block
     {
         /// <summary>
         /// COUNT values are typically used to specify the size of an associated field.
         /// </summary>
-        public object Count;
+        private Block _count;
+        public uint Count;
 
         /// <summary>
         /// The array of string value.
@@ -6261,28 +6201,42 @@
         /// <param name="wide">The Count wide size of PtypMultipleString type.</param>
         public PtypMultipleString_AddressBook(CountWideEnum wide)
         {
-            this.countWide = wide;
+            countWide = wide;
         }
 
         /// <summary>
         /// Parse the PtypMultipleString_AddressBook structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypMultipleString_AddressBook structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            this.Count = help.ReadCount(this.countWide, s);
-            List<MAPIStringAddressBook> tempvalue = new List<MAPIStringAddressBook>();
-            MAPIStringAddressBook str;
-            for (int i = 0; i < this.Count.GetHashCode(); i++)
+            switch (countWide)
             {
-                str = new MAPIStringAddressBook(Encoding.Unicode);
-                str.Parse(s);
+                case CountWideEnum.twoBytes:
+                    _count = BlockT<ushort>.Parse(parser);
+                    Count = (_count as BlockT<ushort>).Data;
+                    break;
+                default:
+                case CountWideEnum.fourBytes:
+                    _count = BlockT<uint>.Parse(parser);
+                    Count = (_count as BlockT<uint>).Data;
+                    break;
+            }
+            var tempvalue = new List<MAPIStringAddressBook>();
+            for (int i = 0; i < Count; i++)
+            {
+                var str = new MAPIStringAddressBook(Encoding.Unicode);
+                str.Parse(parser);
                 tempvalue.Add(str);
             }
 
-            this.Value = tempvalue.ToArray();
+            Value = tempvalue.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("PtypMultipleString_AddressBook");
+            AddChild(_count, $"Count:{Count}");
+            AddLabeledChildren("Value", Value);
         }
     }
 
@@ -6456,7 +6410,7 @@
     }
 
     /// <summary>
-    /// Any: this property type value matches any type; 
+    /// Any: this property type value matches any type;
     /// </summary>
     public class PtypUnspecified : Block
     {
@@ -6510,12 +6464,12 @@
     /// <summary>
     /// 2.11.2 Property Value Structures
     /// </summary>
-    public class PropertyValue : BaseStructure
+    public class PropertyValue : Block
     {
         /// <summary>
         /// A PropertyValue structure, as specified in section 2.11.2. The value MUST be compatible with the value of the propertyType field.
         /// </summary>
-        public object Value;
+        public Block Value;
 
         /// <summary>
         /// The Count wide size of ptypMutiple type.
@@ -6540,14 +6494,14 @@
         /// <summary>
         /// Initializes a new instance of the PropertyValue class
         /// </summary>
-        /// <param name="proType">The property type</param>
+        /// <param name="_propertyType">The property type</param>
         /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type</param>
         /// <param name="addressBook">Whether it is AddressBook related property</param>
-        public PropertyValue(PropertyDataType proType, CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes, bool addressBook = false)
+        public PropertyValue(PropertyDataType _propertyType, CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes, bool addressBook = false)
         {
-            this.countWide = ptypMultiCountSize;
-            this.propertyType = proType;
-            this.isAddressBook = addressBook;
+            countWide = ptypMultiCountSize;
+            propertyType = _propertyType;
+            isAddressBook = addressBook;
         }
 
         /// <summary>
@@ -6556,17 +6510,28 @@
         /// <param name="addressBook">The AddressBook</param>
         public PropertyValue(bool addressBook = false)
         {
-            this.isAddressBook = addressBook;
+            isAddressBook = addressBook;
         }
 
         /// <summary>
         /// Parse the PropertyValue structure.
         /// </summary>
-        /// <param name="s">A stream containing the PropertyValue structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Value = this.ReadPropertyValue(this.propertyType, s, this.countWide);
+            Value = ReadPropertyValue(propertyType, parser, countWide);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("PropertyValue");
+            if (Value != null)
+            {
+                AddChild(Value, $"Value:{Value.Text}");
+            }
+            else
+            {
+                SetText("MSOXCDATA: Not implemented type definition - PropertyValue");
+            }
         }
 
         /// <summary>
@@ -6576,230 +6541,79 @@
         /// <param name="s">A stream containing the PropertyValue structure</param>
         /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
         /// <returns>The object of PropertyValue.</returns>
-        public object ReadPropertyValue(PropertyDataType dataType, Stream s, CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes)
+        static public Block ReadPropertyValue(PropertyDataType dataType, BinaryParser parser, CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes, bool bIsAddressBook = false)
         {
-            base.Parse(s);
-            object propertyValue;
             switch (dataType)
             {
-                case PropertyDataType.PtypInteger16:
-                    {
-                        propertyValue = Block.Parse<PtypInteger16>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypInteger32:
-                    {
-                        propertyValue = Block.Parse<PtypInteger32>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypFloating32:
-                    {
-                        propertyValue = Block.Parse<PtypFloating32>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypFloating64:
-                    {
-                        propertyValue = Block.Parse<PtypFloating64>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypCurrency:
-                    {
-                        propertyValue = Block.Parse<PtypCurrency>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypFloatingTime:
-                    {
-                        propertyValue = Block.Parse<PtypFloatingTime>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypErrorCode:
-                    {
-                        propertyValue = Block.Parse<PtypErrorCode>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypBoolean:
-                    {
-                        propertyValue = Block.Parse<PtypBoolean>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypInteger64:
-                    {
-                        propertyValue = Block.Parse<PtypInteger64>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypString:
-                    {
-                        propertyValue = Block.Parse<PtypStringBlock>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypString8:
-                    {
-                        propertyValue = Block.Parse<PtypString8Block>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypTime:
-                    {
-                        propertyValue = Block.Parse<PtypTime>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypGuid:
-                    {
-                        propertyValue = Block.Parse<PtypGuid>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypServerId:
-                    {
-                        propertyValue = Block.Parse<PtypServerId>(s);
-                        break;
-                    }
-
+                case PropertyDataType.PtypInteger16: return Parse<PtypInteger16>(parser);
+                case PropertyDataType.PtypInteger32: return Parse<PtypInteger32>(parser);
+                case PropertyDataType.PtypFloating32: return Parse<PtypFloating32>(parser);
+                case PropertyDataType.PtypFloating64: return Parse<PtypFloating64>(parser);
+                case PropertyDataType.PtypCurrency: return Parse<PtypCurrency>(parser);
+                case PropertyDataType.PtypFloatingTime: return Parse<PtypFloatingTime>(parser);
+                case PropertyDataType.PtypErrorCode: return Parse<PtypErrorCode>(parser);
+                case PropertyDataType.PtypBoolean: return Parse<PtypBoolean>(parser);
+                case PropertyDataType.PtypInteger64: return Parse<PtypInteger64>(parser);
+                case PropertyDataType.PtypString: return Parse<PtypStringBlock>(parser);
+                case PropertyDataType.PtypString8: return Parse<PtypString8Block>(parser);
+                case PropertyDataType.PtypTime: return Parse<PtypTime>(parser);
+                case PropertyDataType.PtypGuid: return Parse<PtypGuid>(parser);
+                case PropertyDataType.PtypServerId: return Parse<PtypServerId>(parser);
                 case PropertyDataType.PtypRestriction:
                     {
-                        RestrictionType tempPropertyValue = new RestrictionType();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
-                        break;
+                        var tempPropertyValue = new RestrictionType(ptypMultiCountSize);
+                        tempPropertyValue.Parse(parser);
+                        return tempPropertyValue;
                     }
-
                 case PropertyDataType.PtypRuleAction:
                     {
-                        RuleAction tempPropertyValue = new RuleAction();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
-                        break;
+                        var tempPropertyValue = new RuleAction(ptypMultiCountSize);
+                        tempPropertyValue.Parse(parser);
+                        return tempPropertyValue;
                     }
-
-                case PropertyDataType.PtypUnspecified:
-                    {
-                        propertyValue = Block.Parse<PtypUnspecified>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypNull:
-                    {
-                        propertyValue = Block.Parse<PtypNull>(s);
-                        break;
-                    }
-
+                case PropertyDataType.PtypUnspecified: return Parse<PtypUnspecified>(parser);
+                case PropertyDataType.PtypNull: return Parse<PtypNull>(parser);
                 case PropertyDataType.PtypBinary:
                     {
-                        PtypBinaryBlock tempPropertyValue = new PtypBinaryBlock(ptypMultiCountSize);
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
-                        break;
+                        var tempPropertyValue = new PtypBinaryBlock(ptypMultiCountSize);
+                        tempPropertyValue.Parse(parser);
+                        return tempPropertyValue;
                     }
-
-                case PropertyDataType.PtypMultipleInteger16:
-                    {
-                        propertyValue = Block.Parse<PtypMultipleInteger16>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypMultipleInteger32:
-                    {
-                        propertyValue = Block.Parse<PtypMultipleInteger32>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypMultipleFloating32:
-                    {
-                        propertyValue = Block.Parse<PtypMultipleFloating32>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypMultipleFloating64:
-                    {
-                        propertyValue = Block.Parse<PtypMultipleFloating64>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypMultipleCurrency:
-                    {
-                        propertyValue = Block.Parse<PtypMultipleCurrency>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypMultipleFloatingTime:
-                    {
-                        propertyValue = Block.Parse<PtypMultipleFloatingTime>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypMultipleInteger64:
-                    {
-                        propertyValue = Block.Parse<PtypMultipleInteger64>(s);
-                        break;
-                    }
-
+                case PropertyDataType.PtypMultipleInteger16: return Parse<PtypMultipleInteger16>(parser);
+                case PropertyDataType.PtypMultipleInteger32: return Parse<PtypMultipleInteger32>(parser);
+                case PropertyDataType.PtypMultipleFloating32: return Parse<PtypMultipleFloating32>(parser);
+                case PropertyDataType.PtypMultipleFloating64: return Parse<PtypMultipleFloating64>(parser);
+                case PropertyDataType.PtypMultipleCurrency: return Parse<PtypMultipleCurrency>(parser);
+                case PropertyDataType.PtypMultipleFloatingTime: return Parse<PtypMultipleFloatingTime>(parser);
+                case PropertyDataType.PtypMultipleInteger64: return Parse<PtypMultipleInteger64>(parser);
                 case PropertyDataType.PtypMultipleString:
                     {
-                        if (this.isAddressBook)
+                        if (bIsAddressBook)
                         {
-                            PtypMultipleString_AddressBook tempPropertyValue = new PtypMultipleString_AddressBook(ptypMultiCountSize);
-                            tempPropertyValue.Parse(s);
-                            propertyValue = tempPropertyValue;
+                            var tempPropertyValue = new PtypMultipleString_AddressBook(ptypMultiCountSize);
+                            tempPropertyValue.Parse(parser);
+                            return tempPropertyValue;
                         }
                         else
                         {
-                            propertyValue = Block.Parse<PtypMultipleString>(s);
+                            return Parse<PtypMultipleString>(parser);
                         }
-
-                        break;
                     }
-
-                case PropertyDataType.PtypMultipleString8:
-                    {
-                        propertyValue = Block.Parse<PtypMultipleString8>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypMultipleTime:
-                    {
-                        propertyValue = Block.Parse<PtypMultipleTime>(s);
-                        break;
-                    }
-
-                case PropertyDataType.PtypMultipleGuid:
-                    {
-                        propertyValue = Block.Parse<PtypMultipleGuid>(s);
-                        break;
-                    }
-
+                case PropertyDataType.PtypMultipleString8: return Parse<PtypMultipleString8>(parser);
+                case PropertyDataType.PtypMultipleTime: return Parse<PtypMultipleTime>(parser);
+                case PropertyDataType.PtypMultipleGuid: return Parse<PtypMultipleGuid>(parser);
                 case PropertyDataType.PtypMultipleBinary:
                     {
-                        PtypMultipleBinary tempPropertyValue = new PtypMultipleBinary(ptypMultiCountSize);
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
-                        break;
+                        var tempPropertyValue = new PtypMultipleBinary(ptypMultiCountSize);
+                        tempPropertyValue.Parse(parser);
+                        return tempPropertyValue;
                     }
 
                 case PropertyDataType.PtypObject_Or_PtypEmbeddedTable:
-                    {
-                        PtypObject_Or_PtypEmbeddedTable tempPropertyValue = new PtypObject_Or_PtypEmbeddedTable();
-                        tempPropertyValue.Parse(s);
-                        propertyValue = tempPropertyValue;
-                        break;
-                    }
-
-                default:
-                    propertyValue = null;
-                    break;
+                    return Parse<PtypObject_Or_PtypEmbeddedTable>(parser);
             }
 
-            return propertyValue;
+            return null;
         }
     }
 
@@ -6807,19 +6621,19 @@
 
     #region 2.11.3	TypedPropertyValue Structure
     /// <summary>
-    /// 2.11.3 TypedPropertyValue Structure 
+    /// 2.11.3 TypedPropertyValue Structure
     /// </summary>
-    public class TypedPropertyValue : BaseStructure
+    public class TypedPropertyValue : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the data type of the property value, according to the table in section 2.11.1.
         /// </summary>
-        public PropertyDataType PropertyType;
+        public BlockT<PropertyDataType> PropertyType;
 
         /// <summary>
         /// A PropertyValue structure, as specified in section 2.11.2. The value MUST be compatible with the value of the propertyType field.
         /// </summary>
-        public object PropertyValue;
+        public Block _PropertyValue;
 
         /// <summary>
         /// Source property tag information
@@ -6837,19 +6651,29 @@
         /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type</param>
         public TypedPropertyValue(CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes)
         {
-            this.countWide = ptypMultiCountSize;
+            countWide = ptypMultiCountSize;
         }
 
         /// <summary>
         /// Parse the TypedPropertyValue structure.
         /// </summary>
-        /// <param name="s">A stream containing the TypedPropertyValue structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.PropertyType = this.ConvertToPropType(this.ReadUshort());
-            PropertyValue propertyValue = new PropertyValue();
-            this.PropertyValue = propertyValue.ReadPropertyValue(this.PropertyType, s, this.countWide);
+            PropertyType = BlockT<PropertyDataType>.Parse(parser);
+            _PropertyValue = PropertyValue.ReadPropertyValue(PropertyType.Data, parser, countWide);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(PropertyType, $"PropertyType:{PropertyType.Data}");
+            if (_PropertyValue != null)
+            {
+                AddLabeledChild("PropertyValue", _PropertyValue);
+            }
+            else
+            {
+                SetText("PropertyValue is null");
+            }
         }
     }
     #endregion
@@ -6858,7 +6682,7 @@
     /// <summary>
     /// 2.11.4 TaggedPropertyValue Structure
     /// </summary>
-    public class TaggedPropertyValue : BaseStructure
+    public class TaggedPropertyValue : Block
     {
         /// <summary>
         /// A PropertyTag structure, as specified in section 2.9, giving the values of the PropertyId and propertyType fields for the property.
@@ -6866,9 +6690,9 @@
         public PropertyTag PropertyTag;
 
         /// <summary>
-        /// A PropertyValue structure, as specified in section 2.11.2.1. specifying the value of the property. 
+        /// A PropertyValue structure, as specified in section 2.11.2.1. specifying the value of the property.
         /// </summary>
-        public object PropertyValue;
+        public Block _PropertyValue;
 
         /// <summary>
         /// The Constructor to set the Count wide size.
@@ -6887,31 +6711,42 @@
         /// <param name="propertyTag">The PropertyTag structure</param>
         public TaggedPropertyValue(CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes, PropertyTag propertyTag = null)
         {
-            this.countWide = ptypMultiCountSize;
-            this.tagInRestriction = propertyTag;
+            countWide = ptypMultiCountSize;
+            tagInRestriction = propertyTag;
         }
 
         /// <summary>
         /// Parse the TaggedPropertyValue structure.
         /// </summary>
-        /// <param name="s">A stream containing the TaggedPropertyValue structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.PropertyTag = Block.Parse<PropertyTag>(s);
-            PropertyValue propertyValue = new PropertyValue();
-            if (this.tagInRestriction != null)
+            PropertyTag = Parse<PropertyTag>(parser);
+            if (tagInRestriction != null)
             {
-                if (((ushort)this.tagInRestriction.PropertyType.Data & 0x1000) == 0x1000)
+                if (((ushort)tagInRestriction.PropertyType.Data & 0x1000) == 0x1000)
                 {
-                    this.tagInRestriction.PropertyType.Data = (PropertyDataType)((ushort)this.tagInRestriction.PropertyType.Data & 0xfff);
+                    tagInRestriction.PropertyType.Data = (PropertyDataType)((ushort)tagInRestriction.PropertyType.Data & 0xfff);
                 }
 
-                this.PropertyValue = propertyValue.ReadPropertyValue(this.tagInRestriction.PropertyType.Data, s, this.countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(tagInRestriction.PropertyType.Data, parser, countWide);
             }
             else
             {
-                this.PropertyValue = propertyValue.ReadPropertyValue(this.PropertyTag.PropertyType.Data, s, this.countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyTag.PropertyType.Data, parser, countWide);
+            }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("TaggedPropertyValue");
+            AddChild(PropertyTag, "PropertyTag");
+            if (_PropertyValue != null)
+            {
+                AddChild(_PropertyValue, $"PropertyValue:{_PropertyValue.Text}");
+            }
+            else
+            {
+                SetText("PropertyValue is null");
             }
         }
     }
@@ -6921,17 +6756,17 @@
     /// <summary>
     /// 2.11.5 FlaggedPropertyValue Structure
     /// </summary>
-    public class FlaggedPropertyValue : BaseStructure
+    public class FlaggedPropertyValue : Block
     {
         /// <summary>
-        /// An unsigned integer. This value of this flag determines what is conveyed in the PropertyValue field. 
+        /// An unsigned integer. This value of this flag determines what is conveyed in the PropertyValue field.
         /// </summary>
-        public byte Flag;
+        public BlockT<byte> Flag;
 
         /// <summary>
         /// A PropertyValue structure, as specified in section 2.11.2.1, unless the Flag field is set to 0x1.
         /// </summary>
-        public object PropertyValue;
+        public Block _PropertyValue;
 
         /// <summary>
         /// The Property data type.
@@ -6944,42 +6779,42 @@
         private CountWideEnum countWide;
 
         /// <summary>
-        /// Source property tag information
-        /// </summary>
-        public AnnotatedComment PropertyTag;
-
-        /// <summary>
         /// Initializes a new instance of the FlaggedPropertyValue class
         /// </summary>
         /// <param name="propertyType">The Property data type.</param>
         /// <param name="ptypMultiCountSize">The Count wide size.</param>
-        public FlaggedPropertyValue(PropertyDataType propertyType, CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes)
+        public FlaggedPropertyValue(PropertyDataType _propertyType, CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes)
         {
-            this.propertyType = propertyType;
-            this.countWide = ptypMultiCountSize;
+            propertyType = _propertyType;
+            countWide = ptypMultiCountSize;
         }
 
         /// <summary>
         /// Parse the FlaggedPropertyValue structure.
         /// </summary>
-        /// <param name="s">A stream containing the FlaggedPropertyValue structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Flag = this.ReadByte();
-            if (this.Flag == 0x00)
+            Flag = BlockT<byte>.Parse(parser);
+            if (Flag.Data == 0x00)
             {
-                PropertyValue propertyValue = new PropertyValue();
-                this.PropertyValue = propertyValue.ReadPropertyValue(this.propertyType, s, this.countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(propertyType, parser, countWide);
             }
-            else if (this.Flag == 0x0A)
+            else if (Flag.Data == 0x0A)
             {
-                PropertyValue propertyValue = new PropertyValue();
-                this.PropertyValue = propertyValue.ReadPropertyValue(PropertyDataType.PtypErrorCode, s, this.countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyDataType.PtypErrorCode, parser, countWide);
+            }
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Flag, $"Flag:{Flag.Data}");
+            if (_PropertyValue != null)
+            {
+                AddLabeledChild("PropertyValue", _PropertyValue);
             }
             else
             {
-                this.PropertyValue = null;
+                SetText("PropertyValue is null");
             }
         }
     }
@@ -6989,27 +6824,22 @@
     /// <summary>
     /// 2.11.6 FlaggedPropertyValueWithType Structure
     /// </summary>
-    public class FlaggedPropertyValueWithType : BaseStructure
+    public class FlaggedPropertyValueWithType : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the data type of the property value, according to the table in section 2.11.1.
         /// </summary>
-        public PropertyDataType PropertyType;
+        public BlockT<PropertyDataType> PropertyType;
 
         /// <summary>
-        /// An unsigned integer. This flag MUST be set one of three possible values: 0x0, 0x1, or 0xA, which determines what is conveyed in the PropertyValue field. 
+        /// An unsigned integer. This flag MUST be set one of three possible values: 0x0, 0x1, or 0xA, which determines what is conveyed in the PropertyValue field.
         /// </summary>
-        public byte Flag;
+        public BlockT<byte> Flag;
 
         /// <summary>
-        /// A PropertyValue structure, as specified in section 2.11.2.1, unless the Flag field is set to 0x1. 
+        /// A PropertyValue structure, as specified in section 2.11.2.1, unless the Flag field is set to 0x1.
         /// </summary>
-        public object PropertyValue;
-
-        /// <summary>
-        /// Source property tag information
-        /// </summary>
-        public AnnotatedComment PropertyTag;
+        public Block _PropertyValue;
 
         /// <summary>
         /// The Count wide size.
@@ -7022,31 +6852,36 @@
         /// <param name="ptypMultiCountSize">The Count wide size.</param>
         public FlaggedPropertyValueWithType(CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes)
         {
-            this.countWide = ptypMultiCountSize;
+            countWide = ptypMultiCountSize;
         }
 
         /// <summary>
         /// Parse the FlaggedPropertyValueWithType structure.
         /// </summary>
-        /// <param name="s">A stream containing the FlaggedPropertyValueWithType structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.PropertyType = this.ConvertToPropType(this.ReadUshort());
-            this.Flag = this.ReadByte();
-            if (this.Flag == 0x00)
+            PropertyType = BlockT<PropertyDataType>.Parse(parser);
+            Flag = BlockT<byte>.Parse(parser);
+            if (Flag.Data == 0x00)
             {
-                PropertyValue propertyValue = new PropertyValue();
-                this.PropertyValue = propertyValue.ReadPropertyValue(this.PropertyType, s, this.countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyType.Data, parser, countWide);
             }
-            else if (this.Flag == 0x0A)
+            else if (Flag.Data == 0x0A)
             {
-                PropertyValue propertyValue = new PropertyValue();
-                this.PropertyValue = propertyValue.ReadPropertyValue(PropertyDataType.PtypErrorCode, s, this.countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyDataType.PtypErrorCode, parser, countWide);
+            }
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Flag, $"Flag:{Flag.Data}");
+            if (_PropertyValue != null)
+            {
+                AddLabeledChild("PropertyValue", _PropertyValue);
             }
             else
             {
-                this.PropertyValue = null;
+                SetText("PropertyValue is null");
             }
         }
     }
@@ -7120,12 +6955,12 @@
     /// <summary>
     ///  2.12   Restrictions
     /// </summary>
-    public class RestrictionType : BaseStructure
+    public class RestrictionType : Block
     {
         /// <summary>
-        /// An unsigned integer. This value indicates the type of restriction.
+        /// The restriction
         /// </summary>
-        public object Restriction;
+        public Block Restriction;
 
         /// <summary>
         /// The Count wide size.
@@ -7138,113 +6973,112 @@
         /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
         public RestrictionType(CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes)
         {
-            this.countWide = ptypMultiCountSize;
+            countWide = ptypMultiCountSize;
         }
 
         /// <summary>
         /// Parse the RestrictionType structure.
         /// </summary>
-        /// <param name="s">A stream containing the RestrictionType structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RestrictTypeEnum tempRestrictType = (RestrictTypeEnum)ReadByte();
-            s.Position -= 1;
-            switch (tempRestrictType)
+            var restrictType = BlockT<RestrictTypeEnum>.Parse(parser);
+            if (!restrictType.Parsed) return;
+            parser.Offset -= sizeof(RestrictTypeEnum);
+            switch (restrictType.Data)
             {
                 case RestrictTypeEnum.AndRestriction:
                     {
-                        AndRestriction restriction = new AndRestriction(this.countWide);
-                        restriction.Parse(s);
-                        this.Restriction = restriction;
+                        var restriction = new AndRestriction(countWide);
+                        restriction.Parse(parser);
+                        Restriction = restriction;
                         break;
                     }
 
                 case RestrictTypeEnum.OrRestriction:
                     {
-                        OrRestriction restriction = new OrRestriction(this.countWide);
-                        restriction.Parse(s);
-                        this.Restriction = restriction;
+                        var restriction = new OrRestriction(countWide);
+                        restriction.Parse(parser);
+                        Restriction = restriction;
                         break;
                     }
 
                 case RestrictTypeEnum.NotRestriction:
                     {
-                        NotRestriction restriction = new NotRestriction();
-                        restriction.Parse(s);
-                        this.Restriction = restriction;
+                        var restriction = new NotRestriction(countWide);
+                        restriction.Parse(parser);
+                        Restriction = restriction;
                         break;
                     }
 
                 case RestrictTypeEnum.ContentRestriction:
                     {
-                        ContentRestriction restriction = new ContentRestriction(this.countWide);
-                        restriction.Parse(s);
-                        this.Restriction = restriction;
+                        var restriction = new ContentRestriction(countWide);
+                        restriction.Parse(parser);
+                        Restriction = restriction;
                         break;
                     }
 
                 case RestrictTypeEnum.PropertyRestriction:
                     {
-                        PropertyRestriction restriction = new PropertyRestriction(this.countWide);
-                        restriction.Parse(s);
-                        this.Restriction = restriction;
+                        var restriction = new PropertyRestriction(countWide);
+                        restriction.Parse(parser);
+                        Restriction = restriction;
                         break;
                     }
 
                 case RestrictTypeEnum.ComparePropertiesRestriction:
                     {
-                        ComparePropertiesRestriction restriction = new ComparePropertiesRestriction();
-                        restriction.Parse(s);
-                        this.Restriction = restriction;
+                        var restriction = new ComparePropertiesRestriction();
+                        restriction.Parse(parser);
+                        Restriction = restriction;
                         break;
                     }
 
                 case RestrictTypeEnum.BitMaskRestriction:
                     {
-                        BitMaskRestriction restriction = new BitMaskRestriction();
-                        restriction.Parse(s);
-                        this.Restriction = restriction;
+                        var restriction = new BitMaskRestriction();
+                        restriction.Parse(parser);
+                        Restriction = restriction;
                         break;
                     }
 
                 case RestrictTypeEnum.SizeRestriction:
                     {
-                        SizeRestriction restriction = new SizeRestriction();
-                        restriction.Parse(s);
-                        this.Restriction = restriction;
+                        var restriction = new SizeRestriction();
+                        restriction.Parse(parser);
+                        Restriction = restriction;
                         break;
                     }
 
                 case RestrictTypeEnum.ExistRestriction:
                     {
-                        ExistRestriction restriction = new ExistRestriction();
-                        restriction.Parse(s);
-                        this.Restriction = restriction;
+                        var restriction = new ExistRestriction();
+                        restriction.Parse(parser);
+                        Restriction = restriction;
                         break;
                     }
 
                 case RestrictTypeEnum.SubObjectRestriction:
                     {
-                        SubObjectRestriction restriction = new SubObjectRestriction(this.countWide);
-                        restriction.Parse(s);
-                        this.Restriction = restriction;
+                        var restriction = new SubObjectRestriction(countWide);
+                        restriction.Parse(parser);
+                        Restriction = restriction;
                         break;
                     }
 
                 case RestrictTypeEnum.CommentRestriction:
                     {
-                        CommentRestriction restriction = new CommentRestriction(this.countWide);
-                        restriction.Parse(s);
-                        this.Restriction = restriction;
+                        var restriction = new CommentRestriction(countWide);
+                        restriction.Parse(parser);
+                        Restriction = restriction;
                         break;
                     }
 
                 case RestrictTypeEnum.CountRestriction:
                     {
-                        CountRestriction restriction = new CountRestriction(this.countWide);
-                        restriction.Parse(s);
-                        this.Restriction = restriction;
+                        var restriction = new CountRestriction(countWide);
+                        restriction.Parse(parser);
+                        Restriction = restriction;
                         break;
                     }
 
@@ -7252,25 +7086,32 @@
                     break;
             }
         }
+
+        protected override void ParseBlocks()
+        {
+            SetText("Restriction");
+            AddLabeledChild("Restriction", Restriction);
+        }
     }
 
     /// <summary>
     /// 2.12.1 And Restriction Structures
     /// </summary>
-    public class AndRestriction : BaseStructure
+    public class AndRestriction : Block
     {
         /// <summary>
         /// An unsigned integer. This value indicates the type of restriction (2) and MUST be set to 0x00.
         /// </summary>
-        public RestrictTypeEnum RestrictType;
+        public BlockT<RestrictTypeEnum> RestrictType;
 
         /// <summary>
         /// This value specifies how many restriction structures are present in the Restricts field. The width of this field is 16 bits in the context of ROPs and 32 bits in the context of extended rules.
         /// </summary>
-        public object RestrictCount;
+        private Block _restrictCount;
+        public uint RestrictCount;
 
         /// <summary>
-        /// An array of restriction structures. 
+        /// An array of restriction structures.
         /// </summary>
         public RestrictionType[] Restricts;
 
@@ -7285,52 +7126,63 @@
         /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
         public AndRestriction(CountWideEnum ptypMultiCountSize)
         {
-            this.countWide = ptypMultiCountSize;
+            countWide = ptypMultiCountSize;
         }
 
         /// <summary>
         /// Parse the AndRestriction structure.
         /// </summary>
-        /// <param name="s">A stream containing the AndRestriction structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.RestrictType = (RestrictTypeEnum)ReadByte();
-            if (this.countWide == CountWideEnum.twoBytes)
+            RestrictType = BlockT<RestrictTypeEnum>.Parse(parser);
+            switch (countWide)
             {
-                this.RestrictCount = this.ReadUshort();
-            }
-            else
-            {
-                this.RestrictCount = this.ReadUint();
+                case CountWideEnum.twoBytes:
+                    _restrictCount = BlockT<ushort>.Parse(parser);
+                    RestrictCount = (_restrictCount as BlockT<ushort>).Data;
+                    break;
+                default:
+                case CountWideEnum.fourBytes:
+                    _restrictCount = BlockT<uint>.Parse(parser);
+                    RestrictCount = (_restrictCount as BlockT<uint>).Data;
+                    break;
             }
 
-            List<RestrictionType> tempRestricts = new List<RestrictionType>();
-            for (int length = 0; length < this.RestrictCount.GetHashCode(); length++)
+            var tempRestricts = new List<RestrictionType>();
+            for (int length = 0; length < RestrictCount.GetHashCode(); length++)
             {
-                RestrictionType tempRestriction = new RestrictionType();
-                tempRestriction.Parse(s);
+                var tempRestriction = new RestrictionType();
+                tempRestriction.Parse(parser);
                 tempRestricts.Add(tempRestriction);
             }
 
-            this.Restricts = tempRestricts.ToArray();
+            Restricts = tempRestricts.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AndRestriction");
+            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChild(_restrictCount, $"RestrictCount:{RestrictCount}");
+            AddLabeledChildren("Restricts", Restricts);
         }
     }
 
     /// <summary>
     /// 2.12.2.1 OrRestriction Structure
     /// </summary>
-    public class OrRestriction : BaseStructure
+    public class OrRestriction : Block
     {
         /// <summary>
-        /// An unsigned integer. This value indicates the type of restriction (2) and MUST be set to 0x01.
+        /// An unsigned integer. This value indicates the type of restriction (2) and MUST be set to 0x00.
         /// </summary>
-        public RestrictTypeEnum RestrictType;
+        public BlockT<RestrictTypeEnum> RestrictType;
 
         /// <summary>
         /// This value specifies how many restriction structures are present in the Restricts field. The width of this field is 16 bits in the context of ROPs and 32 bits in the context of extended rules.
         /// </summary>
-        public object RestrictCount;
+        private Block _restrictCount;
+        public uint RestrictCount;
 
         /// <summary>
         /// An array of restriction structures. This field MUST contain the number of structures indicated by the RestrictCount field.
@@ -7348,47 +7200,57 @@
         /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
         public OrRestriction(CountWideEnum ptypMultiCountSize)
         {
-            this.countWide = ptypMultiCountSize;
+            countWide = ptypMultiCountSize;
         }
 
         /// <summary>
         /// Parse the OrRestriction structure.
         /// </summary>
-        /// <param name="s">A stream containing the OrRestriction structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.RestrictType = (RestrictTypeEnum)this.ReadByte();
-            if (this.countWide == CountWideEnum.twoBytes)
+            RestrictType = BlockT<RestrictTypeEnum>.Parse(parser);
+            switch (countWide)
             {
-                this.RestrictCount = this.ReadUshort();
-            }
-            else
-            {
-                this.RestrictCount = this.ReadUint();
+                case CountWideEnum.twoBytes:
+                    _restrictCount = BlockT<ushort>.Parse(parser);
+                    RestrictCount = (_restrictCount as BlockT<ushort>).Data;
+                    break;
+                default:
+                case CountWideEnum.fourBytes:
+                    _restrictCount = BlockT<uint>.Parse(parser);
+                    RestrictCount = (_restrictCount as BlockT<uint>).Data;
+                    break;
             }
 
-            List<RestrictionType> tempRestricts = new List<RestrictionType>();
-            for (int length = 0; length < this.RestrictCount.GetHashCode(); length++)
+            var tempRestricts = new List<RestrictionType>();
+            for (int length = 0; length < RestrictCount.GetHashCode(); length++)
             {
-                RestrictionType tempRestriction = new RestrictionType();
-                tempRestriction.Parse(s);
+                var tempRestriction = new RestrictionType();
+                tempRestriction.Parse(parser);
                 tempRestricts.Add(tempRestriction);
             }
 
-            this.Restricts = tempRestricts.ToArray();
+            Restricts = tempRestricts.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("OrRestriction");
+            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChild(_restrictCount, $"RestrictCount:{_restrictCount}");
+            AddLabeledChildren("Restricts", Restricts);
         }
     }
 
     /// <summary>
     /// 2.12.3 Not Restriction Structures
     /// </summary>
-    public class NotRestriction : BaseStructure
+    public class NotRestriction : Block
     {
         /// <summary>
         /// An unsigned integer. This value indicates the type of restriction (2) and MUST be set to 0x02.
         /// </summary>
-        public RestrictTypeEnum RestrictType;
+        public BlockT<RestrictTypeEnum> RestrictType;
 
         /// <summary>
         /// A restriction structure. This value specifies the restriction (2) that the logical NOT operation applies to.
@@ -7396,38 +7258,56 @@
         public RestrictionType Restriction;
 
         /// <summary>
+        /// The Count wide size.
+        /// </summary>
+        private CountWideEnum countWide;
+
+        /// <summary>
+        /// Initializes a new instance of the AndRestriction class
+        /// </summary>
+        /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
+        public NotRestriction(CountWideEnum ptypMultiCountSize)
+        {
+            countWide = ptypMultiCountSize;
+        }
+
+        /// <summary>
         /// Parse the NotRestriction structure.
         /// </summary>
-        /// <param name="s">A stream containing the NotRestriction structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RestrictType = BlockT<RestrictTypeEnum>.Parse(parser);
+            Restriction = new RestrictionType(countWide);
+            Restriction.Parse(parser);
+        }
 
-            this.RestrictType = (RestrictTypeEnum)ReadByte();
-            this.Restriction = new RestrictionType();
-            this.Restriction.Parse(s);
+        protected override void ParseBlocks()
+        {
+            SetText("NotRestriction");
+            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddLabeledChild("Restriction", Restriction);
         }
     }
 
     /// <summary>
     /// 2.12.4 Content Restriction Structures
     /// </summary>
-    public class ContentRestriction : BaseStructure
+    public class ContentRestriction : Block
     {
         /// <summary>
         /// An unsigned integer. This value indicates the type of restriction (2) and MUST be set to 0x03.
         /// </summary>
-        public RestrictTypeEnum RestrictType;
+        public BlockT<RestrictTypeEnum> RestrictType;
 
         /// <summary>
         /// An unsigned integer. This field specifies the level of precision that the server enforces when checking for a match against a ContentRestriction structure.
         /// </summary>
-        public FuzzyLevelLowEnum FuzzyLevelLow;
+        public BlockT<FuzzyLevelLowEnum> FuzzyLevelLow;
 
         /// <summary>
-        /// This field applies only to string-value properties. 
+        /// This field applies only to string-value properties.
         /// </summary>
-        public FuzzyLevelHighEnum FuzzyLevelHigh;
+        public BlockT<FuzzyLevelHighEnum> FuzzyLevelHigh;
 
         /// <summary>
         /// This value indicates the property tag of the column whose value MUST be matched against the value specified in the TaggedValue field.
@@ -7435,7 +7315,7 @@
         public PropertyTag PropertyTag;
 
         /// <summary>
-        /// A TaggedPropertyValue structure, as specified in section 2.11.4. 
+        /// A TaggedPropertyValue structure, as specified in section 2.11.4.
         /// </summary>
         public TaggedPropertyValue TaggedValue;
 
@@ -7456,41 +7336,49 @@
         /// <summary>
         /// Parse the ContentRestriction structure.
         /// </summary>
-        /// <param name="s">A stream containing the ContentRestriction structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.RestrictType = (RestrictTypeEnum)ReadByte();
-            this.FuzzyLevelLow = (FuzzyLevelLowEnum)ReadUshort();
-            this.FuzzyLevelHigh = (FuzzyLevelHighEnum)ReadUshort();
-            this.PropertyTag = Block.Parse<PropertyTag>(s);
-            this.TaggedValue = new TaggedPropertyValue(this.countWide, this.PropertyTag);
-            this.TaggedValue.Parse(s);
+            RestrictType = BlockT<RestrictTypeEnum>.Parse(parser);
+            FuzzyLevelLow = BlockT<FuzzyLevelLowEnum>.Parse(parser);
+            FuzzyLevelHigh = BlockT<FuzzyLevelHighEnum>.Parse(parser);
+            PropertyTag = Parse<PropertyTag>(parser);
+            TaggedValue = new TaggedPropertyValue(countWide, PropertyTag);
+            TaggedValue.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ContentRestriction");
+            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChild(FuzzyLevelLow, $"FuzzyLevelLow:{FuzzyLevelLow.Data}");
+            AddChild(FuzzyLevelHigh, $"FuzzyLevelHigh:{FuzzyLevelHigh.Data}");
+            AddChild(PropertyTag);
+            AddChild(TaggedValue, "TaggedValue");
         }
     }
 
     /// <summary>
     /// 2.12.5 Property Restriction Structures
     /// </summary>
-    public class PropertyRestriction : BaseStructure
+    public class PropertyRestriction : Block
     {
         /// <summary>
         /// An unsigned integer. This value indicates the type of restriction (2) and MUST be set to 0x4.
         /// </summary>
-        public RestrictTypeEnum RestrictType;
+        public BlockT<RestrictTypeEnum> RestrictType;
 
         /// <summary>
-        /// An unsigned integer. This value indicates the relational operator that is used to compare the property on the object with the value of the TaggedValue field. 
+        /// An unsigned integer. This value indicates the relational operator that is used to compare the property on the object with the value of the TaggedValue field.
         /// </summary>
-        public RelOpType RelOp;
+        public BlockT<RelOpType> RelOp;
 
         /// <summary>
         /// An unsigned integer. This value indicates the property tag of the property that MUST be compared.
         /// </summary>
-        public uint PropTag;
+        public PropertyTag PropTag;
 
         /// <summary>
-        ///  A TaggedValue structure, as specified in section 2.11.4. 
+        ///  A TaggedValue structure, as specified in section 2.11.4.
         /// </summary>
         public TaggedPropertyValue TaggedValue;
 
@@ -7505,187 +7393,218 @@
         /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
         public PropertyRestriction(CountWideEnum ptypMultiCountSize)
         {
-            this.countWide = ptypMultiCountSize;
+            countWide = ptypMultiCountSize;
         }
 
         /// <summary>
         /// Parse the PropertyRestriction structure.
         /// </summary>
-        /// <param name="s">A stream containing the PropertyRestriction structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.RestrictType = (RestrictTypeEnum)this.ReadByte();
-            this.RelOp = (RelOpType)this.ReadByte();
-            this.PropTag = this.ReadUint();
-            s.Position -= 4;
-            PropertyTag propertyTag = Block.Parse<PropertyTag>(s);
-            this.TaggedValue = new TaggedPropertyValue(this.countWide, propertyTag);
-            this.TaggedValue.Parse(s);
+            RestrictType = BlockT<RestrictTypeEnum>.Parse(parser);
+            RelOp = BlockT<RelOpType>.Parse(parser);
+            PropTag = Parse<PropertyTag>(parser);
+            TaggedValue = new TaggedPropertyValue(countWide, PropTag);
+            TaggedValue.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("PropertyRestriction");
+            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChild(RelOp, $"RelOp:{RelOp.Data}");
+            AddChild(PropTag, "PropTag");
+            AddLabeledChild("TaggedValue", TaggedValue);
         }
     }
 
     /// <summary>
     /// 2.12.6 Compare Properties Restriction Structures
     /// </summary>
-    public class ComparePropertiesRestriction : BaseStructure
+    public class ComparePropertiesRestriction : Block
     {
         /// <summary>
         /// An unsigned integer. This value indicates the type of restriction (2) and MUST be set to 0x05.
         /// </summary>
-        public RestrictTypeEnum RestrictType;
+        public BlockT<RestrictTypeEnum> RestrictType;
 
         /// <summary>
-        /// An unsigned integer. This value indicates the relational operator used to compare the two properties. 
+        /// An unsigned integer. This value indicates the relational operator used to compare the two properties.
         /// </summary>
-        public RelOpType RelOp;
+        public BlockT<RelOpType> RelOp;
 
         /// <summary>
         /// An unsigned integer. This value is the property tag of the first property that MUST be compared.
         /// </summary>
-        public uint PropTag1;
+        public PropertyTag PropTag1;
 
         /// <summary>
         /// An unsigned integer. This value is the property tag of the second property that MUST be compared.
         /// </summary>
-        public uint PropTag2;
+        public PropertyTag PropTag2;
 
         /// <summary>
         /// Parse the ComparePropertiesRestriction structure.
         /// </summary>
-        /// <param name="s">A stream containing the ComparePropertiesRestriction structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.RestrictType = (RestrictTypeEnum)ReadByte();
-            this.RelOp = (RelOpType)ReadByte();
-            this.PropTag1 = this.ReadUint();
-            this.PropTag2 = this.ReadUint();
+            RestrictType = BlockT<RestrictTypeEnum>.Parse(parser);
+            RelOp = BlockT<RelOpType>.Parse(parser);
+            PropTag1 = Parse<PropertyTag>(parser);
+            PropTag2 = Parse<PropertyTag>(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ComparePropertiesRestriction");
+            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChild(RelOp, $"RelOp:{RelOp.Data}");
+            AddChild(PropTag1, "PropTag1");
+            AddChild(PropTag2, "PropTag2");
         }
     }
 
     /// <summary>
     /// 2.12.7 Bitmask Restriction Structures
     /// </summary>
-    public class BitMaskRestriction : BaseStructure
+    public class BitMaskRestriction : Block
     {
         /// <summary>
         /// An unsigned integer. This value indicates the type of restriction (2) and MUST be set to 0x06.
         /// </summary>
-        public RestrictTypeEnum RestrictType;
+        public BlockT<RestrictTypeEnum> RestrictType;
 
         /// <summary>
-        /// An unsigned integer. This value specifies how the server MUST perform the masking operation. 
+        /// An unsigned integer. This value specifies how the server MUST perform the masking operation.
         /// </summary>
-        public BitmapRelOpType BitmapRelOp;
+        public BlockT<BitmapRelOpType> BitmapRelOp;
 
         /// <summary>
-        /// An unsigned integer. This value is the property tag of the property to be tested. 
+        /// An unsigned integer. This value is the property tag of the property to be tested.
         /// </summary>
-        public PtypInteger32 PropTag;
+        public PropertyTag PropTag;
 
         /// <summary>
         /// An unsigned integer. The bitmask to be used for the AND operation.
         /// </summary>
-        public uint Mask;
+        public BlockT<uint> Mask;
 
         /// <summary>
         /// Parse the BitMaskRestriction structure.
         /// </summary>
-        /// <param name="s">A stream containing the BitMaskRestriction structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.RestrictType = (RestrictTypeEnum)ReadByte();
-            this.BitmapRelOp = (BitmapRelOpType)ReadByte();
-            this.PropTag = Block.Parse<PtypInteger32>(s);
-            this.Mask = this.ReadUint();
+            RestrictType = BlockT<RestrictTypeEnum>.Parse(parser);
+            BitmapRelOp = BlockT<BitmapRelOpType>.Parse(parser);
+            PropTag = Parse<PropertyTag>(parser);
+            Mask = BlockT<uint>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("BitMaskRestriction");
+            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChild(BitmapRelOp, $"BitmapRelOp:{BitmapRelOp.Data}");
+            AddChild(PropTag, "PropTag");
+            AddChild(Mask, $"Mask:{Mask.Data}");
         }
     }
 
     /// <summary>
     /// 2.12.8 Size Restriction Structures
     /// </summary>
-    public class SizeRestriction : BaseStructure
+    public class SizeRestriction : Block
     {
         /// <summary>
         /// An unsigned integer. This value indicates the type of restriction (2) and MUST be set to 0x07.
         /// </summary>
-        public RestrictTypeEnum RestrictType;
+        public BlockT<RestrictTypeEnum> RestrictType;
 
         /// <summary>
         ///  An unsigned integer. This value indicates the relational operator used in the size comparison.
         /// </summary>
-        public RelOpType RelOp;
+        public BlockT<RelOpType> RelOp;
 
         /// <summary>
         /// An unsigned integer. This value indicates the property tag of the property whose value size is being tested.
         /// </summary>
-        public uint PropTag;
+        public PropertyTag PropTag;
 
         /// <summary>
         /// An unsigned integer. This value indicates the size, in bytes, that is to be used in the comparison.
         /// </summary>
-        public uint Size;
+        public BlockT<uint> _Size;
 
         /// <summary>
         /// Parse the SizeRestriction structure.
         /// </summary>
-        /// <param name="s">A stream containing the SizeRestriction structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.RestrictType = (RestrictTypeEnum)this.ReadByte();
-            this.RelOp = (RelOpType)this.ReadByte();
-            this.PropTag = this.ReadUint();
-            this.Size = this.ReadUint();
+            RestrictType = BlockT<RestrictTypeEnum>.Parse(parser);
+            RelOp = BlockT<RelOpType>.Parse(parser);
+            PropTag = Parse<PropertyTag>(parser);
+            _Size = BlockT<uint>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("SizeRestriction");
+            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChild(RelOp, $"RelOp:{RelOp.Data}");
+            AddChild(PropTag, "PropTag");
+            AddChild(_Size, $"Size:{_Size.Data}");
         }
     }
 
     /// <summary>
     /// 2.12.9 Exist Restriction Structures
     /// </summary>
-    public class ExistRestriction : BaseStructure
+    public class ExistRestriction : Block
     {
         /// <summary>
         /// An unsigned integer. This value indicates the type of restriction (2) and MUST be set to 0x08.
         /// </summary>
-        public RestrictTypeEnum RestrictType;
+        public BlockT<RestrictTypeEnum> RestrictType;
 
         /// <summary>
-        /// This value encodes the PropTag field of the SizeRestriction structure. 
+        /// This value encodes the PropTag field of the SizeRestriction structure.
         /// </summary>
-        public uint PropTag;
+        public PropertyTag PropTag;
 
         /// <summary>
         /// Parse the ExistRestriction structure.
         /// </summary>
-        /// <param name="s">A stream containing the ExistRestriction structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.RestrictType = (RestrictTypeEnum)ReadByte();
-            this.PropTag = this.ReadUint();
+            RestrictType = BlockT<RestrictTypeEnum>.Parse(parser);
+            PropTag = Parse<PropertyTag>(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ExistRestriction");
+            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChild(PropTag, "PropTag");
         }
     }
 
     /// <summary>
     /// 2.12.10 subObject Restriction Structures
     /// </summary>
-    public class SubObjectRestriction : BaseStructure
+    public class SubObjectRestriction : Block
     {
         /// <summary>
         /// An unsigned integer. This value indicates the type of restriction (2) and MUST be set to 0x09.
         /// </summary>
-        public RestrictTypeEnum RestrictType;
+        public BlockT<RestrictTypeEnum> RestrictType;
 
         /// <summary>
-        /// An unsigned integer. This value is a property tag that designates the target of the subrestriction. 
+        /// An unsigned integer. This value is a property tag that designates the target of the subrestriction.
         /// </summary>
-        public uint Subobject;
+        public PropertyTag Subobject;
 
         /// <summary>
-        /// A Restriction structure. 
+        /// A Restriction structure.
         /// </summary>
         public RestrictionType Restriction;
 
@@ -7700,47 +7619,53 @@
         /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
         public SubObjectRestriction(CountWideEnum ptypMultiCountSize)
         {
-            this.countWide = ptypMultiCountSize;
+            countWide = ptypMultiCountSize;
         }
 
         /// <summary>
         /// Parse the SubObjectRestriction structure.
         /// </summary>
-        /// <param name="s">A stream containing the SubObjectRestriction structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.RestrictType = (RestrictTypeEnum)this.ReadByte();
-            this.Subobject = this.ReadUint();
-            this.Restriction = new RestrictionType(this.countWide);
-            this.Restriction.Parse(s);
+            RestrictType = BlockT<RestrictTypeEnum>.Parse(parser);
+            Subobject = Parse<PropertyTag>(parser);
+            Restriction = new RestrictionType(countWide);
+            Restriction.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("SubObjectRestriction");
+            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChild(Subobject, "Subobject");
+            AddLabeledChild($"Restriction", Restriction);
         }
     }
 
     /// <summary>
     /// 2.12.11 CommentRestriction Structure
     /// </summary>
-    public class CommentRestriction : BaseStructure
+    public class CommentRestriction : Block
     {
         /// <summary>
         /// An unsigned integer. This value indicates the type of restriction (2) and MUST be set to 0x0A.
         /// </summary>
-        public RestrictTypeEnum RestrictType;
+        public BlockT<RestrictTypeEnum> RestrictType;
 
         /// <summary>
         /// An unsigned integer. This value specifies how many TaggedValue structures are present in the TaggedValues field.
         /// </summary>
-        public byte TaggedValuesCount;
+        public BlockT<byte> TaggedValuesCount;
 
         /// <summary>
-        /// An array of TaggedPropertyValue structures, as specified in section 2.11.4. 
+        /// An array of TaggedPropertyValue structures, as specified in section 2.11.4.
         /// </summary>
         public TaggedPropertyValue[] TaggedValues;
 
         /// <summary>
-        /// An unsigned integer. This field MUST contain either TRUE (0x01) or FALSE (0x00). 
+        /// An unsigned integer. This field MUST contain either TRUE (0x01) or FALSE (0x00).
         /// </summary>
-        public bool RestrictionPresent;
+        public BlockT<bool> RestrictionPresent;
 
         /// <summary>
         /// A Restriction structure. This field is present only if RestrictionPresent is TRUE.
@@ -7758,32 +7683,43 @@
         /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
         public CommentRestriction(CountWideEnum ptypMultiCountSize)
         {
-            this.countWide = ptypMultiCountSize;
+            countWide = ptypMultiCountSize;
         }
 
         /// <summary>
         /// Parse the CommentRestriction structure.
         /// </summary>
-        /// <param name="s">A stream containing the CommentRestriction structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.RestrictType = (RestrictTypeEnum)ReadByte();
-            this.TaggedValuesCount = this.ReadByte();
-            List<TaggedPropertyValue> tempTaggedValue = new List<TaggedPropertyValue>();
-            for (int i = 0; i < this.TaggedValuesCount; i++)
+            RestrictType = BlockT<RestrictTypeEnum>.Parse(parser);
+            TaggedValuesCount = BlockT<byte>.Parse(parser);
+            var tempTaggedValue = new List<TaggedPropertyValue>();
+            for (int i = 0; i < TaggedValuesCount.Data; i++)
             {
-                TaggedPropertyValue tempproperty = new TaggedPropertyValue(this.countWide);
-                tempproperty.Parse(s);
+                var tempproperty = new TaggedPropertyValue(countWide);
+                tempproperty.Parse(parser);
                 tempTaggedValue.Add(tempproperty);
             }
 
-            this.TaggedValues = tempTaggedValue.ToArray();
-            this.RestrictionPresent = this.ReadBoolean();
-            if (this.RestrictionPresent == true)
+            TaggedValues = tempTaggedValue.ToArray();
+            RestrictionPresent = BlockT<bool>.Parse<byte>(parser);
+            if (RestrictionPresent.Data == true)
             {
-                this.Restriction = new RestrictionType(this.countWide);
-                this.Restriction.Parse(s);
+                Restriction = new RestrictionType(countWide);
+                Restriction.Parse(parser);
+            }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("CommentRestriction");
+            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChild(TaggedValuesCount, $"TaggedValuesCount:{TaggedValuesCount.Data}");
+            AddLabeledChildren("TaggedValues", TaggedValues);
+            AddChild(RestrictionPresent, $"RestrictionPresent:{RestrictionPresent.Data}");
+            if (Restriction != null)
+            {
+                AddChild(Restriction);
             }
         }
     }
@@ -7791,17 +7727,17 @@
     /// <summary>
     /// 2.12.12 CountRestriction Structure
     /// </summary>
-    public class CountRestriction : BaseStructure
+    public class CountRestriction : Block
     {
         /// <summary>
         /// An unsigned integer. This value indicates the type of restriction (2) and MUST be set to 0x0B.
         /// </summary>
-        public RestrictTypeEnum RestrictType;
+        public BlockT<RestrictTypeEnum> RestrictType;
 
         /// <summary>
         /// An unsigned integer. This value specifies the limit on the number of matches to be returned when the value of the SubRestriction field is evaluated.
         /// </summary>
-        public uint Count;
+        public BlockT<uint> Count;
 
         /// <summary>
         /// A restriction structure. This field specifies the restriction (2) to be limited.
@@ -7819,20 +7755,26 @@
         /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
         public CountRestriction(CountWideEnum ptypMultiCountSize)
         {
-            this.countWide = ptypMultiCountSize;
+            countWide = ptypMultiCountSize;
         }
 
         /// <summary>
         /// Parse the CountRestriction structure.
         /// </summary>
-        /// <param name="s">A stream containing the CountRestriction structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.RestrictType = (RestrictTypeEnum)this.ReadByte();
-            this.Count = this.ReadUint();
-            this.SubRestriction = new RestrictionType(this.countWide);
-            this.SubRestriction.Parse(s);
+            RestrictType = BlockT<RestrictTypeEnum>.Parse(parser);
+            Count = BlockT<uint>.Parse(parser);
+            SubRestriction = new RestrictionType(countWide);
+            SubRestriction.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("CountRestriction");
+            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChild(Count, $"Count:{Count.Data}");
+            AddLabeledChild("SubRestriction", SubRestriction);
         }
     }
     #endregion
@@ -7889,17 +7831,17 @@
         public BlockT<ushort> SortOrderCount;
 
         /// <summary>
-        /// An unsigned integer. This value specifies that the first CategorizedCount columns are categorized. 
+        /// An unsigned integer. This value specifies that the first CategorizedCount columns are categorized.
         /// </summary>
         public BlockT<ushort> CategorizedCount;
 
         /// <summary>
-        /// An unsigned integer. This value specifies that the first ExpandedCount field in the categorized columns starts in an expanded state in which all of the rows that apply to the category are visible in the table view. 
+        /// An unsigned integer. This value specifies that the first ExpandedCount field in the categorized columns starts in an expanded state in which all of the rows that apply to the category are visible in the table view.
         /// </summary>
         public BlockT<ushort> ExpandedCount;
 
         /// <summary>
-        /// An array of sortOrder structures. This field MUST contain the number of structures indicated by the value of the SortOrderCount field. 
+        /// An array of sortOrder structures. This field MUST contain the number of structures indicated by the value of the SortOrderCount field.
         /// </summary>
         public SortOrder[] SortOrders;
 

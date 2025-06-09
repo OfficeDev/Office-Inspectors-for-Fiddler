@@ -4286,17 +4286,17 @@
     /// <summary>
     ///  A class indicates the AddressBookPropertyValue structure.
     /// </summary>
-    public class AddressBookPropertyValue : BaseStructure
+    public class AddressBookPropertyValue : Block
     {
         /// <summary>
         /// An unsigned integer when the PropertyType is known to be either PtypString, PtypString8, PtypBinary or PtypMultiple ([MS-OXCDATA] section 2.11.1). 
         /// </summary>
-        public bool? HasValue;
+        public BlockT<bool> HasValue;
 
         /// <summary>
         /// A PropertyValue structure, unless HasValue is present with a value of FALSE (0x00).
         /// </summary>
-        public object PropertyValue;
+        public Block _PropertyValue;
 
         /// <summary>
         /// A propertyDataType is used to initialized the AddressBookPropertyValue structure
@@ -4318,41 +4318,50 @@
         /// </summary>
         /// <param name="propertyDataType">The PropertyDataType for this structure</param>
         /// <param name="ptypMultiCountSize">The CountWideEnum for this structure</param>
-        public AddressBookPropertyValue(PropertyDataType propertyDataType, CountWideEnum ptypMultiCountSize = CountWideEnum.fourBytes)
+        public AddressBookPropertyValue(PropertyDataType _propertyDataType, CountWideEnum ptypMultiCountSize = CountWideEnum.fourBytes)
         {
-            this.propertyDataType = propertyDataType;
-            this.countWide = ptypMultiCountSize;
+            propertyDataType = _propertyDataType;
+            countWide = ptypMultiCountSize;
         }
 
         /// <summary>
         /// Parse the AddressBookPropertyValue structure.
         /// </summary>
-        /// <param name="s">A stream containing AddressBookPropertyValue structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            bool hasValue = (this.propertyDataType == PropertyDataType.PtypString) || (this.propertyDataType == PropertyDataType.PtypString8) ||
-                            (this.propertyDataType == PropertyDataType.PtypBinary) || (this.propertyDataType == PropertyDataType.PtypMultipleInteger16) ||
-                            (this.propertyDataType == PropertyDataType.PtypMultipleInteger32) || (this.propertyDataType == PropertyDataType.PtypMultipleFloating32) ||
-                            (this.propertyDataType == PropertyDataType.PtypMultipleFloating64) || (this.propertyDataType == PropertyDataType.PtypMultipleCurrency) ||
-                            (this.propertyDataType == PropertyDataType.PtypMultipleFloatingTime) || (this.propertyDataType == PropertyDataType.PtypMultipleInteger64) ||
-                            (this.propertyDataType == PropertyDataType.PtypMultipleString) || (this.propertyDataType == PropertyDataType.PtypMultipleString8) ||
-                            (this.propertyDataType == PropertyDataType.PtypMultipleTime) || (this.propertyDataType == PropertyDataType.PtypMultipleGuid) ||
-                            (this.propertyDataType == PropertyDataType.PtypMultipleBinary);
+            bool hasValue = (propertyDataType == PropertyDataType.PtypString) || (propertyDataType == PropertyDataType.PtypString8) ||
+                            (propertyDataType == PropertyDataType.PtypBinary) || (propertyDataType == PropertyDataType.PtypMultipleInteger16) ||
+                            (propertyDataType == PropertyDataType.PtypMultipleInteger32) || (propertyDataType == PropertyDataType.PtypMultipleFloating32) ||
+                            (propertyDataType == PropertyDataType.PtypMultipleFloating64) || (propertyDataType == PropertyDataType.PtypMultipleCurrency) ||
+                            (propertyDataType == PropertyDataType.PtypMultipleFloatingTime) || (propertyDataType == PropertyDataType.PtypMultipleInteger64) ||
+                            (propertyDataType == PropertyDataType.PtypMultipleString) || (propertyDataType == PropertyDataType.PtypMultipleString8) ||
+                            (propertyDataType == PropertyDataType.PtypMultipleTime) || (propertyDataType == PropertyDataType.PtypMultipleGuid) ||
+                            (propertyDataType == PropertyDataType.PtypMultipleBinary);
 
             if (hasValue)
             {
-                this.HasValue = this.ReadBoolean();
+                HasValue = BlockT<bool>.Parse<byte>(parser);
             }
-            else
+ 
+            if (HasValue == null || HasValue.Data)
             {
-                this.HasValue = null;
+                _PropertyValue = PropertyValue.ReadPropertyValue(propertyDataType, parser, countWide);
             }
+        }
 
-            if ((this.HasValue == null) || ((this.HasValue != null) && (this.HasValue == true)))
+        protected override void ParseBlocks()
+        {
+            if (HasValue != null && HasValue.Data)
             {
-                PropertyValue propertyValue = new PropertyValue(true);
-                this.PropertyValue = propertyValue.ReadPropertyValue(this.propertyDataType, s, this.countWide);
+                AddChild(HasValue, $"HasValue:{HasValue.Data}");
+                if (_PropertyValue != null)
+                {
+                    AddChild(_PropertyValue, $"PropertyValue:{_PropertyValue.Text}");
+                }
+                else
+                {
+                    SetText("PropertyValue is null");
+                }
             }
         }
     }

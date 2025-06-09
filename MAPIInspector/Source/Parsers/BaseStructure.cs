@@ -640,7 +640,7 @@
         /// <param name="index">The bit index to read</param>
         /// <param name="length">The bit length to read</param>
         /// <returns>bits value</returns>
-        public byte GetBits(byte b, int index, int length)
+        static public byte GetBits(byte b, int index, int length)
         {
             int bit = 0;
             int tempBit = 0;
