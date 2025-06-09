@@ -65,6 +65,12 @@ namespace BlockParser
             Parsed = true;
         }
 
+        protected override void ParseBlocks()
+        {
+            // No blocks to parse in BlockT
+            // TODO: Consider if a default implementation should be provided
+        }
+
         private static U ReadStruct<U>(BinaryParser parser) where U : struct
         {
             Type type = typeof(U);

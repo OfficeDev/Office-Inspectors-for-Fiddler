@@ -49,5 +49,11 @@ namespace BlockParser
                 Parsed = true;
             }
         }
+
+        protected override void ParseBlocks()
+        {
+            // No blocks to parse in BlockBytes
+            // TODO: Consider if a default implementation should be provided
+        }
     }
 }

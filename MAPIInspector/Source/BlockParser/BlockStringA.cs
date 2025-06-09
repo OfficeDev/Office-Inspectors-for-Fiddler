@@ -57,6 +57,12 @@ namespace BlockParser
             }
         }
 
+        protected override void ParseBlocks()
+        {
+            // No blocks to parse in BlockStringA
+            // TODO: Consider if a default implementation should be provided
+        }
+
         public static BlockStringA EmptySA() => new BlockStringA();
     }
 }

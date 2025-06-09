@@ -41,9 +41,9 @@ namespace BlockParser
         protected abstract void Parse();
         /// <summary>
         /// When overridden in a derived class, parses and adds any child blocks to this block.
-        /// The default implementation does nothing. Override to add custom child block parsing logic.
+        /// No default implementation is provided, as this method is expected to be specific to the derived class's structure.
         /// </summary>
-        protected virtual void ParseBlocks() { }
+        protected abstract void ParseBlocks();
 
         public void SetText(string format, params object[] args)
         {
