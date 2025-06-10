@@ -4251,7 +4251,6 @@
         {
             AddChild(ReplicaId, $"ReplicaId:{ReplicaId.Data}");
             AddChild(GlobalCounter, $"GlobalCounter:{GlobalCounter.ToHexString(false)}");
-            GlobalCounter.AddHeader($"cb:{GlobalCounter.Count}");
         }
     }
 

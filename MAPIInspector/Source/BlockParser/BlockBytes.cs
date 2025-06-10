@@ -45,15 +45,14 @@ namespace BlockParser
                 (cbMaxBytes == -1 || cbBytes <= cbMaxBytes))
             {
                 _data = new List<byte>(parser.ReadBytes(cbBytes));
-                SetText(ToHexString(true));
                 Parsed = true;
             }
         }
 
         protected override void ParseBlocks()
         {
-            // No blocks to parse in BlockBytes
-            // TODO: Consider if a default implementation should be provided
+            SetText(ToHexString(false));
+            AddHeader($"cb: {_data.Count}");
         }
     }
 }

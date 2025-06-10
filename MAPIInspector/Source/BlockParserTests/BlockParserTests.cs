@@ -64,14 +64,16 @@ namespace BlockParserTests
             Assert.AreEqual(3, block.Children.Count);
             Assert.AreEqual("f1 = 0x12345678", block.Children[0].Text);
             Assert.AreEqual("f2 = 0xABCD", block.Children[1].Text);
-            Assert.AreEqual("Unparsed data size = 0x00000002", block.Children[2].Text);
-            Assert.AreEqual("cb: 2 lpb: 0000", block.Children[2].Children[0].Text);
+            Assert.AreEqual("Unparsed data", block.Children[2].Text);
+            Assert.AreEqual("0000", block.Children[2].Children[0].Text);
+            Assert.AreEqual("cb: 2", block.Children[2].Children[0].Children[0].Text);
             Assert.AreEqual(
                 "TestBlock\r\n" +
                 "\tf1 = 0x12345678\r\n" +
                 "\tf2 = 0xABCD\r\n" +
-                "\tUnparsed data size = 0x00000002\r\n" +
-                "\t\tcb: 2 lpb: 0000",
+                "\tUnparsed data\r\n" +
+                "\t\t0000\r\n" +
+                "\t\t\tcb: 2",
                 block.FullString);
         }
 
@@ -97,8 +99,9 @@ namespace BlockParserTests
                 "\tf1 = 0x12345678\r\n" +
                 "\tf2 = 0xABCD",
                 block.Children[2].FullString);
-            Assert.AreEqual("Unparsed data size = 0x00000002", block.Children[3].Text);
-            Assert.AreEqual("cb: 2 lpb: BEEF", block.Children[3].Children[0].Text);
+            Assert.AreEqual("Unparsed data", block.Children[3].Text);
+            Assert.AreEqual("BEEF", block.Children[3].Children[0].Text);
+            Assert.AreEqual("cb: 2", block.Children[3].Children[0].Children[0].Text);
             Assert.AreEqual(
                 "TestBlock2\r\n" +
                 "\tf1 = 0x08675309\r\n" +
@@ -106,8 +109,9 @@ namespace BlockParserTests
                 "\tTestBlock\r\n" +
                 "\t\tf1 = 0x12345678\r\n" +
                 "\t\tf2 = 0xABCD\r\n" +
-                "\tUnparsed data size = 0x00000002\r\n" +
-                "\t\tcb: 2 lpb: BEEF",
+                "\tUnparsed data\r\n" +
+                "\t\tBEEF\r\n" +
+                "\t\t\tcb: 2",
                 block.FullString);
         }
 
@@ -126,14 +130,16 @@ namespace BlockParserTests
             Assert.AreEqual("f1 = 0x08675309", block.Children[0].Text);
             Assert.AreEqual("TestBlock", block.Children[1].Text);
             Assert.AreEqual("TestBlock", block.Children[1].ToString());
-            Assert.AreEqual("Unparsed data size = 0x00000001", block.Children[2].Text);
-            Assert.AreEqual("cb: 1 lpb: 68", block.Children[2].Children[0].Text);
+            Assert.AreEqual("Unparsed data", block.Children[2].Text);
+            Assert.AreEqual("68", block.Children[2].Children[0].Text);
+            Assert.AreEqual("cb: 1", block.Children[2].Children[0].Children[0].Text);
             Assert.AreEqual(
                 "TestBlock2\r\n" +
                 "\tf1 = 0x08675309\r\n" +
                 "\tTestBlock\r\n" +
-                "\tUnparsed data size = 0x00000001\r\n" +
-                "\t\tcb: 1 lpb: 68",
+                "\tUnparsed data\r\n" +
+                "\t\t68\r\n" +
+                "\t\t\tcb: 1",
                 block.FullString);
         }
 

@@ -762,7 +762,6 @@
             AddChild(NC, $"NC:{NC.Data}");
             AddChild(PR, $"PR:{PR.Data}");
             AddChild(Reservedbits1,$"Reservedbits1:{Reservedbits1.ToHexString(false)}");
-            Reservedbits1.AddHeader($"cb:{Reservedbits1.Count}");
         }
 
     }
@@ -815,7 +814,6 @@
             AddChild(ST, $"ST:{ST.Data}");
             AddChild(NS, $"NS:{NS.Data}");
             AddChild(Reservedbits1, $"Reservedbits1:{Reservedbits1.ToHexString(false)}");
-            Reservedbits1.AddHeader($"cb:{Reservedbits1.Count}");
         }
     }
 
@@ -905,7 +903,6 @@
             AddChild(FolderInThisStore, $"FolderInThisStore:{FolderInThisStore.Data}");
             AddChild(StoreEIDSize, $"StoreEIDSize:{StoreEIDSize.Data}");
             AddChild(StoreEID, $"StoreEID:{StoreEID.ToHexString(false)}");
-            StoreEID.AddHeader($"cb:{StoreEID.Count}");
             AddChild(FolderEIDSize, $"FolderEIDSize:{FolderEIDSize.Data}");
             AddChild(FolderEID, "FolderEID");
         }
@@ -951,7 +948,6 @@
         {
             AddChild(StoreEIDSize, $"StoreEIDSize:{StoreEIDSize.Data}");
             AddChild(StoreEID, $"StoreEID:{StoreEID.ToHexString(false)}");
-            StoreEID.AddHeader($"cb:{StoreEID.Count}");
             AddChild(FolderEIDSize, $"FolderEIDSize:{FolderEIDSize.Data}");
             AddChild(FolderEID, "FolderEID");
         }
@@ -1223,7 +1219,6 @@
         protected override void ParseBlocks()
         {
             AddChild(DeferActionData, $"DeferActionData:{DeferActionData.ToHexString(false)}");
-            DeferActionData.AddHeader($"cb:{DeferActionData.Count}");
         }
     }
 

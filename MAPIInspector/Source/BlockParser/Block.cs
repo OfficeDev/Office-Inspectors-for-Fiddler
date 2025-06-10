@@ -232,7 +232,7 @@ namespace BlockParser
                 if (HasData && EnableJunk && parser.RemainingBytes > 0)
                 {
                     var junkData = BlockBytes.Parse(parser, parser.RemainingBytes);
-                    AddLabeledChild(string.Format("Unparsed data size = 0x{0:X8}", junkData.Size), junkData);
+                    AddLabeledChild(string.Format("Unparsed data"), junkData);
                 }
 
                 Size = parser.Offset - Offset;

@@ -75,8 +75,9 @@ namespace BlockParserTests
             // Check for junk node
             Assert.IsTrue(block.Children.Count > 1);
             var junkNode = block.Children[block.Children.Count - 1];
-            Assert.IsTrue(junkNode.Text.Contains("Unparsed data size"));
-            Assert.IsTrue(junkNode.Children[0].Text.Contains("cb: 3"));
+            Assert.AreEqual("Unparsed data", junkNode.Text);
+            Assert.AreEqual("AABBCC", junkNode.Children[0].Text);
+            Assert.AreEqual("cb: 3", junkNode.Children[0].Children[0].Text);
             // Verify each block has the correct size and offset relative to the original array of data
             Assert.AreEqual(13, block.Size);
             Assert.AreEqual(0, block.Offset);
@@ -97,7 +98,9 @@ namespace BlockParserTests
             Assert.AreEqual(sizeof(short) * 3, block.Children[1].Size, "Kids size");
 
             // Junk Data
-            Assert.AreEqual("Unparsed data size = 0x00000003", block.Children[2].Text, "JunkData text");
+            Assert.AreEqual("Unparsed data", block.Children[2].Text, "JunkData header");
+            Assert.AreEqual("AABBCC", block.Children[2].Children[0].Text, "JunkData lpb");
+            Assert.AreEqual("cb: 3", block.Children[2].Children[0].Children[0].Text, "JunkData cb");
             Assert.AreEqual(sizeof(int) + sizeof(short) * 3, block.Children[2].Offset, "JunkData offset");
             Assert.AreEqual(sizeof(byte) * 3, block.Children[2].Size, "JunkData size");
         }
