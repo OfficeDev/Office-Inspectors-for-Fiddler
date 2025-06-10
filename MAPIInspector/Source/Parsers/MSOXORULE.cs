@@ -536,7 +536,7 @@
         protected override void ParseBlocks()
         {
             SetText("RuleAction");
-            AddChild(_noOfActions, $"NoOfActions{NoOfActions}");
+            AddChild(_noOfActions, $"NoOfActions:{NoOfActions}");
             AddLabeledChildren("ActionBlocks", ActionBlocks);
         }
     }
