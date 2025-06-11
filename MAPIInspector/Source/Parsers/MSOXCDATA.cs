@@ -4754,22 +4754,22 @@
     /// <summary>
     /// 2.8.1 PropertyRow Structures
     /// </summary>
-    public class PropertyRow : BaseStructure
+    public class PropertyRow : Block
     {
         /// <summary>
         /// An unsigned integer. This value indicate if all property values are present and without error.
         /// </summary>
-        public byte Flag;
+        public BlockT<byte> Flag;
 
         /// <summary>
         /// An array of variable-sized structures.
         /// </summary>
-        public object[] ValueArray;
+        public Block[] ValueArray;
 
         /// <summary>
         /// Bytes as byte array.
         /// </summary>
-        public byte[] bytes;
+        public BlockBytes bytes;
 
         /// <summary>
         /// The array of property tag.
@@ -4804,49 +4804,47 @@
         /// <summary>
         /// Parse the PropertyRow structure.
         /// </summary>
-        /// <param name="s">A stream containing the PropertyRow structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Flag = this.ReadByte();
-            List<object> tempPropArray = new List<object>();
-            if (this.propTags != null)
+            Flag = BlockT<byte>.Parse(parser);
+            var tempPropArray = new List<Block>();
+            if (propTags != null)
             {
-                foreach (PropertyTag tempPropTag in this.propTags)
+                foreach (var tempPropTag in propTags)
                 {
-                    object rowPropValue = null;
-                    tempPropTag.PropertyType.Data = ConvertToPropType((ushort)tempPropTag.PropertyType.Data);
+                    Block rowPropValue = null;
+                    tempPropTag.PropertyType.Data = BaseStructure.ConvertToPropType((ushort)tempPropTag.PropertyType.Data);
 
-                    if (this.Flag == 0x00)
+                    if (Flag.Data == 0x00)
                     {
                         if (tempPropTag.PropertyType.Data != PropertyDataType.PtypUnspecified)
                         {
                             var propValue = new PropertyValue(tempPropTag.PropertyType.Data);
-                            propValue.Parse(s);
+                            propValue.Parse(parser);
                             propValue.AddHeader($"PropertyTag: {tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}");
                             rowPropValue = propValue;
                         }
                         else
                         {
                             var typePropValue = new TypedPropertyValue();
-                            typePropValue.Parse(s);
+                            typePropValue.Parse(parser);
                             typePropValue.AddHeader($"PropertyTag: {tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}");
                             rowPropValue = typePropValue;
                         }
                     }
-                    else if (this.Flag == 0x01)
+                    else if (Flag.Data == 0x01)
                     {
                         if (tempPropTag.PropertyType.Data != PropertyDataType.PtypUnspecified)
                         {
                             var flagPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType.Data);
-                            flagPropValue.Parse(s);
+                            flagPropValue.Parse(parser);
                             flagPropValue.AddHeader($"PropertyTag: {tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}");
                             rowPropValue = flagPropValue;
                         }
                         else
                         {
                             var flagPropValue = new FlaggedPropertyValueWithType();
-                            flagPropValue.Parse(s);
+                            flagPropValue.Parse(parser);
                             flagPropValue.AddHeader($"PropertyTag: {tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}");
                             rowPropValue = flagPropValue;
                         }
@@ -4857,10 +4855,23 @@
             }
             else if (size > 0)
             {
-                this.bytes = this.ReadBytes(this.size - 1);
+                bytes = BlockBytes.Parse(parser, size - 1);
             }
 
             this.ValueArray = tempPropArray.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(Flag, $"Flag:{Flag.Data}");
+            if (bytes != null)
+            {
+                AddChild(bytes, $"Bytes:{bytes.ToHexString(false)}");
+            }
+            foreach (var propValue in ValueArray)
+            {
+                AddChild(propValue, $"{propValue.GetType().Name}");
+            }
         }
     }
 

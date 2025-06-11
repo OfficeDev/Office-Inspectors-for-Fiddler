@@ -682,7 +682,7 @@
         /// </summary>
         /// <param name="typeValue">The type value</param>
         /// <returns>PropertyDataType type</returns>
-        public PropertyDataType ConvertToPropType(ushort typeValue)
+        public static PropertyDataType ConvertToPropType(ushort typeValue)
         {
             return (PropertyDataType)(typeValue & (ushort)~PropertyDataTypeFlag.MultivalueInstance);
         }
