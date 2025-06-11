@@ -4863,6 +4863,7 @@
 
         protected override void ParseBlocks()
         {
+            SetText("PropertyRow");
             AddChild(Flag, $"Flag:{Flag.Data}");
             if (bytes != null)
             {

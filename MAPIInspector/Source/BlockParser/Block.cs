@@ -136,7 +136,8 @@ namespace BlockParser
                     long size = 0;
                     foreach (var block in blocks)
                     {
-                        node.AddChild(block);
+                        var label = string.IsNullOrEmpty(block.Text) ? block.GetType().Name : block.Text;
+                        node.AddChild(block, label);
                         size += block.Size;
                     }
 
