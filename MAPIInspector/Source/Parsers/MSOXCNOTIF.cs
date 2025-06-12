@@ -4,13 +4,13 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Text;
 
     #region The class or enum define related to ROPs.
 
     /// <summary>
     /// The enum value of Notification type.
     /// </summary>
+    [Flags]
     public enum NotificationTypesEnum : ushort
     {
         /// <summary>
@@ -59,18 +59,6 @@
         Extended = 0x0400,
 
         /// <summary>
-        /// Other event
-        /// </summary>
-        NULL = 0x0000
-    }
-
-    /// <summary>
-    /// The enum value of NotificationData Availability.
-    /// </summary>
-    [Flags]
-    public enum NotificationDataAvailabilityEnum : ushort
-    {
-        /// <summary>
         /// The notification contains information about a change in the total number of messages in a folder triggering the event
         /// </summary>
         T = 0x1000,
@@ -89,11 +77,6 @@
         /// The notification is caused by an event on a message
         /// </summary>
         M = 0x8000,
-
-        /// <summary>
-        /// Other value
-        /// </summary>
-        NULL = 0x0000
     }
 
     /// <summary>
@@ -126,63 +109,11 @@
         /// </summary>
         TableRestrictionChanged = 0x0007
     }
-
-    /// <summary>
-    /// A class indicates the NotificationFlagsT.
-    /// </summary>
-    public class NotificationFlagsT : BaseStructure
-    {
-        /// <summary>
-        /// The Notification type.
-        /// </summary>
-        [BitAttribute(12)]
-        public NotificationTypesEnum NotificationType;
-
-        /// <summary>
-        /// The NotificationData Availability.
-        /// </summary>
-        [BitAttribute(4)]
-        public NotificationDataAvailabilityEnum NotificationDataAvailability;
-
-        /// <summary>
-        /// Parse the NotificationFlagsT structure.
-        /// </summary>
-        /// <param name="s">A stream containing NotificationFlagsT structure.</param>
-        public override void Parse(Stream s)
-        {
-            base.Parse(s);
-            ushort flag = this.ReadUshort();
-            this.NotificationDataAvailability = (NotificationDataAvailabilityEnum)(flag & 0xf000);
-            this.NotificationType = (NotificationTypesEnum)(flag & 0x0fff);
-        }
-    }
-
-    /// <summary>
-    /// A class indicates the NotificationFlags.
-    /// </summary>
-    public class NotificationFlags : BaseStructure
-    {
-        /// <summary>
-        /// Notification flag
-        /// </summary>
-        public NotificationFlagsT Value;
-
-        /// <summary>
-        /// Parse the NotificationFlags structure.
-        /// </summary>
-        /// <param name="s">A stream containing NotificationFlags structure.</param>
-        public override void Parse(Stream s)
-        {
-            base.Parse(s);
-            this.Value = new NotificationFlagsT();
-            this.Value.Parse(s);
-        }
-    }
     #endregion
 
     #region 2.2.1.2.1	RopRegisterNotification ROP
     /// <summary>
-    /// The RopRegisterNotification ROP ([MS-OXCROPS] section 2.2.14.1) creates a subscription for specified notifications on the server and returns a handle of the subscription to the client. 
+    /// The RopRegisterNotification ROP ([MS-OXCROPS] section 2.2.14.1) creates a subscription for specified notifications on the server and returns a handle of the subscription to the client.
     /// </summary>
     public class RopRegisterNotificationRequest : BaseStructure
     {
@@ -197,12 +128,12 @@
         public byte LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
         public byte InputHandleIndex;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
         /// </summary>
         public byte OutputHandleIndex;
 
@@ -212,7 +143,7 @@
         public NotificationTypesEnum NotificationTypes;
 
         /// <summary>
-        /// A flags structure. 
+        /// A flags structure.
         /// </summary>
         public byte? Reserved;
 
@@ -370,20 +301,20 @@
     /// <summary>
     /// A class indicates the NotificationData
     /// </summary>
-    public class NotificationData : BaseStructure
+    public class NotificationData : Block
     {
         /// <summary>
         /// A combination of an enumeration and flags that describe the type of the notification and the availability of the notification data fields.
         /// </summary>
-        public NotificationFlags NotificationFlags;
+        public BlockT<NotificationTypesEnum> NotificationFlags;
 
         /// <summary>
         /// A subtype of the notification for a TableModified event.
         /// </summary>
-        public TableEventTypeEnum? TableEventType;
+        public BlockT<TableEventTypeEnum> TableEventType;
 
         /// <summary>
-        /// The value of the Folder ID structure, as specified in [MS-OXCDATA] section 2.2.1.1, of the item triggering the notification. 
+        /// The value of the Folder ID structure, as specified in [MS-OXCDATA] section 2.2.1.1, of the item triggering the notification.
         /// </summary>
         public FolderID TableRowFolderID;
 
@@ -393,29 +324,29 @@
         public MessageID TableRowMessageID;
 
         /// <summary>
-        /// An identifier of the instance of the previous row in the table. 
+        /// An identifier of the instance of the previous row in the table.
         /// </summary>
-        public uint? TableRowInstance;
+        public BlockT<uint> TableRowInstance;
 
         /// <summary>
-        /// The old value of the Folder ID structure of the item triggering the notification. 
+        /// The old value of the Folder ID structure of the item triggering the notification.
         /// </summary>
         public FolderID InsertAfterTableRowFolderID;
 
         /// <summary>
-        /// The old value of the Message ID structure of the item triggering the notification. 
+        /// The old value of the Message ID structure of the item triggering the notification.
         /// </summary>
         public MessageID InsertAfterTableRowID;
 
         /// <summary>
-        /// An unsigned 32-bit identifier of the instance of the row where the modified row is inserted. 
+        /// An unsigned 32-bit identifier of the instance of the row where the modified row is inserted.
         /// </summary>
-        public uint? InsertAfterTableRowInstance;
+        public BlockT<uint> InsertAfterTableRowInstance;
 
         /// <summary>
-        /// An unsigned 16-bit integer that indicates the length of the table row data. 
+        /// An unsigned 16-bit integer that indicates the length of the table row data.
         /// </summary>
-        public ushort? TableRowDataSize;
+        public BlockT<ushort> TableRowDataSize;
 
         /// <summary>
         /// The table row data, which contains a list of property values
@@ -423,12 +354,12 @@
         public PropertyRow TableRowData;
 
         /// <summary>
-        /// The Folder ID structure of the item triggering the event. 
+        /// The Folder ID structure of the item triggering the event.
         /// </summary>
         public FolderID FolderId;
 
         /// <summary>
-        /// The Message ID structure, as specified in [MS-OXCDATA] section 2.2.1.2, of the item triggering the event. 
+        /// The Message ID structure, as specified in [MS-OXCDATA] section 2.2.1.2, of the item triggering the event.
         /// </summary>
         public MessageID MessageId;
 
@@ -438,54 +369,54 @@
         public FolderID ParentFolderId;
 
         /// <summary>
-        /// The old Folder ID structure of the item triggering the event. 
+        /// The old Folder ID structure of the item triggering the event.
         /// </summary>
         public FolderID OldFolderId;
 
         /// <summary>
-        /// The old Message ID structure of the item triggering the event. 
+        /// The old Message ID structure of the item triggering the event.
         /// </summary>
         public MessageID OldMessageId;
 
         /// <summary>
-        /// The old parent Folder ID structure of the item triggering the event. 
+        /// The old parent Folder ID structure of the item triggering the event.
         /// </summary>
-        public MessageID OldParentFolderId;
+        public FolderID OldParentFolderId;
 
         /// <summary>
-        /// An unsigned 16-bit integer that specifies the number of property tags in the Tags field. 
+        /// An unsigned 16-bit integer that specifies the number of property tags in the Tags field.
         /// </summary>
-        public ushort? TagCount;
+        public BlockT<ushort> TagCount;
 
         /// <summary>
-        /// An array of unsigned 32-bit integers that identifies the IDs of properties that have changed. 
+        /// An array of unsigned 32-bit integers that identifies the IDs of properties that have changed.
         /// </summary>
         public PropertyTag[] Tags;
 
         /// <summary>
         /// An unsigned 32-bit integer that specifies the total number of items in the folder triggering this event.
         /// </summary>
-        public uint? TotalMessageCount;
+        public BlockT<uint> TotalMessageCount;
 
         /// <summary>
-        /// An unsigned 32-bit integer that specifies the number of unread items in a folder triggering this event. 
+        /// An unsigned 32-bit integer that specifies the number of unread items in a folder triggering this event.
         /// </summary>
-        public uint? UnreadMessageCount;
+        public BlockT<uint> UnreadMessageCount;
 
         /// <summary>
         /// An unsigned 32-bit integer that specifies the message flags of new mail that has been received
         /// </summary>
-        public uint? MessageFlags;
+        public BlockT<uint> MessageFlags;
 
         /// <summary>
         /// A value of TRUE (0x01) indicates the value of the MessageClass field is in Unicode
         /// </summary>
-        public byte? UnicodeFlag;
+        public BlockT<byte> UnicodeFlag;
 
         /// <summary>
-        /// A null-terminated string containing the message class of the new mail. 
+        /// A null-terminated string containing the message class of the new mail.
         /// </summary>
-        public MAPIString MessageClass;
+        public Block MessageClass;
 
         /// <summary>
         /// A Server object handle that specifies the notification Server object associated with this notification event.
@@ -493,7 +424,7 @@
         private uint notificationHandle;
 
         /// <summary>
-        /// Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1). 
+        /// Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1).
         /// </summary>
         private PropertyTag[] propertiesBySetColum;
 
@@ -507,169 +438,202 @@
         }
 
         /// <summary>
-        /// Get whether the messageID is empty 
-        /// </summary>
-        /// <param name="messageId">Message ID</param>
-        /// <returns>Indicates if messageID is empty</returns>
-        public bool IsEmptyMessageID(MessageID messageId)
-        {
-            if (messageId.ReplicaId.Data != 0)
-            {
-                return false;
-            }
-
-            foreach (var item in messageId.GlobalCounter.Data)
-            {
-                if (item != 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// Parse the NotificationData structure.
         /// </summary>
-        /// <param name="s">A stream containing NotificationData structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.NotificationFlags = new NotificationFlags();
-            this.NotificationFlags.Parse(s);
-
-            if (this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.TableModified)
+            NotificationFlags = BlockT<NotificationTypesEnum>.Parse(parser);
+            if (NotificationFlags.Data.HasFlag(NotificationTypesEnum.TableModified))
             {
-                this.TableEventType = (TableEventTypeEnum)this.ReadUshort();
+                TableEventType = BlockT<TableEventTypeEnum>.Parse(parser);
             }
 
-            if (this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.TableModified && (this.TableEventType == TableEventTypeEnum.TableRowAdded || this.TableEventType == TableEventTypeEnum.TableRowDeleted || this.TableEventType == TableEventTypeEnum.TableRowModified))
-            {
-                this.TableRowFolderID = new FolderID();
-                this.TableRowFolderID.Parse(s);
-            }
+            // bit 0x8000 is set in the NotificationFlags field
+            var isMessage = NotificationFlags.Data.HasFlag(NotificationTypesEnum.M);
+            // NotificationType value in the NotificationFlags field is not 0x0100 or 0x0400
+            var notModifiedExtended = !NotificationFlags.Data.HasFlag(NotificationTypesEnum.TableModified) &&
+            !NotificationFlags.Data.HasFlag(NotificationTypesEnum.Extended);
+            // NotificationType in the NotificationFlags field is 0x0004, 0x0008, 0x0020, or 0x0040,
+            var isCreateDeleteMovedCopied = NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectCreated) ||
+                NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectDeleted) ||
+                NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectMoved) ||
+                NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectCopied);
+            // a message in a search folder(both bit 0x4000 and bit 0x8000 are set in the NotificationFlags field)
+            var isSearchFolderMessage = NotificationFlags.Data.HasFlag(NotificationTypesEnum.S) &&
+                NotificationFlags.Data.HasFlag(NotificationTypesEnum.M);
+            // a folder (both bit 0x4000 and bit 0x8000 are not set in the NotificationFlags field).
+            var isFolder = !NotificationFlags.Data.HasFlag(NotificationTypesEnum.S) &&
+                !NotificationFlags.Data.HasFlag(NotificationTypesEnum.M);
+            // NotificationType value in the NotificationFlags field is 0x0020 or 0x0040
+            var isMovedCopied = NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectMoved) ||
+                NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectCopied);
+            // NotificationType in the NotificationFlags field is 0x0004 or 0x0010
+            var isCreateDelete = NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectCreated) ||
+                NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectDeleted);
+            // bit 0x1000 is set in the NotificationFlags field
+            var isTotalMessageCount = NotificationFlags.Data.HasFlag(NotificationTypesEnum.T);
+            // bit 0x2000 is set in the NotificationFlags field
+            var isUnreadMessageCount = NotificationFlags.Data.HasFlag(NotificationTypesEnum.U);
+            // NotificationType in the NotificationFlags field is 0x0002
+            var isNewMail = NotificationFlags.Data.HasFlag(NotificationTypesEnum.NewMail);
 
-            if ((((int)this.NotificationFlags.Value.NotificationDataAvailability & 0x8000) != 0) && (this.TableEventType == TableEventTypeEnum.TableRowAdded || this.TableEventType == TableEventTypeEnum.TableRowDeleted || this.TableEventType == TableEventTypeEnum.TableRowModified))
+            if (TableEventType != null)
             {
-                this.TableRowMessageID = new MessageID();
-                this.TableRowMessageID.Parse(s);
-            }
+                // TableEventType field is available and is 0x0003, 0x0004, or 0x0005
+                var isADM = TableEventType.Data == TableEventTypeEnum.TableRowAdded ||
+                    TableEventType.Data == TableEventTypeEnum.TableRowDeleted ||
+                    TableEventType.Data == TableEventTypeEnum.TableRowModified;
+                // TableEventType field is available and is 0x0003 or 0x0005
+                var isAM = TableEventType.Data == TableEventTypeEnum.TableRowAdded ||
+                    TableEventType.Data == TableEventTypeEnum.TableRowModified;
 
-            if ((((int)this.NotificationFlags.Value.NotificationDataAvailability & 0x8000) != 0) && (this.TableEventType == TableEventTypeEnum.TableRowAdded || this.TableEventType == TableEventTypeEnum.TableRowDeleted || this.TableEventType == TableEventTypeEnum.TableRowModified))
-            {
-                this.TableRowInstance = this.ReadUint();
-            }
+                if (isADM) TableRowFolderID = Parse<FolderID>(parser);
+                if (isMessage && isADM) TableRowMessageID = Parse<MessageID>(parser);
+                if (isMessage && isADM) TableRowInstance = BlockT<uint>.Parse(parser);
 
-            if (this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.TableModified && (this.TableEventType == TableEventTypeEnum.TableRowAdded || this.TableEventType == TableEventTypeEnum.TableRowModified))
-            {
-                this.InsertAfterTableRowFolderID = new FolderID();
-                this.InsertAfterTableRowFolderID.Parse(s);
-            }
+                if (isMessage && isAM) InsertAfterTableRowFolderID = Parse<FolderID>(parser);
+                if (isMessage && isAM) InsertAfterTableRowID = Parse<MessageID>(parser);
+                if (isMessage && isAM) InsertAfterTableRowInstance = BlockT<uint>.Parse(parser);
 
-            if (this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.TableModified && (((int)this.NotificationFlags.Value.NotificationDataAvailability & 0x8000) != 0) && (this.TableEventType == TableEventTypeEnum.TableRowAdded || this.TableEventType == TableEventTypeEnum.TableRowModified))
-            {
-                this.InsertAfterTableRowID = new MessageID();
-                this.InsertAfterTableRowID.Parse(s);
-            }
-
-            if (this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.TableModified && (((int)this.NotificationFlags.Value.NotificationDataAvailability & 0x8000) != 0) && (this.TableEventType == TableEventTypeEnum.TableRowAdded || this.TableEventType == TableEventTypeEnum.TableRowModified))
-            {
-                this.InsertAfterTableRowInstance = this.ReadUint();
-            }
-
-            if (this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.TableModified && (this.TableEventType == TableEventTypeEnum.TableRowAdded || this.TableEventType == TableEventTypeEnum.TableRowModified))
-            {
-                this.TableRowDataSize = this.ReadUshort();
-
-                int parsingSessionID = MapiInspector.MAPIParser.ParsingSession.id;
-                if (MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
+                if (isAM)
                 {
-                    parsingSessionID = int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"]);
-                }
-                if (DecodingContext.Notify_handlePropertyTags.Count > 0 && DecodingContext.Notify_handlePropertyTags.ContainsKey(this.notificationHandle) && DecodingContext.Notify_handlePropertyTags[this.notificationHandle].ContainsKey(parsingSessionID)
-                    && DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item1 == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath
-                    && DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item2 == MapiInspector.MAPIParser.ParsingSession.LocalProcess
-                    && DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item3 == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
-                {
-                    this.propertiesBySetColum = DecodingContext.Notify_handlePropertyTags[this.notificationHandle][parsingSessionID].Item4;
-                }
+                    TableRowDataSize = BlockT<ushort>.Parse(parser);
 
-                this.TableRowData = new PropertyRow(this.TableRowDataSize.Value, this.propertiesBySetColum);
-                this.TableRowData.Parse(s);
-            }
-
-            if (this.NotificationFlags.Value.NotificationType != NotificationTypesEnum.TableModified && this.NotificationFlags.Value.NotificationType != NotificationTypesEnum.Extended)
-            {
-                this.FolderId = new FolderID();
-                this.FolderId.Parse(s);
-            }
-
-            if (this.NotificationFlags.Value.NotificationType != NotificationTypesEnum.TableModified && this.NotificationFlags.Value.NotificationType != NotificationTypesEnum.Extended && (((int)this.NotificationFlags.Value.NotificationDataAvailability & 0x8000) != 0))
-            {
-                this.MessageId = new MessageID();
-                this.MessageId.Parse(s);
-            }
-
-            if ((this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectCreated || this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectDeleted || this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectMoved || this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectCopied) && ((((int)this.NotificationFlags.Value.NotificationDataAvailability) & 0xC000) == 0xC000 || (((int)this.NotificationFlags.Value.NotificationDataAvailability) & 0xC000) == 0))
-            {
-                this.ParentFolderId = new FolderID();
-                this.ParentFolderId.Parse(s);
-            }
-
-            if (this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectMoved || this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectCopied)
-            {
-                this.OldFolderId = new FolderID();
-                this.OldFolderId.Parse(s);
-            }
-
-            if ((this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectMoved || this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectCopied) && (((int)this.NotificationFlags.Value.NotificationDataAvailability & 0x8000) != 0))
-            {
-                this.OldMessageId = new MessageID();
-                this.OldMessageId.Parse(s);
-            }
-
-            if ((this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectMoved || this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectCopied) && (((int)this.NotificationFlags.Value.NotificationDataAvailability & 0x8000) == 0))
-            {
-                this.OldParentFolderId = new MessageID();
-                this.OldParentFolderId.Parse(s);
-            }
-
-            if (this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectCreated || this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.ObjectModified)
-            {
-                this.TagCount = this.ReadUshort();
-
-                if (this.TagCount != 0x0000 && this.TagCount != 0xFFFF)
-                {
-                    List<PropertyTag> listTags = new List<PropertyTag>();
-
-                    for (int i = 0; i < this.TagCount; i++)
+                    int parsingSessionID = MapiInspector.MAPIParser.ParsingSession.id;
+                    if (MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
                     {
-                        PropertyTag tempTag = Block.Parse<PropertyTag>(s);
-                        listTags.Add(tempTag);
+                        parsingSessionID = int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"]);
+                    }
+                    if (DecodingContext.Notify_handlePropertyTags.Count > 0 && DecodingContext.Notify_handlePropertyTags.ContainsKey(notificationHandle) && DecodingContext.Notify_handlePropertyTags[notificationHandle].ContainsKey(parsingSessionID)
+                        && DecodingContext.Notify_handlePropertyTags[notificationHandle][parsingSessionID].Item1 == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath
+                        && DecodingContext.Notify_handlePropertyTags[notificationHandle][parsingSessionID].Item2 == MapiInspector.MAPIParser.ParsingSession.LocalProcess
+                        && DecodingContext.Notify_handlePropertyTags[notificationHandle][parsingSessionID].Item3 == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
+                    {
+                        propertiesBySetColum = DecodingContext.Notify_handlePropertyTags[notificationHandle][parsingSessionID].Item4;
                     }
 
-                    this.Tags = listTags.ToArray();
+                    TableRowData = new PropertyRow(TableRowDataSize.Data, propertiesBySetColum);
+                    TableRowData.Parse(parser);
+                }
+
+                if (notModifiedExtended) FolderId = Parse<FolderID>(parser);
+                if (notModifiedExtended && isMessage) MessageId = Parse<MessageID>(parser);
+                if (isCreateDeleteMovedCopied && (isSearchFolderMessage || isFolder)) ParentFolderId = Parse<FolderID>(parser);
+                if (isMovedCopied) OldFolderId = Parse<FolderID>(parser);
+                if (isMovedCopied && isMessage) OldMessageId = Parse<MessageID>(parser);
+                if (isMovedCopied && isMessage) OldParentFolderId = Parse<FolderID>(parser);
+
+
+                if (isCreateDelete)
+                {
+                    TagCount = BlockT<ushort>.Parse(parser);
+
+                    if (TagCount.Data != 0x0000 && TagCount.Data != 0xFFFF)
+                    {
+                        var listTags = new List<PropertyTag>();
+
+                        for (int i = 0; i < TagCount.Data; i++)
+                        {
+                            listTags.Add(Parse<PropertyTag>(parser));
+                        }
+
+                        Tags = listTags.ToArray();
+                    }
+                }
+
+                if (isTotalMessageCount) TotalMessageCount = BlockT<uint>.Parse(parser);
+                if (isUnreadMessageCount) UnreadMessageCount = BlockT<uint>.Parse(parser);
+
+                if (isNewMail)
+                {
+                    MessageFlags = BlockT<uint>.Parse(parser);
+                    UnicodeFlag = BlockT<byte>.Parse(parser);
+                    if (UnicodeFlag.Data == 0x00)
+                    {
+                        MessageClass = BlockStringA.Parse(parser);
+                    }
+                    else if (UnicodeFlag.Data == 0x01)
+                    {
+                        MessageClass = BlockStringW.Parse(parser);
+                    }
                 }
             }
+        }
 
-            if (((int)this.NotificationFlags.Value.NotificationDataAvailability & 0x1000) != 0)
+        protected override void ParseBlocks()
+        {
+            // Add NotificationFlags as a labeled child
+            if (NotificationFlags != null)
             {
-                this.TotalMessageCount = this.ReadUint();
+                AddChild(NotificationFlags, $"NotificationFlags:{NotificationFlags.Data}");
             }
 
-            if (((int)this.NotificationFlags.Value.NotificationDataAvailability & 0x2000) != 0)
+            // Add TableEventType if present
+            if (TableEventType != null)
             {
-                this.UnreadMessageCount = this.ReadUint();
+                AddChild(TableEventType, $"TableEventType:{TableEventType.Data}");
             }
 
-            if (this.NotificationFlags.Value.NotificationType == NotificationTypesEnum.NewMail)
+            // Add TableRowFolderID, TableRowMessageID, TableRowInstance if present
+            AddLabeledChild("TableRowFolderID", TableRowFolderID);
+            AddLabeledChild("TableRowMessageID", TableRowMessageID);
+            if (TableRowInstance != null)
             {
-                this.MessageFlags = this.ReadUint();
-                this.UnicodeFlag = this.ReadByte();
-                this.MessageClass = new MAPIString(Encoding.ASCII);
-                this.MessageClass.Parse(s);
+                AddChild(TableRowInstance, $"TableRowInstance:{TableRowInstance.Data}");
             }
+
+            // Add InsertAfterTableRowFolderID, InsertAfterTableRowID, InsertAfterTableRowInstance if present
+            AddLabeledChild("InsertAfterTableRowFolderID", InsertAfterTableRowFolderID);
+            AddLabeledChild("InsertAfterTableRowID", InsertAfterTableRowID);
+            if (InsertAfterTableRowInstance != null)
+            {
+                AddChild(InsertAfterTableRowInstance, $"InsertAfterTableRowInstance:{InsertAfterTableRowInstance.Data}");
+            }
+
+            // Add TableRowDataSize and TableRowData if present
+            if (TableRowDataSize != null)
+            {
+                AddChild(TableRowDataSize, $"TableRowDataSize:{TableRowDataSize.Data}");
+            }
+
+            AddLabeledChild("TableRowData", TableRowData);
+
+            // Add FolderId, MessageId, ParentFolderId, OldFolderId, OldMessageId, OldParentFolderId if present
+            AddLabeledChild("FolderId", FolderId);
+            AddLabeledChild("MessageId", MessageId);
+            AddLabeledChild("ParentFolderId", ParentFolderId);
+            AddLabeledChild("OldFolderId", OldFolderId);
+            AddLabeledChild("OldMessageId", OldMessageId);
+            AddLabeledChild("OldParentFolderId", OldParentFolderId);
+
+            // Add TagCount and Tags if present
+            if (TagCount != null)
+            {
+                AddChild(TagCount, $"TagCount:{TagCount.Data}");
+                AddLabeledChildren("Tags", Tags);
+            }
+
+            // Add TotalMessageCount, UnreadMessageCount if present
+            if (TotalMessageCount != null)
+            {
+                AddChild(TotalMessageCount, $"TotalMessageCount:{TotalMessageCount.Data}");
+            }
+            if (UnreadMessageCount != null)
+            {
+                AddChild(UnreadMessageCount, $"UnreadMessageCount:{UnreadMessageCount.Data}");
+            }
+
+            // Add MessageFlags, UnicodeFlag, MessageClass if present
+            if (MessageFlags != null)
+            {
+                AddChild(MessageFlags, $"MessageFlags:{MessageFlags.Data}");
+            }
+            if (UnicodeFlag != null)
+            {
+                AddChild(UnicodeFlag, $"UnicodeFlag:{UnicodeFlag.Data}");
+            }
+
+            AddLabeledChild("MessageClass", MessageClass);
         }
     }
 

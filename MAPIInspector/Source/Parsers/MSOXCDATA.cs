@@ -4249,6 +4249,7 @@
 
         protected override void ParseBlocks()
         {
+            SetText("FolderID");
             AddChild(ReplicaId, $"ReplicaId:{ReplicaId.Data}");
             AddChild(GlobalCounter, $"GlobalCounter:{GlobalCounter.ToHexString(false)}");
         }
