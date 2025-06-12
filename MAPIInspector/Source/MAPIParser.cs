@@ -1233,7 +1233,15 @@
                             }
                         }
 
-                        currentSession = AllSessions[Convert.ToInt32(currentSession["Number"]) + 1];
+                        var nextSessionNumber = Convert.ToInt32(currentSession["Number"]) + 1;
+                        foreach (var session in AllSessions)
+                        {
+                            if (Convert.ToInt32(session["Number"]) == nextSessionNumber)
+                            {
+                                currentSession = session;
+                                break;
+                            }
+                        }
                         if (currentSessionID == currentSession.id ||
                             (currentSession["VirtualID"] != null && currentSessionID == int.Parse(currentSession["VirtualID"]))) break;
                         if (IsFromFiddlerCore(currentSession))
