@@ -2,6 +2,7 @@
 {
     /// <summary>
     /// An enumeration that specifies flags control the type of RopFastTransferSourceCopyTo operation. 
+    /// 2.2.3.1.1.1.1 RopFastTransferSourceCopyTo ROP Request Buffer
     /// </summary>
     public enum CopyFlags_CopyTo : uint
     {

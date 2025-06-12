@@ -2,6 +2,7 @@
 {
     /// <summary>
     /// Represents the type of FastTransfer stream.
+    /// TODO: Unused?
     /// </summary>
     public enum FastTransferStreamType
     {

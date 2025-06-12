@@ -2,6 +2,7 @@
 {
     /// <summary>
     /// An enumeration that specifies flags control the type of RopFastTransferSourceCopyProperties operation. 
+    /// 2.2.3.1.1.2.1 RopFastTransferSourceCopyProperties ROP Request Buffer
     /// </summary>
     public enum CopyFlags_CopyProperties : byte
     {

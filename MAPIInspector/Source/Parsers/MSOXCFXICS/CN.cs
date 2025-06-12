@@ -2,7 +2,7 @@
 {
     using System;
 
-    #region 2.2.2.1 CN
+    #region 2.2.2.1 CN Structure
     /// <summary>
     /// Represents CN structure contains a change number that identifies a version of a messaging object. 
     /// </summary>

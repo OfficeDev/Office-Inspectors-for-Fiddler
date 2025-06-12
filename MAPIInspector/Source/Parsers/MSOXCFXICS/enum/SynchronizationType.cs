@@ -1,7 +1,8 @@
 ﻿namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// An enumeration that defines the type of synchronization requested. 
+    /// An enumeration that defines the type of synchronization requested.
+    /// 2.2.3.2.1.1.1 RopSynchronizationConfigure ROP Request Buffer
     /// </summary>
     public enum SynchronizationType : byte
     {

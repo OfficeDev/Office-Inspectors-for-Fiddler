@@ -1,7 +1,8 @@
 ﻿namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  Object handles type. 
+    ///  Object handles type.
+    ///  TODO: Unused?
     /// </summary>
     public enum ObjectHandlesType : byte
     {

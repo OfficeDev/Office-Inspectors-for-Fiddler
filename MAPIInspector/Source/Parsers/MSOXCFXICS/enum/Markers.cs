@@ -2,11 +2,12 @@
 {
     /// <summary>
     /// Syntactical markers
+    /// 2.2.4.1.4 Markers
     /// </summary>
     public enum Markers : uint
     {
         /// <summary>
-        /// StartTopFld marker 
+        /// StartTopFld marker
         /// </summary>
         StartTopFld = 0x40090003,
 
@@ -26,7 +27,7 @@
         StartMessage = 0x400C0003,
 
         /// <summary>
-        /// EndMessage marker 
+        /// EndMessage marker
         /// </summary>
         EndMessage = 0x400D0003,
 

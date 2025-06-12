@@ -2,9 +2,9 @@
 {
     using System;
 
-    #region 2.2.2.2 XID
     /// <summary>
     /// Represents an external identifier for an entity within a data store.
+    /// 2.2.2.2 XID Structure
     /// </summary>
     public class XID : BaseStructure
     {
@@ -42,6 +42,4 @@
             this.LocalId = stream.ReadBlock((int)this.length - 16);
         }
     }
-
-    #endregion
 }

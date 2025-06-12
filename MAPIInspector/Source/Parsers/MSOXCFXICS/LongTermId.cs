@@ -1,7 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using System;
-    #region Structures used in FastTransfer stream (defined in MS-OXCDATA)
     /// <summary>
     /// The structure of LongTermId
     /// </summary>
@@ -43,5 +42,4 @@
             this.Pad = stream.ReadUInt16();
         }
     }
-    #endregion
 }

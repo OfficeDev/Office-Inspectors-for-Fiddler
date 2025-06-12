@@ -1,7 +1,8 @@
 ﻿namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// An enumeration that specifies the current status of the transfer. 
+    /// An enumeration that specifies the current status of the transfer.
+    /// 2.2.3.1.1.5.2 RopFastTransferSourceGetBuffer ROP Response Buffer
     /// </summary>
     public enum TransferStatus : ushort
     {

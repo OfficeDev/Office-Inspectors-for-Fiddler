@@ -1722,7 +1722,8 @@ namespace MAPIInspector.Parsers
         MetaTagFXDelProp = 0x4016,
 
         /// <summary>
-        /// he MetaTagIdsetGiven property contains a serialization of REPLGUID-based IDSET structures, as specified in section 2.2.2.4.2.
+        /// The MetaTagIdsetGiven property contains a serialization of REPLGUID-based IDSET structures, as specified in section 2.2.2.4.2.
+        /// 2.2.1.1.1 MetaTagIdsetGiven ICS State Property
         /// </summary>
         MetaTagIdsetGiven = 0x4017,
 
@@ -2208,6 +2209,7 @@ namespace MAPIInspector.Parsers
 
         /// <summary>
         /// The MetaTagCnsetSeen property contains a serialization of REPLGUID-based CNSET structures, as specified in section 2.2.2.4.
+        /// 2.2.1.1.2 MetaTagCnsetSeen ICS State Property
         /// </summary>
         MetaTagCnsetSeen = 0x6796,
 
@@ -2223,11 +2225,13 @@ namespace MAPIInspector.Parsers
 
         /// <summary>
         /// The MetaTagCnsetRead property contains a serialization of REPLGUID-based CNSET structures, as specified in section 2.2.2.4.
+        /// 2.2.1.1.4 MetaTagCnsetRead ICS State Property
         /// </summary>
         MetaTagCnsetRead = 0x67D2,
 
         /// <summary>
         /// The MetaTagCnsetSeenFAI property contains a serialization of REPLGUID-based IDSET structures, as specified in section 2.2.2.4.
+        /// 2.2.1.1.3 MetaTagCnsetSeenFAI ICS State Property
         /// </summary>
         MetaTagCnsetSeenFAI = 0x67DA,
 
