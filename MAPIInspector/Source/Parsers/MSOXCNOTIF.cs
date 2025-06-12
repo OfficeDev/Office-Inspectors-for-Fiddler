@@ -515,47 +515,46 @@
                     TableRowData = new PropertyRow(TableRowDataSize.Data, propertiesBySetColum);
                     TableRowData.Parse(parser);
                 }
+            }
 
-                if (notModifiedExtended) FolderId = Parse<FolderID>(parser);
-                if (notModifiedExtended && isMessage) MessageId = Parse<MessageID>(parser);
-                if (isCreateDeleteMovedCopied && (isSearchFolderMessage || isFolder)) ParentFolderId = Parse<FolderID>(parser);
-                if (isMovedCopied) OldFolderId = Parse<FolderID>(parser);
-                if (isMovedCopied && isMessage) OldMessageId = Parse<MessageID>(parser);
-                if (isMovedCopied && isMessage) OldParentFolderId = Parse<FolderID>(parser);
+            if (notModifiedExtended) FolderId = Parse<FolderID>(parser);
+            if (notModifiedExtended && isMessage) MessageId = Parse<MessageID>(parser);
+            if (isCreateDeleteMovedCopied && (isSearchFolderMessage || isFolder)) ParentFolderId = Parse<FolderID>(parser);
+            if (isMovedCopied) OldFolderId = Parse<FolderID>(parser);
+            if (isMovedCopied && isMessage) OldMessageId = Parse<MessageID>(parser);
+            if (isMovedCopied && isMessage) OldParentFolderId = Parse<FolderID>(parser);
 
+            if (isCreateDelete)
+            {
+                TagCount = BlockT<ushort>.Parse(parser);
 
-                if (isCreateDelete)
+                if (TagCount.Data != 0x0000 && TagCount.Data != 0xFFFF)
                 {
-                    TagCount = BlockT<ushort>.Parse(parser);
+                    var listTags = new List<PropertyTag>();
 
-                    if (TagCount.Data != 0x0000 && TagCount.Data != 0xFFFF)
+                    for (int i = 0; i < TagCount.Data; i++)
                     {
-                        var listTags = new List<PropertyTag>();
-
-                        for (int i = 0; i < TagCount.Data; i++)
-                        {
-                            listTags.Add(Parse<PropertyTag>(parser));
-                        }
-
-                        Tags = listTags.ToArray();
+                        listTags.Add(Parse<PropertyTag>(parser));
                     }
+
+                    Tags = listTags.ToArray();
                 }
+            }
 
-                if (isTotalMessageCount) TotalMessageCount = BlockT<uint>.Parse(parser);
-                if (isUnreadMessageCount) UnreadMessageCount = BlockT<uint>.Parse(parser);
+            if (isTotalMessageCount) TotalMessageCount = BlockT<uint>.Parse(parser);
+            if (isUnreadMessageCount) UnreadMessageCount = BlockT<uint>.Parse(parser);
 
-                if (isNewMail)
+            if (isNewMail)
+            {
+                MessageFlags = BlockT<uint>.Parse(parser);
+                UnicodeFlag = BlockT<byte>.Parse(parser);
+                if (UnicodeFlag.Data == 0x00)
                 {
-                    MessageFlags = BlockT<uint>.Parse(parser);
-                    UnicodeFlag = BlockT<byte>.Parse(parser);
-                    if (UnicodeFlag.Data == 0x00)
-                    {
-                        MessageClass = BlockStringA.Parse(parser);
-                    }
-                    else if (UnicodeFlag.Data == 0x01)
-                    {
-                        MessageClass = BlockStringW.Parse(parser);
-                    }
+                    MessageClass = BlockStringA.Parse(parser);
+                }
+                else if (UnicodeFlag.Data == 0x01)
+                {
+                    MessageClass = BlockStringW.Parse(parser);
                 }
             }
         }
