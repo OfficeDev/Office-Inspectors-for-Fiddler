@@ -3,6 +3,7 @@
     using System;
     /// <summary>
     /// The structure of LongTermId
+    /// 2.2.1.3.1 LongTermID Structure
     /// </summary>
     public class LongTermId : SyntacticalBase
     {
