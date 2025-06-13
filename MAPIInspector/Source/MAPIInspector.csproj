@@ -138,7 +138,7 @@
     <Compile Include="Parsers\MSOXCFXICS\enum\FastTransferStreamType.cs" />
     <Compile Include="Parsers\MSOXCFXICS\enum\ImportDeleteFlags.cs" />
     <Compile Include="Parsers\MSOXCFXICS\enum\ImportFlag.cs" />
-    <Compile Include="Parsers\MSOXCFXICS\structs\FastTransferStream.cs" />
+    <Compile Include="Parsers\MSOXCFXICS\FastTransferStream.cs" />
     <Compile Include="Parsers\MSOXCFXICS\structs\FolderReplicaInfo.cs" />
     <Compile Include="Parsers\MSOXCFXICS\structs\GLOBSET.cs" />
     <Compile Include="Parsers\MSOXCFXICS\structs\GroupPropertyName.cs" />
