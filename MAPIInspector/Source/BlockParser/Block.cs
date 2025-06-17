@@ -3,6 +3,7 @@ using System.IO;
 
 namespace BlockParser
 {
+    // TODO: Make use of these
     public static class Constants
     {
         public const uint _MaxBytes = 0xFFFF;
@@ -14,11 +15,23 @@ namespace BlockParser
         public const uint _MaxEntriesEnormous = 10000;
     }
 
-    public abstract class Block
+    public abstract partial class Block
     {
         public long Size { get; set; }
         public long Offset { get; set; }
         public string Text { get; protected set; } = string.Empty;
+        public uint Source
+        {
+            get => _source;
+            set
+            {
+                _source = value;
+                foreach (var child in Children)
+                {
+                    child.Source = value;
+                }
+            }
+        }
 
         public IReadOnlyList<Block> Children => children.AsReadOnly();
         public bool IsHeader => Size == 0 && Offset == 0;
@@ -70,19 +83,6 @@ namespace BlockParser
             foreach (var child in Children)
             {
                 child.ShiftOffset(shift);
-            }
-        }
-
-        public uint Source
-        {
-            get => _source;
-            set
-            {
-                _source = value;
-                foreach (var child in Children)
-                {
-                    child.Source = value;
-                }
             }
         }
 
@@ -159,34 +159,6 @@ namespace BlockParser
             AddChild(node);
         }
 
-        // Static create functions returns a non parsing block
-        public static Block Create() => new ScratchBlock();
-
-        public static Block Create(long size, long offset, string format, params object[] args)
-        {
-            var ret = Create();
-            ret.Size = size;
-            ret.Offset = offset;
-            ret.SetText(format, args);
-            return ret;
-        }
-
-        public static Block Create(string format, params object[] args)
-        {
-            var ret = Create();
-            ret.SetText(format, args);
-            return ret;
-        }
-
-        // Static parse function returns a parsing block based on a stream at it's current position
-        // Advance the stream by the size of the block after parsing
-        public static T Parse<T>(Stream stream, bool enableJunk = false) where T : Block, new()
-        {
-            var block = Parse<T>(new BinaryParser(stream, stream.Position), enableJunk);
-            stream.Seek(block.Size, SeekOrigin.Current);
-            return block;
-        }
-
         public void Parse(Stream stream, bool enableJunk = false) => Parse(stream, 0, enableJunk);
         private void Parse(Stream stream, int cbBin, bool enableJunk = false)
         {
@@ -195,20 +167,6 @@ namespace BlockParser
             stream.Seek(Size, SeekOrigin.Current);
         }
 
-        // Static parse function returns a parsing block based on a BinaryParser
-        public static T Parse<T>(BinaryParser parser, bool enableJunk = false) where T : Block, new()
-        {
-            return Parse<T>(parser, 0, enableJunk);
-        }
-
-        public static T Parse<T>(BinaryParser parser, int cbBin, bool enableJunk = false) where T : Block, new()
-        {
-            var ret = new T();
-            ret.Parse(parser, cbBin, enableJunk);
-            return ret;
-        }
-
-        // Non-static parse functions actually do the parsing
         public void Parse(BinaryParser parser, bool enableJunk = false) => Parse(parser, 0, enableJunk);
 
         private void Parse(BinaryParser parser, int cbBin, bool enableJunk = false)
