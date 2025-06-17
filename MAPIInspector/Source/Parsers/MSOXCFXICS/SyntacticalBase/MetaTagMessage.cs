@@ -30,8 +30,8 @@ namespace MAPIInspector.Parsers
         public static bool Verify(BinaryParser parser)
         {
             var offset = parser.Offset;
-            var prefix = BlockT<MetaProperties>.Parse(parser);
-            var warning = BlockT<MetaProperties>.Parse(parser);
+            var prefix = ParseT<MetaProperties>(parser);
+            var warning = ParseT<MetaProperties>(parser);
             parser.Offset = offset;
             if (!prefix.Parsed || warning.Parsed) return false;
 

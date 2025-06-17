@@ -45,8 +45,8 @@ namespace MAPIInspector.Parsers
                 MapiInspector.MAPIParser.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
                 MapiInspector.MAPIParser.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])))
             {
-                PropType = BlockT<PropertyDataType>.Parse(parser);
-                PropID = BlockT<PidTagPropertyEnum>.Parse(parser);
+                PropType = ParseT<PropertyDataType>(parser);
+                PropID = ParseT<PidTagPropertyEnum>(parser);
             }
 
             if (parser.Empty)
@@ -104,7 +104,7 @@ namespace MAPIInspector.Parsers
                         }
                         else
                         {
-                            length = BlockT<int>.Parse(parser);
+                            length = ParseT<int>(parser);
                         }
 
                         if (parser.RemainingBytes < length.Data)

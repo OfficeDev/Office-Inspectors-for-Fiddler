@@ -16,7 +16,7 @@ namespace BlockParserTests
                 var _f1 = new List<BlockT<byte>>();
                 while (!parser.Empty && parser.RemainingBytes >= sizeof(byte))
                 {
-                    var b = BlockT<byte>.Parse(parser);
+                    var b = ParseT<byte>(parser);
                     if (!b.Parsed) break; // Stop parsing when we hit a zero byte
                     _f1.Add(b);
                 }
@@ -44,11 +44,11 @@ namespace BlockParserTests
 
             protected override void Parse()
             {
-                size = BlockT<int>.Parse(parser);
+                size = ParseT<int>(parser);
                 parser.PushCap(size.Data);
                 expandingBlock = Parse<ExpandingBlock>(parser);
                 parser.PopCap();
-                footer = BlockT<int>.Parse(parser);
+                footer = ParseT<int>(parser);
             }
 
             protected override void ParseBlocks()
@@ -87,7 +87,7 @@ namespace BlockParserTests
 
             protected override void Parse()
             {
-                size = BlockT<byte>.Parse(parser);
+                size = ParseT<byte>(parser);
                 parser.PushCap(size.Data);
                 var _parents = new List<ParentBlock>();
                 while (!parser.Empty)
@@ -98,8 +98,8 @@ namespace BlockParserTests
                 }
                 parents = _parents.ToArray();
                 parser.PopCap();
-                footer = BlockT<int>.Parse(parser);
-                footer2 = BlockT<int>.Parse(parser);
+                footer = ParseT<int>(parser);
+                footer2 = ParseT<int>(parser);
             }
 
             protected override void ParseBlocks()

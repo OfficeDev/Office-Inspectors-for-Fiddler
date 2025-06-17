@@ -16,16 +16,6 @@ namespace BlockParser
             Offset = offset;
         }
 
-        public static BlockT<T> Parse(BinaryParser parser)
-        {
-            var ret = new BlockT<T>
-            {
-                parser = parser
-            };
-            ret.EnsureParsed();
-            return ret;
-        }
-
         /// <summary>
         /// Read a block off our stream, but don't advance the stream position.
         /// </summary>

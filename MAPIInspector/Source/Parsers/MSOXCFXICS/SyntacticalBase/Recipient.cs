@@ -34,12 +34,12 @@
 
         protected override void Parse()
         {
-            StartMarker = BlockT<Markers>.Parse(parser);
+            StartMarker = ParseT<Markers>(parser);
             if (StartMarker.Data == Markers.StartRecip)
             {
                 PropList = Parse<PropList>(parser);
 
-                EndMarker = BlockT<Markers>.Parse(parser);
+                EndMarker = ParseT<Markers>(parser);
                 if (EndMarker.Data != Markers.EndToRecip)
                 {
                     Parsed = false;

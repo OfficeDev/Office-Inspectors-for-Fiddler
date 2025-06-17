@@ -46,5 +46,15 @@ namespace BlockParser
             ret.Parse(parser, cbBin, enableJunk);
             return ret;
         }
+
+        public static BlockT<T> ParseT<T>(BinaryParser parser) where T : struct
+        {
+            var ret = new BlockT<T>
+            {
+                parser = parser
+            };
+            ret.EnsureParsed();
+            return ret;
+        }
     }
 }

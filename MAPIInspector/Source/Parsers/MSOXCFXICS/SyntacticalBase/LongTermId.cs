@@ -28,9 +28,9 @@
         /// </summary>
         protected override void Parse()
         {
-            DatabaseGuid = BlockT<Guid>.Parse(parser);
+            DatabaseGuid = ParseT<Guid>(parser);
             GlobalCounter = BlockBytes.Parse(parser, 6, 6);
-            Pad = BlockT<ushort>.Parse(parser);
+            Pad = ParseT<ushort>(parser);
         }
 
         protected override void ParseBlocks()

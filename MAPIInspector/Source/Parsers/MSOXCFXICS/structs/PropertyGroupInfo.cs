@@ -34,9 +34,9 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            GroupId = BlockT<uint>.Parse(parser);
-            Reserved = BlockT<uint>.Parse(parser);
-            GroupCount = BlockT<uint>.Parse(parser);
+            GroupId = ParseT<uint>(parser);
+            Reserved = ParseT<uint>(parser);
+            GroupCount = ParseT<uint>(parser);
             var tmpGrp = new List<PropertyGroup>();
             for (int i = 0; i < GroupCount.Data; i++)
             {
