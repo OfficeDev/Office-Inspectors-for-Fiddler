@@ -1,15 +1,18 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+using System.Collections.Generic;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The PropertyGroup.
     /// 2.2.2.8.1 PropertyGroup
     /// </summary>
-    public class PropertyGroup : BaseStructure
+    public class PropertyGroup : Block
     {
         /// <summary>
         /// An unsigned 32-bit integer value that specifies how many PropertyTag structures are present in the PropertyTags field. 
         /// </summary>
-        public uint PropertyTagCount;
+        public BlockT<uint> PropertyTagCount;
 
         /// <summary>
         /// An array of PropertyTagWithGroupPropertyName structures.
@@ -19,16 +22,28 @@
         /// <summary>
         /// Parse from a stream.
         /// </summary>
-        /// <param name="stream">A stream contains PropertyGroup.</param>
-        public void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            this.PropertyTagCount = stream.ReadUInt32();
-            this.PropertyTags = new PropertyTagWithGroupPropertyName[this.PropertyTagCount];
-            for (int i = 0; i < this.PropertyTagCount; i++)
+            PropertyTagCount = BlockT<uint>.Parse(parser);
+            var tags = new List<PropertyTagWithGroupPropertyName>();
+            for (int i = 0; i < PropertyTagCount.Data; i++)
             {
-                PropertyTagWithGroupPropertyName tmpName = new PropertyTagWithGroupPropertyName();
-                tmpName.Parse(stream);
-                this.PropertyTags[i] = tmpName;
+                tags.Add(Parse<PropertyTagWithGroupPropertyName>(parser));
+            }
+
+            PropertyTags = tags.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("PropertyGroup");
+            if (PropertyTagCount != null) AddChild(PropertyTagCount, $"PropertyTagCount:{PropertyTagCount.Data}");
+            if (PropertyTags != null)
+            {
+                foreach (var tag in PropertyTags)
+                {
+                    AddChild(tag);
+                }
             }
         }
     }

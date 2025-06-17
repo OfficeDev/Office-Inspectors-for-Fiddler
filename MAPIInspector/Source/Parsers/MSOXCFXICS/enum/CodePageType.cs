@@ -21,8 +21,8 @@
         PtypCodePageWesternEuropean = 0x84E4,
 
         /// <summary>
-        /// ptypCodePag eUnicode 52
+        /// PtypCodePageUnicode 52
         /// </summary>
-        ptypCodePageUnicode52 = 0x94B0
+        PtypCodePageUnicode52 = 0x94B0
     }
 }

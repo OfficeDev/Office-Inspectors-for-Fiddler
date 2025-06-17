@@ -1,16 +1,16 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System;
+    using BlockParser;
 
     /// <summary>
     /// The messageChangeFull element contains the complete content of a new or changed message: the message properties, the recipients,and the attachments.
     /// </summary>
-    public class MessageChangeFull : SyntacticalBase
+    public class MessageChangeFull : Block
     {
         /// <summary>
         /// A start marker for MessageChangeFull.
         /// </summary>
-        public Markers StartMarker;
+        public BlockT<Markers> StartMarker;
 
         /// <summary>
         /// A MessageChangeHeader value.
@@ -20,7 +20,7 @@
         /// <summary>
         /// A second marker for MessageChangeFull.
         /// </summary>
-        public Markers SecondMarker;
+        public BlockT<Markers> SecondMarker;
 
         /// <summary>
         /// A PropList value.
@@ -33,47 +33,44 @@
         public MessageChildren MessageChildren;
 
         /// <summary>
-        /// Initializes a new instance of the MessageChangeFull class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public MessageChangeFull(FastTransferStream stream)
-            : base(stream)
-        {
-        }
-
-        /// <summary>
         /// Verify that a stream's current position contains a serialized messageChangeFull.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains 
         /// a serialized messageChangeFull, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return stream.VerifyMarker(Markers.IncrSyncChg);
+            return MarkersHelper.VerifyMarker(parser, Markers.IncrSyncChg);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            if (stream.ReadMarker() == Markers.IncrSyncChg)
+            StartMarker = BlockT<Markers>.Parse(parser);
+            if (StartMarker.Data == Markers.IncrSyncChg)
             {
-                this.StartMarker = Markers.IncrSyncChg;
-                this.MessageChangeHeader = new PropList(stream);
+                MessageChangeHeader = Parse<PropList>(parser);
 
-                if (stream.ReadMarker() == Markers.IncrSyncMessage)
+                SecondMarker = BlockT<Markers>.Parse(parser);
+                if (SecondMarker.Data == Markers.IncrSyncMessage)
                 {
-                    this.SecondMarker = Markers.IncrSyncMessage;
-                    this.PropList = new PropList(stream);
-                    this.MessageChildren = new MessageChildren(stream);
+                    PropList = Parse<PropList>(parser);
+                    MessageChildren = Parse<MessageChildren>(parser);
                 }
                 else
                 {
-                    throw new Exception("The MessageChangeFull cannot be parsed successfully. The IncrSyncMessage Marker is missed.");
+                    Parsed = false;
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("MessageChangeFull");
+            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddLabeledChild("MessageChangeHeader", MessageChangeHeader);
+            if (SecondMarker != null) AddChild(SecondMarker, $"SecondMarker:{SecondMarker.Data}");
+            AddLabeledChild("PropList", PropList);
+            AddLabeledChild("MessageChildren", MessageChildren);
         }
     }
 }

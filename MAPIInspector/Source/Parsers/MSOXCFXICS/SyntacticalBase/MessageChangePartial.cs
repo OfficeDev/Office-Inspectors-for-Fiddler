@@ -1,12 +1,12 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System;
+    using BlockParser;
     using System.Collections.Generic;
 
     /// <summary>
     /// The MessageChangePartial element represents the difference in message content since the last download, as identified by the initial ICS state.
     /// </summary>
-    public class MessageChangePartial : SyntacticalBase
+    public class MessageChangePartial : Block
     {
         /// <summary>
         /// A groupInfo value.
@@ -21,7 +21,7 @@
         /// <summary>
         /// The MessageChangePartial marker.
         /// </summary>
-        public Markers Marker;
+        public BlockT<Markers> Marker;
 
         /// <summary>
         /// A MessageChangeHeader value.
@@ -39,55 +39,56 @@
         public MessageChildren MessageChildren;
 
         /// <summary>
-        /// Initializes a new instance of the MessageChangePartial class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream object.</param>
-        public MessageChangePartial(FastTransferStream stream)
-            : base(stream)
-        {
-        }
-
-        /// <summary>
         /// Verify that a stream's current position contains a serialized MessageChangePartial.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized MessageChangePartial, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return GroupInfo.Verify(stream);
+            return GroupInfo.Verify(parser);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
             List<SyncMessagePartialPropList> interMessagePartialList = new List<SyncMessagePartialPropList>();
-            this.GroupInfo = new GroupInfo(stream);
+            GroupInfo = Parse<GroupInfo>(parser);
 
-            if (stream.VerifyMetaProperty(MetaProperties.MetaTagIncrSyncGroupId))
+            if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagIncrSyncGroupId))
             {
-                this.MetaTagIncrSyncGroupId = new MetaPropValue(stream);
+                MetaTagIncrSyncGroupId = Parse<MetaPropValue>(parser);
             }
 
-            if (stream.ReadMarker() == Markers.IncrSyncChgPartial)
+            Marker = BlockT<Markers>.Parse(parser);
+            if (Marker.Data == Markers.IncrSyncChgPartial)
             {
-                this.Marker = Markers.IncrSyncChgPartial;
-                this.MessageChangeHeader = new PropList(stream);
+                MessageChangeHeader = Parse<PropList>(parser);
 
-                while (stream.VerifyMetaProperty(MetaProperties.MetaTagIncrementalSyncMessagePartial))
+                while (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagIncrementalSyncMessagePartial))
                 {
-                    interMessagePartialList.Add(new SyncMessagePartialPropList(stream));
+                    interMessagePartialList.Add(Parse<SyncMessagePartialPropList>(parser));
                 }
 
-                this.SyncMessagePartialPropList = interMessagePartialList.ToArray();
-                this.MessageChildren = new MessageChildren(stream);
+                SyncMessagePartialPropList = interMessagePartialList.ToArray();
+                MessageChildren = Parse<MessageChildren>(parser);
             }
             else
             {
-                throw new Exception("The MessageChangePartial cannot be parsed successfully. The IncrSyncChgPartial Marker is missed.");
+                Parsed = false;
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("MessageChangePartial");
+            AddChild(GroupInfo, "GroupInfo");
+            AddChild(MetaTagIncrSyncGroupId, "MetaTagIncrSyncGroupId");
+            if (Marker != null) AddChild(Marker, $"Marker:{Marker.Data}");
+            AddChild(MessageChangeHeader, "MessageChangeHeader");
+            if (SyncMessagePartialPropList != null)
+            {
+                AddLabeledChildren("SyncMessagePartialPropList", SyncMessagePartialPropList);
+            }
+            AddChild(MessageChildren, "MessageChildren");
         }
     }
 }

@@ -28,9 +28,9 @@ namespace BlockParser
             return ret;
         }
 
-        public string ToTextStringA(bool multiLine) => Strings.StripCharacter(Strings.BinToTextStringA(_data, multiLine), '\0');
+        public string ToTextStringA(bool multiLine = false) => Strings.StripCharacter(Strings.BinToTextStringA(_data, multiLine), '\0');
 
-        public string ToHexString(bool multiLine) => Strings.BinToHexString(_data, multiLine);
+        public string ToHexString(bool multiLine = false, int limit = 128) => Strings.BinToHexString(_data, multiLine, limit);
 
         public bool Equal(int cb, byte[] bin)
         {

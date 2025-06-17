@@ -1,11 +1,12 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System.Collections.Generic;
 
     /// <summary>
     /// The folderContent element contains the content of a folder: its properties, messages, and subFolders.
     /// </summary>
-    public class FolderContent : SyntacticalBase
+    public class FolderContent : Block
     {
         /// <summary>
         /// The MetaTagDnPrefix
@@ -37,64 +38,58 @@
         /// </summary>
         public SubFolder[] SubFolders;
 
-        /// <summary>
-        /// Initializes a new instance of the FolderContent class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public FolderContent(FastTransferStream stream)
-            : base(stream)
+        protected override void Parse()
         {
-        }
-
-        /// <summary>
-        /// Verify that a stream's current position contains a serialized folderContent.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        /// <returns>If the stream's current position contains a serialized folderContent, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
-        {
-            return !stream.IsEndOfStream && (stream.VerifyUInt32() == (uint)MetaProperties.MetaTagDnPrefix || PropList.Verify(stream));
-        }
-
-        /// <summary>
-        ///  Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
-        {
-            if (stream.VerifyMetaProperty(MetaProperties.MetaTagDnPrefix))
+            if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagDnPrefix))
             {
-                this.MetaTagDnPrefix = new MetaPropValue(stream);
+                MetaTagDnPrefix = Parse<MetaPropValue>(parser);
             }
 
-            this.PropList = new PropList(stream);
+            PropList = Parse<PropList>(parser);
 
-            if (!stream.IsEndOfStream)
+            if (!parser.Empty)
             {
-                List<SubFolder> interSubFolders = new List<SubFolder>();
+                var interSubFolders = new List<SubFolder>();
 
-                if (stream.VerifyMetaProperty(MetaProperties.MetaTagNewFXFolder))
+                if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagNewFXFolder))
                 {
-                    this.MetaTagNewFXFolder = new MetaPropValue(stream);
+                    MetaTagNewFXFolder = Parse<MetaPropValue>(parser);
                 }
                 else
                 {
-                    this.FolderMessages = new FolderMessages(stream);
+                    FolderMessages = Parse<FolderMessages>(parser);
                 }
 
-                if (stream.VerifyMetaProperty(MetaProperties.MetaTagFXDelProp))
+                if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagFXDelProp))
                 {
-                    this.MetaTagFXDelProp = new MetaPropValue(stream);
+                    MetaTagFXDelProp = Parse<MetaPropValue>(parser);
                 }
 
-                if (!stream.IsEndOfStream)
+                if (!parser.Empty)
                 {
-                    while (SubFolder.Verify(stream))
+                    while (SubFolder.Verify(parser))
                     {
-                        interSubFolders.Add(new SubFolder(stream));
+                        interSubFolders.Add(Parse<SubFolder>(parser));
                     }
 
-                    this.SubFolders = interSubFolders.ToArray();
+                    SubFolders = interSubFolders.ToArray();
+                }
+            }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("FolderContent");
+            AddLabeledChild("MetaTagDnPrefix", MetaTagDnPrefix);
+            AddLabeledChild("PropList", PropList);
+            AddLabeledChild("MetaTagNewFXFolder", MetaTagNewFXFolder);
+            AddLabeledChild("FolderMessages", FolderMessages);
+            AddLabeledChild("MetaTagFXDelProp", MetaTagFXDelProp);
+            if (SubFolders != null && SubFolders.Length > 0)
+            {
+                foreach (var subFolder in SubFolders)
+                {
+                    AddLabeledChild("SubFolder", subFolder);
                 }
             }
         }

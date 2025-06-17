@@ -1,16 +1,16 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System;
+    using BlockParser;
 
     /// <summary>
     /// The Recipient element represents a Recipient object, which is a subobject of the Message object.
     /// </summary>
-    public class Recipient : SyntacticalBase
+    public class Recipient : Block
     {
         /// <summary>
         /// The start marker of Recipient.
         /// </summary>
-        public Markers StartMarker;
+        public BlockT<Markers> StartMarker;
 
         /// <summary>
         /// A PropList value.
@@ -20,47 +20,39 @@
         /// <summary>
         /// The end marker of Recipient.
         /// </summary>
-        public Markers EndMarker;
-
-        /// <summary>
-        /// Initializes a new instance of the Recipient class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public Recipient(FastTransferStream stream)
-            : base(stream)
-        {
-        }
+        public BlockT<Markers> EndMarker;
 
         /// <summary>
         /// Verify that a stream's current position contains a serialized Recipient.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized Recipient, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return stream.VerifyMarker(Markers.StartRecip);
+            return MarkersHelper.VerifyMarker(parser, Markers.StartRecip);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            if (stream.ReadMarker() == Markers.StartRecip)
+            StartMarker = BlockT<Markers>.Parse(parser);
+            if (StartMarker.Data == Markers.StartRecip)
             {
-                this.StartMarker = Markers.StartRecip;
-                this.PropList = new PropList(stream);
+                PropList = Parse<PropList>(parser);
 
-                if (stream.ReadMarker() == Markers.EndToRecip)
+                EndMarker = BlockT<Markers>.Parse(parser);
+                if (EndMarker.Data != Markers.EndToRecip)
                 {
-                    this.EndMarker = Markers.EndToRecip;
-                }
-                else
-                {
-                    throw new Exception("The Recipient cannot be parsed successfully. The EndToRecip Marker is missed.");
+                    Parsed = false;
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("Recipient");
+            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddLabeledChild("PropList", PropList);
+            if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
         }
     }
 }

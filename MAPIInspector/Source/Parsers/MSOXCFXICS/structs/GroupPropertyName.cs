@@ -1,58 +1,66 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System;
-    using System.Text;
 
     /// <summary>
     /// The GroupPropertyName.
     /// 2.2.2.8.1.1 GroupPropertyName
     /// </summary>
-    public class GroupPropertyName : BaseStructure
+    public class GroupPropertyName : Block
     {
         /// <summary>
         /// The GUID that identifies the property set for the named property.
         /// </summary>
-        public Guid Guid;
+        public BlockT<Guid> Guid;
 
         /// <summary>
         /// A value that identifies the type of property. 
         /// </summary>
-        public uint Kind;
+        public BlockT<uint> Kind;
 
         /// <summary>
         ///  A value that identifies the named property within its property set. 
         /// </summary>
-        public uint? Lid;
+        public BlockT<uint> Lid;
 
         /// <summary>
         /// A value that specifies the length of the Name field, in bytes. 
         /// </summary>
-        public uint? NameSize;
+        public BlockT<uint> NameSize;
 
         /// <summary>
         /// A Unicode (UTF-16) string that identifies the property within the property set. 
         /// </summary>
-        public MAPIString Name;
+        public BlockStringW Name;
 
         /// <summary>
         /// Parse from a stream.
         /// </summary>
-        /// <param name="stream">A stream contains GroupPropertyName.</param>
-        public void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            this.Guid = stream.ReadGuid();
-            this.Kind = stream.ReadUInt32();
+            Guid = BlockT<Guid>.Parse(parser);
+            Kind = BlockT<uint>.Parse(parser);
 
-            if (this.Kind == 0x00000000)
+            if (Kind.Data == 0x00000000)
             {
-                this.Lid = stream.ReadUInt32();
+                Lid = BlockT<uint>.Parse(parser);
             }
-            else if (this.Kind == 0x00000001)
+            else if (Kind.Data == 0x00000001)
             {
-                this.NameSize = stream.ReadUInt32();
-                this.Name = new MAPIString(Encoding.Unicode, string.Empty, (int)this.NameSize / 2);
-                this.Name.Parse(stream);
+                NameSize = BlockT<uint>.Parse(parser);
+                Name = BlockStringW.Parse(parser, (int)NameSize.Data / 2);
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("GroupPropertyName");
+            if (Guid != null) AddChild(Guid, $"Guid:{Guid.Data}");
+            if (Kind != null) AddChild(Kind, $"Kind:{Kind.Data}");
+            if (Lid != null) AddChild(Lid, $"Lid:{Lid.Data}");
+            if (NameSize != null) AddChild(NameSize, $"NameSize:{NameSize.Data}");
+            if (Name != null) AddChild(Name, $"Name:{Name.Data}");
         }
     }
 }

@@ -1,16 +1,16 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System;
+    using BlockParser;
 
     /// <summary>
     /// Contain a MessageContent.
     /// </summary>
-    public class EmbeddedMessage : SyntacticalBase
+    public class EmbeddedMessage : Block
     {
         /// <summary>
         /// The start marker of the EmbeddedMessage.
         /// </summary>
-        public Markers StartMarker;
+        public BlockT<Markers> StartMarker;
 
         /// <summary>
         /// A MessageContent value represents the content of a message: its properties, the recipients, and the attachments.
@@ -20,47 +20,39 @@
         /// <summary>
         /// The end marker of the EmbeddedMessage.
         /// </summary>
-        public Markers EndMarker;
-
-        /// <summary>
-        /// Initializes a new instance of the EmbeddedMessage class.
-        /// </summary>
-        /// <param name="stream">The stream.</param>
-        public EmbeddedMessage(FastTransferStream stream)
-            : base(stream)
-        {
-        }
+        public BlockT<Markers> EndMarker;
 
         /// <summary>
         /// Verify that a stream's current position contains a serialized EmbeddedMessage.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized EmbeddedMessage, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return stream.VerifyMarker(Markers.StartEmbed);
+            return MarkersHelper.VerifyMarker(parser, Markers.StartEmbed);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            if (stream.ReadMarker() == Markers.StartEmbed)
+            StartMarker = BlockT<Markers>.Parse(parser);
+            if (StartMarker.Data == Markers.StartEmbed)
             {
-                this.StartMarker = Markers.NewAttach;
-                this.MessageContent = new MessageContent(stream);
+                MessageContent = Parse<MessageContent>(parser);
 
-                if (stream.ReadMarker() == Markers.EndEmbed)
+                EndMarker = BlockT<Markers>.Parse(parser);
+                if (EndMarker.Data != Markers.EndEmbed)
                 {
-                    this.EndMarker = Markers.EndEmbed;
-                }
-                else
-                {
-                    throw new Exception("The EmbeddedMessage cannot be parsed successfully. The EndEmbed Marker is missed.");
+                    Parsed = false;
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("EmbeddedMessage");
+            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddLabeledChild("MessageContent", MessageContent);
+            if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
         }
     }
 }

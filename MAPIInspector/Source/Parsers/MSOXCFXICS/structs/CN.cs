@@ -1,34 +1,38 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System;
+    using BlockParser;
 
-    #region 2.2.2.1 CN Structure
     /// <summary>
     /// Represents CN structure contains a change number that identifies a version of a messaging object. 
+    /// 2.2.2.1 CN Structure
     /// </summary>
-    public class CN : BaseStructure
+    public class CN : Block
     {
         /// <summary>
         /// A 16-bit unsigned integer identifying the server replica in which the messaging object was last changed.
         /// </summary>
-        public ushort ReplicaId;
+        public BlockT<ushort> ReplicaId;
 
         /// <summary>
         /// An unsigned 48-bit integer identifying the change to the messaging object.
         /// </summary>
-        [BytesAttribute(6)]
-        public ulong GlobalCounter;
+        public BlockBytes GlobalCounter; // 6 bytes
 
         /// <summary>
         /// Parse from a stream.
         /// </summary>
-        /// <param name="stream">A stream contains CN.</param>
-        public void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            this.ReplicaId = stream.ReadUInt16();
-            this.GlobalCounter = BitConverter.ToUInt64(stream.ReadBlock(6), 0);
+            ReplicaId = BlockT<ushort>.Parse(parser);
+            GlobalCounter = BlockBytes.Parse(parser, 6);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("CN");
+            if (ReplicaId != null) AddChild(ReplicaId, $"ReplicaId:{ReplicaId.Data} ({ReplicaId.Data:X4})");
+            AddLabeledChild("GlobalCounter", GlobalCounter);
         }
     }
-
-    #endregion
 }
+

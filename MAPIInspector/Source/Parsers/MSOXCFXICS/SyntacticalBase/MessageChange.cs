@@ -1,9 +1,11 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The MessageChange element contains information for the changed messages.
     /// </summary>
-    public class MessageChange : SyntacticalBase
+    public class MessageChange : Block
     {
         /// <summary>
         /// A MessageChangeFull value.
@@ -16,38 +18,32 @@
         public MessageChangePartial MesageChangePartial;
 
         /// <summary>
-        /// Initializes a new instance of the MessageChange class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream object.</param>
-        public MessageChange(FastTransferStream stream)
-            : base(stream)
-        {
-        }
-
-        /// <summary>
         /// Verify that a stream's current position contains a serialized MessageChange.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized MessageChange, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return MessageChangeFull.Verify(stream) || MessageChangePartial.Verify(stream);
+            return MessageChangeFull.Verify(parser) || MessageChangePartial.Verify(parser);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            if (MessageChangeFull.Verify(stream))
+            if (MessageChangeFull.Verify(parser))
             {
-                this.MessageChangeFull = new MessageChangeFull(stream);
+                MessageChangeFull = Parse<MessageChangeFull>(parser);
             }
             else
             {
-                this.MesageChangePartial = new MessageChangePartial(stream);
+                MesageChangePartial = Parse<MessageChangePartial>(parser);
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("MessageChange");
+            AddLabeledChild("MessageChangeFull", MessageChangeFull);
+            AddLabeledChild("MesageChangePartial", MesageChangePartial);
         }
     }
 }

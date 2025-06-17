@@ -1,4 +1,6 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Represent a fixedPropType PropValue.
@@ -8,115 +10,84 @@
         /// <summary>
         /// A fixed value.
         /// </summary>
-        public object FixedValue;
-
-        /// <summary>
-        /// Initializes a new instance of the FixedPropTypePropValue class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream</param>
-        public FixedPropTypePropValue(FastTransferStream stream)
-            : base(stream)
-        {
-        }
+        public Block FixedValue;
 
         /// <summary>
         /// Verify that a stream's current position contains a serialized FixedPropTypePropValue.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized FixedPropTypePropValue, return true, else false</returns>
-        public static new bool Verify(FastTransferStream stream)
+        public static new bool Verify(BinaryParser parser)
         {
-            ushort tmp = stream.VerifyUInt16();
-            return LexicalTypeHelper.IsFixedType((PropertyDataType)tmp)
-                && !PropValue.IsMetaTagIdsetGiven(stream);
+            var tmp = BlockT<PropertyDataType>.TestParse(parser);
+            if (tmp == null || !tmp.Parsed) return false;
+            return LexicalTypeHelper.IsFixedType(tmp.Data) && !IsMetaTagIdsetGiven(parser);
         }
 
-        /// <summary>
-        /// Parse a DispidNamedPropInfo instance from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        /// <returns>A DispidNamedPropInfo instance.</returns>
-        public static new LexicalBase ParseFrom(FastTransferStream stream)
+        protected override void Parse()
         {
-            return new FixedPropTypePropValue(stream);
+            base.Parse();
+
+            FixedValue = ParseFixedProp(parser, PropType.Data, PropInfo.PropID.Data);
         }
 
-        /// <summary>
-        /// Parse next object from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void ParseBlocks()
         {
-            base.Parse(stream);
-            PropertyDataType type = (PropertyDataType)this.PropType;
+            base.ParseBlocks();
+            AddChild(FixedValue, $"FixedValue:{FixedValue}");
+        }
 
-            switch (type)
+        public static Block ParseFixedProp(BinaryParser parser, PropertyDataType dataType, PidTagPropertyEnum id)
+        {
+            switch (dataType)
             {
                 case PropertyDataType.PtypInteger16:
-                    this.FixedValue = stream.ReadInt16();
-                    break;
+                    return Parse<PtypInteger16>(parser);
                 case PropertyDataType.PtypInteger32:
-                    if ((ushort)this.PropInfo.PropID == 0x67A4)
+                    if (id == PidTagPropertyEnum.PidTagChangeNumber)
                     {
-                        CN tmpCN = new CN();
-                        tmpCN.Parse(stream);
-                        this.FixedValue = tmpCN;
+                        return Parse<CN>(parser);
                     }
                     else
                     {
-                        this.FixedValue = stream.ReadInt32();
+                        return Parse<PtypInteger32>(parser);
                     }
 
-                    break;
                 case PropertyDataType.PtypFloating32:
-                    this.FixedValue = stream.ReadFloating32();
-                    break;
+                    return Parse<PtypFloating32>(parser);
                 case PropertyDataType.PtypFloating64:
-                    this.FixedValue = stream.ReadFloating64();
-                    break;
+                    return Parse<PtypFloating64>(parser);
                 case PropertyDataType.PtypCurrency:
-                    this.FixedValue = stream.ReadCurrency();
-                    break;
+                    return Parse<PtypCurrency>(parser);
                 case PropertyDataType.PtypFloatingTime:
-                    this.FixedValue = stream.ReadFloatingTime();
-                    break;
+                    return Parse<PtypFloatingTime>(parser);
                 case PropertyDataType.PtypBoolean:
-                    this.FixedValue = stream.ReadBoolean();
-                    break;
+                    return Parse<PtypBooleanShort>(parser);
                 case PropertyDataType.PtypInteger64:
-                    if ((ushort)this.PropInfo.PropID == 0x6714)
+                    if (id == (PidTagPropertyEnum)0x6714)
                     {
-                        CN tmpCN = new CN();
-                        tmpCN.Parse(stream);
-                        this.FixedValue = tmpCN;
+                        return Parse<CN>(parser);
                     }
-                    else if ((ushort)base.PropInfo.PropID == 0x674A)
+                    else if (id == PidTagPropertyEnum.PidTagMid)
                     {
-                        MessageID tmpMID = new MessageID();
-                        tmpMID.Parse(stream);
-                        this.FixedValue = tmpMID;
+                        return Parse<MessageID>(parser);
                     }
-                    else if ((ushort)base.PropInfo.PropID == 0x6748)
+                    else if (id == PidTagPropertyEnum.PidTagFolderId)
                     {
-                        FolderID tmpFID = new FolderID();
-                        tmpFID.Parse(stream);
-                        this.FixedValue = tmpFID;
+                        return Parse<FolderID>(parser);
                     }
                     else
                     {
-                        this.FixedValue = stream.ReadInt64();
+                        return Parse<PtypInteger64>(parser);
                     }
 
-                    break;
                 case PropertyDataType.PtypTime:
-                    PtypTime tempPropertyValue = new PtypTime();
-                    tempPropertyValue.Parse(stream);
-                    this.FixedValue = tempPropertyValue;
-                    break;
+                    return Parse<PtypTime>(parser);
                 case PropertyDataType.PtypGuid:
-                    this.FixedValue = stream.ReadGuid();
-                    break;
+                    return Parse<PtypGuid>(parser);
             }
+
+            return null;
         }
     }
 }

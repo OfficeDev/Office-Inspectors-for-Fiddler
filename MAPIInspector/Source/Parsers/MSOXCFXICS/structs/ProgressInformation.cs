@@ -1,59 +1,72 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The ProgressInformation.
     /// 2.2.2.7 ProgressInformation Structure
     /// </summary>
-    public class ProgressInformation : BaseStructure
+    public class ProgressInformation : Block
     {
         /// <summary>
         /// An unsigned 16-bit value that contains a number that identifies the binary structure of the data that follows.
         /// </summary>
-        public ushort Version;
+        public BlockT<ushort> Version;
 
         /// <summary>
         ///  The padding.
         /// </summary>
-        public ushort Padding1;
+        public BlockT<ushort> Padding1;
 
         /// <summary>
         /// An unsigned 32-bit integer value that contains the total number of changes to FAI messages that are scheduled for download during the current synchronization operation.
         /// </summary>
-        public uint FAIMessageCount;
+        public BlockT<uint> FAIMessageCount;
 
         /// <summary>
         /// An unsigned 64-bit integer value that contains the size in bytes of all changes to FAI messages that are scheduled for download during the current synchronization operation.
         /// </summary>
-        public ulong FAIMessageTotalSize;
+        public BlockT<ulong> FAIMessageTotalSize;
 
         /// <summary>
         /// An unsigned 32-bit integer value that contains the total number of changes to normal messages that are scheduled for download during the current synchronization operation.
         /// </summary>
-        public uint NormalMessageCount;
+        public BlockT<uint> NormalMessageCount;
 
         /// <summary>
         /// The padding.
         /// </summary>
-        public uint Padding2;
+        public BlockT<uint> Padding2;
 
         /// <summary>
         /// An unsigned 64-bit integer value that contains the size in bytes of all changes to normal messages  that are scheduled for download during the current synchronization operation.
         /// </summary>
-        public ulong NormalMessageTotalSize;
+        public BlockT<ulong> NormalMessageTotalSize;
 
         /// <summary>
         /// Parse from a stream.
         /// </summary>
-        /// <param name="stream">A stream contains ProgressInformation.</param>
-        public void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            this.Version = stream.ReadUInt16();
-            this.Padding1 = stream.ReadUInt16();
-            this.FAIMessageCount = stream.ReadUInt32();
-            this.FAIMessageTotalSize = stream.ReadUInt64();
-            this.NormalMessageCount = stream.ReadUInt32();
-            this.Padding2 = stream.ReadUInt32();
-            this.NormalMessageTotalSize = stream.ReadUInt64();
+            Version = BlockT<ushort>.Parse(parser);
+            Padding1 = BlockT<ushort>.Parse(parser);
+            FAIMessageCount = BlockT<uint>.Parse(parser);
+            FAIMessageTotalSize = BlockT<ulong>.Parse(parser);
+            NormalMessageCount = BlockT<uint>.Parse(parser);
+            Padding2 = BlockT<uint>.Parse(parser);
+            NormalMessageTotalSize = BlockT<ulong>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ProgressInformation");
+            if (Version != null) AddChild(Version, $"Version:{Version.Data}");
+            if (Padding1 != null) AddChild(Padding1, $"Padding1:{Padding1.Data}");
+            if (FAIMessageCount != null) AddChild(FAIMessageCount, $"FAIMessageCount:{FAIMessageCount.Data}");
+            if (FAIMessageTotalSize != null) AddChild(FAIMessageTotalSize, $"FAIMessageTotalSize:{FAIMessageTotalSize.Data}");
+            if (NormalMessageCount != null) AddChild(NormalMessageCount, $"NormalMessageCount:{NormalMessageCount.Data}");
+            if (Padding2 != null) AddChild(Padding2, $"Padding2:{Padding2.Data}");
+            if (NormalMessageTotalSize != null) AddChild(NormalMessageTotalSize, $"NormalMessageTotalSize:{NormalMessageTotalSize.Data}");
         }
     }
 }

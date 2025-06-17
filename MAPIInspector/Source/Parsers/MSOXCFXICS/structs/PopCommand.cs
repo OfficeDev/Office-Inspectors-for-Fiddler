@@ -1,4 +1,6 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Represent a pop command.
@@ -9,15 +11,20 @@
         /// <summary>
         /// The Command for pop
         /// </summary>
-        public byte Command;
+        public BlockT<byte> Command;
 
         /// <summary>
         /// Parse from a stream.
         /// </summary>
-        /// <param name="stream">A stream contains PopCommand.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            this.Command = stream.ReadByte();
+            Command = BlockT<byte>.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("PopCommand");
+            if (Command != null) AddChild(Command, $"Command:{Command.Data}");
         }
     }
 }

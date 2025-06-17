@@ -1,14 +1,16 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The Deletions element contains information of messages that have been deleted expired or moved out of the sync scope.
     /// </summary>
-    public class Deletions : SyntacticalBase
+    public class Deletions : Block
     {
         /// <summary>
         /// The start marker of Deletions.
         /// </summary>
-        public Markers StartMarker;
+        public BlockT<Markers> StartMarker;
 
         /// <summary>
         /// A PropList value.
@@ -16,35 +18,29 @@
         public PropList PropList;
 
         /// <summary>
-        /// Initializes a new instance of the Deletions class.
-        /// </summary>
-        /// <param name="stream">The stream.</param>
-        public Deletions(FastTransferStream stream)
-            : base(stream)
-        {
-        }
-
-        /// <summary>
         /// Verify that a stream's current position contains a serialized Deletions.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized Deletions, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return stream.VerifyMarker(Markers.IncrSyncDel);
+            return MarkersHelper.VerifyMarker(parser, Markers.IncrSyncDel);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            if (stream.ReadMarker() == Markers.IncrSyncDel)
+            StartMarker = BlockT<Markers>.Parse(parser);
+            if (StartMarker.Data == Markers.IncrSyncDel)
             {
-                this.StartMarker = Markers.IncrSyncDel;
-                this.PropList = new PropList(stream);
+                PropList = Parse<PropList>(parser);
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("Deletions");
+            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddLabeledChild("PropList", PropList);
         }
     }
 }

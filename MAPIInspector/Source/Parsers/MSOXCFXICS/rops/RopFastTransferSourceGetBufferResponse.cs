@@ -1,138 +1,130 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System;
+    using BlockParser;
     using System.Collections.Generic;
-    using System.IO;
 
     /// <summary>
     ///  A class indicates the RopFastTransferSourceGetBuffer ROP Response Buffer.
     ///  2.2.3.1.1.5.2 RopFastTransferSourceGetBuffer ROP Response Buffer
     /// </summary>
-    public class RopFastTransferSourceGetBufferResponse : BaseStructure
+    public class RopFastTransferSourceGetBufferResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An enumeration that specifies the current status of the transfer. 
         /// </summary>
-        public TransferStatus? TransferStatus;
+        public BlockT<TransferStatus> TransferStatus;
 
         /// <summary>
         /// An unsigned integer that specifies the number of steps that have been completed in the current operation.
         /// </summary>
-        public ushort? InProgressCount;
+        public BlockT<ushort> InProgressCount;
 
         /// <summary>
         /// An unsigned integer that specifies the approximate number of steps to be completed in the current operation.
         /// </summary>
-        public ushort? TotalStepCount;
+        public BlockT<ushort> TotalStepCount;
 
         /// <summary>
         /// A reserved field
         /// </summary>
-        public byte? Reserved;
+        public BlockT<byte> Reserved;
 
         /// <summary>
         /// An unsigned integer that specifies the size of the TransferBuffer field.
         /// </summary>
-        public ushort? TransferBufferSize;
+        public BlockT<ushort> TransferBufferSize;
 
         /// <summary>
-        ///  An array of bytes that specifies FastTransferStream.
+        ///  An array of blocks that specifies FastTransferStream.
         /// </summary>
-        public object TransferBuffer;
+        public Block[] TransferBuffer;
 
         /// <summary>
         /// An unsigned integer that specifies the number of milliseconds for the client to wait before trying this operation again
         /// </summary>
-        public uint? BackoffTime;
+        public BlockT<uint> BackoffTime;
 
         /// <summary>
         /// Parse the RopFastTransferSourceGetBufferResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopFastTransferSourceGetBufferResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = BlockT<RopIdType>.Parse(parser);
+            InputHandleIndex = BlockT<byte>.Parse(parser);
+            ReturnValue = BlockT<ErrorCodes>.Parse(parser);
 
-            this.RopId = (RopIdType)this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
-
-            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                this.TransferStatus = (TransferStatus)this.ReadUshort();
-                this.InProgressCount = this.ReadUshort();
-                this.TotalStepCount = this.ReadUshort();
-                this.Reserved = this.ReadByte();
-                this.TransferBufferSize = this.ReadUshort();
-                byte[] buffer = ReadBytes((int)this.TransferBufferSize);
-                FastTransferStream transferStream = new FastTransferStream(new byte[0], true);
-                long sposition = 0;
+                TransferStatus = BlockT<TransferStatus>.Parse(parser);
+                InProgressCount = BlockT<ushort>.Parse(parser);
+                TotalStepCount = BlockT<ushort>.Parse(parser);
+                Reserved = BlockT<byte>.Parse(parser);
+                TransferBufferSize = BlockT<ushort>.Parse(parser);
 
-                if (this.TransferStatus.Value == Parsers.TransferStatus.Partial)
+                parser.PushCap(TransferBufferSize.Data);
+                if (TransferStatus.Data == Parsers.TransferStatus.Partial)
                 {
-                    transferStream = new FastTransferStream(buffer, true);
-                    List<TransferGetBufferElement> transferBufferList = new List<TransferGetBufferElement>();
+                    var transferBufferList = new List<TransferGetBufferElement>();
 
-                    while (!transferStream.IsEndOfStream)
+                    while (!parser.Empty)
                     {
-                        sposition = transferStream.Position;
-                        TransferGetBufferElement element = new TransferGetBufferElement(transferStream);
-
-                        if (sposition == transferStream.Position)
-                        {
-                            throw new Exception(string.Format("Error occurred in the {0} TransferElement", transferBufferList.Count));
-                        }
-                        else
-                        {
-                            transferBufferList.Add(element);
-                        }
+                        var element = Parse<TransferGetBufferElement>(parser);
+                        if (!element.Parsed || element.Size == 0) break;
+                        transferBufferList.Add(element);
                     }
 
-                    this.TransferBuffer = transferBufferList.ToArray();
+                    TransferBuffer = transferBufferList.ToArray();
                 }
                 else
                 {
-                    transferStream = new FastTransferStream(buffer, true);
-                    List<TransferGetBufferElement> transferBufferList = new List<TransferGetBufferElement>();
+                    var transferBufferList = new List<TransferGetBufferElement>();
 
-                    while (transferStream.Position < transferStream.Length)
+                    while (!parser.Empty)
                     {
-                        sposition = transferStream.Position;
-
-                        TransferGetBufferElement element = new TransferGetBufferElement(transferStream);
-                        if (sposition == transferStream.Position)
-                        {
-                            throw new Exception(string.Format("Error occurred in the {0} TransferElement", transferBufferList.Count));
-                        }
-                        else
-                        {
-                            transferBufferList.Add(element);
-                        }
+                        var element = Parse<TransferGetBufferElement>(parser);
+                        if (!element.Parsed || element.Size == 0) break;
+                        transferBufferList.Add(element);
                     }
 
-                    this.TransferBuffer = transferBufferList.ToArray();
+                    TransferBuffer = transferBufferList.ToArray();
                 }
-            }
 
-            if ((AdditionalErrorCodes)this.ReturnValue == AdditionalErrorCodes.ServerBusy)
-            {
-                this.BackoffTime = this.ReadUint();
+                parser.PopCap();
             }
+            else if ((AdditionalErrorCodes)ReturnValue.Data == AdditionalErrorCodes.ServerBusy)
+            {
+                BackoffTime = BlockT<uint>.Parse(parser);
+            }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopFastTransferSourceGetBufferResponse");
+            if (RopId != null) AddChild(RopId, $"RopId:{RopId.Data}");
+            if (InputHandleIndex != null) AddChild(InputHandleIndex, $"InputHandleIndex:{InputHandleIndex.Data}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data}");
+            if (TransferStatus != null) AddChild(TransferStatus, $"TransferStatus:{TransferStatus.Data}");
+            if (InProgressCount != null) AddChild(InProgressCount, $"InProgressCount:{InProgressCount.Data}");
+            if (TotalStepCount != null) AddChild(TotalStepCount, $"TotalStepCount:{TotalStepCount.Data}");
+            if (Reserved != null) AddChild(Reserved, $"Reserved:{Reserved.Data}");
+            if (TransferBufferSize != null) AddChild(TransferBufferSize, $"TransferBufferSize:{TransferBufferSize.Data}");
+            AddLabeledChildren("TransferBuffer", TransferBuffer);
+            if (BackoffTime != null) AddChild(BackoffTime, $"BackoffTime:{BackoffTime.Data}");
         }
     }
 }

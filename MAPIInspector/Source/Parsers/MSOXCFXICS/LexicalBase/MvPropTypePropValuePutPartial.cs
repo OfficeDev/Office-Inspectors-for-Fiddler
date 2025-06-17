@@ -1,6 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System;
+    using BlockParser;
 
     /// <summary>
     /// multi-valued property type PropValue
@@ -10,43 +10,22 @@
         /// <summary>
         /// This represent the length variable.
         /// </summary>
-        public int? Length;
+        public BlockT<int> Length;
 
-        /// <summary>
-        /// A list of fixed size values.
-        /// </summary>
-        public byte[][] FixedSizeValueList;
-
-        /// <summary>
-        /// A list of LengthOfBlock.
-        /// </summary>
-        public LengthOfBlock[] VarSizeValueList;
+        Block[] ValueArray;
 
         /// <summary>
         /// Length for partial
         /// </summary>
         private int Plength;
 
-        /// <summary>
-        /// Initializes a new instance of the MvPropTypePropValuePutPartial class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream</param>
-        public MvPropTypePropValuePutPartial(FastTransferStream stream)
-            : base(stream)
+        protected override void Parse()
         {
-        }
+            base.Parse();
 
-        /// <summary>
-        /// Parse next object from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream</param>
-        public override void Parse(FastTransferStream stream)
-        {
-            base.Parse(stream);
-
-            if (stream.IsEndOfStream)
+            if (parser.Empty)
             {
-                MapiInspector.MAPIParser.PartialPutType = (ushort)this.PropType;
+                MapiInspector.MAPIParser.PartialPutType = PropType.Data;
                 MapiInspector.MAPIParser.PartialPutServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
                 MapiInspector.MAPIParser.PartialPutProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
                 MapiInspector.MAPIParser.PartialPutClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
@@ -56,16 +35,16 @@
                 if (MapiInspector.MAPIParser.PartialPutType != 0 && MapiInspector.MAPIParser.PartialPutServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIParser.PartialPutProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
                     && MapiInspector.MAPIParser.PartialPutClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    this.ptype = MapiInspector.MAPIParser.PartialPutType;
+                    ptype = BlockT<PropertyDataType>.Create(MapiInspector.MAPIParser.PartialPutType, 0, 0);
 
                     if (MapiInspector.MAPIParser.PartialPutRemainSize != -1)
                     {
-                        this.Plength = MapiInspector.MAPIParser.PartialPutRemainSize;
+                        Plength = MapiInspector.MAPIParser.PartialPutRemainSize;
                         MapiInspector.MAPIParser.PartialPutRemainSize = -1;
                     }
                     else
                     {
-                        this.Length = stream.ReadInt32();
+                        Length = BlockT<int>.Parse(parser);
                     }
 
                     // clear
@@ -81,70 +60,30 @@
                 }
                 else
                 {
-                    this.Length = stream.ReadInt32();
+                    Length = BlockT<int>.Parse(parser);
                 }
 
-                int lengthValue;
-                ushort typeValue;
-
-                if (this.Length != null)
+                int blocksLength = Length != null ? Length.Data : Plength;
+                PropertyDataType typeValue = PropertyDataType.PtypUnspecified;
+                if (PropType != null)
                 {
-                    lengthValue = (int)this.Length;
+                    typeValue = PropType.Data;
                 }
-                else
+                else if (ptype != null)
                 {
-                    lengthValue = this.Plength;
-                }
-
-                if (this.PropType != null)
-                {
-                    typeValue = (ushort)this.PropType;
-                }
-                else
-                {
-                    typeValue = this.ptype;
+                    typeValue = ptype.Data;
                 }
 
-                switch ((PropertyDataType)this.PropType)
-                {
-                    case PropertyDataType.PtypMultipleInteger16:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 2, typeValue, false, true);
-                        break;
-                    case PropertyDataType.PtypMultipleInteger32:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4, typeValue, false, true);
-                        break;
-                    case PropertyDataType.PtypMultipleFloating32:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 4, typeValue, false, true);
-                        break;
-                    case PropertyDataType.PtypMultipleFloating64:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, false, true);
-                        break;
-                    case PropertyDataType.PtypMultipleCurrency:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, false, true);
-                        break;
-                    case PropertyDataType.PtypMultipleFloatingTime:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, false, true);
-                        break;
-                    case PropertyDataType.PtypMultipleInteger64:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, false, true);
-                        break;
-                    case PropertyDataType.PtypMultipleTime:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, 8, typeValue, false, true);
-                        break;
-                    case PropertyDataType.PtypMultipleGuid:
-                        this.FixedSizeValueList = stream.ReadBlocksPartial(lengthValue, Guid.Empty.ToByteArray().Length, typeValue, false, true);
-                        break;
-                    case PropertyDataType.PtypMultipleBinary:
-                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false, true);
-                        break;
-                    case PropertyDataType.PtypMultipleString:
-                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false, true);
-                        break;
-                    case PropertyDataType.PtypMultipleString8:
-                        this.VarSizeValueList = stream.ReadLengthBlocksPartial(lengthValue, typeValue, false, true);
-                        break;
-                }
+                ValueArray = MvPropTypePropValue.ParseArray(parser, PropType.Data, blocksLength);
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            base.ParseBlocks();
+            SetText("MvPropTypePropValuePutPartial");
+            AddChild(Length, $"Length: {Length.Data} bytes");
+            AddLabeledChildren("ValueArray", ValueArray);
         }
     }
 }

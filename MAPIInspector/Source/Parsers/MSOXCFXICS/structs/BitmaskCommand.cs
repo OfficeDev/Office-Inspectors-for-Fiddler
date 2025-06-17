@@ -1,36 +1,44 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Represent a bitmask command.
     /// 2.2.2.6.3 Bitmask Command (0x42)
-
     /// </summary>
     public class BitmaskCommand : Command
     {
         /// <summary>
         /// Bitmask Command.
         /// </summary>
-        public byte Command;
+        public BlockT<byte> Command;
 
         /// <summary>
         /// The low-order byte of the low value of the first GLOBCNT range.
         /// </summary>
-        public byte StartValue;
+        public BlockT<byte> StartValue;
 
         /// <summary>
         /// One bit set for each value within a range, excluding the low value of the first GLOBCNT range.
         /// </summary>
-        public byte Bitmask;
+        public BlockT<byte> Bitmask;
 
         /// <summary>
         /// Parse from a stream.
         /// </summary>
-        /// <param name="stream">A stream contains BitmaskCommand.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            this.Command = stream.ReadByte();
-            this.StartValue = stream.ReadByte();
-            this.Bitmask = stream.ReadByte();
+            Command = new BlockT<byte>(parser);
+            StartValue = new BlockT<byte>(parser);
+            Bitmask = new BlockT<byte>(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("BitmaskCommand");
+            if (Command != null) AddChild(Command, $"Command: {Command.Data:X2}");
+            if (StartValue != null) AddChild(StartValue, $"StartValue: {StartValue.Data}");
+            if (Bitmask != null) AddChild(Bitmask, $"Bitmask: {Bitmask.Data:X2}");
         }
     }
 }

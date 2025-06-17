@@ -108,7 +108,6 @@
     <Compile Include="MAPIRequestInspector.cs" />
     <Compile Include="MAPIResponseInspector.cs" />
     <Compile Include="Parsers\BaseStructure.cs" />
-    <Compile Include="Parsers\MSOXCFXICS\LexicalBase\DispidNamedPropInfo.cs" />
     <Compile Include="Parsers\MSOXCFXICS\LexicalBase\FixedPropTypePropValue.cs" />
     <Compile Include="Parsers\MSOXCFXICS\LexicalBase\FixedPropTypePropValueGetPartial.cs" />
     <Compile Include="Parsers\MSOXCFXICS\LexicalBase\FixedPropTypePropValuePutExtendPartial.cs" />
@@ -118,7 +117,6 @@
     <Compile Include="Parsers\MSOXCFXICS\LexicalBase\MvPropTypePropValuePutExtendPartial.cs" />
     <Compile Include="Parsers\MSOXCFXICS\LexicalBase\MvPropTypePropValuePutPartial.cs" />
     <Compile Include="Parsers\MSOXCFXICS\LexicalBase\NamedPropInfo.cs" />
-    <Compile Include="Parsers\MSOXCFXICS\LexicalBase\NameNamedPropInfo.cs" />
     <Compile Include="Parsers\MSOXCFXICS\LexicalBase\PropInfo.cs" />
     <Compile Include="Parsers\MSOXCFXICS\LexicalBase\PropValue.cs" />
     <Compile Include="Parsers\MSOXCFXICS\LexicalBase\VarPropTypePropValue.cs" />
@@ -138,14 +136,11 @@
     <Compile Include="Parsers\MSOXCFXICS\enum\FastTransferStreamType.cs" />
     <Compile Include="Parsers\MSOXCFXICS\enum\ImportDeleteFlags.cs" />
     <Compile Include="Parsers\MSOXCFXICS\enum\ImportFlag.cs" />
-    <Compile Include="Parsers\MSOXCFXICS\FastTransferStream.cs" />
     <Compile Include="Parsers\MSOXCFXICS\structs\FolderReplicaInfo.cs" />
     <Compile Include="Parsers\MSOXCFXICS\structs\GLOBSET.cs" />
     <Compile Include="Parsers\MSOXCFXICS\structs\GroupPropertyName.cs" />
     <Compile Include="Parsers\MSOXCFXICS\structs\IDSET_REPLGUID.cs" />
     <Compile Include="Parsers\MSOXCFXICS\structs\IDSET_REPLID.cs" />
-    <Compile Include="Parsers\MSOXCFXICS\LengthOfBlock.cs" />
-    <Compile Include="Parsers\MSOXCFXICS\LexicalBase\LexicalBase.cs" />
     <Compile Include="Parsers\MSOXCFXICS\LexicalTypeHelper.cs" />
     <Compile Include="Parsers\MSOXCFXICS\SyntacticalBase\LongTermId.cs" />
     <Compile Include="Parsers\MSOXCFXICS\enum\Markers.cs" />
@@ -251,7 +246,6 @@
     <Compile Include="Parsers\MSOXCFXICS\SyntacticalBase\State.cs" />
     <Compile Include="Parsers\MSOXCFXICS\SyntacticalBase\SubFolder.cs" />
     <Compile Include="Parsers\MSOXCFXICS\SyntacticalBase\SubFolderNoDelProps.cs" />
-    <Compile Include="Parsers\MSOXCFXICS\SyntacticalBase\SyntacticalBase.cs" />
     <Compile Include="Parsers\MSOXCFXICS\SyntacticalBase\TopFolder.cs" />
     <Compile Include="Parsers\MSOXCFXICS\SyntacticalBase\TransferGetBufferElement.cs" />
     <Compile Include="Parsers\MSOXCFXICS\SyntacticalBase\TransferPutBufferElement.cs" />

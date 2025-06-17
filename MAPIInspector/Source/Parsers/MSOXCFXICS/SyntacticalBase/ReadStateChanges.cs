@@ -1,14 +1,16 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The readStateChanges element contains information of Message objects that had their read state changed
     /// </summary>
-    public class ReadStateChanges : SyntacticalBase
+    public class ReadStateChanges : Block
     {
         /// <summary>
         /// The start marker of ReadStateChange.
         /// </summary>
-        public Markers StartMarker;
+        public BlockT<Markers> StartMarker;
 
         /// <summary>
         /// A PropList value.
@@ -16,35 +18,29 @@
         public PropList PropList;
 
         /// <summary>
-        /// Initializes a new instance of the ReadStateChanges class.
-        /// </summary>
-        /// <param name="stream">The stream.</param>
-        public ReadStateChanges(FastTransferStream stream)
-            : base(stream)
-        {
-        }
-
-        /// <summary>
         /// Verify that a stream's current position contains a serialized ReadStateChange.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized ReadStateChange, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return stream.VerifyMarker(Markers.IncrSyncRead);
+            return MarkersHelper.VerifyMarker(parser, Markers.IncrSyncRead);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            if (stream.ReadMarker() == Markers.IncrSyncRead)
+            StartMarker = BlockT<Markers>.Parse(parser);
+            if (StartMarker.Data == Markers.IncrSyncRead)
             {
-                this.StartMarker = Markers.IncrSyncRead;
-                this.PropList = new PropList(stream);
+                PropList = Parse<PropList>(parser);
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ReadStateChanges");
+            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddLabeledChild("PropList", PropList);
         }
     }
 }

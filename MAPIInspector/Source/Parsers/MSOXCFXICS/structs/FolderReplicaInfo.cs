@@ -1,22 +1,23 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.Text;
+    using BlockParser;
+    using System.Collections.Generic;
 
     /// <summary>
     /// The FolderReplicaInfo structure contains information about server replicas of a public folder.
     /// 2.2.2.9 FolderReplicaInfo
     /// </summary>
-    public class FolderReplicaInfo : BaseStructure
+    public class FolderReplicaInfo : Block
     {
         /// <summary>
         /// A UInt value.
         /// </summary>
-        public uint Flags;
+        public BlockT<uint> Flags;
 
         /// <summary>
         /// A UInt value.
         /// </summary>
-        public uint Depth;
+        public BlockT<uint> Depth;
 
         /// <summary>
         /// A LongTermID structure. Contains the LongTermID of a folder, for which server replica information is being described.
@@ -26,35 +27,49 @@
         /// <summary>
         /// An unsigned 32-bit integer value that determines how many elements exist in ServerDNArray. 
         /// </summary>
-        public uint ServerDNCount;
+        public BlockT<uint> ServerDNCount;
 
         /// <summary>
         /// An unsigned 32-bit integer value that determines how many of the leading elements in ServerDNArray have the same,lowest, network access cost.
         /// </summary>
-        public uint CheapServerDNCount;
+        public BlockT<uint> CheapServerDNCount;
 
         /// <summary>
         /// An array of ASCII-encoded NULL-terminated strings. 
         /// </summary>
-        public MAPIString[] ServerDNArray;
+        public BlockStringA[] ServerDNArray;
 
         /// <summary>
         /// Parse from a stream.
         /// </summary>
-        /// <param name="stream">A stream contains FolderReplicaInfo.</param>
-        public void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            this.Flags = stream.ReadUInt32();
-            this.Depth = stream.ReadUInt32();
-            this.FolderLongTermId = new LongTermId(stream);
-            this.ServerDNCount = stream.ReadUInt32();
-            this.CheapServerDNCount = stream.ReadUInt32();
-            this.ServerDNArray = new MAPIString[this.ServerDNCount];
+            Flags = BlockT<uint>.Parse(parser);
+            Depth = BlockT<uint>.Parse(parser);
+            FolderLongTermId = Parse<LongTermId>(parser);
+            ServerDNCount = BlockT<uint>.Parse(parser);
+            CheapServerDNCount = BlockT<uint>.Parse(parser);
 
-            for (int i = 0; i < this.ServerDNCount; i++)
+            var tmpDNArray = new List<BlockStringA>();
+            for (int i = 0; i < ServerDNCount.Data; i++)
             {
-                this.ServerDNArray[i] = new MAPIString(Encoding.ASCII);
-                this.ServerDNArray[i].Parse(stream);
+                tmpDNArray.Add(BlockStringA.Parse(parser));
+            }
+
+            ServerDNArray = tmpDNArray.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("FolderReplicaInfo");
+            if (Flags != null) AddChild(Flags, $"Flags:{Flags.Data}");
+            if (Depth != null) AddChild(Depth, $"Depth:{Depth.Data}");
+            if (FolderLongTermId != null) AddChild(FolderLongTermId, "FolderLongTermId");
+            if (ServerDNCount != null) AddChild(ServerDNCount, $"ServerDNCount:{ServerDNCount.Data}");
+            if (CheapServerDNCount != null) AddChild(CheapServerDNCount, $"CheapServerDNCount:{CheapServerDNCount.Data}");
+            foreach (var serverDN in ServerDNArray)
+            {
+                if (serverDN != null) AddChild(serverDN, $"ServerDN:{serverDN.Data}");
             }
         }
     }

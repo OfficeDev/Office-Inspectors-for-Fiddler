@@ -1,4 +1,6 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Represent a push command.
@@ -7,23 +9,29 @@
     public class PushCommand : Command
     {
         /// <summary>
-        /// An integer that specifies the number of high-order bytes that the GLOBCNT structures
+        /// An integer that specifies the number of high-order bytes that the GLOBCNT structures, as specified in section 2.2.2.5, share
         /// </summary>
-        public byte Command;
+        public BlockT<byte> Command;
 
         /// <summary>
         /// A byte array that contains the bytes shared by the GLOBCNT structures
         /// </summary>
-        public byte[] CommonBytes;
+        public BlockBytes CommonBytes;
 
         /// <summary>
         /// Parse from a stream.
         /// </summary>
-        /// <param name="stream">A stream contains PushCommand.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            this.Command = stream.ReadByte();
-            this.CommonBytes = stream.ReadBlock(this.Command);
+            Command = BlockT<byte>.Parse(parser);
+            CommonBytes = BlockBytes.Parse(parser, Command.Data, 6);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("PushCommand");
+            if (Command != null) AddChild(Command, $"Command:{Command.Data}");
+            AddLabeledChild("CommonBytes", CommonBytes);
         }
     }
 }

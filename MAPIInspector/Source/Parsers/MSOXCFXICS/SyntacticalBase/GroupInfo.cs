@@ -1,24 +1,26 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The GroupInfo element provides a definition for the property group mapping.
     /// </summary>
-    public class GroupInfo : SyntacticalBase
+    public class GroupInfo : Block
     {
         /// <summary>
         /// The start marker of GroupInfo.
         /// </summary>
-        public Markers StartMarker;
+        public BlockT<Markers> StartMarker;
 
         /// <summary>
         /// The propertyTag for ProgressInformation.
         /// </summary>
-        public uint PropertiesTag;
+        public BlockT<uint> PropertiesTag;
 
         /// <summary>
         /// The count of the PropList.
         /// </summary>
-        public uint PropertiesLength;
+        public BlockT<uint> PropertiesLength;
 
         /// <summary>
         /// A PropList value.
@@ -26,39 +28,33 @@
         public PropertyGroupInfo PropList;
 
         /// <summary>
-        /// Initializes a new instance of the GroupInfo class.
-        /// </summary>
-        /// <param name="stream">The stream.</param>
-        public GroupInfo(FastTransferStream stream)
-            : base(stream)
-        {
-        }
-
-        /// <summary>
         /// Verify that a stream's current position contains a serialized GroupInfo.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized GroupInfo, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return stream.VerifyMarker(Markers.IncrSyncGroupInfo);
+            return MarkersHelper.VerifyMarker(parser, Markers.IncrSyncGroupInfo);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            if (stream.ReadMarker() == Markers.IncrSyncGroupInfo)
+            StartMarker = new BlockT<Markers>(parser);
+            if (StartMarker.Data == Markers.IncrSyncGroupInfo)
             {
-                this.StartMarker = Markers.IncrSyncGroupInfo;
-                this.PropertiesTag = stream.ReadUInt32();
-                this.PropertiesLength = stream.ReadUInt32();
-                PropertyGroupInfo tmpGroupInfo = new PropertyGroupInfo();
-                tmpGroupInfo.Parse(stream);
-                this.PropList = tmpGroupInfo;
+                PropertiesTag = BlockT<uint>.Parse(parser);
+                PropertiesLength = BlockT<uint>.Parse(parser);
+                PropList = Parse<PropertyGroupInfo>(parser);
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("GroupInfo");
+            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            if (PropertiesTag != null) AddChild(PropertiesTag, $"PropertiesTag:0x{PropertiesTag.Data:X8}");
+            if (PropertiesLength != null) AddChild(PropertiesLength, $"PropertiesLength:{PropertiesLength.Data}");
+            if (PropList != null) AddChild(PropList);
         }
     }
 }

@@ -1,14 +1,16 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The ProgressPerMessage element contains data that describes the approximate size of message change data that follows.
     /// </summary>
-    public class ProgressPerMessage : SyntacticalBase
+    public class ProgressPerMessage : Block
     {
         /// <summary>
         /// The start marker of ProgressPerMessage.
         /// </summary>
-        public Markers StartMarker;
+        public BlockT<Markers> StartMarker;
 
         /// <summary>
         /// A PropList value.
@@ -16,35 +18,29 @@
         public PropList PropList;
 
         /// <summary>
-        /// Initializes a new instance of the ProgressPerMessage class.
-        /// </summary>
-        /// <param name="stream">The stream.</param>
-        public ProgressPerMessage(FastTransferStream stream)
-            : base(stream)
-        {
-        }
-
-        /// <summary>
         /// Verify that a stream's current position contains a serialized ProgressPerMessage.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized ProgressPerMessage, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return stream.VerifyMarker(Markers.IncrSyncProgressPerMsg);
+            return MarkersHelper.VerifyMarker(parser, Markers.IncrSyncProgressPerMsg);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            if (stream.ReadMarker() == Markers.IncrSyncProgressPerMsg)
+            StartMarker = BlockT<Markers>.Parse(parser);
+            if (StartMarker.Data == Markers.IncrSyncProgressPerMsg)
             {
-                this.StartMarker = Markers.IncrSyncProgressPerMsg;
-                this.PropList = new PropList(stream);
+                PropList = Parse<PropList>(parser);
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ProgressPerMessage");
+            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddLabeledChild("PropList", PropList);
         }
     }
 }

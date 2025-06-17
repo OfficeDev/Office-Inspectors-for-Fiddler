@@ -58,12 +58,12 @@
         /// <summary>
         /// Used to record fasterTransfer stream property type in RopGetBuffer partial
         /// </summary>
-        public static ushort PartialGetType;
+        public static PropertyDataType PartialGetType;
 
         /// <summary>
         /// Used to record fasterTransfer stream property Id in RopGetBuffer partial
         /// </summary>
-        public static ushort PartialGetId;
+        public static PidTagPropertyEnum PartialGetId;
 
         /// <summary>
         /// Used to record fasterTransfer stream property remain size in RopGetBuffer partial
@@ -103,12 +103,12 @@
         /// <summary>
         /// Used to record fasterTransfer stream property type in RopPutBuffer partial
         /// </summary>
-        public static ushort PartialPutType;
+        public static PropertyDataType PartialPutType;
 
         /// <summary>
         /// Used to record fasterTransfer stream property Id in RopPutBuffer partial
         /// </summary>
-        public static ushort PartialPutId;
+        public static PidTagPropertyEnum PartialPutId;
 
         /// <summary>
         /// Used to record fasterTransfer stream property remain size in RopPutBuffer partial
@@ -148,12 +148,12 @@
         /// <summary>
         /// Used to record fasterTransfer stream property type in putExtendBuffer partial
         /// </summary>
-        public static ushort PartialPutExtendType;
+        public static PropertyDataType PartialPutExtendType;
 
         /// <summary>
         /// Used to record fasterTransfer stream property Id in putExtendBuffer partial
         /// </summary>
-        public static ushort PartialPutExtendId;
+        public static PidTagPropertyEnum PartialPutExtendId;
 
         /// <summary>
         /// Used to record fasterTransfer stream property remain size in putExtendBuffer partial
@@ -1131,8 +1131,8 @@
 
                     if (HandleWithSessionGetContextInformation.ContainsKey(parameters) && HandleWithSessionGetContextInformation[parameters].ContainsKey(thisSessionID))
                     {
-                        PartialGetId = HandleWithSessionGetContextInformation[parameters][thisSessionID].ID;
-                        PartialGetType = HandleWithSessionGetContextInformation[parameters][thisSessionID].Type;
+                        PartialGetId = (PidTagPropertyEnum)HandleWithSessionGetContextInformation[parameters][thisSessionID].ID;
+                        PartialGetType = (PropertyDataType)HandleWithSessionGetContextInformation[parameters][thisSessionID].Type;
                         PartialGetRemainSize = HandleWithSessionGetContextInformation[parameters][thisSessionID].RemainSize;
                         PartialGetSubRemainSize = HandleWithSessionGetContextInformation[parameters][thisSessionID].SubRemainSize;
                         IsGet = HandleWithSessionGetContextInformation[parameters][thisSessionID].IsGet;
@@ -1172,8 +1172,8 @@
 
                         if (lastSavedSessionID != 1)
                         {
-                            PartialGetId = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].ID;
-                            PartialGetType = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].Type;
+                            PartialGetId = (PidTagPropertyEnum)HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].ID;
+                            PartialGetType = (PropertyDataType)HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].Type;
                             PartialGetRemainSize = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].RemainSize;
                             PartialGetSubRemainSize = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].SubRemainSize;
                             IsGet = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].IsGet;
@@ -1275,8 +1275,8 @@
                     {
                         if (HandleWithSessionPutContextInformation.ContainsKey(parameters) && HandleWithSessionPutContextInformation[parameters].ContainsKey(thisSessionID))
                         {
-                            PartialPutId = HandleWithSessionPutContextInformation[parameters][thisSessionID].ID;
-                            PartialPutType = HandleWithSessionPutContextInformation[parameters][thisSessionID].Type;
+                            PartialPutId = (PidTagPropertyEnum)HandleWithSessionPutContextInformation[parameters][thisSessionID].ID;
+                            PartialPutType = (PropertyDataType)HandleWithSessionPutContextInformation[parameters][thisSessionID].Type;
                             PartialPutRemainSize = HandleWithSessionPutContextInformation[parameters][thisSessionID].RemainSize;
                             PartialPutSubRemainSize = HandleWithSessionPutContextInformation[parameters][thisSessionID].SubRemainSize;
                             IsPut = true;
@@ -1290,8 +1290,8 @@
                     {
                         if (HandleWithSessionPutExtendContextInformation.ContainsKey(parameters) && HandleWithSessionPutExtendContextInformation[parameters].ContainsKey(thisSessionID))
                         {
-                            PartialPutExtendId = HandleWithSessionPutExtendContextInformation[parameters][thisSessionID].ID;
-                            PartialPutExtendType = HandleWithSessionPutExtendContextInformation[parameters][thisSessionID].Type;
+                            PartialPutExtendId = (PidTagPropertyEnum)HandleWithSessionPutExtendContextInformation[parameters][thisSessionID].ID;
+                            PartialPutExtendType = (PropertyDataType)HandleWithSessionPutExtendContextInformation[parameters][thisSessionID].Type;
                             PartialPutExtendRemainSize = HandleWithSessionPutExtendContextInformation[parameters][thisSessionID].RemainSize;
                             PartialPutExtendSubRemainSize = HandleWithSessionPutExtendContextInformation[parameters][thisSessionID].SubRemainSize;
                             IsPutExtend = true;
@@ -1334,8 +1334,8 @@
 
                             if (lastSavedSessionID != 1)
                             {
-                                PartialPutId = HandleWithSessionPutContextInformation[parameters][lastSavedSessionID].ID;
-                                PartialPutType = HandleWithSessionPutContextInformation[parameters][lastSavedSessionID].Type;
+                                PartialPutId = (PidTagPropertyEnum)HandleWithSessionPutContextInformation[parameters][lastSavedSessionID].ID;
+                                PartialPutType = (PropertyDataType)HandleWithSessionPutContextInformation[parameters][lastSavedSessionID].Type;
                                 PartialPutRemainSize = HandleWithSessionPutContextInformation[parameters][lastSavedSessionID].RemainSize;
                                 PartialPutSubRemainSize = HandleWithSessionPutContextInformation[parameters][lastSavedSessionID].SubRemainSize;
                                 IsPut = true;
@@ -1381,8 +1381,8 @@
 
                             if (lastSavedSessionID != 1)
                             {
-                                PartialPutExtendId = HandleWithSessionPutExtendContextInformation[parameters][lastSavedSessionID].ID;
-                                PartialPutExtendType = HandleWithSessionPutExtendContextInformation[parameters][lastSavedSessionID].Type;
+                                PartialPutExtendId = (PidTagPropertyEnum)HandleWithSessionPutExtendContextInformation[parameters][lastSavedSessionID].ID;
+                                PartialPutExtendType = (PropertyDataType)HandleWithSessionPutExtendContextInformation[parameters][lastSavedSessionID].Type;
                                 PartialPutExtendRemainSize = HandleWithSessionPutExtendContextInformation[parameters][lastSavedSessionID].RemainSize;
                                 PartialPutExtendSubRemainSize = HandleWithSessionPutExtendContextInformation[parameters][lastSavedSessionID].SubRemainSize;
                                 IsPutExtend = true;

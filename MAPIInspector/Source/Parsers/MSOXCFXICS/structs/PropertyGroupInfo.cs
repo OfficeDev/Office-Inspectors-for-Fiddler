@@ -1,25 +1,28 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+using System.Collections.Generic;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The PropertyGroupInfo class
     /// 2.2.2.8 PropertyGroupInfo
     /// </summary>
-    public class PropertyGroupInfo : BaseStructure
+    public class PropertyGroupInfo : Block
     {
         /// <summary>
         /// An unsigned 32-bit integer value that identifies a property mapping within the current synchronization download context.
         /// </summary>
-        public uint GroupId;
+        public BlockT<uint> GroupId;
 
         /// <summary>
         /// A reserved field
         /// </summary>
-        public uint Reserved;
+        public BlockT<uint> Reserved;
 
         /// <summary>
         ///  An unsigned 32-bit integer value that specifies how many PropertyGroup structures are present in the Groups field. 
         /// </summary>
-        public uint GroupCount;
+        public BlockT<uint> GroupCount;
 
         /// <summary>
         /// An array of PropertyGroup structures,
@@ -29,18 +32,29 @@
         /// <summary>
         /// Parse from a stream.
         /// </summary>
-        /// <param name="stream">A stream contains PropertyGroupInfo.</param>
-        public void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            this.GroupId = stream.ReadUInt32();
-            this.Reserved = stream.ReadUInt32();
-            this.GroupCount = stream.ReadUInt32();
-            this.Groups = new PropertyGroup[this.GroupCount];
-            for (int i = 0; i < this.GroupCount; i++)
+            GroupId = BlockT<uint>.Parse(parser);
+            Reserved = BlockT<uint>.Parse(parser);
+            GroupCount = BlockT<uint>.Parse(parser);
+            var tmpGrp = new List<PropertyGroup>();
+            for (int i = 0; i < GroupCount.Data; i++)
             {
-                PropertyGroup tmpPropertyGroup = new PropertyGroup();
-                tmpPropertyGroup.Parse(stream);
-                this.Groups[i] = tmpPropertyGroup;
+                tmpGrp.Add(Parse<PropertyGroup>(parser));
+            }
+
+            Groups = tmpGrp.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("PropertyGroupInfo");
+            if (GroupId != null) AddChild(GroupId, $"GroupId:{GroupId.Data}");
+            AddChild(Reserved, "Reserved:0x00000000");
+            if (GroupCount != null) AddChild(GroupCount, $"GroupCount:{GroupCount.Data}");
+            foreach (var group in Groups)
+            {
+                AddChild(group);
             }
         }
     }

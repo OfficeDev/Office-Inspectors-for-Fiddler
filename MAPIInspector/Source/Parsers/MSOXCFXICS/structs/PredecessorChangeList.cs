@@ -1,12 +1,13 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System.Collections.Generic;
 
     /// <summary>
     /// Contains a set of XIDs that represent change numbers of messaging objects in different replicas. 
     /// 2.2.2.3 PredecessorChangeList Structure
     /// </summary>
-    public class PredecessorChangeList : BaseStructure
+    public class PredecessorChangeList : Block
     {
         /// <summary>
         /// A SizedXid list.
@@ -30,21 +31,26 @@
         /// <summary>
         /// Parse from a stream.
         /// </summary>
-        /// <param name="stream">A stream contains PredecessorChangeList.</param>
-        public void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            List<SizedXid> interSizeXid = new List<SizedXid>();
-            for (int i = 0; i < this.length;)
+            var interSizeXid = new List<SizedXid>();
+            for (long i = 0; i < length;)
             {
-                int position = (int)stream.Position;
-                SizedXid tmpSizedXid = new SizedXid();
-                tmpSizedXid.Parse(stream);
+                var tmpSizedXid = Parse<SizedXid>(parser);
                 interSizeXid.Add(tmpSizedXid);
-
-                i += (int)stream.Position - position;
+                i += tmpSizedXid.Size;
             }
 
-            this.SizedXidList = interSizeXid.ToArray();
+            SizedXidList = interSizeXid.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("PredecessorChangeList");
+            foreach (var sizedXid in SizedXidList)
+            {
+                AddLabeledChild("SizedXid", sizedXid);
+            }
         }
     }
 }

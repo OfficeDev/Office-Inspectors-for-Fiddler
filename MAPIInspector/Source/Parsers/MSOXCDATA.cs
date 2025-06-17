@@ -4,6 +4,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Text;
 
     /// <summary>
@@ -4866,10 +4867,7 @@
         {
             SetText("PropertyRow");
             AddChild(Flag, $"Flag:{Flag.Data}");
-            if (bytes != null)
-            {
-                AddChild(bytes, $"Bytes:{bytes.ToHexString(false)}");
-            }
+            if (bytes != null) AddChild(bytes, $"Bytes:{bytes.ToHexString(false)}");
             foreach (var propValue in ValueArray)
             {
                 AddChild(propValue, $"{propValue.GetType().Name}");
@@ -5407,6 +5405,30 @@
     }
 
     /// <summary>
+    /// 2 bytes; restricted to 1 or 0.
+    /// </summary>
+    public class PtypBooleanShort : Block
+    {
+        /// <summary>
+        /// 1 byte; restricted to 1 or 0.
+        /// </summary>
+        public BlockT<bool> Value;
+
+        /// <summary>
+        /// Parse the PtypBoolean structure.
+        /// </summary>
+        protected override void Parse()
+        {
+            Value = BlockT<bool>.Parse<short>(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            Text = $"{Value.Data}";
+        }
+    }
+
+    /// <summary>
     /// 8 bytes; a 64-bit integer.[MS-DTYP]: LONGLONG.
     /// </summary>
     public class PtypInteger64 : Block
@@ -5494,39 +5516,55 @@
         }
     }
 
-    /// <summary>
-    /// Variable size; a string of multibyte characters in externally specified encoding with terminating null character (single 0 byte).
-    /// </summary>
-    public class PtypString8 : BaseStructure
+    public class PtypStringBlockCounted : Block
     {
-        /// <summary>
-        /// A string of multibyte characters in externally specified encoding with terminating null character (single 0 byte).
-        /// </summary>
-        public MAPIString Value;
+        private Block _count;
+        public uint Count;
 
         /// <summary>
-        /// The length value
+        /// A string of Unicode characters in UTF-16LE format encoding with terminating null character (0x0000).
         /// </summary>
-        private int length;
+        public BlockStringW Value;
 
         /// <summary>
-        /// Initializes a new instance of the PtypString8 class
+        /// The Count wide size.
         /// </summary>
-        /// <param name="len">The length parameter</param>
-        public PtypString8(int len = 0)
+        private CountWideEnum countWide;
+
+        /// <summary>
+        /// Initializes a new instance of the PtypStringBlockCounted class
+        /// </summary>
+        /// <param name="wide">The Count wide size of PtypStringBlockCounted type.</param>
+        public PtypStringBlockCounted(CountWideEnum wide)
         {
-            this.length = len;
+            countWide = wide;
         }
 
         /// <summary>
-        /// Parse the PtypString8 structure.
+        /// Parse the PtypString structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypString8 structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.Value = new MAPIString(Encoding.ASCII, "\0", this.length);
-            this.Value.Parse(s);
+            switch (countWide)
+            {
+                case CountWideEnum.twoBytes:
+                    _count = BlockT<ushort>.Parse(parser);
+                    Count = (_count as BlockT<ushort>).Data;
+                    break;
+                default:
+                case CountWideEnum.fourBytes:
+                    _count = BlockT<uint>.Parse(parser);
+                    Count = (_count as BlockT<uint>).Data;
+                    break;
+            }
+
+            Value = BlockStringW.Parse(parser, (int)Count / 2);
+        }
+
+        protected override void ParseBlocks()
+        {
+            Text = $"\"{Value.Text}\"";
+            if (_count != null) AddChild(_count, $"Count:{Count}");
         }
     }
 
@@ -5550,6 +5588,58 @@
             Text = $"\"{Value.Text}\"";
         }
     }
+
+    public class PtypString8BlockCounted : Block
+    {
+        private Block _count;
+        public uint Count;
+
+        /// <summary>
+        /// A string of multibyte characters in externally specified encoding with terminating null character (single 0 byte).
+        /// </summary>
+        public BlockStringA Value;
+
+        /// <summary>
+        /// The Count wide size.
+        /// </summary>
+        private CountWideEnum countWide;
+
+        /// <summary>
+        /// Initializes a new instance of the PtypString8BlockCounted class
+        /// </summary>
+        /// <param name="wide">The Count wide size of PtypString8BlockCounted type.</param>
+        public PtypString8BlockCounted(CountWideEnum wide)
+        {
+            countWide = wide;
+        }
+
+        /// <summary>
+        /// Parse the PtypString8 structure.
+        /// </summary>
+        protected override void Parse()
+        {
+            switch (countWide)
+            {
+                case CountWideEnum.twoBytes:
+                    _count = BlockT<ushort>.Parse(parser);
+                    Count = (_count as BlockT<ushort>).Data;
+                    break;
+                default:
+                case CountWideEnum.fourBytes:
+                    _count = BlockT<uint>.Parse(parser);
+                    Count = (_count as BlockT<uint>).Data;
+                    break;
+            }
+
+            Value = BlockStringA.Parse(parser, (int)Count);
+        }
+
+        protected override void ParseBlocks()
+        {
+            Text = $"\"{Value.Text}\"";
+        }
+    }
+
     /// <summary>
     /// 8 bytes; a 64-bit integer representing the number of 100-nanosecond intervals since January 1, 1601.[MS-DTYP]: FILETIME.
     /// </summary>

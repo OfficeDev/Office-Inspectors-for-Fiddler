@@ -1,9 +1,11 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The MetaTagEcWaringMessage is used to parse MessageList class.
     /// </summary>
-    public class MetaTagMessage : SyntacticalBase
+    public class MetaTagMessage : Block
     {
         /// <summary>
         /// The MetaTagDnPrefix
@@ -21,47 +23,48 @@
         public Message Message;
 
         /// <summary>
-        /// Initializes a new instance of the MetaTagMessage class.
-        /// </summary>
-        /// <param name="stream">The stream.</param>
-        public MetaTagMessage(FastTransferStream stream)
-            : base(stream)
-        {
-        }
-
-        /// <summary>
         /// Verify that a stream's current position contains a serialized MetaTagEcWaringMessage.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized MetaTagEcWaringMessage, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return !stream.IsEndOfStream
-                && (stream.VerifyUInt32() == (uint)MetaProperties.MetaTagDnPrefix
-                || stream.VerifyUInt32() == (uint)MetaProperties.MetaTagEcWarning
-                || Message.Verify(stream));
+            var offset = parser.Offset;
+            var prefix = BlockT<MetaProperties>.Parse(parser);
+            var warning = BlockT<MetaProperties>.Parse(parser);
+            parser.Offset = offset;
+            if (!prefix.Parsed || warning.Parsed) return false;
+
+            return !parser.Empty
+                && (prefix.Data == MetaProperties.MetaTagDnPrefix
+                || warning.Data == MetaProperties.MetaTagEcWarning
+                || Message.Verify(parser));
         }
 
-        /// <summary>
-        /// Parse MetaTagEcWaringMessage from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            if (stream.VerifyMetaProperty(MetaProperties.MetaTagDnPrefix))
+            if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagDnPrefix))
             {
-                this.MetaTagDnPrefix = new MetaPropValue(stream);
+                MetaTagDnPrefix = Parse<MetaPropValue>(parser);
             }
 
-            if (stream.VerifyMetaProperty(MetaProperties.MetaTagEcWarning))
+            if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagEcWarning))
             {
-                this.MetaTagEcWaring = new MetaPropValue(stream);
+                MetaTagEcWaring = Parse<MetaPropValue>(parser);
             }
 
-            if (Message.Verify(stream))
+            if (Message.Verify(parser))
             {
-                this.Message = new Message(stream);
+                Message = Parse<Message>(parser);
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("MetaTagMessage");
+            if (MetaTagDnPrefix != null) AddLabeledChild("MetaTagDnPrefix", MetaTagDnPrefix);
+            if (MetaTagEcWaring != null) AddLabeledChild("MetaTagEcWaring", MetaTagEcWaring);
+            if (Message != null) AddLabeledChild("Message", Message);
         }
     }
 }

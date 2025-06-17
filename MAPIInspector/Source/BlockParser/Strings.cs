@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -118,7 +119,7 @@ namespace BlockParser
             return sb.ToString();
         }
 
-        public static string BinToHexString(List<byte> bin, bool prependCb = false)
+        public static string BinToHexString(List<byte> bin, bool prependCb = false, int limit = 128)
         {
             var sb = new System.Text.StringBuilder();
 
@@ -133,13 +134,20 @@ namespace BlockParser
             }
             else
             {
-                for (int i = 0; i < bin.Count; i++)
+                if (limit < 0) limit = 0;
+                int count = Math.Min(bin.Count, limit);
+                for (int i = 0; i < count; i++)
                 {
                     byte b = bin[i];
                     char high = (char)((b >> 4) <= 0x9 ? '0' + (b >> 4) : 'A' + (b >> 4) - 0xA);
                     char low = (char)((b & 0xF) <= 0x9 ? '0' + (b & 0xF) : 'A' + (b & 0xF) - 0xA);
                     sb.Append(high);
                     sb.Append(low);
+                }
+
+                if (bin.Count > limit)
+                {
+                    sb.Append("...");
                 }
             }
 

@@ -1,77 +1,71 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The MetaPropValue represents identification information and the value of the Meta property.
     /// </summary>
-    public class MetaPropValuePutExtendPartial : SyntacticalBase
+    public class MetaPropValuePutExtendPartial : Block
     {
         /// <summary>
         /// The property type.
         /// </summary>
-        public ushort? PropType;
+        public BlockT<PropertyDataType> PropType;
 
         /// <summary>
         /// The property id.
         /// </summary>
-        public ushort? PropID;
+        public BlockT<PidTagPropertyEnum> PropID;
 
         /// <summary>
         /// The property value.
         /// </summary>
-        public object PropValue;
+        public Block PropValue;
 
         /// <summary>
         /// The property type for partial split.
         /// </summary>
-        private ushort propertyType;
+        private PropertyDataType propertyType;
 
         /// <summary>
         /// The property id for partial split.
         /// </summary>
-        private ushort propertyID;
+        private PidTagPropertyEnum propertyID;
 
         /// <summary>
         /// The length value is for ptypBinary
         /// </summary>
-        private int length;
+        public BlockT<int> length;
 
-        /// <summary>
-        /// Initializes a new instance of the MetaPropValuePutExtendPartial class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public MetaPropValuePutExtendPartial(FastTransferStream stream)
-            : base(stream)
+        protected override void Parse()
         {
-        }
-
-        /// <summary>
-        /// Parse MetaPropValue from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
-        {
-            if (MapiInspector.MAPIParser.PartialPutExtendType == 0 || (MapiInspector.MAPIParser.PartialPutType != 0 && !(MapiInspector.MAPIParser.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIParser.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
-                && MapiInspector.MAPIParser.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])))
+            if (MapiInspector.MAPIParser.PartialPutExtendType == 0 ||
+                (MapiInspector.MAPIParser.PartialPutType != 0 &&
+                !(MapiInspector.MAPIParser.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
+                MapiInspector.MAPIParser.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
+                MapiInspector.MAPIParser.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])))
             {
-                this.PropType = stream.ReadUInt16();
-                this.PropID = stream.ReadUInt16();
+                PropType = BlockT<PropertyDataType>.Parse(parser);
+                PropID = BlockT<PidTagPropertyEnum>.Parse(parser);
             }
 
-            if (stream.IsEndOfStream)
+            if (parser.Empty)
             {
-                MapiInspector.MAPIParser.PartialPutExtendType = (ushort)this.PropType;
-                MapiInspector.MAPIParser.PartialPutExtendId = (ushort)this.PropID;
+                MapiInspector.MAPIParser.PartialPutExtendType = PropType.Data;
+                MapiInspector.MAPIParser.PartialPutExtendId = PropID.Data;
                 MapiInspector.MAPIParser.PartialPutExtendServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
                 MapiInspector.MAPIParser.PartialPutExtendProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
                 MapiInspector.MAPIParser.PartialPutExtendClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIParser.PartialPutExtendType != 0 && MapiInspector.MAPIParser.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIParser.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
-                    && MapiInspector.MAPIParser.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
+                if (MapiInspector.MAPIParser.PartialPutExtendType != 0 &&
+                    MapiInspector.MAPIParser.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
+                    MapiInspector.MAPIParser.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
+                    MapiInspector.MAPIParser.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    this.propertyType = MapiInspector.MAPIParser.PartialPutExtendType;
-                    this.propertyID = MapiInspector.MAPIParser.PartialPutExtendId;
+                    propertyType = MapiInspector.MAPIParser.PartialPutExtendType;
+                    propertyID = MapiInspector.MAPIParser.PartialPutExtendId;
 
                     // clear
                     MapiInspector.MAPIParser.PartialPutExtendType = 0;
@@ -85,43 +79,22 @@
                     }
                 }
 
-                ushort typeValue;
-                ushort identifyValue;
-
-                if (this.PropType != null)
+                PropertyDataType typeValue = PropType != null ? PropType.Data : propertyType;
+                PidTagPropertyEnum identifyValue = PropID != null ? PropID.Data : propertyID;
+                if (identifyValue != PidTagPropertyEnum.MetaTagNewFXFolder && identifyValue != PidTagPropertyEnum.MetaTagDnPrefix)
                 {
-                    typeValue = (ushort)this.PropType;
+                    PropValue = BlockT<uint>.Parse(parser);
                 }
-                else
+                else if (identifyValue == PidTagPropertyEnum.MetaTagNewFXFolder)
                 {
-                    typeValue = this.propertyType;
-                }
-
-                if (this.PropID != null)
-                {
-                    identifyValue = (ushort)this.PropID;
-                }
-                else
-                {
-                    identifyValue = this.propertyID;
-                }
-
-                if (identifyValue != 0x4011 && identifyValue != 0x4008)
-                {
-                    this.PropValue = stream.ReadUInt32();
-                }
-                else if (identifyValue == 0x4011)
-                {
-                    PtypBinary ptypeBinary = new PtypBinary(CountWideEnum.fourBytes);
-
-                    if (!stream.IsEndOfStream)
+                    if (!parser.Empty)
                     {
-                        long spositon = stream.Position;
-
-                        if (MapiInspector.MAPIParser.PartialPutExtendRemainSize != -1 && MapiInspector.MAPIParser.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIParser.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
-                            && MapiInspector.MAPIParser.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
+                        if (MapiInspector.MAPIParser.PartialPutExtendRemainSize != -1 &&
+                            MapiInspector.MAPIParser.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
+                            MapiInspector.MAPIParser.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
+                            MapiInspector.MAPIParser.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                         {
-                            this.length = MapiInspector.MAPIParser.PartialPutExtendRemainSize;
+                            length = BlockT<int>.Create(MapiInspector.MAPIParser.PartialPutExtendRemainSize, 0, 0);
 
                             // clear
                             MapiInspector.MAPIParser.PartialPutExtendRemainSize = -1;
@@ -131,41 +104,41 @@
                         }
                         else
                         {
-                            this.length = stream.ReadInt32();
+                            length = BlockT<int>.Parse(parser);
                         }
 
-                        if ((stream.Length - stream.Position) < this.length)
+                        if (parser.RemainingBytes < length.Data)
                         {
                             MapiInspector.MAPIParser.PartialGetType = typeValue;
                             MapiInspector.MAPIParser.PartialGetId = identifyValue;
-                            MapiInspector.MAPIParser.PartialPutExtendRemainSize = this.length - (int)(stream.Length - stream.Position);
+                            MapiInspector.MAPIParser.PartialPutExtendRemainSize = length.Data - parser.RemainingBytes;
                             MapiInspector.MAPIParser.PartialPutExtendServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
                             MapiInspector.MAPIParser.PartialPutExtendProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
                             MapiInspector.MAPIParser.PartialPutExtendClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
 
-                            if (spositon != stream.Position)
-                            {
-                                ptypeBinary.Count = (int)(stream.Length - stream.Position);
-                            }
 
-                            ptypeBinary.Value = stream.ReadBlock(this.length);
+                            PropValue = BlockBytes.Parse(parser, parser.RemainingBytes);
                         }
                         else
                         {
-                            stream.Position -= 4;
-                            ptypeBinary.Parse(stream);
+                            PropValue = BlockBytes.Parse(parser, length.Data);
                         }
-
-                        this.PropValue = ptypeBinary;
                     }
                 }
                 else
                 {
-                    PtypString8 pstring8 = new PtypString8();
-                    pstring8.Parse(stream);
-                    this.PropValue = pstring8;
+                    PropValue = BlockStringA.Parse(parser);
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("MetaPropValuePutExtendPartial");
+            if (PropType!= null) AddChild(PropType, $"PropType:{PropType.Data}");
+            if (PropID != null) AddChild(PropID, $"PropID:{MapiInspector.Utilities.EnumToString(PropID.Data)}");
+            if (PropValue != null) AddChild(PropValue, $"PropValue:{PropValue.GetType().Name}");
+            if (length != null) AddChild(length, $"Length:{length.Data}");
         }
     }
 }

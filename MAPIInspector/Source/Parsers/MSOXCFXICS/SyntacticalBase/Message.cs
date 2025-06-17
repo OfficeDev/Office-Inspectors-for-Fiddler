@@ -1,21 +1,16 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System;
+    using BlockParser;
 
     /// <summary>
     /// The message element represents a Message object.
     /// </summary>
-    public class Message : SyntacticalBase
+    public class Message : Block
     {
         /// <summary>
         /// The start marker of message.
         /// </summary>
-        public Markers? StartMarker1;
-
-        /// <summary>
-        /// The start marker of message.
-        /// </summary>
-        public Markers? StartMarker2;
+        public BlockT<Markers> StartMarker;
 
         /// <summary>
         /// A MessageContent value.Represents the content of a message: its properties, the recipients, and the attachments.
@@ -25,58 +20,38 @@
         /// <summary>
         /// The end marker of message.
         /// </summary>
-        public Markers EndMarker;
-
-        /// <summary>
-        /// Initializes a new instance of the Message class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public Message(FastTransferStream stream)
-            : base(stream)
-        {
-        }
+        public BlockT<Markers> EndMarker;
 
         /// <summary>
         /// Verify that a stream's current position contains a serialized message.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized message, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return stream.VerifyMarker(Markers.StartMessage) ||
-                stream.VerifyMarker(Markers.StartFAIMsg);
+            return MarkersHelper.VerifyMarker(parser, Markers.StartMessage) ||
+                MarkersHelper.VerifyMarker(parser, Markers.StartFAIMsg);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            Markers marker = stream.ReadMarker();
+            StartMarker = BlockT<Markers>.Parse(parser);
 
-            if (marker == Markers.StartMessage || marker == Markers.StartFAIMsg)
+            Content = Parse<MessageContent>(parser);
+
+            EndMarker = BlockT<Markers>.Parse(parser);
+            if (EndMarker.Data != Markers.EndMessage)
             {
-                if (marker == Markers.StartMessage)
-                {
-                    this.StartMarker1 = Markers.StartMessage;
-                }
-                else
-                {
-                    this.StartMarker2 = Markers.StartFAIMsg;
-                }
-
-                this.Content = new MessageContent(stream);
-
-                if (stream.ReadMarker() == Markers.EndMessage)
-                {
-                    this.EndMarker = Markers.EndMessage;
-                }
-                else
-                {
-                    throw new Exception("The Message cannot be parsed successfully. The EndMessage Marker is missed.");
-                }
+                Parsed = false;
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("Message");
+            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddLabeledChild("Content", Content);
+            if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
         }
     }
 }

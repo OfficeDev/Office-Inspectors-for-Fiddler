@@ -1,63 +1,71 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+using System;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The NamedPropInfo class.
+    /// 2.2.4.1 Lexical structure namedPropInfo
     /// </summary>
-    public class NamedPropInfo : LexicalBase
+    public class NamedPropInfo : Block
     {
         /// <summary>
         /// The PropertySet item in lexical definition.
         /// </summary>
-        public AnnotatedGuid PropertySet;
+        public BlockT<Guid> PropertySet;
 
         /// <summary>
         /// The flag variable.
         /// </summary>
-        public byte Flag;
+        public BlockT<byte> Flag;
 
         /// <summary>
-        /// Initializes a new instance of the NamedPropInfo class.
+        /// The Dispid in lexical definition.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public NamedPropInfo(FastTransferStream stream)
-            : base(stream)
-        {
-        }
+        public BlockT<uint> Dispid;
 
         /// <summary>
-        /// Parse a NamedPropInfo instance from a FastTransferStream.
+        /// The name of the NamedPropInfo.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        /// <returns>A NamedPropInfo instance.</returns>
-        public static LexicalBase ParseFrom(FastTransferStream stream)
+        public BlockStringW Name;
+
+        protected override void Parse()
         {
-            if (DispidNamedPropInfo.Verify(stream))
+            PropertySet = BlockT<Guid>.Parse(parser);
+            Flag = BlockT<byte>.Parse(parser);
+
+            if (Flag.Data == 0x00)
             {
-                return new DispidNamedPropInfo(stream);
+                Dispid = BlockT<uint>.Parse(parser);
             }
-            else if (NameNamedPropInfo.Verify(stream))
+            else if (Flag.Data == 0x01)
             {
-                return new NameNamedPropInfo(stream);
-            }
-            else
-            {
-                return null;
+                Name = BlockStringW.Parse(parser);
             }
         }
 
-        /// <summary>
-        /// Parse next object from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void ParseBlocks()
         {
-            base.Parse(stream);
-            this.PropertySet = new AnnotatedGuid(stream);
-            int tmp = stream.ReadByte();
-            if (tmp > 0)
+            SetText("NamedPropInfo");
+
+            if (PropertySet != null) AddChild(PropertySet, $"PropertySet: {Guids.ToString(PropertySet.Data)}");
+            if (Flag != null) AddChild(Flag, $"Flag:{Flag.Data:X}");
+
+            NamedProperty namedProp = null;
+            if (PropertySet != null && Dispid != null)
             {
-                this.Flag = (byte)tmp;
+                namedProp = NamedProperty.Lookup(PropertySet.Data, Dispid.Data);
             }
+
+            if (Dispid != null)
+            {
+                if (namedProp != null)
+                    AddChild(Dispid, $"Dispid: {namedProp.Name} = 0x{Dispid.Data:X4}");
+                else
+                    AddChild(Dispid, $"Dispid: 0x{Dispid.Data:X4}");
+            }
+
+            if (Name != null) AddChild(Name, $"Name: {Name.Data}");
         }
     }
 }

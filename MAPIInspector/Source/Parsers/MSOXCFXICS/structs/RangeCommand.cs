@@ -1,4 +1,6 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Represent a range command.
@@ -9,17 +11,17 @@
         /// <summary>
         /// Bitmask Command.
         /// </summary>
-        public byte Command;
+        public BlockT<byte> Command;
 
         /// <summary>
         /// The low value of the range.
         /// </summary>
-        public byte[] LowValue;
+        public BlockBytes LowValue;
 
         /// <summary>
         /// The high value of the range.
         /// </summary>
-        public byte[] HighValue;
+        public BlockBytes HighValue;
 
         /// <summary>
         /// The length of the LowValue and hignValue.
@@ -38,12 +40,19 @@
         /// <summary>
         /// Parse from a stream.
         /// </summary>
-        /// <param name="stream">A stream contains RangeCommand.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            this.Command = stream.ReadByte();
-            this.LowValue = stream.ReadBlock((int)this.length);
-            this.HighValue = stream.ReadBlock((int)this.length);
+            Command = BlockT<byte>.Parse(parser);
+            LowValue = BlockBytes.Parse(parser, (int)length);
+            HighValue = BlockBytes.Parse(parser, (int)length);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RangeCommand");
+            if (Command != null) AddChild(Command, $"Command:{Command.Data}");
+            AddLabeledChild("LowValue", LowValue);
+            AddLabeledChild("HighValue", HighValue);
         }
     }
 }

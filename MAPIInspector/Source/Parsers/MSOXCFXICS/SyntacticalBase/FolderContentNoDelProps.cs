@@ -1,11 +1,12 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System.Collections.Generic;
 
     /// <summary>
     /// The folderContentNoDelProps element contains the content of a folder: its properties, messages, and subFolders.
     /// </summary>
-    public class FolderContentNoDelProps : SyntacticalBase
+    public class FolderContentNoDelProps : Block
     {
         /// <summary>
         /// Contains the properties of the Folder object, which are possibly affected by property filters.
@@ -32,56 +33,43 @@
         /// </summary>
         public SubFolderNoDelProps[] SubFolderNoDelPropList;
 
-        /// <summary>
-        /// Initializes a new instance of the FolderContentNoDelProps class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public FolderContentNoDelProps(FastTransferStream stream)
-            : base(stream)
+        protected override void Parse()
         {
-        }
+            PropList = Parse<PropList>(parser);
 
-        /// <summary>
-        /// Verify that a stream's current position contains a serialized folderContentNoDelProps.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        /// <returns>If the stream's current position contains a serialized folderContentNoDelProps, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
-        {
-            return !stream.IsEndOfStream && PropList.Verify(stream);
-        }
-
-        /// <summary>
-        ///  Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
-        {
-            this.PropList = new PropList(stream);
-
-            if (!stream.IsEndOfStream)
+            if (!parser.Empty)
             {
-                List<SubFolderNoDelProps> interSubFolders = new List<SubFolderNoDelProps>();
+                var interSubFolders = new List<SubFolderNoDelProps>();
 
-                if (stream.VerifyMetaProperty(MetaProperties.MetaTagNewFXFolder))
+                if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagNewFXFolder))
                 {
-                    this.MetaTagNewFXFolder = new MetaPropValue(stream);
+                    MetaTagNewFXFolder = Parse<MetaPropValue>(parser);
                 }
                 else
                 {
-                    this.FolderMessagesNoDelProps = new FolderMessagesNoDelProps(stream);
+                    FolderMessagesNoDelProps = Parse<FolderMessagesNoDelProps>(parser);
                 }
 
-                if (!stream.IsEndOfStream)
+                if (!parser.Empty)
                 {
-                    while (SubFolderNoDelProps.Verify(stream))
+                    while (SubFolderNoDelProps.Verify(parser))
                     {
-                        interSubFolders.Add(new SubFolderNoDelProps(stream));
+                        interSubFolders.Add(Parse<SubFolderNoDelProps>(parser));
                     }
 
-                    this.SubFolderNoDelPropList = interSubFolders.ToArray();
+                    SubFolderNoDelPropList = interSubFolders.ToArray();
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("FolderContentNoDelProps");
+            AddLabeledChild("PropList", PropList);
+            AddLabeledChild("MetaTagNewFXFolder", MetaTagNewFXFolder);
+            AddLabeledChild("FolderMessagesNoDelProps", FolderMessagesNoDelProps);
+            AddLabeledChild("MetaTagFXDelProp", MetaTagFXDelProp);
+            AddLabeledChildren("SubFoldersNoDelProps", SubFolderNoDelPropList);
         }
     }
 }

@@ -1,9 +1,11 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The MetaTagFxDelPropMessageList is used to parse folderMessages class.
     /// </summary>
-    public class MetaTagFxDelPropMessageList : SyntacticalBase
+    public class MetaTagFxDelPropMessageList : Block
     {
         /// <summary>
         /// A MetaTagFXDelProp property. 
@@ -16,32 +18,26 @@
         public MessageList MessageLists;
 
         /// <summary>
-        /// Initializes a new instance of the MetaTagFxDelPropMessageList class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public MetaTagFxDelPropMessageList(FastTransferStream stream)
-            : base(stream)
-        {
-        }
-
-        /// <summary>
         /// Verify that a stream's current position contains a serialized MetaTagFxDelPropMessageList
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized MetaTagFxDelPropMessageList, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return !stream.IsEndOfStream && stream.VerifyMetaProperty(MetaProperties.MetaTagFXDelProp);
+            return !parser.Empty && MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagFXDelProp);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            this.MetaTagFXDelProp = new MetaPropValue(stream);
-            this.MessageLists = new MessageList(stream);
+            MetaTagFXDelProp = Parse<MetaPropValue>(parser);
+            MessageLists = Parse<MessageList>(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("MetaTagFxDelPropMessageList");
+            AddLabeledChild("MetaTagFXDelProp", MetaTagFXDelProp);
+            AddLabeledChild("MessageLists", MessageLists);
         }
     }
 }

@@ -1,9 +1,11 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Contains a folderContent.
     /// </summary>
-    public class TopFolder : SyntacticalBase
+    public class TopFolder : Block
     {
         /// <summary>
         /// The MetaTagDnPrefix
@@ -13,7 +15,7 @@
         /// <summary>
         /// The start marker of TopFolder.
         /// </summary>
-        public Markers StartMarker;
+        public BlockT<Markers> StartMarker;
 
         /// <summary>
         /// A FolderContentNoDelProps value contains the content of a folder: its properties, messages, and subFolders.
@@ -23,48 +25,35 @@
         /// <summary>
         /// The end marker of TopFolder.
         /// </summary>
-        public Markers EndMarker;
+        public BlockT<Markers> EndMarker;
 
-        /// <summary>
-        /// Initializes a new instance of the TopFolder class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public TopFolder(FastTransferStream stream)
-            : base(stream)
+        protected override void Parse()
         {
-        }
-
-        /// <summary>
-        /// Verify a stream's current position contains a serialized TopFolder.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        /// <returns>If the stream's current position contains a serialized TopFolder, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
-        {
-            return stream.VerifyUInt32() == (uint)MetaProperties.MetaTagDnPrefix || stream.VerifyMarker(Markers.StartTopFld);
-        }
-
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
-        {
-            if (stream.VerifyMetaProperty(MetaProperties.MetaTagDnPrefix))
+            if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagDnPrefix))
             {
-                this.MetaTagDnPrefix = new MetaPropValue(stream);
+                MetaTagDnPrefix = Parse<MetaPropValue>(parser);
             }
 
-            if (stream.ReadMarker() == Markers.StartTopFld)
+            StartMarker = BlockT<Markers>.Parse(parser);
+            if (StartMarker.Data == Markers.StartTopFld)
             {
-                this.StartMarker = Markers.StartTopFld;
-                this.FolderContentNoDelProps = new FolderContentNoDelProps(stream);
+                FolderContentNoDelProps = Parse<FolderContentNoDelProps>(parser);
 
-                if (stream.ReadMarker() == Markers.EndFolder)
+                EndMarker = BlockT<Markers>.Parse(parser);
+                if (EndMarker.Data != Markers.EndFolder)
                 {
-                    this.EndMarker = Markers.EndFolder;
+                    Parsed = false;
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("TopFolder");
+            AddChild(MetaTagDnPrefix, "MetaTagDnPrefix");
+            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddChild(FolderContentNoDelProps, "FolderContentNoDelProps");
+            if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
         }
     }
 }

@@ -1,16 +1,16 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System;
+    using BlockParser;
 
     /// <summary>
     /// Contains a folderContent.
     /// </summary>
-    public class SubFolder : SyntacticalBase
+    public class SubFolder : Block
     {
         /// <summary>
         /// The start marker of SubFolder.
         /// </summary>
-        public Markers StartMarker;
+        public BlockT<Markers> StartMarker;
 
         /// <summary>
         /// A folderContent value contains the content of a folder: its properties, messages, and subFolders.
@@ -20,46 +20,38 @@
         /// <summary>
         /// The end marker of SubFolder.
         /// </summary>
-        public Markers EndMarker;
-
-        /// <summary>
-        /// Initializes a new instance of the SubFolder class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public SubFolder(FastTransferStream stream)
-            : base(stream)
-        {
-        }
+        public BlockT<Markers> EndMarker;
 
         /// <summary>
         /// Verify that a stream's current position contains a serialized SubFolder.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized SubFolder, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return stream.VerifyMarker(Markers.StartSubFld);
+            return MarkersHelper.VerifyMarker(parser, Markers.StartSubFld);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            if (stream.ReadMarker() == Markers.StartSubFld)
+            StartMarker = BlockT<Markers>.Parse(parser);
+            if (StartMarker.Data == Markers.StartSubFld)
             {
-                this.StartMarker = Markers.StartSubFld;
-                this.FolderContent = new FolderContent(stream);
-                if (stream.ReadMarker() == Markers.EndFolder)
+                FolderContent = Parse<FolderContent>(parser);
+                EndMarker = BlockT<Markers>.Parse(parser);
+                if (EndMarker.Data != Markers.EndFolder)
                 {
-                    this.EndMarker = Markers.EndFolder;
-                }
-                else
-                {
-                    throw new Exception("The SubFolder cannot be parsed successfully. The EndFolder Marker is missed.");
+                    Parsed = false;
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("SubFolder");
+            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddLabeledChild("FolderContent", FolderContent);
+            if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
         }
     }
 }

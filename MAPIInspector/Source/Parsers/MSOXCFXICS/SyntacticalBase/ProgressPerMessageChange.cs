@@ -1,9 +1,11 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The ProgressPerMessageChange is used to parse ContentSync class.
     /// </summary>
-    public class ProgressPerMessageChange : SyntacticalBase
+    public class ProgressPerMessageChange : Block
     {
         /// <summary>
         /// A ProgressPerMessage value.
@@ -16,36 +18,30 @@
         public MessageChange MessageChange;
 
         /// <summary>
-        /// Initializes a new instance of the ProgressPerMessageChange class.
-        /// </summary>
-        /// <param name="stream">The stream.</param>
-        public ProgressPerMessageChange(FastTransferStream stream)
-            : base(stream)
-        {
-        }
-
-        /// <summary>
         /// Verify that a stream's current position contains a serialized ProgressPerMessageChange.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized ProgressPerMessageChange, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return ProgressPerMessage.Verify(stream) || MessageChange.Verify(stream);
+            return ProgressPerMessage.Verify(parser) || MessageChange.Verify(parser);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            if (ProgressPerMessage.Verify(stream))
+            if (ProgressPerMessage.Verify(parser))
             {
-                this.ProgressPerMessage = new ProgressPerMessage(stream);
+                ProgressPerMessage = Parse<ProgressPerMessage>(parser);
             }
 
-            this.MessageChange = new MessageChange(stream);
+            MessageChange = Parse<MessageChange>(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ProgressPerMessageChange");
+            AddLabeledChild("ProgressPerMessage", ProgressPerMessage);
+            AddLabeledChild("MessageChange", MessageChange);
         }
     }
 }

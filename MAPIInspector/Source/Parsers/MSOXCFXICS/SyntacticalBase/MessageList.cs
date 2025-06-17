@@ -1,50 +1,51 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System.Collections.Generic;
 
     /// <summary>
     /// The MessageList element contains a list of messages, which is determined by the scope of the operation.
     /// </summary>
-    public class MessageList : SyntacticalBase
+    public class MessageList : Block
     {
         /// <summary>
         /// A list of MetaTagMessage objects.
         /// </summary>
         public MetaTagMessage[] MetaTagMessages;
 
-        /// <summary>
-        /// Initializes a new instance of the MessageList class.
-        /// </summary>
-        /// <param name="stream">The stream.</param>
-        public MessageList(FastTransferStream stream)
-            : base(stream)
-        {
-        }
 
         /// <summary>
         /// Verify that a stream's current position contains a serialized MessageList.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized MessageList, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return MetaTagMessage.Verify(stream);
+            return MetaTagMessage.Verify(parser);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            List<MetaTagMessage> interMessageList = new List<MetaTagMessage>();
+            var interMessageList = new List<MetaTagMessage>();
 
-            while (Verify(stream))
+            while (Verify(parser))
             {
-                interMessageList.Add(new MetaTagMessage(stream));
+                interMessageList.Add(Parse<MetaTagMessage>(parser));
             }
 
-            this.MetaTagMessages = interMessageList.ToArray();
+            MetaTagMessages = interMessageList.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("MessageList");
+            if (MetaTagMessages != null)
+            {
+                foreach (var message in MetaTagMessages)
+                {
+                    AddChild(message);
+                }
+            }
         }
     }
 }

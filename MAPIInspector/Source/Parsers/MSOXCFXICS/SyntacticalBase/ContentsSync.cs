@@ -1,12 +1,12 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System;
+    using BlockParser;
     using System.Collections.Generic;
 
     /// <summary>
     /// The ContentsSync element contains the result of the contents synchronization download operation.
     /// </summary>
-    public class ContentsSync : SyntacticalBase
+    public class ContentsSync : Block
     {
         /// <summary>
         /// A ProgressTotal value
@@ -36,72 +36,59 @@
         /// <summary>
         /// A end marker of ContentSync.
         /// </summary>
-        public Markers EndMarker;
+        public BlockT<Markers> EndMarker;
 
-        /// <summary>
-        /// Initializes a new instance of the ContentsSync class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public ContentsSync(FastTransferStream stream)
-            : base(stream)
+        protected override void Parse()
         {
+            var interProgressPerMessageChanges = new List<ProgressPerMessageChange>();
+
+            if (ProgressTotal.Verify(parser))
+            {
+                ProgressTotal = Parse<ProgressTotal>(parser);
+            }
+
+            while (ProgressPerMessageChange.Verify(parser))
+            {
+                interProgressPerMessageChanges.Add(Parse<ProgressPerMessageChange>(parser));
+            }
+
+            ProgressPerMessageChanges = interProgressPerMessageChanges.ToArray();
+
+            if (Deletions.Verify(parser))
+            {
+                Deletions = Parse<Deletions>(parser);
+            }
+
+            if (ReadStateChanges.Verify(parser))
+            {
+                ReadStateChanges = Parse<ReadStateChanges>(parser);
+            }
+
+            State = Parse<State>(parser);
+
+            EndMarker = BlockT<Markers>.Parse(parser);
+            if (EndMarker.Data != Markers.IncrSyncEnd)
+            {
+                Parsed = false;
+            }
         }
 
-        /// <summary>
-        /// Verify that a stream's current position contains a serialized contentsSync.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        /// <returns>If the stream's current position contains a serialized contentsSync, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        protected override void ParseBlocks()
         {
-            return (ProgressTotal.Verify(stream)
-                || ProgressPerMessageChange.Verify(stream)
-                || Deletions.Verify(stream)
-                || ReadStateChanges.Verify(stream)
-                || State.Verify(stream))
-                && stream.VerifyMarker(Markers.IncrSyncEnd, (int)stream.Length - 4 - (int)stream.Position);
-        }
-
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
-        {
-            List<ProgressPerMessageChange> interProgressPerMessageChanges = new List<ProgressPerMessageChange>();
-
-            if (ProgressTotal.Verify(stream))
+            SetText("ContentsSync");
+            AddChild(ProgressTotal);
+            if (ProgressPerMessageChanges != null)
             {
-                this.ProgressTotal = new ProgressTotal(stream);
+                foreach (var progress in ProgressPerMessageChanges)
+                {
+                    AddChild(progress);
+                }
             }
 
-            while (ProgressPerMessageChange.Verify(stream))
-            {
-                interProgressPerMessageChanges.Add(new ProgressPerMessageChange(stream));
-            }
-
-            this.ProgressPerMessageChanges = interProgressPerMessageChanges.ToArray();
-
-            if (Deletions.Verify(stream))
-            {
-                this.Deletions = new Deletions(stream);
-            }
-
-            if (ReadStateChanges.Verify(stream))
-            {
-                this.ReadStateChanges = new ReadStateChanges(stream);
-            }
-
-            this.State = new State(stream);
-
-            if (stream.ReadMarker() == Markers.IncrSyncEnd)
-            {
-                this.EndMarker = Markers.IncrSyncEnd;
-            }
-            else
-            {
-                throw new Exception("The ContentsSync cannot be parsed successfully. The IncrSyncEnd Marker is missed.");
-            }
+            AddChild(Deletions);
+            AddChild(ReadStateChanges);
+            AddChild(State);
+            if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
         }
     }
 }

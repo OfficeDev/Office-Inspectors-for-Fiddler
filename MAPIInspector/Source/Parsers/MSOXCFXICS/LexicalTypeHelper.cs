@@ -31,7 +31,7 @@
         /// <summary>
         /// Contains MetaProperty Ids.
         /// </summary>
-        private static List<ushort> metaPropIds;
+        private static List<PidTagPropertyEnum> metaPropIds;
 
         /// <summary>
         /// Initializes static members of the LexicalTypeHelper class.
@@ -85,14 +85,14 @@
                 CodePageType.PtypCodePageWesternEuropean
             };
 
-            metaPropIds = new List<ushort>
+            metaPropIds = new List<PidTagPropertyEnum>
             {
-                0x4016,
-                0x400f,
-                0x4011,
-                0x407c,
-                0x407a,
-                0x4008
+                PidTagPropertyEnum.MetaTagFXDelProp,
+                PidTagPropertyEnum.MetaTagEcWarning,
+                PidTagPropertyEnum.MetaTagNewFXFolder,
+                PidTagPropertyEnum.MetaTagIncrSyncGroupId,
+                PidTagPropertyEnum.MetaTagIncrementalSyncMessagePartial,
+                PidTagPropertyEnum.MetaTagDnPrefix
             };
         }
 
@@ -129,23 +129,23 @@
         /// <summary>
         /// Indicate whether a PropertyID is a Meta property ID.
         /// </summary>
-        /// <param name="id">A UShort value.</param>
+        /// <param name="id">A PidTagPropertyEnum value.</param>
         /// <returns>If a PropertyID is a Meta property ID, return true, else return false.</returns>
-        public static bool IsMetaPropertyID(ushort id)
+        public static bool IsMetaPropertyID(PidTagPropertyEnum id)
         {
             return metaPropIds.Contains(id);
         }
 
         /// <summary>
-        /// Indicate whether a UShort value is a codePage property type. 
+        /// Indicate whether a PropertyDataType value is a codePage property type. 
         /// </summary>
-        /// <param name="type">A UShort value.</param>
-        /// <returns>If the UShort is a either PtypCodePageUnicode, PtypCodePageUnicodeBigendian or PtypCodePageWesternEuropean return true, else false.</returns>
-        public static bool IsCodePageType(ushort type)
+        /// <param name="type">A PropertyDataType value.</param>
+        /// <returns>If the PropertyDataType is a either PtypCodePageUnicode, PtypCodePageUnicodeBigendian or PtypCodePageWesternEuropean return true, else false.</returns>
+        public static bool IsCodePageType(PropertyDataType type)
         {
-            foreach (CodePageType t in Enum.GetValues(typeof(CodePageType)))
+            foreach (var t in Enum.GetValues(typeof(CodePageType)))
             {
-                if (type == (uint)t)
+                if (type == (PropertyDataType)t)
                 {
                     return true;
                 }

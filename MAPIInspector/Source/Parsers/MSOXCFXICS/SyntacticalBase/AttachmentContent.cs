@@ -1,10 +1,12 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The attachmentContent element contains the properties and the embedded message of an Attachment object. If present,
     /// </summary>
 
-    public class AttachmentContent : SyntacticalBase
+    public class AttachmentContent : Block
     {
         /// <summary>
         /// The MetaTagDnPrefix
@@ -21,42 +23,27 @@
         /// </summary>
         public EmbeddedMessage EmbeddedMessage;
 
-        /// <summary>
-        /// Initializes a new instance of the AttachmentContent class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public AttachmentContent(FastTransferStream stream)
-            : base(stream)
+        protected override void Parse()
         {
-        }
-
-        /// <summary>
-        /// Verify that a stream's current position contains a serialized attachmentContent.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        /// <returns>If the stream's current position contains a serialized attachmentContent, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
-        {
-            return !stream.IsEndOfStream && (stream.VerifyUInt32() == (uint)MetaProperties.MetaTagDnPrefix || PropList.Verify(stream));
-        }
-
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
-        {
-            if (stream.VerifyMetaProperty(MetaProperties.MetaTagDnPrefix))
+            if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagDnPrefix))
             {
-                this.MetaTagDnPrefix = new MetaPropValue(stream);
+                MetaTagDnPrefix = Parse<MetaPropValue>(parser);
             }
 
-            this.PropList = new PropList(stream);
+            PropList = Parse<PropList>(parser);
 
-            if (EmbeddedMessage.Verify(stream))
+            if (EmbeddedMessage.Verify(parser))
             {
-                this.EmbeddedMessage = new EmbeddedMessage(stream);
+                EmbeddedMessage = Parse<EmbeddedMessage>(parser);
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AttachmentContent");
+            AddLabeledChild("MetaTagDnPrefix", MetaTagDnPrefix);
+            AddLabeledChild("PropList", PropList);
+            AddLabeledChild("EmbeddedMessage", EmbeddedMessage);
         }
     }
 }

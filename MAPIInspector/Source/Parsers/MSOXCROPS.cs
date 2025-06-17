@@ -4508,14 +4508,14 @@
         /// <summary>
         /// Initializes a new instance of the PartialContextInformation class
         /// </summary>
-        /// <param name="type">The FasttransferStream property type</param>
-        /// <param name="id">The FasttransferStream property id</param>
-        /// <param name="remainSize">The FasttransferStream property value remain size</param>
-        /// <param name="subRemainSize">The FasttransferStream property value sub remain size for multiple type data</param>
-        /// <param name="isGet">Boolean value indicates if this FasttransferStream is about RopGetBuffer ROP</param>
-        /// <param name="session">The session that contains this FasttransferStream</param>
-        /// <param name="payLoadCompresssedXOR">The payload value about this FasttransferStream</param>
-        public PartialContextInformation(ushort type = 0, ushort id = 0, int remainSize = -1, int subRemainSize = -1, bool isGet = true, Session session = null, List<byte[]> payLoadCompresssedXOR = null)
+        /// <param name="type">The property type</param>
+        /// <param name="id">The property id</param>
+        /// <param name="remainSize">The property value remain size</param>
+        /// <param name="subRemainSize">The property value sub remain size for multiple type data</param>
+        /// <param name="isGet">Boolean value indicates if this is about RopGetBuffer ROP</param>
+        /// <param name="session">The session that contains this</param>
+        /// <param name="payLoadCompresssedXOR">The payload value about this</param>
+        public PartialContextInformation(PropertyDataType type = 0, PidTagPropertyEnum id = 0, int remainSize = -1, int subRemainSize = -1, bool isGet = true, Session session = null, List<byte[]> payLoadCompresssedXOR = null)
         {
             this.Type = type;
             this.ID = id;
@@ -4527,25 +4527,25 @@
         }
 
         /// <summary>
-        /// Gets or sets the FasttransferStream property type
+        /// Gets or sets the property type
         /// </summary>
-        public ushort Type
+        public PropertyDataType Type
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Gets or sets the FasttransferStream property ID
+        /// Gets or sets the property ID
         /// </summary>
-        public ushort ID
+        public PidTagPropertyEnum ID
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Gets or sets the FasttransferStream property value remain size
+        /// Gets or sets the property value remain size
         /// </summary>
         public int RemainSize
         {
@@ -4554,7 +4554,7 @@
         }
 
         /// <summary>
-        /// Gets or sets the FasttransferStream property value sub remain size for multiple type data
+        /// Gets or sets the property value sub remain size for multiple type data
         /// </summary>
         public int SubRemainSize
         {
@@ -4563,7 +4563,7 @@
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this FasttransferStream is about RopGetBuffer ROP
+        /// Gets or sets a value indicating whether this is about RopGetBuffer ROP
         /// </summary>
         public bool IsGet
         {
@@ -4572,7 +4572,7 @@
         }
 
         /// <summary>
-        /// Gets or sets the payload value about this FasttransferStream
+        /// Gets or sets the payload value about this
         /// </summary>
         public List<byte[]> PayLoadCompresssedXOR
         {
@@ -4581,7 +4581,7 @@
         }
 
         /// <summary>
-        /// Gets or sets the session that contains this FasttransferStream
+        /// Gets or sets the session that contains this
         /// </summary>
         public Session Session
         {

@@ -1,24 +1,26 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The progressTotal element contains data that describes the approximate size of all the messageChange elements.
     /// </summary>
-    public class ProgressTotal : SyntacticalBase
+    public class ProgressTotal : Block
     {
         /// <summary>
         /// The start marker of progressTotal.
         /// </summary>
-        public Markers StartMarker;
+        public BlockT<Markers> StartMarker;
 
         /// <summary>
         /// The propertyTag for ProgressInformation.
         /// </summary>
-        public uint PropertiesTag;
+        public BlockT<uint> PropertiesTag;
 
         /// <summary>
         /// The count of the PropList.
         /// </summary>
-        public uint PropertiesLength;
+        public BlockT<uint> PropertiesLength;
 
         /// <summary>
         /// A PropList value.
@@ -26,39 +28,33 @@
         public ProgressInformation PropList;
 
         /// <summary>
-        /// Initializes a new instance of the ProgressTotal class.
-        /// </summary>
-        /// <param name="stream">The stream.</param>
-        public ProgressTotal(FastTransferStream stream)
-            : base(stream)
-        {
-        }
-
-        /// <summary>
         /// Verify that a stream's current position contains a serialized progressTotal.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized progressTotal, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return stream.VerifyMarker(Markers.IncrSyncProgressMode);
+            return MarkersHelper.VerifyMarker(parser, Markers.IncrSyncProgressMode);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            if (stream.ReadMarker() == Markers.IncrSyncProgressMode)
+            StartMarker = BlockT<Markers>.Parse(parser);
+            if (StartMarker.Data == Markers.IncrSyncProgressMode)
             {
-                this.StartMarker = Markers.IncrSyncProgressMode;
-                this.PropertiesTag = stream.ReadUInt32();
-                this.PropertiesLength = stream.ReadUInt32();
-                ProgressInformation tmpProgressInfo = new ProgressInformation();
-                tmpProgressInfo.Parse(stream);
-                this.PropList = tmpProgressInfo;
+                PropertiesTag = BlockT<uint>.Parse(parser);
+                PropertiesLength = BlockT<uint>.Parse(parser);
+                PropList = Parse<ProgressInformation>(parser);
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ProgressTotal");
+            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            if (PropertiesTag != null) AddChild(PropertiesTag, $"PropertiesTag:{PropertiesTag.Data}");
+            if (PropertiesLength != null) AddChild(PropertiesLength, $"PropertiesLength:{PropertiesLength.Data}");
+            if (PropList != null) AddChild(PropList, "PropList:");
         }
     }
 }

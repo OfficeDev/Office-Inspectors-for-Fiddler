@@ -1,9 +1,10 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System;
 
     /// <summary>
-    /// Supply help functions for manipulate Markers.
+    /// Supply help functions for manipulating Markers.
     /// </summary>
     public class MarkersHelper
     {
@@ -12,11 +13,11 @@
         /// </summary>
         /// <param name="marker">The UInts value.</param>
         /// <returns>If is a Marker, return true, else false.</returns>
-        public static bool IsMarker(uint marker)
+        public static bool IsMarker(Markers marker)
         {
             foreach (Markers ma in Enum.GetValues(typeof(Markers)))
             {
-                if ((uint)ma == marker)
+                if (ma == marker)
                 {
                     return true;
                 }
@@ -30,17 +31,49 @@
         /// </summary>
         /// <param name="metaTag">The UInts value.</param>
         /// <returns>If is a MetaProperties, return true, else false.</returns>
-        public static bool IsMetaTag(uint metaTag)
+        public static bool IsMetaTag(MetaProperties metaTag)
         {
             foreach (MetaProperties me in Enum.GetValues(typeof(MetaProperties)))
             {
-                if (metaTag == (uint)me)
+                if (metaTag == me)
                 {
                     return true;
                 }
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Indicate the MetaProperties at the position equals a specified MetaProperties
+        /// </summary>
+        /// <param name="meta">A MetaProperties value</param>
+        /// <returns>True if the MetaProperties at the position equals the specified MetaProperties, else false.</returns>
+        public static bool VerifyMetaProperty(BinaryParser parser, MetaProperties meta)
+        {
+            return !parser.Empty && Verify(parser, (uint)meta);
+        }
+
+        /// <summary>
+        /// Indicate the Markers at the position equals a specified Markers.
+        /// </summary>
+        /// <param name="marker">A Markers value</param>
+        /// <returns>True if the Markers at the position equals to the specified Markers, else false.</returns>
+        public static bool VerifyMarker(BinaryParser parser, Markers marker)
+        {
+            return Verify(parser, (uint)marker);
+        }
+
+        /// <summary>
+        /// Indicate the UInt value at the position plus an offset equals a specified UInt value.
+        /// </summary>
+        /// <param name="val">A UInt value</param>
+        /// <param name="offset">An int value</param>
+        /// <returns>True if the UInt at the position plus an offset equals the specified UInt,else false.</returns>
+        private static bool Verify(BinaryParser parser, uint val)
+        {
+            var bufferVal = BlockT<uint>.TestParse(parser);
+            return bufferVal.Parsed && bufferVal.Data == val;
         }
     }
 }

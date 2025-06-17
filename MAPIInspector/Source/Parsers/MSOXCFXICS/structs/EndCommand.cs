@@ -1,4 +1,6 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Represent an end command.
@@ -9,15 +11,20 @@
         /// <summary>
         /// The Command for end
         /// </summary>
-        public byte Command;
+        public BlockT<byte> Command;
 
         /// <summary>
         /// Parse from a stream.
         /// </summary>
-        /// <param name="stream">A stream contains EndCommand.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            this.Command = stream.ReadByte();
+            Command = new BlockT<byte>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("EndCommand");
+            AddChild(Command, $"Command:{Command.Data}");
         }
     }
 }

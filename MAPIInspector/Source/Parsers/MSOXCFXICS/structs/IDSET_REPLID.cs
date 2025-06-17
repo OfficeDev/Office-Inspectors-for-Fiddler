@@ -1,15 +1,17 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Represents a REPLID and GLOBSET structure pair. 
     /// 2.2.2.4.1 Serialized IDSET Structure Containing a REPLID Structure
     /// </summary>
-    public class IDSET_REPLID : BaseStructure
+    public class IDSET_REPLID : Block
     {
         /// <summary>
         /// A unsigned short which combined with all GLOBCNT structures contained in the GLOBSET field, produces a set of IDs.
         /// </summary>
-        public ushort REPLID;
+        public BlockT<ushort> REPLID;
 
         /// <summary>
         /// A serialized GLOBSET structure.
@@ -19,12 +21,17 @@
         /// <summary>
         /// Parse from a stream.
         /// </summary>
-        /// <param name="stream">A stream contains IDSET_REPLID.</param>
-        public void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            this.REPLID = stream.ReadUInt16();
-            this.GLOBSET = new GLOBSET();
-            this.GLOBSET.Parse(stream);
+            REPLID = BlockT<ushort>.Parse(parser);
+            GLOBSET = Parse<GLOBSET>(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("IDSET_REPLID");
+            if (REPLID != null) AddChild(REPLID, $"REPLID: {REPLID.Data} ({REPLID.Data:X4})");
+            AddChild(GLOBSET, "GLOBSET");
         }
     }
 }

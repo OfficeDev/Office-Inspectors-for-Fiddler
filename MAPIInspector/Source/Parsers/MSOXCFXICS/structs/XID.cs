@@ -1,22 +1,23 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System;
 
     /// <summary>
     /// Represents an external identifier for an entity within a data store.
     /// 2.2.2.2 XID Structure
     /// </summary>
-    public class XID : BaseStructure
+    public class XID : Block
     {
         /// <summary>
         /// A GUID that identifies the nameSpace that the identifier specified by LocalId belongs to
         /// </summary>
-        public Guid NamespaceGuid;
+        public BlockT<Guid> NamespaceGuid;
 
         /// <summary>
         /// A variable binary value that contains the ID of the entity in the nameSpace specified by NamespaceGuid.
         /// </summary>
-        public byte[] LocalId;
+        public BlockBytes LocalId;
 
         /// <summary>
         /// A unsigned int value specifies the length of the LocalId.
@@ -35,11 +36,17 @@
         /// <summary>
         /// Parse from a stream.
         /// </summary>
-        /// <param name="stream">A stream contains XID.</param>
-        public void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            this.NamespaceGuid = stream.ReadGuid();
-            this.LocalId = stream.ReadBlock((int)this.length - 16);
+            NamespaceGuid = BlockT<Guid>.Parse(parser);
+            LocalId = BlockBytes.Parse(parser, length - 16); // sizeof Guid is 16 bytes
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("XID");
+            if (NamespaceGuid != null) AddChild(NamespaceGuid, $"NamespaceGuid:{NamespaceGuid.Data}");
+            AddLabeledChild("LocalId", LocalId);
         }
     }
 }

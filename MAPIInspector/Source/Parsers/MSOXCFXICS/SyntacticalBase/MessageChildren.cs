@@ -1,11 +1,12 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System.Collections.Generic;
 
     /// <summary>
     /// The MessageChildren element represents children of the Message objects: Recipient and Attachment objects.
     /// </summary>
-    public class MessageChildren : SyntacticalBase
+    public class MessageChildren : Block
     {
         /// <summary>
         /// A MetaTagFXDelProp property.
@@ -27,51 +28,47 @@
         /// </summary>
         public Attachment[] Attachments;
 
-        /// <summary>
-        /// Initializes a new instance of the MessageChildren class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public MessageChildren(FastTransferStream stream)
-            : base(stream)
+        protected override void Parse()
         {
-        }
+            var interAttachments = new List<Attachment>();
+            var interRecipients = new List<Recipient>();
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
-        {
-            List<Attachment> interAttachments = new List<Attachment>();
-            List<Recipient> interRecipients = new List<Recipient>();
-
-            if (stream.VerifyMetaProperty(MetaProperties.MetaTagFXDelProp))
+            if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagFXDelProp))
             {
-                this.FxdelPropsBeforeRecipient = new MetaPropValue(stream);
+                FxdelPropsBeforeRecipient = Parse<MetaPropValue>(parser);
             }
 
-            if (Recipient.Verify(stream))
+            if (Recipient.Verify(parser))
             {
                 interRecipients = new List<Recipient>();
 
-                while (Recipient.Verify(stream))
+                while (Recipient.Verify(parser))
                 {
-                    interRecipients.Add(new Recipient(stream));
+                    interRecipients.Add(Parse<Recipient>(parser));
                 }
             }
 
-            if (stream.VerifyMetaProperty(MetaProperties.MetaTagFXDelProp))
+            if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagFXDelProp))
             {
-                this.FxdelPropsBeforeAttachment = new MetaPropValue(stream);
+                FxdelPropsBeforeAttachment = Parse<MetaPropValue>(parser);
             }
 
-            while (Attachment.Verify(stream))
+            while (Attachment.Verify(parser))
             {
-                interAttachments.Add(new Attachment(stream));
+                interAttachments.Add(Parse<Attachment>(parser));
             }
 
-            this.Attachments = interAttachments.ToArray();
-            this.Recipients = interRecipients.ToArray();
+            Attachments = interAttachments.ToArray();
+            Recipients = interRecipients.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("MessageChildren");
+            AddLabeledChild("FxdelPropsBeforeRecipient", FxdelPropsBeforeRecipient);
+            AddLabeledChildren("Recipients", Recipients);
+            AddLabeledChild("FxdelPropsBeforeAttachment", FxdelPropsBeforeAttachment);
+            AddLabeledChildren("Attachments", Attachments);
         }
     }
 }

@@ -1,74 +1,56 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The MetaPropValue represents identification information and the value of the Meta property.
     /// </summary>
-    public class MetaPropValue : SyntacticalBase
+    public class MetaPropValue : Block
     {
         /// <summary>
         /// The property type.
         /// </summary>
-        public PropertyDataType PropType;
+        public BlockT<PropertyDataType> PropType;
 
         /// <summary>
         /// The property id.
         /// </summary>
-        public PidTagPropertyEnum PropID;
+        public BlockT<PidTagPropertyEnum> PropID;
 
         /// <summary>
         /// The property value.
         /// </summary>
-        public object PropValue;
+        public Block PropValue;
 
-        /// <summary>
-        /// Initializes a new instance of the MetaPropValue class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public MetaPropValue(FastTransferStream stream)
-            : base(stream)
+        protected override void Parse()
         {
-        }
+            PropType = BlockT<PropertyDataType>.Parse(parser);
+            PropID = BlockT<PidTagPropertyEnum>.Parse(parser);
 
-        /// <summary>
-        /// Verify that a stream's current position contains a serialized MetaPropValue.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        /// <returns>If the stream's current position contains a serialized MetaPropValue, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
-        {
-            ushort tmpType = stream.VerifyUInt16();
-            ushort tmpId = stream.VerifyUInt16();
-            return !stream.IsEndOfStream && LexicalTypeHelper.IsMetaPropertyID(tmpId);
-        }
-
-        /// <summary>
-        /// Parse MetaPropValue from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
-        {
-            this.PropType = (PropertyDataType)stream.ReadUInt16();
-            this.PropID = (PidTagPropertyEnum)stream.ReadUInt16();
-
-            if (this.PropID != PidTagPropertyEnum.MetaTagNewFXFolder && this.PropID != PidTagPropertyEnum.MetaTagDnPrefix)
+            if (PropID.Data != PidTagPropertyEnum.MetaTagNewFXFolder &&
+                PropID.Data != PidTagPropertyEnum.MetaTagDnPrefix)
             {
-                this.PropValue = stream.ReadUInt32();
+                PropValue = BlockT<int>.Parse(parser);
             }
             else
             {
-                if (this.PropID != PidTagPropertyEnum.MetaTagNewFXFolder)
+                if (PropID.Data != PidTagPropertyEnum.MetaTagNewFXFolder)
                 {
-                    FolderReplicaInfo folderReplicaInfo = new FolderReplicaInfo();
-                    folderReplicaInfo.Parse(stream);
-                    this.PropValue = folderReplicaInfo;
+                    PropValue = Parse<FolderReplicaInfo>(parser);
                 }
                 else
                 {
-                    PtypString8 pstring8 = new PtypString8();
-                    pstring8.Parse(stream);
-                    this.PropValue = pstring8;
+                    PropValue = Parse<PtypString8Block>(parser);
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("MetaPropValue");
+            AddLabeledChild("PropType", PropType);
+            if (PropID != null) AddChild(PropID, $"PropID:{MapiInspector.Utilities.EnumToString(PropID.Data)}");
+            AddLabeledChild("PropValue", PropValue);
         }
     }
 }

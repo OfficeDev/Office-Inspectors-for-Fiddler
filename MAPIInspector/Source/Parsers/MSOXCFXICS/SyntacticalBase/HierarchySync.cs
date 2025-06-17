@@ -1,12 +1,12 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System;
+    using BlockParser;
     using System.Collections.Generic;
 
     /// <summary>
     /// The hierarchySync element contains the result of the hierarchy synchronization download operation.
     /// </summary>
-    public class HierarchySync : SyntacticalBase
+    public class HierarchySync : Block
     {
         /// <summary>
         /// A list of FolderChange value.
@@ -26,60 +26,48 @@
         /// <summary>
         /// The end marker of hierarchySync.
         /// </summary>
-        public Markers EndMarker;
+        public BlockT<Markers> EndMarker;
 
-        /// <summary>
-        /// Initializes a new instance of the HierarchySync class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public HierarchySync(FastTransferStream stream)
-            : base(stream)
+        protected override void Parse()
         {
+            var interFolderChanges = new List<FolderChange>();
+
+            while (FolderChange.Verify(parser))
+            {
+                interFolderChanges.Add(Parse<FolderChange>(parser));
+            }
+
+            FolderChanges = interFolderChanges.ToArray();
+
+            if (Deletions.Verify(parser))
+            {
+                Deletions = Parse<Deletions>(parser);
+            }
+
+            State = Parse<State>(parser);
+
+            EndMarker = BlockT<Markers>.Parse(parser);
+            if (EndMarker.Data == Markers.IncrSyncEnd)
+            {
+                Parsed = false;
+            }
         }
 
-        /// <summary>
-        /// Verify that a stream's current position contains a serialized hierarchySync.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        /// <returns>If the stream's current position contains a serialized hierarchySync, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        protected override void ParseBlocks()
         {
-            return (FolderChange.Verify(stream)
-                || Deletions.Verify(stream)
-                || State.Verify(stream))
-                && stream.VerifyMarker(Markers.IncrSyncEnd, (int)stream.Length - 4 - (int)stream.Position);
-        }
-
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
-        {
-            List<FolderChange> interFolderChanges = new List<FolderChange>();
-
-            while (FolderChange.Verify(stream))
+            SetText("HierarchySync");
+            if (FolderChanges != null)
             {
-                interFolderChanges.Add(new FolderChange(stream));
+                foreach (var folderChange in FolderChanges)
+                {
+                    AddChild(folderChange, "FolderChange");
+                }
             }
 
-            this.FolderChanges = interFolderChanges.ToArray();
+            AddLabeledChild("Deletions", Deletions);
+            AddLabeledChild("State", State);
 
-            if (Deletions.Verify(stream))
-            {
-                this.Deletions = new Deletions(stream);
-            }
-
-            this.State = new State(stream);
-
-            if (stream.ReadMarker() == Markers.IncrSyncEnd)
-            {
-                this.EndMarker = Markers.IncrSyncEnd;
-            }
-            else
-            {
-                throw new Exception("The HierarchySync cannot be parsed successfully. The IncrSyncEnd Marker is missed.");
-            }
+            if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
         }
     }
 }

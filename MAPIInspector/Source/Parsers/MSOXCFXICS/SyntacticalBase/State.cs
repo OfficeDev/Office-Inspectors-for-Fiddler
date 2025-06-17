@@ -1,16 +1,16 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System;
+    using BlockParser;
 
     /// <summary>
     /// The state element contains the final ICS state of the synchronization download operation. 
     /// </summary>
-    public class State : SyntacticalBase
+    public class State : Block
     {
         /// <summary>
         /// The start marker of ReadStateChange.
         /// </summary>
-        public Markers StartMarker;
+        public BlockT<Markers> StartMarker;
 
         /// <summary>
         /// A PropList value.
@@ -20,47 +20,29 @@
         /// <summary>
         /// The end marker of ReadStateChange.
         /// </summary>
-        public Markers EndMarker;
+        public BlockT<Markers> EndMarker;
 
-        /// <summary>
-        /// Initializes a new instance of the State class.
-        /// </summary>
-        /// <param name="stream">The stream.</param>
-        public State(FastTransferStream stream)
-            : base(stream)
+        protected override void Parse()
         {
-        }
-
-        /// <summary>
-        /// Verify that a stream's current position contains a serialized State.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        /// <returns>If the stream's current position contains a serialized State, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
-        {
-            return stream.VerifyMarker(Markers.IncrSyncStateBegin);
-        }
-
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
-        {
-            if (stream.ReadMarker() == Markers.IncrSyncStateBegin)
+            StartMarker = BlockT<Markers>.Parse(parser);
+            if (StartMarker.Data == Markers.IncrSyncStateBegin)
             {
-                this.StartMarker = Markers.IncrSyncStateBegin;
-                this.PropList = new PropList(stream);
+                PropList = Parse<PropList>(parser);
 
-                if (stream.ReadMarker() == Markers.IncrSyncStateEnd)
+                EndMarker = BlockT<Markers>.Parse(parser);
+                if (EndMarker.Data != Markers.IncrSyncStateEnd)
                 {
-                    this.EndMarker = Markers.IncrSyncStateEnd;
-                }
-                else
-                {
-                    throw new Exception("The State cannot be parsed successfully. The IncrSyncStateEnd Marker is missed.");
+                    Parsed = false;
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("State");
+            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddLabeledChild("PropList", PropList);
+            if (EndMarker != null) if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
         }
     }
 }

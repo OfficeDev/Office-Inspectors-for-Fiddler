@@ -11,164 +11,145 @@
         /// <summary>
         /// The length of a variate type value.
         /// </summary>
-        public int Length;
+        public BlockT<int> Length;
 
         /// <summary>
         /// The valueArray.
         /// </summary>
-        public object ValueArray;
-
-        /// <summary>
-        /// Initializes a new instance of the VarPropTypePropValue class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public VarPropTypePropValue(FastTransferStream stream)
-            : base(stream)
-        {
-        }
+        public Block ValueArray;
 
         /// <summary>
         /// Verify that a stream's current position contains a serialized VarPropTypePropValue.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized VarPropTypePropValue, return true, else false</returns>
-        public static new bool Verify(FastTransferStream stream)
+        public static new bool Verify(BinaryParser parser)
         {
-            ushort tmp = stream.VerifyUInt16();
-            return LexicalTypeHelper.IsVarType((PropertyDataType)tmp)
-                || PropValue.IsMetaTagIdsetGiven(stream)
-                || LexicalTypeHelper.IsCodePageType(tmp);
+            var tmp = BlockT<PropertyDataType>.TestParse(parser);
+            if (!tmp.Parsed) return false;
+            return LexicalTypeHelper.IsVarType(tmp.Data)
+                || IsMetaTagIdsetGiven(parser)
+                || LexicalTypeHelper.IsCodePageType(tmp.Data);
         }
 
-        /// <summary>
-        /// Parse a VarPropTypePropValue instance from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        /// <returns>A VarPropTypePropValue instance.</returns>
-        public static new LexicalBase ParseFrom(FastTransferStream stream)
+        protected override void Parse()
         {
-            return new VarPropTypePropValue(stream);
-        }
+            base.Parse();
+            Length = BlockT<int>.Parse(parser);
 
-        /// <summary>
-        /// Parse next object from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
-        {
-            base.Parse(stream);
-            this.Length = stream.ReadInt32();
-
-            if (LexicalTypeHelper.IsCodePageType((ushort)this.PropType))
+            if (LexicalTypeHelper.IsCodePageType(PropType.Data))
             {
-                CodePageType type = (CodePageType)this.PropType;
+                var type = (CodePageType)PropType.Data;
 
                 switch (type)
                 {
                     case CodePageType.PtypCodePageUnicode:
-                        PtypString pstring = new PtypString();
-                        pstring.Parse(stream);
-                        this.ValueArray = pstring;
+                        ValueArray = Parse<PtypStringBlock>(parser);
                         break;
                     case CodePageType.PtypCodePageUnicodeBigendian:
                     case CodePageType.PtypCodePageWesternEuropean:
-                        PtypString8 pstring8 = new PtypString8();
-                        pstring8.Parse(stream);
-                        this.ValueArray = pstring8;
+                        ValueArray = Parse<PtypString8Block>(parser);
                         break;
                     default:
-                        PtypString8 defaultstring8 = new PtypString8();
-                        defaultstring8.Parse(stream);
+                        ValueArray = Parse<PtypString8Block>(parser);
                         break;
                 }
             }
             else
             {
-                PropertyDataType type = (PropertyDataType)this.PropType;
-
-                switch (type)
+                switch (PropType.Data)
                 {
                     case PropertyDataType.PtypInteger32:
                     case PropertyDataType.PtypBinary:
-                        // PidTagParentSourceKey, PidTagParentSourceKey, PidTagChangeKey
-                        if ((ushort)this.PropInfo.PropID == 0x65E0 || (ushort)this.PropInfo.PropID == 0x65E1 || (ushort)this.PropInfo.PropID == 0x65E2)
+                        if (PropInfo.PropID.Data == PidTagPropertyEnum.PidTagSourceKey ||
+                            PropInfo.PropID.Data == PidTagPropertyEnum.PidTagParentSourceKey ||
+                            PropInfo.PropID.Data == PidTagPropertyEnum.PidTagChangeKey)
                         {
-                            if (this.Length != 0)
+                            if (Length.Data != 0)
                             {
-                                XID tmpXID = new XID(this.Length);
-                                tmpXID.Parse(stream);
-                                this.ValueArray = tmpXID;
+                                var tmpXID = new XID(Length.Data);
+                                tmpXID.Parse(parser);
+                                ValueArray = tmpXID;
                             }
                         }
-                        else if ((ushort)this.PropInfo.PropID == 0x65E3) // PidTagPredecessorChangeList 
+                        else if (PropInfo.PropID.Data == PidTagPropertyEnum.PidTagPredecessorChangeList)
                         {
-                            PredecessorChangeList tmpPredecessorChangeList = new PredecessorChangeList(this.Length);
-                            tmpPredecessorChangeList.Parse(stream);
-                            this.ValueArray = tmpPredecessorChangeList;
+                            var tmpPredecessorChangeList = new PredecessorChangeList(Length.Data);
+                            tmpPredecessorChangeList.Parse(parser);
+                            ValueArray = tmpPredecessorChangeList;
                         }
-                        else if ((ushort)this.PropInfo.PropID == 0x402D || (ushort)this.PropInfo.PropID == 0x402E || (ushort)this.PropInfo.PropID == 0x67E5 || (ushort)this.PropInfo.PropID == 0x4021 || (ushort)this.PropInfo.PropID == 0x6793)
+                        else if (
+                            (ushort)PropInfo.PropID.Data == 0x402D ||
+                            (ushort)PropInfo.PropID.Data == 0x402E ||
+                            (ushort)PropInfo.PropID.Data == 0x67E5 ||
+                            (ushort)PropInfo.PropID.Data == 0x4021 ||
+                            (ushort)PropInfo.PropID.Data == 0x6793)
                         {
-                            if (this.Length != 0)
+                            if (Length.Data != 0)
                             {
-                                int begionPosition = (int)stream.Position;
-                                int EveLength = this.Length;
-                                List<IDSET_REPLID> InterIDSET_REPLID = new List<IDSET_REPLID>();
+                                ValueArray.SetText("IDSET_REPLID list");
+                                long EveLength = Length.Data;
+                                var InterIDSET_REPLID = new List<IDSET_REPLID>();
                                 while (EveLength > 0)
                                 {
-                                    IDSET_REPLID tmpIDSET_REPLID = new IDSET_REPLID();
-                                    tmpIDSET_REPLID.Parse(stream);
+                                    var tmpIDSET_REPLID = Parse<IDSET_REPLID>(parser);
+                                    ValueArray.AddChild(tmpIDSET_REPLID);
                                     InterIDSET_REPLID.Add(tmpIDSET_REPLID);
-                                    EveLength -= ((int)stream.Position - begionPosition);
+                                    EveLength -= tmpIDSET_REPLID.Size;
                                 }
-
-                                this.ValueArray = InterIDSET_REPLID.ToArray();
                             }
                         }
-                        else if ((ushort)this.PropInfo.PropID == 0x4017 || (ushort)this.PropInfo.PropID == 0x6796 || (ushort)this.PropInfo.PropID == 0x67DA || (ushort)this.PropInfo.PropID == 0x67D2)
+                        else if (
+                            (ushort)PropInfo.PropID.Data == 0x4017 ||
+                            (ushort)PropInfo.PropID.Data == 0x6796 ||
+                            (ushort)PropInfo.PropID.Data == 0x67DA ||
+                            (ushort)PropInfo.PropID.Data == 0x67D2)
+
                         {
-                            if (this.Length != 0)
+                            if (Length.Data != 0)
                             {
-                                int begionPosition = (int)stream.Position;
-                                int EveLength = this.Length;
-                                List<IDSET_REPLGUID> InterIDSET_REPLGUID = new List<IDSET_REPLGUID>();
+                                ValueArray.SetText("IDSET_REPLGUID list");
+                                long EveLength = Length.Data;
+                                var InterIDSET_REPLGUID = new List<IDSET_REPLGUID>();
                                 while (EveLength > 0)
                                 {
-                                    IDSET_REPLGUID tmpIDSET_REPLGUID = new IDSET_REPLGUID();
-                                    tmpIDSET_REPLGUID.Parse(stream);
-                                    InterIDSET_REPLGUID.Add(tmpIDSET_REPLGUID);
-                                    EveLength -= ((int)stream.Position - begionPosition);
+                                    var tmpIDSET_REPLGUID = Parse<IDSET_REPLGUID>(parser);
+                                    ValueArray.AddChild(tmpIDSET_REPLGUID);
+                                    EveLength -= tmpIDSET_REPLGUID.Size;
                                 }
-
-                                this.ValueArray = InterIDSET_REPLGUID.ToArray();
                             }
                         }
                         else
                         {
-                            this.ValueArray = stream.ReadBlock(this.Length);
+                            ValueArray = BlockBytes.Parse(parser, Length.Data);
                         }
 
                         break;
                     case PropertyDataType.PtypString:
-                        PtypString pstring = new PtypString();
-                        pstring.Parse(stream);
-                        this.ValueArray = pstring;
+                        ValueArray = Parse<PtypStringBlock>(parser);
                         break;
                     case PropertyDataType.PtypString8:
-                        PtypString8 pstring8 = new PtypString8();
-                        pstring8.Parse(stream);
-                        this.ValueArray = pstring8;
+                        ValueArray = Parse<PtypString8Block>(parser);
                         break;
                     case PropertyDataType.PtypServerId:
-                        this.ValueArray = Block.Parse<PtypServerId>(stream);
+                        ValueArray = Parse<PtypServerId>(parser);
                         break;
                     case PropertyDataType.PtypObject_Or_PtypEmbeddedTable:
-                        this.ValueArray = stream.ReadBlock(this.Length);
+                        ValueArray = Parse<PtypObject_Or_PtypEmbeddedTable>(parser);
                         break;
                     default:
-                        this.ValueArray = stream.ReadBlock(this.Length);
+                        ValueArray = BlockBytes.Parse(parser, Length.Data);
                         break;
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            base.ParseBlocks();
+            SetText("VarPropTypePropValue");
+            if (Length != null) AddChild(Length, $"Length: {Length.Data})");
+            AddChild(ValueArray);
         }
     }
 }

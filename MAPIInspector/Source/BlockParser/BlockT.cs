@@ -35,6 +35,23 @@ namespace BlockParser
             return ret;
         }
 
+        /// <summary>
+        /// Read a block off our stream, but don't advance the stream position.
+        /// </summary>
+        /// <param name="parser"></param>
+        /// <returns></returns>
+        public static BlockT<T> TestParse(BinaryParser parser)
+        {
+            var offset = parser.Offset;
+            var ret = new BlockT<T>
+            {
+                parser = parser
+            };
+            ret.EnsureParsed();
+            parser.Offset = offset;
+            return ret;
+        }
+
         // Construct directly from a parser
         public BlockT(BinaryParser parser) => Parse<T>(parser);
 

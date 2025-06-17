@@ -1,16 +1,16 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System;
+    using BlockParser;
 
     /// <summary>
     /// Contains a folderContentNoDelProps.
     /// </summary>
-    public class SubFolderNoDelProps : SyntacticalBase
+    public class SubFolderNoDelProps : Block
     {
         /// <summary>
         /// The start marker of SubFolder.
         /// </summary>
-        public Markers StartMarker;
+        public BlockT<Markers> StartMarker;
 
         /// <summary>
         /// A folderContentNoDelProps value contains the content of a folder: its properties, messages, and subFolders.
@@ -20,47 +20,39 @@
         /// <summary>
         /// The end marker of SubFolder.
         /// </summary>
-        public Markers EndMarker;
-
-        /// <summary>
-        /// Initializes a new instance of the SubFolderNoDelProps class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public SubFolderNoDelProps(FastTransferStream stream)
-            : base(stream)
-        {
-        }
+        public BlockT<Markers> EndMarker;
 
         /// <summary>
         /// Verify that a stream's current position contains a serialized SubFolderNoDelProps.
         /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
+        /// <param name="parser">A BinaryParser.</param>
         /// <returns>If the stream's current position contains a serialized SubFolderNoDelProps, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
+        public static bool Verify(BinaryParser parser)
         {
-            return stream.VerifyMarker(Markers.StartSubFld);
+            return MarkersHelper.VerifyMarker(parser, Markers.StartSubFld);
         }
 
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
+        protected override void Parse()
         {
-            if (stream.ReadMarker() == Markers.StartSubFld)
+            StartMarker = BlockT<Markers>.Parse(parser);
+            if (StartMarker.Data == Markers.StartSubFld)
             {
-                this.StartMarker = Markers.StartSubFld;
-                this.FolderContentNoDelProps = new FolderContentNoDelProps(stream);
+                FolderContentNoDelProps = Parse<FolderContentNoDelProps>(parser);
 
-                if (stream.ReadMarker() == Markers.EndFolder)
+                EndMarker = BlockT<Markers>.Parse(parser);
+                if (EndMarker.Data != Markers.EndFolder)
                 {
-                    this.EndMarker = Markers.EndFolder;
-                }
-                else
-                {
-                    throw new Exception("The SubFolderNoDelProps cannot be parsed successfully. The EndFolder Marker is missed.");
+                    Parsed = false;
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("SubFolderNoDelProps");
+            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            if (FolderContentNoDelProps != null) AddChild(FolderContentNoDelProps, "FolderContentNoDelProps");
+            if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
         }
     }
 }

@@ -1,9 +1,11 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Contains a folderContent.
     /// </summary>
-    public class TransferPutBufferElement : SyntacticalBase
+    public class TransferPutBufferElement : Block
     {
         /// <summary>
         /// MetaTagDnPrefix field
@@ -18,99 +20,92 @@
         /// <summary>
         /// Marker field
         /// </summary>
-        public object Marker;
+        public BlockT<Markers> Marker;
 
-        /// <summary>
-        /// Initializes a new instance of the TransferPutBufferElement class.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public TransferPutBufferElement(FastTransferStream stream)
-            : base(stream)
+        protected override void Parse()
         {
-        }
-
-        /// <summary>
-        /// Verify a stream's current position contains a serialized TopFolder.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        /// <returns>If the stream's current position contains a serialized TopFolder, return true, else false.</returns>
-        public static bool Verify(FastTransferStream stream)
-        {
-            return !stream.IsEndOfStream;
-        }
-
-        /// <summary>
-        /// Parse fields from a FastTransferStream.
-        /// </summary>
-        /// <param name="stream">A FastTransferStream.</param>
-        public override void Parse(FastTransferStream stream)
-        {
-            if (MapiInspector.MAPIParser.PartialPutType != 0 && MapiInspector.MAPIParser.PartialPutServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIParser.PartialPutProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
-                && MapiInspector.MAPIParser.PartialPutClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
+            if (MapiInspector.MAPIParser.PartialPutType != 0 &&
+                MapiInspector.MAPIParser.PartialPutServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
+                MapiInspector.MAPIParser.PartialPutProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
+                MapiInspector.MAPIParser.PartialPutClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
             {
-                if (MarkersHelper.IsMarker(stream.VerifyUInt32()))
+                var tmpMarker = BlockT<Markers>.TestParse(parser);
+                if (MarkersHelper.IsMarker(tmpMarker.Data))
                 {
-                    this.Marker = stream.ReadMarker();
+                    Marker = BlockT<Markers>.Parse(parser);
                 }
                 else if (LexicalTypeHelper.IsMetaPropertyID(MapiInspector.MAPIParser.PartialPutId))
                 {
-                    this.MetaValue = new MetaPropValuePutPartial(stream);
+                    MetaValue = Parse<MetaPropValuePutPartial>(parser);
                 }
                 else
                 {
-                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)MapiInspector.MAPIParser.PartialPutType))
+                    if (LexicalTypeHelper.IsFixedType(MapiInspector.MAPIParser.PartialPutType))
                     {
-                        if (MapiInspector.MAPIParser.PartialPutType == (ushort)PropertyDataType.PtypInteger32 && MapiInspector.MAPIParser.PartialPutId == 0x4017)
+                        if (MapiInspector.MAPIParser.PartialPutType == PropertyDataType.PtypInteger32 &&
+                            MapiInspector.MAPIParser.PartialPutId == PidTagPropertyEnum.MetaTagIdsetGiven)
                         {
-                            this.PropValue = new VarPropTypePropValuePutPartial(stream);
+                            PropValue = Parse<VarPropTypePropValuePutPartial>(parser);
                         }
                         else
                         {
-                            this.PropValue = new FixedPropTypePropValuePutPartial(stream);
+                            PropValue = Parse<FixedPropTypePropValuePutPartial>(parser);
                         }
                     }
-                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)MapiInspector.MAPIParser.PartialPutType)
-                    || LexicalTypeHelper.IsCodePageType(MapiInspector.MAPIParser.PartialPutType))
+                    else if (LexicalTypeHelper.IsVarType(MapiInspector.MAPIParser.PartialPutType) ||
+                    LexicalTypeHelper.IsCodePageType(MapiInspector.MAPIParser.PartialPutType))
                     {
-                        this.PropValue = new VarPropTypePropValuePutPartial(stream);
+                        PropValue = Parse<VarPropTypePropValuePutPartial>(parser);
                     }
-                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)MapiInspector.MAPIParser.PartialPutType))
+                    else if (LexicalTypeHelper.IsMVType(MapiInspector.MAPIParser.PartialPutType))
                     {
-                        this.PropValue = new MvPropTypePropValuePutPartial(stream);
+                        PropValue = Parse<MvPropTypePropValuePutPartial>(parser);
                     }
                 }
             }
             else
             {
-                if (MarkersHelper.IsMarker(stream.VerifyUInt32()))
+                var tmpMarker = BlockT<Markers>.TestParse(parser);
+                if (MarkersHelper.IsMarker(tmpMarker.Data))
                 {
-                    this.Marker = stream.ReadMarker();
+                    Marker = BlockT<Markers>.Parse(parser);
                 }
-                else if (MarkersHelper.IsMetaTag(stream.VerifyUInt32()))
+                else if (MarkersHelper.IsMetaTag((MetaProperties)tmpMarker.Data))
                 {
-                    this.MetaValue = new MetaPropValuePutPartial(stream);
+                    MetaValue = Parse<MetaPropValuePutPartial>(parser);
                 }
                 else
                 {
-                    long streamPosition = stream.Position;
-                    PropValue propValue = new PropValue(stream);
-                    stream.Position = streamPosition;
+                    var offset = parser.Offset;
+                    PropValue propValue = Parse<PropValue>(parser);
+                    parser.Offset = offset;
 
-                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)propValue.PropType) && !PropValue.IsMetaTagIdsetGiven(stream))
+                    if (LexicalTypeHelper.IsFixedType(propValue.PropType.Data) &&
+                        !PropValue.IsMetaTagIdsetGiven(parser))
                     {
-                        this.PropValue = new FixedPropTypePropValuePutPartial(stream);
+                        PropValue = Parse<FixedPropTypePropValuePutPartial>(parser);
                     }
-                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)propValue.PropType) || PropValue.IsMetaTagIdsetGiven(stream)
-                    || LexicalTypeHelper.IsCodePageType((ushort)propValue.PropType))
+                    else if (LexicalTypeHelper.IsVarType(propValue.PropType.Data) ||
+                        PropValue.IsMetaTagIdsetGiven(parser) ||
+                    LexicalTypeHelper.IsCodePageType(propValue.PropType.Data))
                     {
-                        this.PropValue = new VarPropTypePropValuePutPartial(stream);
+                        PropValue = Parse<VarPropTypePropValuePutPartial>(parser);
                     }
-                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)propValue.PropType) && !PropValue.IsMetaTagIdsetGiven(stream))
+                    else if (LexicalTypeHelper.IsMVType(propValue.PropType.Data) &&
+                        !PropValue.IsMetaTagIdsetGiven(parser))
                     {
-                        this.PropValue = new MvPropTypePropValuePutPartial(stream);
+                        PropValue = Parse<MvPropTypePropValuePutPartial>(parser);
                     }
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("TransferPutBufferElement");
+            AddChild(MetaValue, "MetaValue");
+            AddChild(PropValue, "PropValue");
+            if (Marker != null) AddChild(Marker, $"Marker:{Marker.Data}");
         }
     }
 }
