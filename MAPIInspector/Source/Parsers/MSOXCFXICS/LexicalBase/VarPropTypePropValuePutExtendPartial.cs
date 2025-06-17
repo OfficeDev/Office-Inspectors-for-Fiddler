@@ -43,7 +43,7 @@ namespace MAPIInspector.Parsers
                 if (MapiInspector.MAPIParser.PartialPutExtendType != 0 && MapiInspector.MAPIParser.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIParser.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
                     && MapiInspector.MAPIParser.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    ptype = CreateT(MapiInspector.MAPIParser.PartialPutExtendType, 0, 0);
+                    ptype = CreateBlock(MapiInspector.MAPIParser.PartialPutExtendType, 0, 0);
 
                     if (MapiInspector.MAPIParser.PartialPutExtendRemainSize != -1)
                     {

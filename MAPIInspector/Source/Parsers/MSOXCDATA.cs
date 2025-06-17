@@ -2493,7 +2493,7 @@
         IsamErrorDatabaseCorruptedNoRepair = 0xFFFFFB38,
 
         /// <summary>
-        /// The database engine attempted to replay a Create Database operation from the transaction log but failed due to an incompatible version of that operation.
+        /// The database engine attempted to replay a CreateBlock Database operation from the transaction log but failed due to an incompatible version of that operation.
         /// </summary>
         IsamErrorInvalidCreateDbVersion = 0xFFFFFB37,
 
@@ -5177,8 +5177,8 @@
         public PropertyTag(PropertyDataType ptype, PidTagPropertyEnum pId)
         {
             // TODO: Vet these params
-            PropertyType = CreateT(ptype, 0, 0);
-            PropertyId = CreateT(pId, 0, 0);
+            PropertyType = CreateBlock(ptype, 0, 0);
+            PropertyId = CreateBlock(pId, 0, 0);
         }
 
         /// <summary>

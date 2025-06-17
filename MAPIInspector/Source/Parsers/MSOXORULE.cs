@@ -210,9 +210,9 @@
         {
             Byte0 = BlockT<byte>.Parse(parser);
             int index = 0;
-            X = CreateT(BaseStructure.GetBits(Byte0.Data, index, 7), Byte0.Size, Byte0.Offset);
+            X = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 7), Byte0.Size, Byte0.Offset);
             index = index + 7;
-            R = CreateT(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+            R = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
         }
 
         protected override void ParseBlocks()
@@ -741,15 +741,15 @@
         {
             Byte0 = BlockT<byte>.Parse(parser);
             int index = 0;
-            Reservedbits0 = CreateT(BaseStructure.GetBits(Byte0.Data, index, 4), Byte0.Size, Byte0.Offset);
+            Reservedbits0 = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 4), Byte0.Size, Byte0.Offset);
             index += 4;
-            TM = CreateT(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+            TM = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
-            AT = CreateT(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+            AT = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
-            NC = CreateT(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+            NC = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
-            PR = CreateT(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+            PR = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
 
             Reservedbits1 = BlockBytes.Parse(parser, 3);
         }
@@ -800,11 +800,11 @@
         {
             Byte0 = BlockT<byte>.Parse(parser);
             int index = 0;
-            Reservedbits0 = CreateT(BaseStructure.GetBits(Byte0.Data, index, 6), Byte0.Size, Byte0.Offset);
+            Reservedbits0 = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 6), Byte0.Size, Byte0.Offset);
             index += 6;
-            ST = CreateT(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+            ST = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
-            NS = CreateT(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+            NS = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
             Reservedbits1 = BlockBytes.Parse(parser, 3);
         }
 

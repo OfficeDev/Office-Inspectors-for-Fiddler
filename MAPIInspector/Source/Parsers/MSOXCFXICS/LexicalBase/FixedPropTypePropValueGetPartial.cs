@@ -28,8 +28,8 @@ namespace MAPIInspector.Parsers
                 if (MapiInspector.MAPIParser.PartialGetType != 0 && MapiInspector.MAPIParser.PartialGetServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIParser.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
                     && MapiInspector.MAPIParser.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    ptype = CreateT(MapiInspector.MAPIParser.PartialGetType, 0, 0);
-                    pid = CreateT(MapiInspector.MAPIParser.PartialGetId, 0, 0);
+                    ptype = CreateBlock(MapiInspector.MAPIParser.PartialGetType, 0, 0);
+                    pid = CreateBlock(MapiInspector.MAPIParser.PartialGetId, 0, 0);
 
                     // clear
                     MapiInspector.MAPIParser.PartialGetType = 0;

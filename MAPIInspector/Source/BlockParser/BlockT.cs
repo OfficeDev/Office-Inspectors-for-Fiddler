@@ -57,7 +57,7 @@ namespace BlockParser
 
             U uData = ReadStruct<U>(parser);
             int offset = parser.Offset;
-            return CreateT((T)Convert.ChangeType(uData, typeof(T)), System.Runtime.InteropServices.Marshal.SizeOf(type), offset);
+            return CreateBlock((T)Convert.ChangeType(uData, typeof(T)), System.Runtime.InteropServices.Marshal.SizeOf(type), offset);
         }
 
         protected override void Parse()

@@ -63,7 +63,7 @@ namespace BlockParserTests
         [TestMethod]
         public void Test_TestExpandingBlock()
         {
-            // Create a byte array for the parser to read (4 bytes size (3), 3 bytes, 4 bytes footer)
+            // CreateBlock a byte array for the parser to read (4 bytes size (3), 3 bytes, 4 bytes footer)
             // Then read this array using TestBlock
             byte[] data = new byte[] { 0x03, 0x0,0x0,0x0, 0x0A, 0x0B, 0x0C, 0x04, 0x05, 0x06, 0x07};
             var parser = new BinaryParser(data);

@@ -51,7 +51,7 @@ namespace BlockParserTests
         [TestMethod]
         public void Test_TestBlock()
         {
-            // Create a byte array for the parser to read (8 bytes: 4 for int, 2 for short, 2 padding)
+            // CreateBlock a byte array for the parser to read (8 bytes: 4 for int, 2 for short, 2 padding)
             // Then read this array using TestBlock
             byte[] data = new byte[] { 0x78, 0x56, 0x34, 0x12, 0xCD, 0xAB, 0x00, 0x00 }; // int: 0x12345678, short: 0xABCD
             var parser = new BinaryParser(data);
@@ -80,7 +80,7 @@ namespace BlockParserTests
         [TestMethod]
         public void Test_TestBlock2()
         {
-            // Create a byte array for the parser to read (14 bytes: 4 for int, 2 for short, then 4 for int,2 for short, 2 padding)
+            // CreateBlock a byte array for the parser to read (14 bytes: 4 for int, 2 for short, then 4 for int,2 for short, 2 padding)
             // Then read this array using TestBlock2
             byte[] data = new byte[] { 0x09, 0x53, 0x67, 0x08, 0x68, 0x24, 0x78, 0x56, 0x34, 0x12, 0xCD, 0xAB, 0xBE, 0xEF }; // int: 0x08675309, short: 0x2468
             var parser = new BinaryParser(data);

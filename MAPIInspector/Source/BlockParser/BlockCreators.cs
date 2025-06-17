@@ -3,13 +3,13 @@
     public partial class Block
     {
         /// <summary>
-        /// Create an empty non parsing block
+        /// CreateBlock an empty non parsing block
         /// </summary>
         /// <returns>New instance of ScratchBlock</returns>
         public static Block Create() => new ScratchBlock();
 
         /// <summary>
-        /// Create a block with specified size, offset, and formatted text
+        /// CreateBlock a block with specified size, offset, and formatted text
         /// </summary>
         /// <param name="size">Size of the block</param>
         /// <param name="offset">Offset of the block</param>
@@ -26,7 +26,7 @@
         }
 
         /// <summary>
-        /// Create a block with formatted text, such as a header or label
+        /// CreateBlock a block with formatted text, such as a header or label
         /// </summary>
         /// <param name="format">Format string for the block text</param>
         /// <param name="args">Arguments to format the block text</param>
@@ -38,7 +38,7 @@
             return ret;
         }
 
-        public static BlockT<T> CreateT<T>(T data, long size, long offset) where T : struct
+        public static BlockT<T> CreateBlock<T>(T data, long size, long offset) where T : struct
         {
             var ret = new BlockT<T>(data, size, offset)
             {
