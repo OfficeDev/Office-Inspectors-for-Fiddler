@@ -5455,29 +5455,9 @@
 
     public class PtypString : Block
     {
-        /// <summary>
-        /// A string of Unicode characters in UTF-16LE format encoding with terminating null character (0x0000).
-        /// </summary>
-        public BlockStringW Value;
-
-        /// <summary>
-        /// Parse the PtypString structure.
-        /// </summary>
-        protected override void Parse()
-        {
-            Value = BlockStringW.Parse(parser);
-        }
-
-        protected override void ParseBlocks()
-        {
-            Text = $"\"{Value.Text}\"";
-        }
-    }
-
-    public class PtypStringBlockCounted : Block
-    {
+        // When used, this is a count of bytes. BlockStringW accepts a count of characters, so we need to convert it.
         private Block _count;
-        public uint Count;
+        public int Count = -1;
 
         /// <summary>
         /// A string of Unicode characters in UTF-16LE format encoding with terminating null character (0x0000).
@@ -5490,13 +5470,15 @@
         private CountWideEnum countWide;
 
         /// <summary>
-        /// Initializes a new instance of the PtypStringBlockCounted class
+        /// Initializes a new instance of the PtypString class
         /// </summary>
-        /// <param name="wide">The Count wide size of PtypStringBlockCounted type.</param>
-        public PtypStringBlockCounted(CountWideEnum wide)
-        {
-            countWide = wide;
-        }
+        public PtypString() => countWide = 0; // Default to no count
+
+        /// <summary>
+        /// Initializes a new instance of the PtypString class
+        /// </summary>
+        /// <param name="wide">The Count wide size of PtypString type.</param>
+        public PtypString(CountWideEnum wide) => countWide = wide;
 
         /// <summary>
         /// Parse the PtypString structure.
@@ -5509,14 +5491,17 @@
                     _count = BlockT<ushort>.Parse(parser);
                     Count = (_count as BlockT<ushort>).Data;
                     break;
-                default:
                 case CountWideEnum.fourBytes:
-                    _count = BlockT<uint>.Parse(parser);
-                    Count = (_count as BlockT<uint>).Data;
+                    _count = BlockT<int>.Parse(parser);
+                    Count = (_count as BlockT<int>).Data;
+                    break;
+                default:
                     break;
             }
 
-            Value = BlockStringW.Parse(parser, (int)Count / 2);
+            // If Count is -1, we don't know the size, so we parse until the null terminator.
+            // If Count is >= 0, we parse that many bytes, so we divide by 2 to get the number of characters.
+            Value = BlockStringW.Parse(parser, Count == -1 ? Count : Count / 2);
         }
 
         protected override void ParseBlocks()
@@ -5528,29 +5513,8 @@
 
     public class PtypString8 : Block
     {
-        /// <summary>
-        /// A string of multibyte characters in externally specified encoding with terminating null character (single 0 byte).
-        /// </summary>
-        public BlockStringA Value;
-
-        /// <summary>
-        /// Parse the PtypString8 structure.
-        /// </summary>
-        protected override void Parse()
-        {
-            Value = BlockStringA.Parse(parser);
-        }
-
-        protected override void ParseBlocks()
-        {
-            Text = $"\"{Value.Text}\"";
-        }
-    }
-
-    public class PtypString8BlockCounted : Block
-    {
         private Block _count;
-        public uint Count;
+        public int Count = -1;
 
         /// <summary>
         /// A string of multibyte characters in externally specified encoding with terminating null character (single 0 byte).
@@ -5563,15 +5527,16 @@
         private CountWideEnum countWide;
 
         /// <summary>
-        /// Initializes a new instance of the PtypString8BlockCounted class
+        /// Initializes a new instance of the PtypString8 class
         /// </summary>
-        /// <param name="wide">The Count wide size of PtypString8BlockCounted type.</param>
-        public PtypString8BlockCounted(CountWideEnum wide)
-        {
-            countWide = wide;
-        }
+        public PtypString8() => countWide = 0; // Default to no count
 
         /// <summary>
+        /// Initializes a new instance of the PtypString8 class
+        /// </summary>
+        /// <param name="wide">The Count wide size of PtypString8 type.</param>
+        public PtypString8(CountWideEnum wide) => countWide = wide;
+
         /// Parse the PtypString8 structure.
         /// </summary>
         protected override void Parse()
@@ -5582,21 +5547,24 @@
                     _count = BlockT<ushort>.Parse(parser);
                     Count = (_count as BlockT<ushort>).Data;
                     break;
-                default:
                 case CountWideEnum.fourBytes:
-                    _count = BlockT<uint>.Parse(parser);
-                    Count = (_count as BlockT<uint>).Data;
+                    _count = BlockT<int>.Parse(parser);
+                    Count = (_count as BlockT<int>).Data;
+                    break;
+                default:
                     break;
             }
 
-            Value = BlockStringA.Parse(parser, (int)Count);
+            Value = BlockStringA.Parse(parser, Count == -1 ? Count : Count);
         }
 
         protected override void ParseBlocks()
         {
             Text = $"\"{Value.Text}\"";
+            if (_count != null) AddChild(_count, $"Count:{Count}");
         }
     }
+
 
     /// <summary>
     /// 8 bytes; a 64-bit integer representing the number of 100-nanosecond intervals since January 1, 1601.[MS-DTYP]: FILETIME.

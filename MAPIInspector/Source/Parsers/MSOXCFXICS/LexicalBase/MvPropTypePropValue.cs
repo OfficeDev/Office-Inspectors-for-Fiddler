@@ -76,11 +76,11 @@
                         tmpBlock.Parse(parser);
                         break;
                     case PropertyDataType.PtypMultipleString:
-                        tmpBlock = new PtypStringBlockCounted(CountWideEnum.fourBytes);
+                        tmpBlock = new PtypString(CountWideEnum.fourBytes);
                         tmpBlock.Parse(parser);
                         break;
                     case PropertyDataType.PtypMultipleString8:
-                        tmpBlock = new PtypString8BlockCounted(CountWideEnum.fourBytes);
+                        tmpBlock = new PtypString8(CountWideEnum.fourBytes);
                         tmpBlock.Parse(parser);
                         break;
                 }
