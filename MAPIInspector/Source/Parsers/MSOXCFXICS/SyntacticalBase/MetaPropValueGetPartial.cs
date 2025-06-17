@@ -94,7 +94,7 @@ namespace MAPIInspector.Parsers
                             MapiInspector.MAPIParser.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
                             MapiInspector.MAPIParser.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                         {
-                            length = BlockT<int>.Create(MapiInspector.MAPIParser.PartialGetRemainSize, 0, 0);
+                            length = CreateT(MapiInspector.MAPIParser.PartialGetRemainSize, 0, 0);
 
                             // clear
                             MapiInspector.MAPIParser.PartialGetRemainSize = -1;

@@ -35,7 +35,7 @@
                 if (MapiInspector.MAPIParser.PartialPutType != 0 && MapiInspector.MAPIParser.PartialPutServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIParser.PartialPutProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
                     && MapiInspector.MAPIParser.PartialPutClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    ptype = BlockT<PropertyDataType>.Create(MapiInspector.MAPIParser.PartialPutType, 0, 0);
+                    ptype = CreateT(MapiInspector.MAPIParser.PartialPutType, 0, 0);
 
                     if (MapiInspector.MAPIParser.PartialPutRemainSize != -1)
                     {

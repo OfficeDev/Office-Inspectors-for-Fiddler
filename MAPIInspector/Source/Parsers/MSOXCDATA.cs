@@ -5177,8 +5177,8 @@
         public PropertyTag(PropertyDataType ptype, PidTagPropertyEnum pId)
         {
             // TODO: Vet these params
-            PropertyType = BlockT<PropertyDataType>.Create(ptype, 0, 0);
-            PropertyId = BlockT<PidTagPropertyEnum>.Create(pId, 0, 0);
+            PropertyType = CreateT(ptype, 0, 0);
+            PropertyId = CreateT(pId, 0, 0);
         }
 
         /// <summary>

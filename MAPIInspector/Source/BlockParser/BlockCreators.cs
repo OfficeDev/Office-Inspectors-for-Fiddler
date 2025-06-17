@@ -37,5 +37,14 @@
             ret.SetText(format, args);
             return ret;
         }
+
+        public static BlockT<T> CreateT<T>(T data, long size, long offset) where T : struct
+        {
+            var ret = new BlockT<T>(data, size, offset)
+            {
+                Parsed = true
+            };
+            return ret;
+        }
     }
 }

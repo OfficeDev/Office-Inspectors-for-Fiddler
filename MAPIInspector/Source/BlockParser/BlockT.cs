@@ -16,15 +16,6 @@ namespace BlockParser
             Offset = offset;
         }
 
-        public static BlockT<T> Create(T data, long size, long offset)
-        {
-            var ret = new BlockT<T>(data, size, offset)
-            {
-                Parsed = true
-            };
-            return ret;
-        }
-
         public static BlockT<T> Parse(BinaryParser parser)
         {
             var ret = new BlockT<T>
@@ -66,7 +57,7 @@ namespace BlockParser
 
             U uData = ReadStruct<U>(parser);
             int offset = parser.Offset;
-            return Create((T)Convert.ChangeType(uData, typeof(T)), System.Runtime.InteropServices.Marshal.SizeOf(type), offset);
+            return CreateT((T)Convert.ChangeType(uData, typeof(T)), System.Runtime.InteropServices.Marshal.SizeOf(type), offset);
         }
 
         protected override void Parse()

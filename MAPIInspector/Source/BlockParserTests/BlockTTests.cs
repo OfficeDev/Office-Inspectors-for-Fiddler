@@ -26,7 +26,7 @@ namespace BlockParserTests
         [TestMethod]
         public void BlockT_Create_SetsProperties()
         {
-            var block = BlockT<int>.Create(7, 4, 10);
+            var block = Block.CreateT(7, 4, 10);
             Assert.AreEqual(7, block.Data);
             Assert.AreEqual(4, block.Size);
             Assert.AreEqual(10, block.Offset);
