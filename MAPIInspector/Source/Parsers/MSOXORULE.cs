@@ -537,7 +537,7 @@
         {
             SetText("RuleAction");
             AddChild(_noOfActions, $"NoOfActions:{NoOfActions}");
-            AddLabeledChildren("ActionBlocks", ActionBlocks);
+            AddLabeledChildren(ActionBlocks, "ActionBlocks");
         }
     }
 
@@ -1030,8 +1030,8 @@
 
         protected override void ParseBlocks()
         {
-            AddLabeledChild("ReplyTemplateFID", ReplyTemplateFID);
-            AddLabeledChild("ReplyTemplateMID", ReplyTemplateMID);
+            AddLabeledChild(ReplyTemplateFID, "ReplyTemplateFID");
+            AddLabeledChild(ReplyTemplateMID, "ReplyTemplateMID");
             AddChild(ReplyTemplateGUID, $"ReplyTemplateGUID:{ReplyTemplateGUID.Data}");
         }
     }
@@ -1069,7 +1069,7 @@
         protected override void ParseBlocks()
         {
             AddChild(MessageEIDSize, $"MessageEIDSize:{MessageEIDSize.Data}");
-            AddLabeledChild("ReplyTemplateMessageEID", ReplyTemplateMessageEID);
+            AddLabeledChild(ReplyTemplateMessageEID, "ReplyTemplateMessageEID");
             AddChild(ReplyTemplateGUID, $"ReplyTemplateGUID:{ReplyTemplateGUID.Data}");
         }
     }
@@ -1109,7 +1109,7 @@
         protected override void ParseBlocks()
         {
             AddChild(RecipientCount, $"RecipientCount:{RecipientCount.Data}");
-            AddLabeledChildren("RecipientBlocks", RecipientBlocks);
+            AddLabeledChildren(RecipientBlocks, "RecipientBlocks");
         }
     }
 
@@ -1156,7 +1156,7 @@
             SetText("RecipientBlockData");
             AddChild(Reserved, $"Reserved:{Reserved.Data}");
             AddChild(NoOfProperties, $"NoOfProperties:{NoOfProperties.Data}");
-            AddLabeledChildren("PropertyValues", PropertyValues);
+            AddLabeledChildren(PropertyValues, "PropertyValues");
         }
     }
 

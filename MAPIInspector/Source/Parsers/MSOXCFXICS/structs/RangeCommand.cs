@@ -51,8 +51,8 @@ namespace MAPIInspector.Parsers
         {
             SetText("RangeCommand");
             if (Command != null) AddChild(Command, $"Command:{Command.Data}");
-            AddLabeledChild("LowValue", LowValue);
-            AddLabeledChild("HighValue", HighValue);
+            AddLabeledChild(LowValue, "LowValue");
+            AddLabeledChild(HighValue, "HighValue");
         }
     }
 }

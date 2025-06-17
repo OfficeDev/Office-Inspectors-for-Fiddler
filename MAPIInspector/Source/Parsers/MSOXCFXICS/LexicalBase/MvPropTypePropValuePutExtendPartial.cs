@@ -82,7 +82,7 @@
         {
             base.ParseBlocks();
             if (Length != null) AddChild(Length, $"Length: {Length.Data} bytes");
-            AddLabeledChildren("ValueArray", ValueArray);
+            AddLabeledChildren(ValueArray, "ValueArray");
         }
     }
 }

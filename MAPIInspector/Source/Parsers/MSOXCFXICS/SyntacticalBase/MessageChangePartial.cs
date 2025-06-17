@@ -86,7 +86,7 @@
             AddChild(MessageChangeHeader, "MessageChangeHeader");
             if (SyncMessagePartialPropList != null)
             {
-                AddLabeledChildren("SyncMessagePartialPropList", SyncMessagePartialPropList);
+                AddLabeledChildren(SyncMessagePartialPropList, "SyncMessagePartialPropList");
             }
             AddChild(MessageChildren, "MessageChildren");
         }

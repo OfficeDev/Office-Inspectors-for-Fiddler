@@ -40,8 +40,8 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("ProgressPerMessageChange");
-            AddLabeledChild("ProgressPerMessage", ProgressPerMessage);
-            AddLabeledChild("MessageChange", MessageChange);
+            AddLabeledChild(ProgressPerMessage, "ProgressPerMessage");
+            AddLabeledChild(MessageChange, "MessageChange");
         }
     }
 }

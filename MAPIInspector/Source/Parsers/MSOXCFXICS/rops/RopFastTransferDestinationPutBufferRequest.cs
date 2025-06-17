@@ -73,7 +73,7 @@
             {
                 foreach (var transferData in TransferData)
                 {
-                    AddLabeledChild("TransferData", transferData);
+                    AddLabeledChild(transferData, "TransferData");
                 }
             }
         }

@@ -196,7 +196,7 @@
             AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
             AddChild(SetColumnsFlags, "SetColumnsFlags:{0}", SetColumnsFlags.Data);
             AddChild(PropertyTagCount, "PropertyTagCount:{0}", PropertyTagCount.Data);
-            AddLabeledChildren("PropertyTags", PropertyTags);
+            AddLabeledChildren(PropertyTags, "PropertyTags");
         }
     }
 
@@ -329,7 +329,7 @@
             AddChild(SortOrderCount, "SortOrderCount:{0}", SortOrderCount.Data);
             AddChild(SortOrderCount, "CategoryCount:{0}", CategoryCount.Data);
             AddChild(ExpandedCount, "ExpandedCount :{0}", ExpandedCount.Data);
-            AddLabeledChildren("SortOrders", SortOrders);
+            AddLabeledChildren(SortOrders, "SortOrders");
         }
     }
 

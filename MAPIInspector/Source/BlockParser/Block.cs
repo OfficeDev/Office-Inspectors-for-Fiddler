@@ -110,7 +110,7 @@ namespace BlockParser
         public void AddHeader(string format, params object[] args) => AddHeader(string.Format(format, args));
 
         // Add a text only node with size/offset matching the child node so that it "contains" the child
-        public void AddLabeledChild(string text, Block block)
+        public void AddLabeledChild(Block block, string text)
         {
             if (block != null && block.Parsed)
             {
@@ -124,7 +124,7 @@ namespace BlockParser
         }
 
         // Add a text only node with size/offset matching the children node so that it "contains" the children
-        public void AddLabeledChildren(string text, Block[] blocks)
+        public void AddLabeledChildren(Block[] blocks, string text)
         {
             if (blocks != null)
             {
@@ -233,7 +233,7 @@ namespace BlockParser
                 if (HasData && EnableJunk && parser.RemainingBytes > 0)
                 {
                     var junkData = BlockBytes.Parse(parser, parser.RemainingBytes);
-                    AddLabeledChild(string.Format("Unparsed data"), junkData);
+                    AddLabeledChild(junkData, string.Format("Unparsed data"));
                 }
 
                 Size = parser.Offset - Offset;

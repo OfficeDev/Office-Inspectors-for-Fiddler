@@ -80,16 +80,16 @@
         protected override void ParseBlocks()
         {
             SetText("FolderContent");
-            AddLabeledChild("MetaTagDnPrefix", MetaTagDnPrefix);
-            AddLabeledChild("PropList", PropList);
-            AddLabeledChild("MetaTagNewFXFolder", MetaTagNewFXFolder);
-            AddLabeledChild("FolderMessages", FolderMessages);
-            AddLabeledChild("MetaTagFXDelProp", MetaTagFXDelProp);
+            AddLabeledChild(MetaTagDnPrefix, "MetaTagDnPrefix");
+            AddLabeledChild(PropList, "PropList");
+            AddLabeledChild(MetaTagNewFXFolder, "MetaTagNewFXFolder");
+            AddLabeledChild(FolderMessages, "FolderMessages");
+            AddLabeledChild(MetaTagFXDelProp, "MetaTagFXDelProp");
             if (SubFolders != null && SubFolders.Length > 0)
             {
                 foreach (var subFolder in SubFolders)
                 {
-                    AddLabeledChild("SubFolder", subFolder);
+                    AddLabeledChild(subFolder, "SubFolder");
                 }
             }
         }

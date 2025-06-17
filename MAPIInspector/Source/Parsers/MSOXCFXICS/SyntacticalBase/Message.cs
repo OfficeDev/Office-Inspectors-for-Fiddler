@@ -50,7 +50,7 @@
         {
             SetText("Message");
             if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
-            AddLabeledChild("Content", Content);
+            AddLabeledChild(Content, "Content");
             if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
         }
     }

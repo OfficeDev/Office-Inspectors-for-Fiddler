@@ -41,7 +41,7 @@
         {
             SetText("State");
             if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
-            AddLabeledChild("PropList", PropList);
+            AddLabeledChild(PropList, "PropList");
             if (EndMarker != null) if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
         }
     }

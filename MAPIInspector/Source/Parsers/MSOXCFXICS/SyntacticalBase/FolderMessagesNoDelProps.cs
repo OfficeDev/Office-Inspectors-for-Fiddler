@@ -38,7 +38,7 @@
         protected override void ParseBlocks()
         {
             SetText("FolderMessagesNoDelProps");
-            AddLabeledChildren("MessageLists", MessageLists);
+            AddLabeledChildren(MessageLists, "MessageLists");
         }
     }
 }

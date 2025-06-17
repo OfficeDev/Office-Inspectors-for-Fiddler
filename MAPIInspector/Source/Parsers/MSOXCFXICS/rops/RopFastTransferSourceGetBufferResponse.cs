@@ -123,7 +123,7 @@
             if (TotalStepCount != null) AddChild(TotalStepCount, $"TotalStepCount:{TotalStepCount.Data}");
             if (Reserved != null) AddChild(Reserved, $"Reserved:{Reserved.Data}");
             if (TransferBufferSize != null) AddChild(TransferBufferSize, $"TransferBufferSize:{TransferBufferSize.Data}");
-            AddLabeledChildren("TransferBuffer", TransferBuffer);
+            AddLabeledChildren(TransferBuffer, "TransferBuffer");
             if (BackoffTime != null) AddChild(BackoffTime, $"BackoffTime:{BackoffTime.Data}");
         }
     }

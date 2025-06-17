@@ -65,11 +65,11 @@
         protected override void ParseBlocks()
         {
             SetText("FolderContentNoDelProps");
-            AddLabeledChild("PropList", PropList);
-            AddLabeledChild("MetaTagNewFXFolder", MetaTagNewFXFolder);
-            AddLabeledChild("FolderMessagesNoDelProps", FolderMessagesNoDelProps);
-            AddLabeledChild("MetaTagFXDelProp", MetaTagFXDelProp);
-            AddLabeledChildren("SubFoldersNoDelProps", SubFolderNoDelPropList);
+            AddLabeledChild(PropList, "PropList");
+            AddLabeledChild(MetaTagNewFXFolder, "MetaTagNewFXFolder");
+            AddLabeledChild(FolderMessagesNoDelProps, "FolderMessagesNoDelProps");
+            AddLabeledChild(MetaTagFXDelProp, "MetaTagFXDelProp");
+            AddLabeledChildren(SubFolderNoDelPropList, "SubFoldersNoDelProps");
         }
     }
 }

@@ -32,7 +32,7 @@ namespace MAPIInspector.Parsers
         {
             SetText("SizedXid");
             if (XidSize != null) AddChild(XidSize, $"XidSize:{XidSize.Data}");
-            AddLabeledChild("Xid", Xid);
+            AddLabeledChild(Xid, "Xid");
         }
     }
 }

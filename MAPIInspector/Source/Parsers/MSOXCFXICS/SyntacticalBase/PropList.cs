@@ -28,7 +28,7 @@
         protected override void ParseBlocks()
         {
             SetText("PropList");
-            AddLabeledChildren("PropValues", PropValues);
+            AddLabeledChildren(PropValues, "PropValues");
         }
     }
 }

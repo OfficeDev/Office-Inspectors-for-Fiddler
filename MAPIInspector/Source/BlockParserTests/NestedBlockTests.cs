@@ -31,7 +31,7 @@ namespace BlockParserTests
             {
                 SetText("ParentBlock");
                 AddChild(KidCount, "KidCount:{0}", KidCount.Data);
-                AddLabeledChildren("Kids", Kids);
+                AddLabeledChildren(Kids, "Kids");
             }
         }
 

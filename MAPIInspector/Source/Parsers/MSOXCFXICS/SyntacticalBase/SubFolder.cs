@@ -50,7 +50,7 @@
         {
             SetText("SubFolder");
             if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
-            AddLabeledChild("FolderContent", FolderContent);
+            AddLabeledChild(FolderContent, "FolderContent");
             if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
         }
     }

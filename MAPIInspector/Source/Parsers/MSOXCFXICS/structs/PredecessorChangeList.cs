@@ -49,7 +49,7 @@
             SetText("PredecessorChangeList");
             foreach (var sizedXid in SizedXidList)
             {
-                AddLabeledChild("SizedXid", sizedXid);
+                AddLabeledChild(sizedXid, "SizedXid");
             }
         }
     }

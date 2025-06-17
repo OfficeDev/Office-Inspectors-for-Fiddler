@@ -574,16 +574,16 @@
             }
 
             // Add TableRowFolderID, TableRowMessageID, TableRowInstance if present
-            AddLabeledChild("TableRowFolderID", TableRowFolderID);
-            AddLabeledChild("TableRowMessageID", TableRowMessageID);
+            AddLabeledChild(TableRowFolderID, "TableRowFolderID");
+            AddLabeledChild(TableRowMessageID, "TableRowMessageID");
             if (TableRowInstance != null)
             {
                 AddChild(TableRowInstance, $"TableRowInstance:{TableRowInstance.Data}");
             }
 
             // Add InsertAfterTableRowFolderID, InsertAfterTableRowID, InsertAfterTableRowInstance if present
-            AddLabeledChild("InsertAfterTableRowFolderID", InsertAfterTableRowFolderID);
-            AddLabeledChild("InsertAfterTableRowID", InsertAfterTableRowID);
+            AddLabeledChild(InsertAfterTableRowFolderID, "InsertAfterTableRowFolderID");
+            AddLabeledChild(InsertAfterTableRowID, "InsertAfterTableRowID");
             if (InsertAfterTableRowInstance != null)
             {
                 AddChild(InsertAfterTableRowInstance, $"InsertAfterTableRowInstance:{InsertAfterTableRowInstance.Data}");
@@ -595,21 +595,21 @@
                 AddChild(TableRowDataSize, $"TableRowDataSize:{TableRowDataSize.Data}");
             }
 
-            AddLabeledChild("TableRowData", TableRowData);
+            AddLabeledChild(TableRowData, "TableRowData");
 
             // Add FolderId, MessageId, ParentFolderId, OldFolderId, OldMessageId, OldParentFolderId if present
-            AddLabeledChild("FolderId", FolderId);
-            AddLabeledChild("MessageId", MessageId);
-            AddLabeledChild("ParentFolderId", ParentFolderId);
-            AddLabeledChild("OldFolderId", OldFolderId);
-            AddLabeledChild("OldMessageId", OldMessageId);
-            AddLabeledChild("OldParentFolderId", OldParentFolderId);
+            AddLabeledChild(FolderId, "FolderId");
+            AddLabeledChild(MessageId, "MessageId");
+            AddLabeledChild(ParentFolderId, "ParentFolderId");
+            AddLabeledChild(OldFolderId, "OldFolderId");
+            AddLabeledChild(OldMessageId, "OldMessageId");
+            AddLabeledChild(OldParentFolderId, "OldParentFolderId");
 
             // Add TagCount and Tags if present
             if (TagCount != null)
             {
                 AddChild(TagCount, $"TagCount:{TagCount.Data}");
-                AddLabeledChildren("Tags", Tags);
+                AddLabeledChildren(Tags, "Tags");
             }
 
             // Add TotalMessageCount, UnreadMessageCount if present
@@ -632,7 +632,7 @@
                 AddChild(UnicodeFlag, $"UnicodeFlag:{UnicodeFlag.Data}");
             }
 
-            AddLabeledChild("MessageClass", MessageClass);
+            AddLabeledChild(MessageClass, "MessageClass");
         }
     }
 

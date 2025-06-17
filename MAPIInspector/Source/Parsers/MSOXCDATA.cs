@@ -5668,7 +5668,7 @@
         protected override void ParseBlocks()
         {
             AddChild(Count, $"Count:{Count.Data}");
-            AddLabeledChild("ServerId", ServerId);
+            AddLabeledChild(ServerId, "ServerId");
         }
     }
 
@@ -5725,13 +5725,13 @@
             AddChild(Ours, $"Count:{Ours.Data}");
             if (Ours.Data == 0x01)
             {
-                AddLabeledChild("FolderID", FolderID);
-                AddLabeledChild("MessageID", MessageID);
+                AddLabeledChild(FolderID, "FolderID");
+                AddLabeledChild(MessageID, "MessageID");
                 AddChild(Instance, $"Instance:{Instance.Data}");
             }
             else
             {
-                AddLabeledChild("ClientData", ClientData);
+                AddLabeledChild(ClientData, "ClientData");
             }
         }
     }
@@ -5949,7 +5949,7 @@
         protected override void ParseBlocks()
         {
             AddChild(Count, $"Count:{Count.Data}");
-            AddLabeledChildren("Value", Value);
+            AddLabeledChildren(Value, "Value");
         }
     }
 
@@ -5988,7 +5988,7 @@
         protected override void ParseBlocks()
         {
             AddChild(Count, $"Count:{Count.Data}");
-            AddLabeledChildren("Value", Value);
+            AddLabeledChildren(Value, "Value");
         }
     }
 
@@ -6026,7 +6026,7 @@
         protected override void ParseBlocks()
         {
             AddChild(Count, $"Count:{Count.Data}");
-            AddLabeledChildren("Value", Value);
+            AddLabeledChildren(Value, "Value");
         }
     }
 
@@ -6064,7 +6064,7 @@
         protected override void ParseBlocks()
         {
             AddChild(Count, $"Count:{Count.Data}");
-            AddLabeledChildren("Value", Value);
+            AddLabeledChildren(Value, "Value");
         }
     }
 
@@ -6102,7 +6102,7 @@
         protected override void ParseBlocks()
         {
             AddChild(Count, $"Count:{Count.Data}");
-            AddLabeledChildren("Value", Value);
+            AddLabeledChildren(Value, "Value");
         }
     }
 
@@ -6140,7 +6140,7 @@
         protected override void ParseBlocks()
         {
             AddChild(Count, $"Count:{Count.Data}");
-            AddLabeledChildren("Value", Value);
+            AddLabeledChildren(Value, "Value");
         }
     }
 
@@ -6178,7 +6178,7 @@
         protected override void ParseBlocks()
         {
             AddChild(Count, $"Count:{Count.Data}");
-            AddLabeledChildren("Value", Value);
+            AddLabeledChildren(Value, "Value");
         }
     }
 
@@ -6216,7 +6216,7 @@
         protected override void ParseBlocks()
         {
             AddChild(Count, $"Count:{Count.Data}");
-            AddLabeledChildren("Value", Value);
+            AddLabeledChildren(Value, "Value");
         }
     }
 
@@ -6282,7 +6282,7 @@
         {
             SetText("PtypMultipleString_AddressBook");
             AddChild(_count, $"Count:{Count}");
-            AddLabeledChildren("Value", Value);
+            AddLabeledChildren(Value, "Value");
         }
     }
 
@@ -6320,7 +6320,7 @@
         protected override void ParseBlocks()
         {
             AddChild(Count, $"Count:{Count.Data}");
-            AddLabeledChildren("Value", Value);
+            AddLabeledChildren(Value, "Value");
         }
     }
 
@@ -6358,7 +6358,7 @@
         protected override void ParseBlocks()
         {
             AddChild(Count, $"Count:{Count.Data}");
-            AddLabeledChildren("Value", Value);
+            AddLabeledChildren(Value, "Value");
         }
     }
 
@@ -6397,7 +6397,7 @@
         protected override void ParseBlocks()
         {
             AddChild(Count, $"Count:{Count.Data}");
-            AddLabeledChildren("Value", Value);
+            AddLabeledChildren(Value, "Value");
         }
     }
 
@@ -6451,7 +6451,7 @@
         protected override void ParseBlocks()
         {
             AddChild(Count, $"Count:{Count.Data}");
-            AddLabeledChildren("Value", Value);
+            AddLabeledChildren(Value, "Value");
         }
     }
 
@@ -6714,7 +6714,7 @@
             AddChild(PropertyType, $"PropertyType:{PropertyType.Data}");
             if (_PropertyValue != null)
             {
-                AddLabeledChild("PropertyValue", _PropertyValue);
+                AddLabeledChild(_PropertyValue, "PropertyValue");
             }
             else
             {
@@ -6856,7 +6856,7 @@
             AddChild(Flag, $"Flag:{Flag.Data}");
             if (_PropertyValue != null)
             {
-                AddLabeledChild("PropertyValue", _PropertyValue);
+                AddLabeledChild(_PropertyValue, "PropertyValue");
             }
             else
             {
@@ -6923,7 +6923,7 @@
             AddChild(Flag, $"Flag:{Flag.Data}");
             if (_PropertyValue != null)
             {
-                AddLabeledChild("PropertyValue", _PropertyValue);
+                AddLabeledChild(_PropertyValue, "PropertyValue");
             }
             else
             {
@@ -7136,7 +7136,7 @@
         protected override void ParseBlocks()
         {
             SetText("Restriction");
-            AddLabeledChild("Restriction", Restriction);
+            AddLabeledChild(Restriction, "Restriction");
         }
     }
 
@@ -7210,7 +7210,7 @@
             SetText("AndRestriction");
             AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
             AddChild(_restrictCount, $"RestrictCount:{RestrictCount}");
-            AddLabeledChildren("Restricts", Restricts);
+            AddLabeledChildren(Restricts, "Restricts");
         }
     }
 
@@ -7284,7 +7284,7 @@
             SetText("OrRestriction");
             AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
             AddChild(_restrictCount, $"RestrictCount:{_restrictCount}");
-            AddLabeledChildren("Restricts", Restricts);
+            AddLabeledChildren(Restricts, "Restricts");
         }
     }
 
@@ -7331,7 +7331,7 @@
         {
             SetText("NotRestriction");
             AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
-            AddLabeledChild("Restriction", Restriction);
+            AddLabeledChild(Restriction, "Restriction");
         }
     }
 
@@ -7460,7 +7460,7 @@
             AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
             AddChild(RelOp, $"RelOp:{RelOp.Data}");
             AddChild(PropTag, "PropTag");
-            AddLabeledChild("TaggedValue", TaggedValue);
+            AddLabeledChild(TaggedValue, "TaggedValue");
         }
     }
 
@@ -7684,7 +7684,7 @@
             SetText("SubObjectRestriction");
             AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
             AddChild(Subobject, "Subobject");
-            AddLabeledChild($"Restriction", Restriction);
+            AddLabeledChild(Restriction, $"Restriction");
         }
     }
 
@@ -7761,7 +7761,7 @@
             SetText("CommentRestriction");
             AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
             AddChild(TaggedValuesCount, $"TaggedValuesCount:{TaggedValuesCount.Data}");
-            AddLabeledChildren("TaggedValues", TaggedValues);
+            AddLabeledChildren(TaggedValues, "TaggedValues");
             AddChild(RestrictionPresent, $"RestrictionPresent:{RestrictionPresent.Data}");
             if (Restriction != null)
             {
@@ -7820,7 +7820,7 @@
             SetText("CountRestriction");
             AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
             AddChild(Count, $"Count:{Count.Data}");
-            AddLabeledChild("SubRestriction", SubRestriction);
+            AddLabeledChild(SubRestriction, "SubRestriction");
         }
     }
     #endregion
@@ -7915,7 +7915,7 @@
             AddChild(SortOrderCount, $"SortOrderCount:{SortOrderCount.Data}");
             AddChild(CategorizedCount, $"CategorizedCount:{CategorizedCount.Data}");
             AddChild(ExpandedCount, $"ExpandedCount:{ExpandedCount.Data}");
-            AddLabeledChildren("SortOrders", SortOrders);
+            AddLabeledChildren(SortOrders, "SortOrders");
         }
     }
     #endregion

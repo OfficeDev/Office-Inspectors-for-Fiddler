@@ -64,8 +64,8 @@
                 }
             }
 
-            AddLabeledChild("Deletions", Deletions);
-            AddLabeledChild("State", State);
+            AddLabeledChild(Deletions, "Deletions");
+            AddLabeledChild(State, "State");
 
             if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
         }

@@ -31,7 +31,7 @@
         {
             SetText("CN");
             if (ReplicaId != null) AddChild(ReplicaId, $"ReplicaId:{ReplicaId.Data} ({ReplicaId.Data:X4})");
-            AddLabeledChild("GlobalCounter", GlobalCounter);
+            AddLabeledChild(GlobalCounter, "GlobalCounter");
         }
     }
 }

@@ -31,7 +31,7 @@ namespace MAPIInspector.Parsers
         {
             SetText("PushCommand");
             if (Command != null) AddChild(Command, $"Command:{Command.Data}");
-            AddLabeledChild("CommonBytes", CommonBytes);
+            AddLabeledChild(CommonBytes, "CommonBytes");
         }
     }
 }

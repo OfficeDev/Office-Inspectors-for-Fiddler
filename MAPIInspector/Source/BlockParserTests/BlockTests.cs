@@ -148,7 +148,7 @@ namespace BlockParserTests
             var child = Block.Create();
             child.Offset = 5;
             child.Size = 10;
-            b.AddLabeledChild("label", child);
+            b.AddLabeledChild(child, "label");
             Assert.AreEqual(1, b.Children.Count);
             Assert.AreEqual("label", b.Children[0].Text);
             Assert.AreEqual(5, b.Children[0].Offset);
@@ -275,7 +275,7 @@ namespace BlockParserTests
         {
             var b = Block.Create();
             var child = Block.Create();
-            b.AddLabeledChild(null, child);
+            b.AddLabeledChild(child, null);
             Assert.AreEqual(string.Empty, b.Children[0].Text);
         }
 

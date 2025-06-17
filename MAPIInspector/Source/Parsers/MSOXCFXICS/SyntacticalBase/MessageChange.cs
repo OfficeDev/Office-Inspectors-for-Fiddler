@@ -42,8 +42,8 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("MessageChange");
-            AddLabeledChild("MessageChangeFull", MessageChangeFull);
-            AddLabeledChild("MesageChangePartial", MesageChangePartial);
+            AddLabeledChild(MessageChangeFull, "MessageChangeFull");
+            AddLabeledChild(MesageChangePartial, "MesageChangePartial");
         }
     }
 }

@@ -46,7 +46,7 @@
         {
             SetText("XID");
             if (NamespaceGuid != null) AddChild(NamespaceGuid, $"NamespaceGuid:{NamespaceGuid.Data}");
-            AddLabeledChild("LocalId", LocalId);
+            AddLabeledChild(LocalId, "LocalId");
         }
     }
 }

@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
         {
             SetText("ReadStateChanges");
             if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
-            AddLabeledChild("PropList", PropList);
+            AddLabeledChild(PropList, "PropList");
         }
     }
 }

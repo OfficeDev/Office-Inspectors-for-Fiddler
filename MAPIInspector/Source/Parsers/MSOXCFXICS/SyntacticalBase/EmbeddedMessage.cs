@@ -51,7 +51,7 @@
         {
             SetText("EmbeddedMessage");
             if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
-            AddLabeledChild("MessageContent", MessageContent);
+            AddLabeledChild(MessageContent, "MessageContent");
             if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
         }
     }

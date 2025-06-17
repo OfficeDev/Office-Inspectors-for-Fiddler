@@ -65,10 +65,10 @@
         protected override void ParseBlocks()
         {
             SetText("MessageChildren");
-            AddLabeledChild("FxdelPropsBeforeRecipient", FxdelPropsBeforeRecipient);
-            AddLabeledChildren("Recipients", Recipients);
-            AddLabeledChild("FxdelPropsBeforeAttachment", FxdelPropsBeforeAttachment);
-            AddLabeledChildren("Attachments", Attachments);
+            AddLabeledChild(FxdelPropsBeforeRecipient, "FxdelPropsBeforeRecipient");
+            AddLabeledChildren(Recipients, "Recipients");
+            AddLabeledChild(FxdelPropsBeforeAttachment, "FxdelPropsBeforeAttachment");
+            AddLabeledChildren(Attachments, "Attachments");
         }
     }
 }

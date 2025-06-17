@@ -67,10 +67,10 @@
         {
             SetText("MessageChangeFull");
             if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
-            AddLabeledChild("MessageChangeHeader", MessageChangeHeader);
+            AddLabeledChild(MessageChangeHeader, "MessageChangeHeader");
             if (SecondMarker != null) AddChild(SecondMarker, $"SecondMarker:{SecondMarker.Data}");
-            AddLabeledChild("PropList", PropList);
-            AddLabeledChild("MessageChildren", MessageChildren);
+            AddLabeledChild(PropList, "PropList");
+            AddLabeledChild(MessageChildren, "MessageChildren");
         }
     }
 }
