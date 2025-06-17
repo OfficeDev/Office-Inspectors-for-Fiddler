@@ -103,8 +103,6 @@ namespace MAPIInspector.Parsers
                     switch ((CodePageType)typeValue)
                     {
                         case CodePageType.PtypCodePageUnicode:
-                            PtypString pstring = new PtypString();
-
                             if (parser.RemainingBytes < blockLength)
                             {
                                 MapiInspector.MAPIParser.PartialPutRemainSize = blockLength - parser.RemainingBytes;

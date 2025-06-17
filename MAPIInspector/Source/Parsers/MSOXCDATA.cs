@@ -5453,49 +5453,7 @@
         }
     }
 
-    /// <summary>
-    /// Variable size; a string of Unicode characters in UTF-16LE format encoding with terminating null character (0x0000).
-    /// </summary>
-    public class PtypString : AnnotatedData
-    {
-        /// <summary>
-        /// A string of Unicode characters in UTF-16LE format encoding with terminating null character (0x0000).
-        /// </summary>
-        public MAPIString Value;
-
-        /// <summary>
-        /// The length value
-        /// </summary>
-        private int length;
-
-        /// <summary>
-        /// Initializes a new instance of the PtypString class
-        /// </summary>
-        /// <param name="len">The length parameter</param>
-        public PtypString(int len = 0)
-        {
-            this.length = len;
-        }
-
-        /// <summary>
-        /// Parse the PtypString structure.
-        /// </summary>
-        /// <param name="s">A stream containing the PtypString structure</param>
-        public override void Parse(Stream s)
-        {
-            base.Parse(s);
-            this.Value = new MAPIString(Encoding.Unicode, "\0", this.length);
-            this.Value.Parse(s);
-            this.ParsedValue = $"\"{Value}\"";
-        }
-
-        public override int Size
-        {
-            get { return Value.Size; }
-        }
-    }
-
-    public class PtypStringBlock : Block
+    public class PtypString : Block
     {
         /// <summary>
         /// A string of Unicode characters in UTF-16LE format encoding with terminating null character (0x0000).
@@ -5568,7 +5526,7 @@
         }
     }
 
-    public class PtypString8Block : Block
+    public class PtypString8 : Block
     {
         /// <summary>
         /// A string of multibyte characters in externally specified encoding with terminating null character (single 0 byte).
@@ -6251,7 +6209,7 @@
         /// <summary>
         /// The array of string value.
         /// </summary>
-        public PtypStringBlock[] Value;
+        public PtypString[] Value;
 
         /// <summary>
         /// Parse the PtypMultipleString structure.
@@ -6260,10 +6218,10 @@
         {
             Count = BlockT<uint>.Parse(parser);
 
-            var tempvalue = new List<PtypStringBlock>();
+            var tempvalue = new List<PtypString>();
             for (int i = 0; i < Count.Data; i++)
             {
-                tempvalue.Add(Parse<PtypStringBlock>(parser));
+                tempvalue.Add(Parse<PtypString>(parser));
             }
 
             Value = tempvalue.ToArray();
@@ -6355,7 +6313,7 @@
         /// <summary>
         /// The array of string value.
         /// </summary>
-        public PtypString8Block[] Value;
+        public PtypString8[] Value;
 
         /// <summary>
         /// Parse the PtypMultipleString8 structure.
@@ -6364,10 +6322,10 @@
         {
             Count = BlockT<uint>.Parse(parser);
 
-            var tempvalue = new List<PtypString8Block>();
+            var tempvalue = new List<PtypString8>();
             for (int i = 0; i < Count.Data; i++)
             {
-                tempvalue.Add(Parse<PtypString8Block>(parser));
+                tempvalue.Add(Parse<PtypString8>(parser));
             }
 
             Value = tempvalue.ToArray();
@@ -6656,8 +6614,8 @@
                 case PropertyDataType.PtypErrorCode: return Parse<PtypErrorCode>(parser);
                 case PropertyDataType.PtypBoolean: return Parse<PtypBoolean>(parser);
                 case PropertyDataType.PtypInteger64: return Parse<PtypInteger64>(parser);
-                case PropertyDataType.PtypString: return Parse<PtypStringBlock>(parser);
-                case PropertyDataType.PtypString8: return Parse<PtypString8Block>(parser);
+                case PropertyDataType.PtypString: return Parse<PtypString>(parser);
+                case PropertyDataType.PtypString8: return Parse<PtypString8>(parser);
                 case PropertyDataType.PtypTime: return Parse<PtypTime>(parser);
                 case PropertyDataType.PtypGuid: return Parse<PtypGuid>(parser);
                 case PropertyDataType.PtypServerId: return Parse<PtypServerId>(parser);

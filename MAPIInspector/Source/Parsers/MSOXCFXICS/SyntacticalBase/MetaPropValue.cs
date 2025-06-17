@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
                 }
                 else
                 {
-                    PropValue = Parse<PtypString8Block>(parser);
+                    PropValue = Parse<PtypString8>(parser);
                 }
             }
         }

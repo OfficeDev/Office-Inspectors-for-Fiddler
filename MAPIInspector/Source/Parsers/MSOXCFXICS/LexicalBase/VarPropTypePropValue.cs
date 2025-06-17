@@ -44,14 +44,14 @@
                 switch (type)
                 {
                     case CodePageType.PtypCodePageUnicode:
-                        ValueArray = Parse<PtypStringBlock>(parser);
+                        ValueArray = Parse<PtypString>(parser);
                         break;
                     case CodePageType.PtypCodePageUnicodeBigendian:
                     case CodePageType.PtypCodePageWesternEuropean:
-                        ValueArray = Parse<PtypString8Block>(parser);
+                        ValueArray = Parse<PtypString8>(parser);
                         break;
                     default:
-                        ValueArray = Parse<PtypString8Block>(parser);
+                        ValueArray = Parse<PtypString8>(parser);
                         break;
                 }
             }
@@ -126,10 +126,10 @@
 
                         break;
                     case PropertyDataType.PtypString:
-                        ValueArray = Parse<PtypStringBlock>(parser);
+                        ValueArray = Parse<PtypString>(parser);
                         break;
                     case PropertyDataType.PtypString8:
-                        ValueArray = Parse<PtypString8Block>(parser);
+                        ValueArray = Parse<PtypString8>(parser);
                         break;
                     case PropertyDataType.PtypServerId:
                         ValueArray = Parse<PtypServerId>(parser);
