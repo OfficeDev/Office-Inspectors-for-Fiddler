@@ -44,11 +44,11 @@
         /// </summary>
         protected override void Parse()
         {
-            Flags = ParseT<uint>(parser);
-            Depth = ParseT<uint>(parser);
+            Flags = BlockT<uint>(parser);
+            Depth = BlockT<uint>(parser);
             FolderLongTermId = Parse<LongTermId>(parser);
-            ServerDNCount = ParseT<uint>(parser);
-            CheapServerDNCount = ParseT<uint>(parser);
+            ServerDNCount = BlockT<uint>(parser);
+            CheapServerDNCount = BlockT<uint>(parser);
 
             var tmpDNArray = new List<PtypString8>();
             for (int i = 0; i < ServerDNCount.Data; i++)

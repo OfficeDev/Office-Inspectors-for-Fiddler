@@ -47,7 +47,7 @@ namespace BlockParser
             return ret;
         }
 
-        public static BlockT<T> ParseT<T>(BinaryParser parser) where T : struct
+        public static BlockT<T> BlockT<T>(BinaryParser parser) where T : struct
         {
             var ret = new BlockT<T>
             {

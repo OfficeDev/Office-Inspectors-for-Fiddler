@@ -22,7 +22,7 @@
         /// <returns>If the stream's current position contains a serialized MvPropTypePropValue, return true, else false</returns>
         public static new bool Verify(BinaryParser parser)
         {
-            var tmp = BlockT<PropertyDataType>.TestParse(parser);
+            var tmp = BlockParser.BlockT<PropertyDataType>.TestParse(parser);
             if (tmp == null || !tmp.Parsed) return false;
             return LexicalTypeHelper.IsMVType(tmp.Data) && !IsMetaTagIdsetGiven(parser);
         }
@@ -30,7 +30,7 @@
         protected override void Parse()
         {
             base.Parse();
-            Length = ParseT<int>(parser);
+            Length = BlockT<int>(parser);
             long blocksLength = Length.Data;
 
             ValueArray = ParseArray(parser, PropType.Data, blocksLength);

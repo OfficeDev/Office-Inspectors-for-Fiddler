@@ -44,7 +44,7 @@
                     }
                     else
                     {
-                        Length = ParseT<int>(parser);
+                        Length = BlockT<int>(parser);
                     }
 
                     // clear
@@ -60,7 +60,7 @@
                 }
                 else
                 {
-                    Length = ParseT<int>(parser);
+                    Length = BlockT<int>(parser);
                 }
 
                 int blocksLength = Length != null ? Length.Data : Plength;

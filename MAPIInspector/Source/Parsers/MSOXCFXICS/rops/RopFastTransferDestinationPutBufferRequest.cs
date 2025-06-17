@@ -39,10 +39,10 @@
         /// </summary>
         protected override void Parse()
         {
-            RopId = ParseT<RopIdType>(parser);
-            LogonId = ParseT<byte>(parser);
-            InputHandleIndex = ParseT<byte>(parser);
-            TransferDataSize = ParseT<ushort>(parser);
+            RopId = BlockT<RopIdType>(parser);
+            LogonId = BlockT<byte>(parser);
+            InputHandleIndex = BlockT<byte>(parser);
+            TransferDataSize = BlockT<ushort>(parser);
 
             parser.PushCap(TransferDataSize.Data);
             var transferBufferList = new List<TransferPutBufferElement>();

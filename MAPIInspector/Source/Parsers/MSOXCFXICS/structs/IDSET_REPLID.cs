@@ -23,7 +23,7 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            REPLID = ParseT<ushort>(parser);
+            REPLID = BlockT<ushort>(parser);
             GLOBSET = Parse<GLOBSET>(parser);
         }
 

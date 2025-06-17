@@ -48,13 +48,13 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            Version = ParseT<ushort>(parser);
-            Padding1 = ParseT<ushort>(parser);
-            FAIMessageCount = ParseT<uint>(parser);
-            FAIMessageTotalSize = ParseT<ulong>(parser);
-            NormalMessageCount = ParseT<uint>(parser);
-            Padding2 = ParseT<uint>(parser);
-            NormalMessageTotalSize = ParseT<ulong>(parser);
+            Version = BlockT<ushort>(parser);
+            Padding1 = BlockT<ushort>(parser);
+            FAIMessageCount = BlockT<uint>(parser);
+            FAIMessageTotalSize = BlockT<ulong>(parser);
+            NormalMessageCount = BlockT<uint>(parser);
+            Padding2 = BlockT<uint>(parser);
+            NormalMessageTotalSize = BlockT<ulong>(parser);
         }
 
         protected override void ParseBlocks()

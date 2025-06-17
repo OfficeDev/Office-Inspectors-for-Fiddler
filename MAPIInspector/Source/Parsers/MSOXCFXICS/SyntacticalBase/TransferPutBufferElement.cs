@@ -29,10 +29,10 @@ namespace MAPIInspector.Parsers
                 MapiInspector.MAPIParser.PartialPutProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
                 MapiInspector.MAPIParser.PartialPutClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
             {
-                var tmpMarker = BlockT<Markers>.TestParse(parser);
+                var tmpMarker = BlockParser.BlockT<Markers>.TestParse(parser);
                 if (MarkersHelper.IsMarker(tmpMarker.Data))
                 {
-                    Marker = ParseT<Markers>(parser);
+                    Marker = BlockT<Markers>(parser);
                 }
                 else if (LexicalTypeHelper.IsMetaPropertyID(MapiInspector.MAPIParser.PartialPutId))
                 {
@@ -65,10 +65,10 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                var tmpMarker = BlockT<Markers>.TestParse(parser);
+                var tmpMarker = BlockParser.BlockT<Markers>.TestParse(parser);
                 if (MarkersHelper.IsMarker(tmpMarker.Data))
                 {
-                    Marker = ParseT<Markers>(parser);
+                    Marker = BlockT<Markers>(parser);
                 }
                 else if (MarkersHelper.IsMetaTag((MetaProperties)tmpMarker.Data))
                 {

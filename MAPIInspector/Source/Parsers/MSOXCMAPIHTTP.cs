@@ -4340,7 +4340,7 @@
 
             if (hasValue)
             {
-                HasValue = BlockT<bool>.Parse<byte>(parser);
+                HasValue = BlockParser.BlockT<bool>.Parse<byte>(parser);
             }
  
             if (HasValue == null || HasValue.Data)

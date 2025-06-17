@@ -23,7 +23,7 @@
         /// </summary>
         protected override void Parse()
         {
-            ReplicaId = ParseT<ushort>(parser);
+            ReplicaId = BlockT<ushort>(parser);
             GlobalCounter = BlockBytes.Parse(parser, 6);
         }
 

@@ -39,16 +39,16 @@
         /// </summary>
         protected override void Parse()
         {
-            Guid = ParseT<Guid>(parser);
-            Kind = ParseT<uint>(parser);
+            Guid = BlockT<Guid>(parser);
+            Kind = BlockT<uint>(parser);
 
             if (Kind.Data == 0x00000000)
             {
-                Lid = ParseT<uint>(parser);
+                Lid = BlockT<uint>(parser);
             }
             else if (Kind.Data == 0x00000001)
             {
-                NameSize = ParseT<uint>(parser);
+                NameSize = BlockT<uint>(parser);
                 Name = new PtypString((int)NameSize.Data);
                 Name.Parse(parser);
             }

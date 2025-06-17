@@ -46,7 +46,7 @@ namespace BlockParserTests
             // Arrange
             var bytes = BitConverter.GetBytes(0x12345678);
             var parser = new BinaryParser(bytes);
-            var block = Block.ParseT<int>(parser);
+            var block = Block.BlockT<int>(parser);
             Assert.AreEqual(0x12345678, block.Data);
         }
 
@@ -68,7 +68,7 @@ namespace BlockParserTests
         //        System.Runtime.InteropServices.Marshal.FreeHGlobal(ptr);
         //    }
         //    var parser = new BinaryParser(bytes);
-        //    var block = ParseT<long>.Parse<TestStruct>r);
+        //    var block = BlockT<long>.Parse<TestStruct>r);
         //    Assert.AreEqual(Convert.ToInt64(testStruct.A), block.Data);
         //}
 
@@ -89,7 +89,7 @@ namespace BlockParserTests
                 System.Runtime.InteropServices.Marshal.FreeHGlobal(ptr);
             }
             var parser = new BinaryParser(bytes);
-            var block = Block.ParseT<TestStruct>(parser);
+            var block = Block.BlockT<TestStruct>(parser);
             Assert.AreEqual(testStruct, block.Data);
         }
     }

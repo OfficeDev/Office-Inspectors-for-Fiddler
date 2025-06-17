@@ -37,8 +37,8 @@ namespace MAPIInspector.Parsers
         public static bool IsMetaTagIdsetGiven(BinaryParser parser)
         {
             var offset = parser.Offset;
-            var type = ParseT<PropertyDataType>(parser);
-            var id = ParseT<PidTagPropertyEnum>(parser);
+            var type = BlockT<PropertyDataType>(parser);
+            var id = BlockT<PidTagPropertyEnum>(parser);
             parser.Offset = offset;
             if (!type.Parsed || !id.Parsed) return false;
             return type.Data == PropertyDataType.PtypInteger32 && id.Data == PidTagPropertyEnum.MetaTagIdsetGiven;
@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
         /// <returns>If the stream's current position contains a serialized PropValue, return true, else false.</returns>
         public static bool Verify(BinaryParser parser)
         {
-            var tag = BlockT<Markers>.TestParse(parser);
+            var tag = BlockParser.BlockT<Markers>.TestParse(parser);
             if (!tag.Parsed) return false;
             return !parser.Empty &&
                 (FixedPropTypePropValue.Verify(parser) ||
@@ -92,7 +92,7 @@ namespace MAPIInspector.Parsers
                 (MapiInspector.MAPIParser.IsGet == true && (MapiInspector.MAPIParser.PartialGetType == 0 || (MapiInspector.MAPIParser.PartialGetType != 0 && !(MapiInspector.MAPIParser.PartialGetServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIParser.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess && MapiInspector.MAPIParser.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])))) ||
                 (MapiInspector.MAPIParser.IsPutExtend == true && (MapiInspector.MAPIParser.PartialPutExtendType == 0 || (MapiInspector.MAPIParser.PartialPutType != 0 && !(MapiInspector.MAPIParser.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIParser.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess && MapiInspector.MAPIParser.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])))))
             {
-                PropType = ParseT<PropertyDataType>(parser);
+                PropType = BlockT<PropertyDataType>(parser);
                 PropInfo = Parse<PropInfo>(parser);
             }
         }

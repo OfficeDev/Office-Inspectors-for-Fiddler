@@ -45,12 +45,12 @@
 
         protected override void Parse()
         {
-            StartMarker = ParseT<Markers>(parser);
+            StartMarker = BlockT<Markers>(parser);
             if (StartMarker.Data == Markers.IncrSyncChg)
             {
                 MessageChangeHeader = Parse<PropList>(parser);
 
-                SecondMarker = ParseT<Markers>(parser);
+                SecondMarker = BlockT<Markers>(parser);
                 if (SecondMarker.Data == Markers.IncrSyncMessage)
                 {
                     PropList = Parse<PropList>(parser);

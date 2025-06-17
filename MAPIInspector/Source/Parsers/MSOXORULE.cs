@@ -208,7 +208,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Byte0 = ParseT<byte>(parser);
+            Byte0 = BlockT<byte>(parser);
             int index = 0;
             X = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 7), Byte0.Size, Byte0.Offset);
             index = index + 7;
@@ -513,12 +513,12 @@
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
-                    _noOfActions = ParseT<ushort>(parser);
+                    _noOfActions = BlockT<ushort>(parser);
                     NoOfActions = (_noOfActions as BlockT<ushort>).Data;
                     break;
                 default:
                 case CountWideEnum.fourBytes:
-                    _noOfActions = ParseT<uint>(parser);
+                    _noOfActions = BlockT<uint>(parser);
                     NoOfActions = (_noOfActions as BlockT<uint>).Data;
                     break;
             }
@@ -594,17 +594,17 @@
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
-                    _actionLength = ParseT<ushort>(parser);
+                    _actionLength = BlockT<ushort>(parser);
                     ActionLength = (_actionLength as BlockT<ushort>).Data;
                     break;
                 default:
                 case CountWideEnum.fourBytes:
-                    _actionLength = ParseT<uint>(parser);
+                    _actionLength = BlockT<uint>(parser);
                     ActionLength = (_actionLength as BlockT<uint>).Data;
                     break;
             }
 
-            _actionType = ParseT<ActionType>(parser);
+            _actionType = BlockT<ActionType>(parser);
             switch (_actionType.Data)
             {
                 case ActionType.OP_REPLY:
@@ -636,7 +636,7 @@
                     }
             }
 
-            ActionFlags = ParseT<uint>(parser);
+            ActionFlags = BlockT<uint>(parser);
             if (ActionLength > 9)
             {
                 if ((ActionType.OP_MOVE == _actionType.Data || ActionType.OP_COPY == _actionType.Data) && countWide.Equals(CountWideEnum.twoBytes))
@@ -739,7 +739,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Byte0 = ParseT<byte>(parser);
+            Byte0 = BlockT<byte>(parser);
             int index = 0;
             Reservedbits0 = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 4), Byte0.Size, Byte0.Offset);
             index += 4;
@@ -798,7 +798,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Byte0 = ParseT<byte>(parser);
+            Byte0 = BlockT<byte>(parser);
             int index = 0;
             Reservedbits0 = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 6), Byte0.Size, Byte0.Offset);
             index += 6;
@@ -832,7 +832,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Reservedbits = ParseT<int>(parser);
+            Reservedbits = BlockT<int>(parser);
         }
 
         protected override void ParseBlocks()
@@ -878,15 +878,15 @@
         /// </summary>
         protected override void Parse()
         {
-            FolderInThisStore = BlockT<bool>.Parse<byte>(parser);
-            StoreEIDSize = ParseT<ushort>(parser);
+            FolderInThisStore = BlockParser.BlockT<bool>.Parse<byte>(parser);
+            StoreEIDSize = BlockT<ushort>(parser);
 
             // 2.2.5.1.2.1 OP_MOVE and OP_COPY ActionData Structure
             // No matter the value of FolderInThisStore, the server tends to set StoreEIDSize to 0x0001.
             // So instead of parsing it, we'll just read StoreEIDSize bytes.
             StoreEID = BlockBytes.Parse(parser, StoreEIDSize.Data);
 
-            FolderEIDSize = ParseT<ushort>(parser);
+            FolderEIDSize = BlockT<ushort>(parser);
             if (FolderInThisStore.Data)
             {
                 FolderEID = new ServerEid();
@@ -938,9 +938,9 @@
         /// </summary>
         protected override void Parse()
         {
-            StoreEIDSize = BlockT<uint>.Parse<byte>(parser);
+            StoreEIDSize = BlockParser.BlockT<uint>.Parse<byte>(parser);
             StoreEID = BlockBytes.Parse(parser, (int)StoreEIDSize.Data);
-            FolderEIDSize = BlockT<uint>.Parse<byte>(parser);
+            FolderEIDSize = BlockParser.BlockT<uint>.Parse<byte>(parser);
             FolderEID = Parse<FolderEntryID>(parser);
         }
 
@@ -983,10 +983,10 @@
         /// </summary>
         protected override void Parse()
         {
-            Ours = ParseT<byte>(parser);
+            Ours = BlockT<byte>(parser);
             FolderId = Parse<FolderID>(parser);
-            MessageId = ParseT<ulong>(parser);
-            Instance = ParseT<int>(parser);
+            MessageId = BlockT<ulong>(parser);
+            Instance = BlockT<int>(parser);
         }
 
         protected override void ParseBlocks()
@@ -1025,7 +1025,7 @@
         {
             ReplyTemplateFID = Parse<FolderID>(parser);
             ReplyTemplateMID = Parse<MessageID>(parser);
-            ReplyTemplateGUID = ParseT<Guid>(parser);
+            ReplyTemplateGUID = BlockT<Guid>(parser);
         }
 
         protected override void ParseBlocks()
@@ -1061,9 +1061,9 @@
         /// </summary>
         protected override void Parse()
         {
-            MessageEIDSize = BlockT<uint>.Parse<byte>(parser);
+            MessageEIDSize = BlockParser.BlockT<uint>.Parse<byte>(parser);
             ReplyTemplateMessageEID = Parse<MessageEntryID>(parser);
-            ReplyTemplateGUID = ParseT<Guid>(parser);
+            ReplyTemplateGUID = BlockT<Guid>(parser);
         }
 
         protected override void ParseBlocks()
@@ -1094,7 +1094,7 @@
         /// </summary>
         protected override void Parse()
         {
-            RecipientCount = ParseT<ushort>(parser);
+            RecipientCount = BlockT<ushort>(parser);
             var recipientBlocks = new List<RecipientBlockData>();
             for (int i = 0; i < RecipientCount.Data; i++)
             {
@@ -1138,8 +1138,8 @@
         /// </summary>
         protected override void Parse()
         {
-            Reserved = ParseT<byte>(parser);
-            NoOfProperties = ParseT<ushort>(parser);
+            Reserved = BlockT<byte>(parser);
+            NoOfProperties = BlockT<ushort>(parser);
             var propertyValues = new List<TaggedPropertyValue>();
             for (int i = 0; i < NoOfProperties.Data; i++)
             {
@@ -1175,7 +1175,7 @@
         /// </summary>
         protected override void Parse()
         {
-            BounceCode = ParseT<BounceCodeEnum>(parser);
+            BounceCode = BlockT<BounceCodeEnum>(parser);
         }
 
         protected override void ParseBlocks()

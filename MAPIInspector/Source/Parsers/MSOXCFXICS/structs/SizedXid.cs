@@ -23,7 +23,7 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            XidSize = ParseT<byte>(parser);
+            XidSize = BlockT<byte>(parser);
             Xid = new XID(XidSize.Data);
             Xid.Parse(parser);
         }

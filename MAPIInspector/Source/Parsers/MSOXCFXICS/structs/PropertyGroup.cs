@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            PropertyTagCount = ParseT<uint>(parser);
+            PropertyTagCount = BlockT<uint>(parser);
             var tags = new List<PropertyTagWithGroupPropertyName>();
             for (int i = 0; i < PropertyTagCount.Data; i++)
             {

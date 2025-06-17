@@ -34,11 +34,11 @@
 
         protected override void Parse()
         {
-            StartMarker = ParseT<Markers>(parser);
+            StartMarker = BlockT<Markers>(parser);
             if (StartMarker.Data == Markers.StartSubFld)
             {
                 FolderContent = Parse<FolderContent>(parser);
-                EndMarker = ParseT<Markers>(parser);
+                EndMarker = BlockT<Markers>(parser);
                 if (EndMarker.Data != Markers.EndFolder)
                 {
                     Parsed = false;

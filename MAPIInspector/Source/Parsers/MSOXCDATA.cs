@@ -4244,7 +4244,7 @@
         /// </summary>
         protected override void Parse()
         {
-            ReplicaId = ParseT<ushort>(parser);
+            ReplicaId = BlockT<ushort>(parser);
             GlobalCounter = BlockBytes.Parse(parser, 6);
         }
 
@@ -4276,7 +4276,7 @@
         /// </summary>
         protected override void Parse()
         {
-            ReplicaId = ParseT<ushort>(parser);
+            ReplicaId = BlockT<ushort>(parser);
             GlobalCounter = BlockBytes.Parse(parser, 6);
         }
 
@@ -4313,9 +4313,9 @@
         /// </summary>
         protected override void Parse()
         {
-            DatabaseGuid = ParseT<Guid>(parser);
+            DatabaseGuid = BlockT<Guid>(parser);
             GlobalCounter = BlockBytes.Parse(parser, 6);
-            Pad = ParseT<ushort>(parser);
+            Pad = BlockT<ushort>(parser);
         }
 
         protected override void ParseBlocks()
@@ -4369,8 +4369,8 @@
         /// </summary>
         protected override void Parse()
         {
-            Flags = ParseT<uint>(parser);
-            ProviderUID = ParseT<Guid>(parser);
+            Flags = BlockT<uint>(parser);
+            ProviderUID = BlockT<Guid>(parser);
             // Original implementation looked for this but didn't appear to do anything with it.
             // Provider UID (16 bytes): The value of this field is determined by where the folder is located. For a folder in a
             // private mailbox, this value MUST be set to value of the MailboxGuid field from the RopLogon ROP response buffer
@@ -4378,10 +4378,10 @@
             // %x1A.44.73.90.AA.66.11.CD.9B.C8.00.AA.00.2F.C4.5A.
             // byte[] verifyProviderUID = { 0x1A, 0x44, 0x73, 0x90, 0xAA, 0x66, 0x11, 0xCD, 0x9B, 0xC8, 0x00, 0xAA, 0x00, 0x2F, 0xC4, 0x5A };
 
-            FolderType = ParseT<StoreObjectType>(parser);
-            DatabaseGuid = ParseT<Guid>(parser);
+            FolderType = BlockT<StoreObjectType>(parser);
+            DatabaseGuid = BlockT<Guid>(parser);
             GlobalCounter = BlockBytes.Parse(parser, 6);
-            Pad = ParseT<ushort>(parser);
+            Pad = BlockT<ushort>(parser);
         }
 
         protected override void ParseBlocks()
@@ -4450,8 +4450,8 @@
         /// </summary>
         protected override void Parse()
         {
-            Flags = ParseT<uint>(parser);
-            ProviderUID = ParseT<Guid>(parser);
+            Flags = BlockT<uint>(parser);
+            ProviderUID = BlockT<Guid>(parser);
             // Original implementation looked for this but didn't appear to do anything with it.
             // Provider UID (16 bytes): The value of this field is determined by where the folder is located. For a folder in a
             // private mailbox, this value MUST be set to value of the MailboxGuid field from the RopLogon ROP response buffer
@@ -4459,13 +4459,13 @@
             // %x1A.44.73.90.AA.66.11.CD.9B.C8.00.AA.00.2F.C4.5A.
             // if (tempProviderUID.ToString() == "%x1A.44.73.90.AA.66.11.CD.9B.C8.00.AA.00.2F.C4.5A")
 
-            MessageType = ParseT<StoreObjectType>(parser);
-            FolderDatabaseGuid = ParseT<Guid>(parser);
+            MessageType = BlockT<StoreObjectType>(parser);
+            FolderDatabaseGuid = BlockT<Guid>(parser);
             FolderGlobalCounter = BlockBytes.Parse(parser, 6);
-            Pad1 = ParseT<ushort>(parser);
-            MessageDatabaseGuid = ParseT<Guid>(parser);
+            Pad1 = BlockT<ushort>(parser);
+            MessageDatabaseGuid = BlockT<Guid>(parser);
             MessageGlobalCounter = BlockBytes.Parse(parser, 6);
-            Pad2 = ParseT<ushort>(parser);
+            Pad2 = BlockT<ushort>(parser);
         }
 
         protected override void ParseBlocks()
@@ -4808,7 +4808,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Flag = ParseT<byte>(parser);
+            Flag = BlockT<byte>(parser);
             var tempPropArray = new List<Block>();
             if (propTags != null)
             {
@@ -5187,8 +5187,8 @@
         /// <param name="s">A stream containing the PropertyTag structure</param>
         protected override void Parse()
         {
-            PropertyType = ParseT<PropertyDataType>(parser);
-            PropertyId = ParseT<PidTagPropertyEnum>(parser);
+            PropertyType = BlockT<PropertyDataType>(parser);
+            PropertyId = BlockT<PidTagPropertyEnum>(parser);
         }
 
         protected override void ParseBlocks()
@@ -5218,7 +5218,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Value = ParseT<short>(parser);
+            Value = BlockT<short>(parser);
         }
 
         protected override void ParseBlocks()
@@ -5242,7 +5242,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Value = ParseT<int>(parser);
+            Value = BlockT<int>(parser);
         }
 
         protected override void ParseBlocks()
@@ -5267,7 +5267,7 @@
         /// <param name="s">A stream containing the PtypFloating32 structure</param>
         protected override void Parse()
         {
-            Value = ParseT<float>(parser);
+            Value = BlockT<float>(parser);
         }
 
         protected override void ParseBlocks()
@@ -5292,7 +5292,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Value = ParseT<double>(parser);
+            Value = BlockT<double>(parser);
         }
 
         protected override void ParseBlocks()
@@ -5318,7 +5318,7 @@
         /// <param name="s">A stream containing the PtypCurrency structure</param>
         protected override void Parse()
         {
-            Value = ParseT<long>(parser);
+            Value = BlockT<long>(parser);
         }
 
         protected override void ParseBlocks()
@@ -5344,7 +5344,7 @@
         /// <param name="s">A stream containing the PtypFloatingTime structure</param>
         protected override void Parse()
         {
-            Value = ParseT<double>(parser);
+            Value = BlockT<double>(parser);
         }
 
         protected override void ParseBlocks()
@@ -5370,7 +5370,7 @@
         /// <param name="s">A stream containing the PtypErrorCode structure</param>
         protected override void Parse()
         {
-            Value = ParseT<AdditionalErrorCodes>(parser);
+            Value = BlockT<AdditionalErrorCodes>(parser);
         }
 
         protected override void ParseBlocks()
@@ -5395,7 +5395,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Value = BlockT<bool>.Parse<byte>(parser);
+            Value = BlockParser.BlockT<bool>.Parse<byte>(parser);
         }
 
         protected override void ParseBlocks()
@@ -5419,7 +5419,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Value = BlockT<bool>.Parse<short>(parser);
+            Value = BlockParser.BlockT<bool>.Parse<short>(parser);
         }
 
         protected override void ParseBlocks()
@@ -5444,7 +5444,7 @@
         /// <param name="s">A stream containing the PtypInteger64 structure</param>
         protected override void Parse()
         {
-            Value = ParseT<long>(parser);
+            Value = BlockT<long>(parser);
         }
 
         protected override void ParseBlocks()
@@ -5496,11 +5496,11 @@
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
-                    _count = ParseT<ushort>(parser);
+                    _count = BlockT<ushort>(parser);
                     Count = (_count as BlockT<ushort>).Data;
                     break;
                 case CountWideEnum.fourBytes:
-                    _count = ParseT<int>(parser);
+                    _count = BlockT<int>(parser);
                     Count = (_count as BlockT<int>).Data;
                     break;
                 default:
@@ -5561,11 +5561,11 @@
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
-                    _count = ParseT<ushort>(parser);
+                    _count = BlockT<ushort>(parser);
                     Count = (_count as BlockT<ushort>).Data;
                     break;
                 case CountWideEnum.fourBytes:
-                    _count = ParseT<int>(parser);
+                    _count = BlockT<int>(parser);
                     Count = (_count as BlockT<int>).Data;
                     break;
                 default:
@@ -5600,7 +5600,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Value = ParseT<ulong>(parser);
+            Value = BlockT<ulong>(parser);
             try
             {
                 dateTime = new DateTime(1601, 1, 1).AddMilliseconds(Value.Data / 10000).ToLocalTime();
@@ -5632,7 +5632,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Value = ParseT<Guid>(parser);
+            Value = BlockT<Guid>(parser);
         }
 
         protected override void ParseBlocks()
@@ -5661,7 +5661,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Count = ParseT<ushort>(parser);
+            Count = BlockT<ushort>(parser);
             ServerId = Parse<PtypServerIdStruct>(parser, Count.Data);
         }
 
@@ -5707,12 +5707,12 @@
         /// </summary>
         protected override void Parse()
         {
-            Ours = ParseT<byte>(parser);
+            Ours = BlockT<byte>(parser);
             if (Ours.Data == 0x01)
             {
                 FolderID = Parse<FolderID>(parser);
                 MessageID = Parse<MessageID>(parser);
-                Instance = ParseT<uint>(parser);
+                Instance = BlockT<uint>(parser);
             }
             else
             {
@@ -5886,12 +5886,12 @@
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
-                    _count = ParseT<ushort>(parser);
+                    _count = BlockT<ushort>(parser);
                     Count = (_count as BlockT<ushort>).Data;
                     break;
                 default:
                 case CountWideEnum.fourBytes:
-                    _count = ParseT<uint>(parser);
+                    _count = BlockT<uint>(parser);
                     Count = (_count as BlockT<uint>).Data;
                     break;
             }
@@ -5935,7 +5935,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Count = ParseT<uint>(parser);
+            Count = BlockT<uint>(parser);
 
             var tempvalue = new List<PtypInteger16>();
             for (int i = 0; i < Count.Data; i++)
@@ -5974,7 +5974,7 @@
         /// <param name="s">A stream containing the PtypMultipleInteger32 structure</param>
         protected override void Parse()
         {
-            Count = ParseT<uint>(parser);
+            Count = BlockT<uint>(parser);
 
             var tempvalue = new List<PtypInteger32>();
             for (int i = 0; i < Count.Data; i++)
@@ -6012,7 +6012,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Count = ParseT<uint>(parser);
+            Count = BlockT<uint>(parser);
 
             var tempvalue = new List<PtypFloating32>();
             for (int i = 0; i < Count.Data; i++)
@@ -6050,7 +6050,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Count = ParseT<uint>(parser);
+            Count = BlockT<uint>(parser);
 
             var tempvalue = new List<PtypFloating64>();
             for (int i = 0; i < Count.Data; i++)
@@ -6088,7 +6088,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Count = ParseT<uint>(parser);
+            Count = BlockT<uint>(parser);
 
             var tempvalue = new List<PtypCurrency>();
             for (int i = 0; i < Count.Data; i++)
@@ -6126,7 +6126,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Count = ParseT<uint>(parser);
+            Count = BlockT<uint>(parser);
 
             var tempvalue = new List<PtypFloatingTime>();
             for (int i = 0; i < Count.Data; i++)
@@ -6164,7 +6164,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Count = ParseT<uint>(parser);
+            Count = BlockT<uint>(parser);
 
             var tempvalue = new List<PtypInteger64>();
             for (int i = 0; i < Count.Data; i++)
@@ -6202,7 +6202,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Count = ParseT<uint>(parser);
+            Count = BlockT<uint>(parser);
 
             var tempvalue = new List<PtypString>();
             for (int i = 0; i < Count.Data; i++)
@@ -6258,12 +6258,12 @@
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
-                    _count = ParseT<ushort>(parser);
+                    _count = BlockT<ushort>(parser);
                     Count = (_count as BlockT<ushort>).Data;
                     break;
                 default:
                 case CountWideEnum.fourBytes:
-                    _count = ParseT<uint>(parser);
+                    _count = BlockT<uint>(parser);
                     Count = (_count as BlockT<uint>).Data;
                     break;
             }
@@ -6306,7 +6306,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Count = ParseT<uint>(parser);
+            Count = BlockT<uint>(parser);
 
             var tempvalue = new List<PtypString8>();
             for (int i = 0; i < Count.Data; i++)
@@ -6344,7 +6344,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Count = ParseT<uint>(parser);
+            Count = BlockT<uint>(parser);
 
             var tempvalue = new List<PtypTime>();
             for (int i = 0; i < Count.Data; i++)
@@ -6383,7 +6383,7 @@
         /// <param name="s">A stream containing the PtypMultipleGuid structure</param>
         protected override void Parse()
         {
-            Count = ParseT<uint>(parser);
+            Count = BlockT<uint>(parser);
 
             var tempvalue = new List<PtypGuid>();
             for (int i = 0; i < Count.Data; i++)
@@ -6435,7 +6435,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Count = ParseT<uint>(parser);
+            Count = BlockT<uint>(parser);
 
             List<PtypBinaryBlock> tempvalue = new List<PtypBinaryBlock>();
             for (int i = 0; i < Count.Data; i++)
@@ -6705,7 +6705,7 @@
         /// </summary>
         protected override void Parse()
         {
-            PropertyType = ParseT<PropertyDataType>(parser);
+            PropertyType = BlockT<PropertyDataType>(parser);
             _PropertyValue = PropertyValue.ReadPropertyValue(PropertyType.Data, parser, countWide);
         }
 
@@ -6840,7 +6840,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Flag = ParseT<byte>(parser);
+            Flag = BlockT<byte>(parser);
             if (Flag.Data == 0x00)
             {
                 _PropertyValue = PropertyValue.ReadPropertyValue(propertyType, parser, countWide);
@@ -6906,8 +6906,8 @@
         /// </summary>
         protected override void Parse()
         {
-            PropertyType = ParseT<PropertyDataType>(parser);
-            Flag = ParseT<byte>(parser);
+            PropertyType = BlockT<PropertyDataType>(parser);
+            Flag = BlockT<byte>(parser);
             if (Flag.Data == 0x00)
             {
                 _PropertyValue = PropertyValue.ReadPropertyValue(PropertyType.Data, parser, countWide);
@@ -7027,7 +7027,7 @@
         /// </summary>
         protected override void Parse()
         {
-            var restrictType = ParseT<RestrictTypeEnum>(parser);
+            var restrictType = BlockT<RestrictTypeEnum>(parser);
             if (!restrictType.Parsed) return;
             parser.Offset -= sizeof(RestrictTypeEnum);
             switch (restrictType.Data)
@@ -7180,16 +7180,16 @@
         /// </summary>
         protected override void Parse()
         {
-            RestrictType = ParseT<RestrictTypeEnum>(parser);
+            RestrictType = BlockT<RestrictTypeEnum>(parser);
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
-                    _restrictCount = ParseT<ushort>(parser);
+                    _restrictCount = BlockT<ushort>(parser);
                     RestrictCount = (_restrictCount as BlockT<ushort>).Data;
                     break;
                 default:
                 case CountWideEnum.fourBytes:
-                    _restrictCount = ParseT<uint>(parser);
+                    _restrictCount = BlockT<uint>(parser);
                     RestrictCount = (_restrictCount as BlockT<uint>).Data;
                     break;
             }
@@ -7254,16 +7254,16 @@
         /// </summary>
         protected override void Parse()
         {
-            RestrictType = ParseT<RestrictTypeEnum>(parser);
+            RestrictType = BlockT<RestrictTypeEnum>(parser);
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
-                    _restrictCount = ParseT<ushort>(parser);
+                    _restrictCount = BlockT<ushort>(parser);
                     RestrictCount = (_restrictCount as BlockT<ushort>).Data;
                     break;
                 default:
                 case CountWideEnum.fourBytes:
-                    _restrictCount = ParseT<uint>(parser);
+                    _restrictCount = BlockT<uint>(parser);
                     RestrictCount = (_restrictCount as BlockT<uint>).Data;
                     break;
             }
@@ -7322,7 +7322,7 @@
         /// </summary>
         protected override void Parse()
         {
-            RestrictType = ParseT<RestrictTypeEnum>(parser);
+            RestrictType = BlockT<RestrictTypeEnum>(parser);
             Restriction = new RestrictionType(countWide);
             Restriction.Parse(parser);
         }
@@ -7384,9 +7384,9 @@
         /// </summary>
         protected override void Parse()
         {
-            RestrictType = ParseT<RestrictTypeEnum>(parser);
-            FuzzyLevelLow = ParseT<FuzzyLevelLowEnum>(parser);
-            FuzzyLevelHigh = ParseT<FuzzyLevelHighEnum>(parser);
+            RestrictType = BlockT<RestrictTypeEnum>(parser);
+            FuzzyLevelLow = BlockT<FuzzyLevelLowEnum>(parser);
+            FuzzyLevelHigh = BlockT<FuzzyLevelHighEnum>(parser);
             PropertyTag = Parse<PropertyTag>(parser);
             TaggedValue = new TaggedPropertyValue(countWide, PropertyTag);
             TaggedValue.Parse(parser);
@@ -7447,8 +7447,8 @@
         /// </summary>
         protected override void Parse()
         {
-            RestrictType = ParseT<RestrictTypeEnum>(parser);
-            RelOp = ParseT<RelOpType>(parser);
+            RestrictType = BlockT<RestrictTypeEnum>(parser);
+            RelOp = BlockT<RelOpType>(parser);
             PropTag = Parse<PropertyTag>(parser);
             TaggedValue = new TaggedPropertyValue(countWide, PropTag);
             TaggedValue.Parse(parser);
@@ -7494,8 +7494,8 @@
         /// </summary>
         protected override void Parse()
         {
-            RestrictType = ParseT<RestrictTypeEnum>(parser);
-            RelOp = ParseT<RelOpType>(parser);
+            RestrictType = BlockT<RestrictTypeEnum>(parser);
+            RelOp = BlockT<RelOpType>(parser);
             PropTag1 = Parse<PropertyTag>(parser);
             PropTag2 = Parse<PropertyTag>(parser);
         }
@@ -7540,10 +7540,10 @@
         /// </summary>
         protected override void Parse()
         {
-            RestrictType = ParseT<RestrictTypeEnum>(parser);
-            BitmapRelOp = ParseT<BitmapRelOpType>(parser);
+            RestrictType = BlockT<RestrictTypeEnum>(parser);
+            BitmapRelOp = BlockT<BitmapRelOpType>(parser);
             PropTag = Parse<PropertyTag>(parser);
-            Mask = ParseT<uint>(parser);
+            Mask = BlockT<uint>(parser);
         }
 
         protected override void ParseBlocks()
@@ -7586,10 +7586,10 @@
         /// </summary>
         protected override void Parse()
         {
-            RestrictType = ParseT<RestrictTypeEnum>(parser);
-            RelOp = ParseT<RelOpType>(parser);
+            RestrictType = BlockT<RestrictTypeEnum>(parser);
+            RelOp = BlockT<RelOpType>(parser);
             PropTag = Parse<PropertyTag>(parser);
-            _Size = ParseT<uint>(parser);
+            _Size = BlockT<uint>(parser);
         }
 
         protected override void ParseBlocks()
@@ -7622,7 +7622,7 @@
         /// </summary>
         protected override void Parse()
         {
-            RestrictType = ParseT<RestrictTypeEnum>(parser);
+            RestrictType = BlockT<RestrictTypeEnum>(parser);
             PropTag = Parse<PropertyTag>(parser);
         }
 
@@ -7673,7 +7673,7 @@
         /// </summary>
         protected override void Parse()
         {
-            RestrictType = ParseT<RestrictTypeEnum>(parser);
+            RestrictType = BlockT<RestrictTypeEnum>(parser);
             Subobject = Parse<PropertyTag>(parser);
             Restriction = new RestrictionType(countWide);
             Restriction.Parse(parser);
@@ -7737,8 +7737,8 @@
         /// </summary>
         protected override void Parse()
         {
-            RestrictType = ParseT<RestrictTypeEnum>(parser);
-            TaggedValuesCount = ParseT<byte>(parser);
+            RestrictType = BlockT<RestrictTypeEnum>(parser);
+            TaggedValuesCount = BlockT<byte>(parser);
             var tempTaggedValue = new List<TaggedPropertyValue>();
             for (int i = 0; i < TaggedValuesCount.Data; i++)
             {
@@ -7748,7 +7748,7 @@
             }
 
             TaggedValues = tempTaggedValue.ToArray();
-            RestrictionPresent = BlockT<bool>.Parse<byte>(parser);
+            RestrictionPresent = BlockParser.BlockT<bool>.Parse<byte>(parser);
             if (RestrictionPresent.Data == true)
             {
                 Restriction = new RestrictionType(countWide);
@@ -7809,8 +7809,8 @@
         /// </summary>
         protected override void Parse()
         {
-            RestrictType = ParseT<RestrictTypeEnum>(parser);
-            Count = ParseT<uint>(parser);
+            RestrictType = BlockT<RestrictTypeEnum>(parser);
+            Count = BlockT<uint>(parser);
             SubRestriction = new RestrictionType(countWide);
             SubRestriction.Parse(parser);
         }
@@ -7852,9 +7852,9 @@
         /// </summary>
         protected override void Parse()
         {
-            PropertyType = ParseT<PropertyDataType>(parser);
-            PropertyId = ParseT<PidTagPropertyEnum>(parser);
-            Order = ParseT<OrderType>(parser);
+            PropertyType = BlockT<PropertyDataType>(parser);
+            PropertyId = BlockT<PidTagPropertyEnum>(parser);
+            Order = BlockT<OrderType>(parser);
         }
 
         protected override void ParseBlocks()
@@ -7897,9 +7897,9 @@
         /// <param name="s">A stream containing the SortOrderSet structure</param>
         protected override void Parse()
         {
-            SortOrderCount = ParseT<ushort>(parser);
-            CategorizedCount = ParseT<ushort>(parser);
-            ExpandedCount = ParseT<ushort>(parser);
+            SortOrderCount = BlockT<ushort>(parser);
+            CategorizedCount = BlockT<ushort>(parser);
+            ExpandedCount = BlockT<ushort>(parser);
             var tempSortOrders = new List<SortOrder>();
             for (int i = 0; i < SortOrderCount.Data; i++)
             {

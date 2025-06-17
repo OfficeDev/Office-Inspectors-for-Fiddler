@@ -25,7 +25,7 @@
         /// <returns>If the stream's current position contains a serialized VarPropTypePropValue, return true, else false</returns>
         public static new bool Verify(BinaryParser parser)
         {
-            var tmp = BlockT<PropertyDataType>.TestParse(parser);
+            var tmp = BlockParser.BlockT<PropertyDataType>.TestParse(parser);
             if (!tmp.Parsed) return false;
             return LexicalTypeHelper.IsVarType(tmp.Data)
                 || IsMetaTagIdsetGiven(parser)
@@ -35,7 +35,7 @@
         protected override void Parse()
         {
             base.Parse();
-            Length = ParseT<int>(parser);
+            Length = BlockT<int>(parser);
 
             if (LexicalTypeHelper.IsCodePageType(PropType.Data))
             {

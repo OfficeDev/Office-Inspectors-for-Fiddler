@@ -58,7 +58,7 @@
                 MetaTagIncrSyncGroupId = Parse<MetaPropValue>(parser);
             }
 
-            Marker = ParseT<Markers>(parser);
+            Marker = BlockT<Markers>(parser);
             if (Marker.Data == Markers.IncrSyncChgPartial)
             {
                 MessageChangeHeader = Parse<PropList>(parser);
