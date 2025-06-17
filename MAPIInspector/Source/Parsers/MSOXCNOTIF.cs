@@ -550,11 +550,11 @@
                 UnicodeFlag = BlockT<byte>.Parse(parser);
                 if (UnicodeFlag.Data == 0x00)
                 {
-                    MessageClass = BlockStringA.Parse(parser);
+                    MessageClass = Parse<PtypString8>(parser);
                 }
                 else if (UnicodeFlag.Data == 0x01)
                 {
-                    MessageClass = BlockStringW.Parse(parser);
+                    MessageClass = Parse<PtypString>(parser);
                 }
             }
         }

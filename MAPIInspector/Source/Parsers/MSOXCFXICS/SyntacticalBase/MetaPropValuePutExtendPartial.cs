@@ -127,7 +127,7 @@ namespace MAPIInspector.Parsers
                 }
                 else
                 {
-                    PropValue = BlockStringA.Parse(parser);
+                    PropValue = Parse<PtypString8>(parser);
                 }
             }
         }

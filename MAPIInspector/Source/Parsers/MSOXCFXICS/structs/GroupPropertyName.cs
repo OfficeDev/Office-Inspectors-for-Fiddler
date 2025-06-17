@@ -32,7 +32,7 @@
         /// <summary>
         /// A Unicode (UTF-16) string that identifies the property within the property set. 
         /// </summary>
-        public BlockStringW Name;
+        public PtypString Name;
 
         /// <summary>
         /// Parse from a stream.
@@ -49,7 +49,8 @@
             else if (Kind.Data == 0x00000001)
             {
                 NameSize = BlockT<uint>.Parse(parser);
-                Name = BlockStringW.Parse(parser, (int)NameSize.Data / 2);
+                Name = new PtypString((int)NameSize.Data);
+                Name.Parse(parser);
             }
         }
 
@@ -60,7 +61,7 @@
             if (Kind != null) AddChild(Kind, $"Kind:{Kind.Data}");
             if (Lid != null) AddChild(Lid, $"Lid:{Lid.Data}");
             if (NameSize != null) AddChild(NameSize, $"NameSize:{NameSize.Data}");
-            if (Name != null) AddChild(Name, $"Name:{Name.Data}");
+            AddChild(Name, "Name");
         }
     }
 }

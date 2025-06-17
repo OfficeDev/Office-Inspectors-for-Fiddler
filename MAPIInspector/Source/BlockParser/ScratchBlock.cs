@@ -15,7 +15,7 @@ namespace BlockParser
 
         protected override void ParseBlocks()
         {
-            // No blocks to parse in BlockStringA
+            // No blocks to parse in ScratchBlock
         }
     }
 }

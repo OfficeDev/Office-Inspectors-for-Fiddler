@@ -35,9 +35,9 @@
         public BlockT<uint> CheapServerDNCount;
 
         /// <summary>
-        /// An array of ASCII-encoded NULL-terminated strings. 
+        /// An array of ASCII-encoded NULL-terminated strings.
         /// </summary>
-        public BlockStringA[] ServerDNArray;
+        public PtypString8[] ServerDNArray;
 
         /// <summary>
         /// Parse from a stream.
@@ -50,10 +50,11 @@
             ServerDNCount = BlockT<uint>.Parse(parser);
             CheapServerDNCount = BlockT<uint>.Parse(parser);
 
-            var tmpDNArray = new List<BlockStringA>();
+            var tmpDNArray = new List<PtypString8>();
             for (int i = 0; i < ServerDNCount.Data; i++)
             {
-                tmpDNArray.Add(BlockStringA.Parse(parser));
+
+                tmpDNArray.Add(Parse<PtypString8>(parser));
             }
 
             ServerDNArray = tmpDNArray.ToArray();
@@ -69,7 +70,7 @@
             if (CheapServerDNCount != null) AddChild(CheapServerDNCount, $"CheapServerDNCount:{CheapServerDNCount.Data}");
             foreach (var serverDN in ServerDNArray)
             {
-                if (serverDN != null) AddChild(serverDN, $"ServerDN:{serverDN.Data}");
+                if (serverDN != null) AddChild(serverDN, $"ServerDN");
             }
         }
     }

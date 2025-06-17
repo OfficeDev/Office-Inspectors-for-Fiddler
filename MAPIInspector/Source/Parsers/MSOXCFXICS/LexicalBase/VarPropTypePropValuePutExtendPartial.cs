@@ -119,7 +119,8 @@ namespace MAPIInspector.Parsers
 
                                     if ((blockLength / 2) != 0)
                                     {
-                                        ValueArray = BlockStringW.Parse(parser, blockLength / 2);
+                                        ValueArray = new PtypString(blockLength);
+                                        ValueArray.Parse(parser);
                                     }
 
                                     if (blockLength % 2 != 0)
@@ -138,7 +139,8 @@ namespace MAPIInspector.Parsers
 
                                 if ((blockLength / 2) != 0)
                                 {
-                                    ValueArray = BlockStringW.Parse(parser, blockLength / 2);
+                                    ValueArray = new PtypString(blockLength);
+                                    ValueArray.Parse(parser);
                                 }
                             }
 
@@ -166,7 +168,8 @@ namespace MAPIInspector.Parsers
 
                                     if ((blockLength / 2) != 0)
                                     {
-                                        ValueArray = BlockStringW.Parse(parser, blockLength / 2);
+                                        ValueArray = new PtypString(blockLength);
+                                        ValueArray.Parse(parser);
                                     }
 
                                     if (blockLength % 2 != 0)
@@ -185,7 +188,8 @@ namespace MAPIInspector.Parsers
 
                                 if ((blockLength / 2) != 0)
                                 {
-                                    ValueArray = BlockStringW.Parse(parser, blockLength / 2);
+                                    ValueArray = new PtypString(blockLength);
+                                    ValueArray.Parse(parser);
                                 }
                             }
 
@@ -199,7 +203,8 @@ namespace MAPIInspector.Parsers
                                 blockLength = plength;
                             }
 
-                            ValueArray = BlockStringA.Parse(parser, blockLength);
+                            ValueArray = new PtypString8(blockLength);
+                            ValueArray.Parse(parser);
                             break;
                         default:
                             if (parser.RemainingBytes < blockLength)
@@ -209,7 +214,8 @@ namespace MAPIInspector.Parsers
                                 blockLength = plength;
                             }
 
-                            ValueArray = BlockStringA.Parse(parser, blockLength);
+                            ValueArray = new PtypString8(blockLength);
+                            ValueArray.Parse(parser);
                             break;
                     }
                 }
@@ -234,7 +240,8 @@ namespace MAPIInspector.Parsers
 
                                     if ((blockLength / 2) != 0)
                                     {
-                                        ValueArray = BlockStringW.Parse(parser, blockLength / 2);
+                                        ValueArray = new PtypString(blockLength);
+                                        ValueArray.Parse(parser);
                                     }
 
                                     if (blockLength % 2 != 0)
@@ -253,7 +260,8 @@ namespace MAPIInspector.Parsers
 
                                 if ((blockLength / 2) != 0)
                                 {
-                                    ValueArray = BlockStringW.Parse(parser, blockLength / 2);
+                                    ValueArray = new PtypString(blockLength);
+                                    ValueArray.Parse(parser);
                                 }
                             }
 
@@ -266,7 +274,8 @@ namespace MAPIInspector.Parsers
                                 blockLength = plength;
                             }
 
-                            ValueArray = BlockStringA.Parse(parser, blockLength);
+                            ValueArray = new PtypString8(blockLength);
+                            ValueArray.Parse(parser);
                             break;
                         case PropertyDataType.PtypBinary:
                         case PropertyDataType.PtypServerId:
