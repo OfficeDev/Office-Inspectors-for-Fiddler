@@ -46,5 +46,19 @@
             };
             return ret;
         }
+
+        public static BlockStringW CreateStringW(string data, int size, int offset)
+        {
+            var ret = new BlockStringW
+            {
+                Parsed = true,
+                EnableJunk = false,
+                data = data
+            };
+            ret.SetText(data);
+            ret.Size = size;
+            ret.Offset = offset;
+            return ret;
+        }
     }
 }

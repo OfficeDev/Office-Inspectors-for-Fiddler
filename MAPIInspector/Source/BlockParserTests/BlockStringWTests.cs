@@ -10,7 +10,7 @@ namespace BlockParserTests
         [TestMethod]
         public void Parse_StringData_CreatesBlockWithCorrectData()
         {
-            var block = Block.ParseStringW("hello", 10, 5);
+            var block = Block.CreateStringW("hello", 10, 5);
             Assert.AreEqual("hello", block.Data);
             Assert.AreEqual(5, block.Length);
             Assert.IsFalse(block.Empty);
@@ -19,7 +19,7 @@ namespace BlockParserTests
         [TestMethod]
         public void Parse_EmptyString_ReturnsEmptyBlock()
         {
-            var block = Block.ParseStringW("", 0, 0);
+            var block = Block.CreateStringW("", 0, 0);
             Assert.AreEqual("", block.Data);
             Assert.AreEqual(0, block.Length);
             Assert.IsTrue(block.Empty);
@@ -51,7 +51,7 @@ namespace BlockParserTests
         [TestMethod]
         public void ImplicitOperatorString_ReturnsData()
         {
-            var block = Block.ParseStringW("foo", 3, 0);
+            var block = Block.CreateStringW("foo", 3, 0);
             string s = block;
             Assert.AreEqual("foo", s);
         }
