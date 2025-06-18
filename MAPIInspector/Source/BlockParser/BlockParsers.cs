@@ -48,6 +48,13 @@ namespace BlockParser
             return ret;
         }
 
+        /// <summary>
+        /// Parses binary data using the specified parser and returns a <see cref="BlockT{T}"/> instance containing the
+        /// parsed data.
+        /// </summary>
+        /// <typeparam name="T">The type of the data to parse. Must be a value type (<see langword="struct"/>).</typeparam>
+        /// <param name="parser">The <see cref="BinaryParser"/> instance used to parse the binary data.</param>
+        /// <returns>A <see cref="BlockT{T}"/> instance containing the parsed data.</returns>
         public static BlockT<T> ParseT<T>(BinaryParser parser) where T : struct
         {
             var ret = new BlockT<T>
@@ -58,7 +65,18 @@ namespace BlockParser
             return ret;
         }
 
-        // Build and return object of type T, reading from type U
+        /// <summary>
+        /// Parses binary data of type <typeparamref name="U"/> from the provided <see cref="BinaryParser"/> and converts it into 
+        /// a block of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <remarks>This method reads binary data as type <typeparamref name="U"/> and converts it to
+        /// type <typeparamref name="T"/>. If <typeparamref name="U"/> is an enum, its underlying type is used for size
+        /// validation. The method ensures that the binary data size is sufficient before attempting to parse.</remarks>
+        /// <typeparam name="U">The source data type to read from the binary stream. Must be a value type and can be an enum.</typeparam>
+        /// <typeparam name="T">The target data type to convert the parsed binary data into. Must be a value type.</typeparam>
+        /// <param name="parser">The <see cref="BinaryParser"/> instance used to read binary data.</param>
+        /// <returns>A <see cref="BlockT{T}"/> containing the parsed and converted data of type <typeparamref name="T"/>. Returns
+        /// an empty block if the binary data size is insufficient.</returns>
         public static BlockT<T> ParseAs<U, T>(BinaryParser parser) where U : struct where T : struct
         {
             Type type = typeof(U);
@@ -73,10 +91,10 @@ namespace BlockParser
         }
 
         /// <summary>
-        /// Read a block off our stream, but don't advance the stream position.
+        /// Read a block off our stream, but doesn't advance the stream position.
         /// </summary>
         /// <param name="parser"></param>
-        /// <returns></returns>
+        /// <returns>A <see cref="BlockT{T}"/> instance containing the parsed data.</returns>
         public static BlockT<T> TestParse<T>(BinaryParser parser) where T : struct
         {
             var offset = parser.Offset;
