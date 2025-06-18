@@ -54,26 +54,5 @@
             };
             return ret;
         }
-
-        /// <summary>
-        /// Creates a Unicode string block with the specified data, size, and offset.
-        /// </summary>
-        /// <param name="data">The string data to store in the block.</param>
-        /// <param name="size">The size of the block in bytes.</param>
-        /// <param name="offset">The offset of the block within the parent structure or stream.</param>
-        /// <returns>A new <see cref="BlockStringW"/> instance containing the provided data, size, and offset.</returns>
-        public static BlockStringW CreateStringW(string data, int size, int offset)
-        {
-            var ret = new BlockStringW
-            {
-                Parsed = true,
-                EnableJunk = false,
-                data = data
-            };
-            ret.SetText(data);
-            ret.Size = size;
-            ret.Offset = offset;
-            return ret;
-        }
     }
 }
