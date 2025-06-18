@@ -18,7 +18,7 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            Command = BlockT<byte>(parser);
+            Command = ParseT<byte>(parser);
         }
 
         protected override void ParseBlocks()

@@ -35,7 +35,7 @@
         protected override void Parse()
         {
             base.Parse();
-            Length = BlockT<int>(parser);
+            Length = ParseT<int>(parser);
 
             if (LexicalTypeHelper.IsCodePageType(PropType.Data))
             {

@@ -64,17 +64,17 @@
         /// </summary>
         protected override void Parse()
         {
-            RopId = BlockT<RopIdType>(parser);
-            InputHandleIndex = BlockT<byte>(parser);
-            ReturnValue = BlockT<ErrorCodes>(parser);
+            RopId = ParseT<RopIdType>(parser);
+            InputHandleIndex = ParseT<byte>(parser);
+            ReturnValue = ParseT<ErrorCodes>(parser);
 
             if (ReturnValue.Data == ErrorCodes.Success)
             {
-                TransferStatus = BlockT<TransferStatus>(parser);
-                InProgressCount = BlockT<ushort>(parser);
-                TotalStepCount = BlockT<ushort>(parser);
-                Reserved = BlockT<byte>(parser);
-                TransferBufferSize = BlockT<ushort>(parser);
+                TransferStatus = ParseT<TransferStatus>(parser);
+                InProgressCount = ParseT<ushort>(parser);
+                TotalStepCount = ParseT<ushort>(parser);
+                Reserved = ParseT<byte>(parser);
+                TransferBufferSize = ParseT<ushort>(parser);
 
                 parser.PushCap(TransferBufferSize.Data);
                 if (TransferStatus.Data == Parsers.TransferStatus.Partial)
@@ -108,7 +108,7 @@
             }
             else if ((AdditionalErrorCodes)ReturnValue.Data == AdditionalErrorCodes.ServerBusy)
             {
-                BackoffTime = BlockT<uint>(parser);
+                BackoffTime = ParseT<uint>(parser);
             }
         }
 

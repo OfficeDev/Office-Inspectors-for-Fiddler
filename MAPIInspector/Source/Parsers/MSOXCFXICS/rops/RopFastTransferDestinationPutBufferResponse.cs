@@ -53,14 +53,14 @@
         /// </summary>
         protected override void Parse()
         {
-            RopId = BlockT<RopIdType>(parser);
-            InputHandleIndex = BlockT<byte>(parser);
-            ReturnValue = BlockT<ErrorCodes>(parser);
-            TransferStatus = BlockT<TransferStatus>(parser);
-            InProgressCount = BlockT<ushort>(parser);
-            TotalStepCount = BlockT<ushort>(parser);
-            Reserved = BlockT<byte>(parser);
-            BufferUsedSize = BlockT<ushort>(parser);
+            RopId = ParseT<RopIdType>(parser);
+            InputHandleIndex = ParseT<byte>(parser);
+            ReturnValue = ParseT<ErrorCodes>(parser);
+            TransferStatus = ParseT<TransferStatus>(parser);
+            InProgressCount = ParseT<ushort>(parser);
+            TotalStepCount = ParseT<ushort>(parser);
+            Reserved = ParseT<byte>(parser);
+            BufferUsedSize = ParseT<ushort>(parser);
         }
 
         protected override void ParseBlocks()

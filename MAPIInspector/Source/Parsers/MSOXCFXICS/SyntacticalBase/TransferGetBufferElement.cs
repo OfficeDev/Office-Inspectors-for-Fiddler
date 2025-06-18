@@ -32,7 +32,7 @@ namespace MAPIInspector.Parsers
                 var tmpMarker = BlockParser.BlockT<Markers>.TestParse(parser);
                 if (MarkersHelper.IsMarker(tmpMarker.Data))
                 {
-                    Marker = BlockT<Markers>(parser);
+                    Marker = ParseT<Markers>(parser);
                 }
                 else if (LexicalTypeHelper.IsMetaPropertyID(MapiInspector.MAPIParser.PartialGetId))
                 {
@@ -71,7 +71,7 @@ namespace MAPIInspector.Parsers
                 var tmpMarker = BlockParser.BlockT<Markers>.TestParse(parser);
                 if (MarkersHelper.IsMarker(tmpMarker.Data))
                 {
-                    Marker = BlockT<Markers>(parser);
+                    Marker = ParseT<Markers>(parser);
                 }
                 else if (MarkersHelper.IsMetaTag((MetaProperties)tmpMarker.Data))
                 {

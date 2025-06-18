@@ -45,8 +45,8 @@ namespace MAPIInspector.Parsers
                 MapiInspector.MAPIParser.PartialPutProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
                 MapiInspector.MAPIParser.PartialPutClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])))
             {
-                PropType = BlockT<PropertyDataType>(parser);
-                PropID = BlockT<PidTagPropertyEnum>(parser);
+                PropType = ParseT<PropertyDataType>(parser);
+                PropID = ParseT<PidTagPropertyEnum>(parser);
             }
 
             if (parser.Empty)
@@ -83,7 +83,7 @@ namespace MAPIInspector.Parsers
                 PidTagPropertyEnum identifyValue = PropID != null ? PropID.Data : propertyID;
                 if (identifyValue != PidTagPropertyEnum.MetaTagNewFXFolder && identifyValue != PidTagPropertyEnum.MetaTagDnPrefix)
                 {
-                    PropValue = BlockT<uint>(parser);
+                    PropValue = ParseT<uint>(parser);
                 }
                 else if (identifyValue == PidTagPropertyEnum.MetaTagNewFXFolder)
                 {
@@ -104,7 +104,7 @@ namespace MAPIInspector.Parsers
                         }
                         else
                         {
-                            length = BlockT<int>(parser);
+                            length = ParseT<int>(parser);
                         }
 
                         if (parser.RemainingBytes < length.Data)

@@ -58,7 +58,7 @@ namespace MAPIInspector.Parsers
                     }
                     else
                     {
-                        Length = BlockT<int>(parser);
+                        Length = ParseT<int>(parser);
                     }
 
                     // clear
@@ -74,7 +74,7 @@ namespace MAPIInspector.Parsers
                 }
                 else
                 {
-                    Length = BlockT<int>(parser);
+                    Length = ParseT<int>(parser);
                 }
 
                 int blockLength = Length != null ? Length.Data : plength;
@@ -146,7 +146,7 @@ namespace MAPIInspector.Parsers
                         case CodePageType.PtypCodePageUnicode52:
                             if (Length != null)
                             {
-                                Length = BlockT<int>(parser);
+                                Length = ParseT<int>(parser);
                                 blockLength = Length.Data;
                             }
 

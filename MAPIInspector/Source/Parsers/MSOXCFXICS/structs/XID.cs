@@ -38,7 +38,7 @@
         /// </summary>
         protected override void Parse()
         {
-            NamespaceGuid = BlockT<Guid>(parser);
+            NamespaceGuid = ParseT<Guid>(parser);
             LocalId = BlockBytes.Parse(parser, length - 16); // sizeof Guid is 16 bytes
         }
 

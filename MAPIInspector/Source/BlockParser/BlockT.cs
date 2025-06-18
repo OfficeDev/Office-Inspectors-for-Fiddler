@@ -34,21 +34,7 @@ namespace BlockParser
         }
 
         // Construct directly from a parser
-        public BlockT(BinaryParser parser) => Parse<T>(parser);
-
-        // Build and return object of type T, reading from type U
-        public static BlockT<T> Parse<U>(BinaryParser parser) where U : struct
-        {
-            Type type = typeof(U);
-            if (type.IsEnum)
-                type = Enum.GetUnderlyingType(type);
-            if (!parser.CheckSize(System.Runtime.InteropServices.Marshal.SizeOf(type)))
-                return new BlockT<T>();
-
-            U uData = ReadStruct<U>(parser);
-            int offset = parser.Offset;
-            return CreateBlock((T)Convert.ChangeType(uData, typeof(T)), System.Runtime.InteropServices.Marshal.SizeOf(type), offset);
-        }
+        public BlockT(BinaryParser parser) => Parse(parser);
 
         protected override void Parse()
         {
@@ -69,7 +55,7 @@ namespace BlockParser
             // TODO: Consider if a default implementation should be provided
         }
 
-        private static U ReadStruct<U>(BinaryParser parser) where U : struct
+        public static U ReadStruct<U>(BinaryParser parser) where U : struct
         {
             Type type = typeof(U);
             if (type.IsEnum)

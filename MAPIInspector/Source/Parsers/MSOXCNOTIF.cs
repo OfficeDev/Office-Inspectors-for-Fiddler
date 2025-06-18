@@ -442,10 +442,10 @@
         /// </summary>
         protected override void Parse()
         {
-            NotificationFlags = BlockT<NotificationTypesEnum>(parser);
+            NotificationFlags = ParseT<NotificationTypesEnum>(parser);
             if (NotificationFlags.Data.HasFlag(NotificationTypesEnum.TableModified))
             {
-                TableEventType = BlockT<TableEventTypeEnum>(parser);
+                TableEventType = ParseT<TableEventTypeEnum>(parser);
             }
 
             // bit 0x8000 is set in the NotificationFlags field
@@ -489,15 +489,15 @@
 
                 if (isADM) TableRowFolderID = Parse<FolderID>(parser);
                 if (isMessage && isADM) TableRowMessageID = Parse<MessageID>(parser);
-                if (isMessage && isADM) TableRowInstance = BlockT<uint>(parser);
+                if (isMessage && isADM) TableRowInstance = ParseT<uint>(parser);
 
                 if (isMessage && isAM) InsertAfterTableRowFolderID = Parse<FolderID>(parser);
                 if (isMessage && isAM) InsertAfterTableRowID = Parse<MessageID>(parser);
-                if (isMessage && isAM) InsertAfterTableRowInstance = BlockT<uint>(parser);
+                if (isMessage && isAM) InsertAfterTableRowInstance = ParseT<uint>(parser);
 
                 if (isAM)
                 {
-                    TableRowDataSize = BlockT<ushort>(parser);
+                    TableRowDataSize = ParseT<ushort>(parser);
 
                     int parsingSessionID = MapiInspector.MAPIParser.ParsingSession.id;
                     if (MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
@@ -526,7 +526,7 @@
 
             if (isCreateDelete)
             {
-                TagCount = BlockT<ushort>(parser);
+                TagCount = ParseT<ushort>(parser);
 
                 if (TagCount.Data != 0x0000 && TagCount.Data != 0xFFFF)
                 {
@@ -541,13 +541,13 @@
                 }
             }
 
-            if (isTotalMessageCount) TotalMessageCount = BlockT<uint>(parser);
-            if (isUnreadMessageCount) UnreadMessageCount = BlockT<uint>(parser);
+            if (isTotalMessageCount) TotalMessageCount = ParseT<uint>(parser);
+            if (isUnreadMessageCount) UnreadMessageCount = ParseT<uint>(parser);
 
             if (isNewMail)
             {
-                MessageFlags = BlockT<uint>(parser);
-                UnicodeFlag = BlockT<byte>(parser);
+                MessageFlags = ParseT<uint>(parser);
+                UnicodeFlag = ParseT<byte>(parser);
                 if (UnicodeFlag.Data == 0x00)
                 {
                     MessageClass = Parse<PtypString8>(parser);

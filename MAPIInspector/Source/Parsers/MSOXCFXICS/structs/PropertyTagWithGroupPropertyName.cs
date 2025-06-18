@@ -28,8 +28,8 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            PropertyType = BlockT<PropertyDataType>(parser);
-            PropertyId = BlockT<ushort>(parser);
+            PropertyType = ParseT<PropertyDataType>(parser);
+            PropertyId = ParseT<ushort>(parser);
             if (PropertyId.Data >= 0x8000)
             {
                 GroupPropertyName = Parse<GroupPropertyName>(parser);

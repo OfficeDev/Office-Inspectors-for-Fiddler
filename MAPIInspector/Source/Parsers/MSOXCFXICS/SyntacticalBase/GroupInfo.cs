@@ -42,8 +42,8 @@ namespace MAPIInspector.Parsers
             StartMarker = new BlockT<Markers>(parser);
             if (StartMarker.Data == Markers.IncrSyncGroupInfo)
             {
-                PropertiesTag = BlockT<uint>(parser);
-                PropertiesLength = BlockT<uint>(parser);
+                PropertiesTag = ParseT<uint>(parser);
+                PropertiesLength = ParseT<uint>(parser);
                 PropList = Parse<PropertyGroupInfo>(parser);
             }
         }

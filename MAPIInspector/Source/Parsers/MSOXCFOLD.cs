@@ -1814,11 +1814,11 @@
         /// </summary>
         protected override void Parse()
         {
-            RopId = BlockT<RopIdType>(parser);
-            LogonId = BlockT<byte>(parser);
-            InputHandleIndex = BlockT<byte>(parser);
-            OutputHandleIndex = BlockT<byte>(parser);
-            TableFlags = BlockT<HierarchyTableFlags>(parser);
+            RopId = ParseT<RopIdType>(parser);
+            LogonId = ParseT<byte>(parser);
+            InputHandleIndex = ParseT<byte>(parser);
+            OutputHandleIndex = ParseT<byte>(parser);
+            TableFlags = ParseT<HierarchyTableFlags>(parser);
         }
 
         protected override void ParseBlocks()

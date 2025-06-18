@@ -34,12 +34,12 @@
 
         protected override void Parse()
         {
-            StartMarker = BlockT<Markers>(parser);
+            StartMarker = ParseT<Markers>(parser);
             if (StartMarker.Data == Markers.StartSubFld)
             {
                 FolderContentNoDelProps = Parse<FolderContentNoDelProps>(parser);
 
-                EndMarker = BlockT<Markers>(parser);
+                EndMarker = ParseT<Markers>(parser);
                 if (EndMarker.Data != Markers.EndFolder)
                 {
                     Parsed = false;

@@ -30,7 +30,7 @@
         protected override void Parse()
         {
             base.Parse();
-            Length = BlockT<int>(parser);
+            Length = ParseT<int>(parser);
             long blocksLength = Length.Data;
 
             ValueArray = ParseArray(parser, PropType.Data, blocksLength);

@@ -66,7 +66,7 @@
 
             State = Parse<State>(parser);
 
-            EndMarker = BlockT<Markers>(parser);
+            EndMarker = ParseT<Markers>(parser);
             if (EndMarker.Data != Markers.IncrSyncEnd)
             {
                 Parsed = false;

@@ -34,12 +34,12 @@ namespace MAPIInspector.Parsers
                 MetaTagDnPrefix = Parse<MetaPropValue>(parser);
             }
 
-            StartMarker = BlockT<Markers>(parser);
+            StartMarker = ParseT<Markers>(parser);
             if (StartMarker.Data == Markers.StartTopFld)
             {
                 FolderContentNoDelProps = Parse<FolderContentNoDelProps>(parser);
 
-                EndMarker = BlockT<Markers>(parser);
+                EndMarker = ParseT<Markers>(parser);
                 if (EndMarker.Data != Markers.EndFolder)
                 {
                     Parsed = false;

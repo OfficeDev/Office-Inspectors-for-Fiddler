@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.IO;
 
 namespace BlockParser
@@ -47,7 +48,7 @@ namespace BlockParser
             return ret;
         }
 
-        public static BlockT<T> BlockT<T>(BinaryParser parser) where T : struct
+        public static BlockT<T> ParseT<T>(BinaryParser parser) where T : struct
         {
             var ret = new BlockT<T>
             {
@@ -55,6 +56,20 @@ namespace BlockParser
             };
             ret.EnsureParsed();
             return ret;
+        }
+
+        // Build and return object of type T, reading from type U
+        public static BlockT<T> ParseAs<U, T>(BinaryParser parser) where U : struct where T : struct
+        {
+            Type type = typeof(U);
+            if (type.IsEnum)
+                type = Enum.GetUnderlyingType(type);
+            if (!parser.CheckSize(System.Runtime.InteropServices.Marshal.SizeOf(type)))
+                return new BlockT<T>();
+
+            U uData = BlockT<U>.ReadStruct<U>(parser);
+            int offset = parser.Offset;
+            return CreateBlock((T)Convert.ChangeType(uData, typeof(T)), System.Runtime.InteropServices.Marshal.SizeOf(type), offset);
         }
     }
 }
