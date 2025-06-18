@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
         /// <returns>If the stream's current position contains a serialized PropValue, return true, else false.</returns>
         public static bool Verify(BinaryParser parser)
         {
-            var tag = BlockParser.BlockT<Markers>.TestParse(parser);
+            var tag = TestParse<Markers>(parser);
             if (!tag.Parsed) return false;
             return !parser.Empty &&
                 (FixedPropTypePropValue.Verify(parser) ||

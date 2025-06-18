@@ -29,7 +29,7 @@ namespace MAPIInspector.Parsers
                 MapiInspector.MAPIParser.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
                 MapiInspector.MAPIParser.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
             {
-                var tmpMarker = BlockParser.BlockT<Markers>.TestParse(parser);
+                var tmpMarker = TestParse<Markers>(parser);
                 if (MarkersHelper.IsMarker(tmpMarker.Data))
                 {
                     Marker = ParseT<Markers>(parser);
@@ -65,7 +65,7 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                var tmpMarker = BlockParser.BlockT<Markers>.TestParse(parser);
+                var tmpMarker = TestParse<Markers>(parser);
                 if (MarkersHelper.IsMarker(tmpMarker.Data))
                 {
                     Marker = ParseT<Markers>(parser);

@@ -71,5 +71,22 @@ namespace BlockParser
             int offset = parser.Offset;
             return CreateBlock((T)Convert.ChangeType(uData, typeof(T)), System.Runtime.InteropServices.Marshal.SizeOf(type), offset);
         }
+
+        /// <summary>
+        /// Read a block off our stream, but don't advance the stream position.
+        /// </summary>
+        /// <param name="parser"></param>
+        /// <returns></returns>
+        public static BlockT<T> TestParse<T>(BinaryParser parser) where T : struct
+        {
+            var offset = parser.Offset;
+            var ret = new BlockT<T>
+            {
+                parser = parser
+            };
+            ret.EnsureParsed();
+            parser.Offset = offset;
+            return ret;
+        }
     }
 }

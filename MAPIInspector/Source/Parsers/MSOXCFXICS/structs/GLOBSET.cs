@@ -25,7 +25,7 @@
             // A UInt list indicates the pushed or popped count of bytes in common stack.
             var commonStackCollection = new List<uint>();
 
-            var tmp = BlockParser.BlockT<byte>.TestParse(parser);
+            var tmp = Block.TestParse<byte>(parser);
 
             var commands = new List<Command>();
             while (tmp.Parsed && tmp.Data != 0x00)
@@ -64,7 +64,7 @@
                         break;
                 }
 
-                tmp = BlockParser.BlockT<byte>.TestParse(parser);
+                tmp = TestParse<byte>(parser);
             }
 
             commands.Add(Parse<EndCommand>(parser));

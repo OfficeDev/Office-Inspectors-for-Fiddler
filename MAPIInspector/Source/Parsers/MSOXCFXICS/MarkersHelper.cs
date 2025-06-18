@@ -72,7 +72,7 @@
         /// <returns>True if the UInt at the position plus an offset equals the specified UInt,else false.</returns>
         private static bool Verify(BinaryParser parser, uint val)
         {
-            var bufferVal = BlockT<uint>.TestParse(parser);
+            var bufferVal = Block.TestParse<uint>(parser);
             return bufferVal.Parsed && bufferVal.Data == val;
         }
     }

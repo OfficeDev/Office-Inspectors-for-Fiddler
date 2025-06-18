@@ -19,7 +19,7 @@ namespace MAPIInspector.Parsers
         /// <returns>If the stream's current position contains a serialized FixedPropTypePropValue, return true, else false</returns>
         public static new bool Verify(BinaryParser parser)
         {
-            var tmp = BlockParser.BlockT<PropertyDataType>.TestParse(parser);
+            var tmp = TestParse<PropertyDataType>(parser);
             if (tmp == null || !tmp.Parsed) return false;
             return LexicalTypeHelper.IsFixedType(tmp.Data) && !IsMetaTagIdsetGiven(parser);
         }
