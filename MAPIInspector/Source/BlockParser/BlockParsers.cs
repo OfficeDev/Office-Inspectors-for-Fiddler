@@ -120,5 +120,42 @@ namespace BlockParser
             return ret;
         }
 
+        public static BlockStringW ParseStringW(string data, int size, int offset)
+        {
+            var ret = new BlockStringW
+            {
+                Parsed = true,
+                EnableJunk = false,
+                data = data
+            };
+            ret.SetText(data);
+            ret.Size = size;
+            ret.Offset = offset;
+            return ret;
+        }
+
+        public static BlockStringW ParseStringW(BinaryParser parser, int cchChar = -1)
+        {
+            var ret = new BlockStringW
+            {
+                parser = parser,
+                EnableJunk = false,
+                cchChar = cchChar
+            };
+            ret.EnsureParsed();
+            return ret;
+        }
+
+        public static BlockStringA ParseStringA(BinaryParser parser, int cchChar = -1)
+        {
+            var ret = new BlockStringA
+            {
+                parser = parser,
+                EnableJunk = false,
+                cchChar = cchChar
+            };
+            ret.EnsureParsed();
+            return ret;
+        }
     }
 }

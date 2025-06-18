@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
             }
             else if (Flag.Data == 0x01)
             {
-                Name = BlockStringW.Parse(parser);
+                Name = ParseStringW(parser);
             }
         }
 

@@ -4,40 +4,14 @@ namespace BlockParser
 {
     public class BlockStringW : Block
     {
-        private string data = string.Empty;
-        private int cchChar = -1;
+        internal string data = string.Empty;
+        internal int cchChar = -1;
 
         public static implicit operator string(BlockStringW block) => block.data;
 
         public string Data => data;
         public int Length => data.Length;
         public bool Empty => string.IsNullOrEmpty(data);
-
-        public static BlockStringW Parse(string data, int size, int offset)
-        {
-            var ret = new BlockStringW
-            {
-                Parsed = true,
-                EnableJunk = false,
-                data = data
-            };
-            ret.SetText(data);
-            ret.Size = size;
-            ret.Offset = offset;
-            return ret;
-        }
-
-        public static BlockStringW Parse(BinaryParser parser, int cchChar = -1)
-        {
-            var ret = new BlockStringW
-            {
-                parser = parser,
-                EnableJunk = false,
-                cchChar = cchChar
-            };
-            ret.EnsureParsed();
-            return ret;
-        }
 
         protected override void Parse()
         {
@@ -76,7 +50,5 @@ namespace BlockParser
             // No blocks to parse in BlockStringW
             // TODO: Consider if a default implementation should be provided
         }
-
-        public static BlockStringW EmptySW() => new BlockStringW();
     }
 }

@@ -5,25 +5,13 @@ namespace BlockParser
     public class BlockStringA : Block
     {
         private string data = string.Empty;
-        private int cchChar = -1;
+        internal int cchChar = -1;
 
         public static implicit operator string(BlockStringA block) => block.data;
 
         public string Data => data;
         public int Length => data.Length;
         public bool Empty => string.IsNullOrEmpty(data);
-
-        public static BlockStringA Parse(BinaryParser parser, int cchChar = -1)
-        {
-            var ret = new BlockStringA
-            {
-                parser = parser,
-                EnableJunk = false,
-                cchChar = cchChar
-            };
-            ret.EnsureParsed();
-            return ret;
-        }
 
         protected override void Parse()
         {
@@ -62,7 +50,5 @@ namespace BlockParser
             // No blocks to parse in BlockStringA
             // TODO: Consider if a default implementation should be provided
         }
-
-        public static BlockStringA EmptySA() => new BlockStringA();
     }
 }
