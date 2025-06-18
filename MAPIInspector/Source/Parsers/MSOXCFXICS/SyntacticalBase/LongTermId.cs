@@ -29,7 +29,7 @@
         protected override void Parse()
         {
             DatabaseGuid = ParseT<Guid>(parser);
-            GlobalCounter = ParseBytes(parser, 6, 6);
+            GlobalCounter = ParseBytes(6, 6);
             Pad = ParseT<ushort>(parser);
         }
 

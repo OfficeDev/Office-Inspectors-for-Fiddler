@@ -117,11 +117,11 @@ namespace MAPIInspector.Parsers
                             MapiInspector.MAPIParser.PartialPutExtendClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
 
 
-                            PropValue = ParseBytes(parser, parser.RemainingBytes);
+                            PropValue = ParseBytes(parser.RemainingBytes);
                         }
                         else
                         {
-                            PropValue = ParseBytes(parser, length.Data);
+                            PropValue = ParseBytes(length.Data);
                         }
                     }
                 }

@@ -43,8 +43,8 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             Command = ParseT<byte>(parser);
-            LowValue = ParseBytes(parser, (int)length);
-            HighValue = ParseBytes(parser, (int)length);
+            LowValue = ParseBytes((int)length);
+            HighValue = ParseBytes((int)length);
         }
 
         protected override void ParseBlocks()

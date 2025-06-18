@@ -285,7 +285,7 @@ namespace MAPIInspector.Parsers
                                 blockLength = plength;
                             }
 
-                            ValueArray = ParseBytes(parser, blockLength);
+                            ValueArray = ParseBytes(blockLength);
                             break;
                         default:
                             if (parser.RemainingBytes < blockLength)
@@ -295,7 +295,7 @@ namespace MAPIInspector.Parsers
                                 blockLength = plength;
                             }
 
-                            ValueArray = ParseBytes(parser, blockLength);
+                            ValueArray = ParseBytes(blockLength);
                             break;
                     }
                 }

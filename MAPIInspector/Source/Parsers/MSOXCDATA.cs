@@ -4245,7 +4245,7 @@
         protected override void Parse()
         {
             ReplicaId = ParseT<ushort>(parser);
-            GlobalCounter = Block.ParseBytes(parser, 6);
+            GlobalCounter = ParseBytes(6);
         }
 
         protected override void ParseBlocks()
@@ -4277,7 +4277,7 @@
         protected override void Parse()
         {
             ReplicaId = ParseT<ushort>(parser);
-            GlobalCounter = ParseBytes(parser, 6);
+            GlobalCounter = ParseBytes(6);
         }
 
         protected override void ParseBlocks()
@@ -4314,7 +4314,7 @@
         protected override void Parse()
         {
             DatabaseGuid = ParseT<Guid>(parser);
-            GlobalCounter = ParseBytes(parser, 6);
+            GlobalCounter = ParseBytes(6);
             Pad = ParseT<ushort>(parser);
         }
 
@@ -4380,7 +4380,7 @@
 
             FolderType = ParseT<StoreObjectType>(parser);
             DatabaseGuid = ParseT<Guid>(parser);
-            GlobalCounter = ParseBytes(parser, 6);
+            GlobalCounter = ParseBytes(6);
             Pad = ParseT<ushort>(parser);
         }
 
@@ -4461,10 +4461,10 @@
 
             MessageType = ParseT<StoreObjectType>(parser);
             FolderDatabaseGuid = ParseT<Guid>(parser);
-            FolderGlobalCounter = ParseBytes(parser, 6);
+            FolderGlobalCounter = ParseBytes(6);
             Pad1 = ParseT<ushort>(parser);
             MessageDatabaseGuid = ParseT<Guid>(parser);
-            MessageGlobalCounter = ParseBytes(parser, 6);
+            MessageGlobalCounter = ParseBytes(6);
             Pad2 = ParseT<ushort>(parser);
         }
 
@@ -4857,7 +4857,7 @@
             }
             else if (size > 0)
             {
-                bytes = ParseBytes(parser, size - 1);
+                bytes = ParseBytes(size - 1);
             }
 
             this.ValueArray = tempPropArray.ToArray();
@@ -5716,7 +5716,7 @@
             }
             else
             {
-                ClientData = ParseBytes(parser, parser.RemainingBytes);
+                ClientData = ParseBytes(parser.RemainingBytes);
             }
         }
 
@@ -5895,7 +5895,7 @@
                     Count = (_count as BlockT<uint>).Data;
                     break;
             }
-            Value = ParseBytes(parser, (int)Count);
+            Value = ParseBytes((int)Count);
         }
 
         protected override void ParseBlocks()
