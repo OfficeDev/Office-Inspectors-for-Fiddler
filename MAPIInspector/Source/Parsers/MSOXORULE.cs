@@ -751,7 +751,7 @@
             index += 1;
             PR = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
 
-            Reservedbits1 = BlockBytes.Parse(parser, 3);
+            Reservedbits1 = ParseBytes(parser, 3);
         }
 
         protected override void ParseBlocks()
@@ -805,7 +805,7 @@
             ST = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
             NS = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
-            Reservedbits1 = BlockBytes.Parse(parser, 3);
+            Reservedbits1 = ParseBytes(parser, 3);
         }
 
         protected override void ParseBlocks()
@@ -884,7 +884,7 @@
             // 2.2.5.1.2.1 OP_MOVE and OP_COPY ActionData Structure
             // No matter the value of FolderInThisStore, the server tends to set StoreEIDSize to 0x0001.
             // So instead of parsing it, we'll just read StoreEIDSize bytes.
-            StoreEID = BlockBytes.Parse(parser, StoreEIDSize.Data);
+            StoreEID = ParseBytes(parser, StoreEIDSize.Data);
 
             FolderEIDSize = ParseT<ushort>(parser);
             if (FolderInThisStore.Data)
@@ -894,7 +894,7 @@
             }
             else
             {
-                FolderEID = BlockBytes.Parse(parser, FolderEIDSize.Data);
+                FolderEID = ParseBytes(parser, FolderEIDSize.Data);
             }
         }
 
@@ -939,7 +939,7 @@
         protected override void Parse()
         {
             StoreEIDSize = ParseAs<byte, uint>(parser);
-            StoreEID = BlockBytes.Parse(parser, (int)StoreEIDSize.Data);
+            StoreEID = ParseBytes(parser, (int)StoreEIDSize.Data);
             FolderEIDSize = ParseAs<byte, uint>(parser);
             FolderEID = Parse<FolderEntryID>(parser);
         }
@@ -1213,7 +1213,7 @@
         /// </summary>
         protected override void Parse()
         {
-            DeferActionData = BlockBytes.Parse(parser, length);
+            DeferActionData = ParseBytes(parser, length);
         }
 
         protected override void ParseBlocks()

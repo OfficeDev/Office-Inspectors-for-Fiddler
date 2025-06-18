@@ -190,7 +190,7 @@ namespace BlockParser
 
                 if (HasData && EnableJunk && parser.RemainingBytes > 0)
                 {
-                    var junkData = BlockBytes.Parse(parser, parser.RemainingBytes);
+                    var junkData = ParseBytes(parser, parser.RemainingBytes);
                     AddLabeledChild(junkData, string.Format("Unparsed data"));
                 }
 

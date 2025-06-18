@@ -6,27 +6,14 @@ namespace BlockParser
     public class BlockBytes : Block
     {
         private List<byte> _data = new List<byte>();
-        private int cbBytes;
-        private int cbMaxBytes;
+        internal int cbBytes;
+        internal int cbMaxBytes;
 
         public BlockBytes() { }
 
         public IReadOnlyList<byte> Data => _data;
         public int Count => _data.Count;
         public bool Empty => _data.Count == 0;
-
-        public static BlockBytes Parse(BinaryParser parser, int cbBytes, int cbMaxBytes = -1)
-        {
-            var ret = new BlockBytes
-            {
-                parser = parser,
-                EnableJunk = false,
-                cbBytes = cbBytes,
-                cbMaxBytes = cbMaxBytes
-            };
-            ret.EnsureParsed();
-            return ret;
-        }
 
         public string ToTextStringA(bool multiLine = false) => Strings.StripCharacter(Strings.BinToTextStringA(_data, multiLine), '\0');
 

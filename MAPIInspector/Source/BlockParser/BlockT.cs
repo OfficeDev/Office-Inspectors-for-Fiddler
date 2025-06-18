@@ -38,7 +38,7 @@ namespace BlockParser
             // TODO: Consider if a default implementation should be provided
         }
 
-        public static U ReadStruct<U>(BinaryParser parser) where U : struct
+        internal static U ReadStruct<U>(BinaryParser parser) where U : struct
         {
             Type type = typeof(U);
             if (type.IsEnum)

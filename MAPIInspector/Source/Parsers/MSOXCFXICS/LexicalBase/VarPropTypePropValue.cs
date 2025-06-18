@@ -121,7 +121,7 @@
                         }
                         else
                         {
-                            ValueArray = BlockBytes.Parse(parser, Length.Data);
+                            ValueArray = ParseBytes(parser, Length.Data);
                         }
 
                         break;
@@ -138,7 +138,7 @@
                         ValueArray = Parse<PtypObject_Or_PtypEmbeddedTable>(parser);
                         break;
                     default:
-                        ValueArray = BlockBytes.Parse(parser, Length.Data);
+                        ValueArray = ParseBytes(parser, Length.Data);
                         break;
                 }
             }

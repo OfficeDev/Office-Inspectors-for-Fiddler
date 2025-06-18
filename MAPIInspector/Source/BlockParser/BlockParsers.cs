@@ -106,5 +106,19 @@ namespace BlockParser
             parser.Offset = offset;
             return ret;
         }
+
+        public static BlockBytes ParseBytes(BinaryParser parser, int cbBytes, int cbMaxBytes = -1)
+        {
+            var ret = new BlockBytes
+            {
+                parser = parser,
+                EnableJunk = false,
+                cbBytes = cbBytes,
+                cbMaxBytes = cbMaxBytes
+            };
+            ret.EnsureParsed();
+            return ret;
+        }
+
     }
 }
