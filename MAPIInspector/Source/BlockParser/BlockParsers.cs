@@ -107,6 +107,13 @@ namespace BlockParser
             return ret;
         }
 
+        /// <summary>
+        /// Parses a specified number of bytes from the binary parser and returns a <see cref="BlockBytes"/> instance.
+        /// </summary>
+        /// <param name="parser">The <see cref="BinaryParser"/> instance used to parse the bytes.</param>
+        /// <param name="cbBytes">The number of bytes to parse.</param>
+        /// <param name="cbMaxBytes">The maximum number of bytes to parse. If set to -1, no maximum is enforced.</param>
+        /// <returns>A <see cref="BlockBytes"/> instance containing the parsed bytes.</returns>
         public static BlockBytes ParseBytes(BinaryParser parser, int cbBytes, int cbMaxBytes = -1)
         {
             var ret = new BlockBytes
@@ -120,6 +127,12 @@ namespace BlockParser
             return ret;
         }
 
+        /// <summary>
+        /// Parses a Unicode (wide) string from the binary parser and returns a <see cref="BlockStringW"/> instance.
+        /// </summary>
+        /// <param name="parser">The <see cref="BinaryParser"/> instance used to parse the string.</param>
+        /// <param name="cchChar">The number of characters to parse. If set to -1, parses until a null terminator or end of data.</param>
+        /// <returns>A <see cref="BlockStringW"/> instance containing the parsed string.</returns>
         public static BlockStringW ParseStringW(BinaryParser parser, int cchChar = -1)
         {
             var ret = new BlockStringW
@@ -132,6 +145,12 @@ namespace BlockParser
             return ret;
         }
 
+        /// <summary>
+        /// Parses an ANSI (narrow) string from the binary parser and returns a <see cref="BlockStringA"/> instance.
+        /// </summary>
+        /// <param name="parser">The <see cref="BinaryParser"/> instance used to parse the string.</param>
+        /// <param name="cchChar">The number of characters to parse. If set to -1, parses until a null terminator or end of data.</param>
+        /// <returns>A <see cref="BlockStringA"/> instance containing the parsed string.</returns>
         public static BlockStringA ParseStringA(BinaryParser parser, int cchChar = -1)
         {
             var ret = new BlockStringA

@@ -38,6 +38,14 @@
             return ret;
         }
 
+        /// <summary>
+        /// Creates a block containing the specified data, size, and offset.
+        /// </summary>
+        /// <typeparam name="T">The value type to store in the block.</typeparam>
+        /// <param name="data">The data to store in the block.</param>
+        /// <param name="size">The size of the block in bytes.</param>
+        /// <param name="offset">The offset of the block within the parent structure or stream.</param>
+        /// <returns>A new <see cref="BlockT{T}"/> instance containing the provided data, size, and offset.</returns>
         public static BlockT<T> CreateBlock<T>(T data, long size, long offset) where T : struct
         {
             var ret = new BlockT<T>(data, size, offset)
@@ -47,6 +55,13 @@
             return ret;
         }
 
+        /// <summary>
+        /// Creates a Unicode string block with the specified data, size, and offset.
+        /// </summary>
+        /// <param name="data">The string data to store in the block.</param>
+        /// <param name="size">The size of the block in bytes.</param>
+        /// <param name="offset">The offset of the block within the parent structure or stream.</param>
+        /// <returns>A new <see cref="BlockStringW"/> instance containing the provided data, size, and offset.</returns>
         public static BlockStringW CreateStringW(string data, int size, int offset)
         {
             var ret = new BlockStringW
