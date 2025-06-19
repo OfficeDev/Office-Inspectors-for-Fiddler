@@ -191,11 +191,11 @@
         protected override void ParseBlocks()
         {
             SetText("RopSetColumnsRequest");
-            AddChild(RopId, "RopId:{0}", RopId.Data);
-            AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
-            AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
-            AddChild(SetColumnsFlags, "SetColumnsFlags:{0}", SetColumnsFlags.Data);
-            AddChild(PropertyTagCount, "PropertyTagCount:{0}", PropertyTagCount.Data);
+            AddChildBlockT(RopId, "RopId");
+            if (LogonId != null) AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(SetColumnsFlags, "SetColumnsFlags");
+            AddChildBlockT(PropertyTagCount, "PropertyTagCount");
             AddLabeledChildren(PropertyTags, "PropertyTags");
         }
     }
@@ -240,13 +240,13 @@
         protected override void ParseBlocks()
         {
             SetText("RopSetColumnsResponse");
-            AddChild(RopId, "RopId:{0}", RopId.Data);
-            AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             var returnValue = HelpMethod.FormatErrorCode(ReturnValue.Data);
             AddChild(ReturnValue, "ReturnValue:{0}", returnValue);
             if (TableStatus.Parsed)
             {
-                AddChild(TableStatus, "TableStatus:{0}", TableStatus.Data);
+                AddChildBlockT(TableStatus, "TableStatus");
             }
         }
     }
@@ -322,13 +322,13 @@
         protected override void ParseBlocks()
         {
             SetText("RopSortTableRequest");
-            AddChild(RopId, "RopId:{0}", RopId.Data);
-            AddChild(LogonId, "LogonId:{0}", LogonId.Data);
-            AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
-            AddChild(SortTableFlags, "SortTableFlags:{0}", SortTableFlags.Data);
-            AddChild(SortOrderCount, "SortOrderCount:{0}", SortOrderCount.Data);
-            AddChild(SortOrderCount, "CategoryCount:{0}", CategoryCount.Data);
-            AddChild(ExpandedCount, "ExpandedCount :{0}", ExpandedCount.Data);
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(SortTableFlags, "SortTableFlags");
+            AddChildBlockT(SortOrderCount, "SortOrderCount");
+            AddChildBlockT(SortOrderCount, "SortOrderCount");
+            AddChildBlockT(ExpandedCount, "ExpandedCount");
             AddLabeledChildren(SortOrders, "SortOrders");
         }
     }
@@ -534,12 +534,12 @@
         protected override void ParseBlocks()
         {
             SetText("RopSeekRowRequest");
-            AddChild(RopId, "RopId:{0}", RopId.Data);
-            AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
-            AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
-            AddChild(QueryRowsFlags, "QueryRowsFlags:{0}", QueryRowsFlags.Data);
-            AddChild(ForwardRead, "ForwardRead:{0}", ForwardRead.Data);
-            AddChild(RowCount, "RowCount:{0}", RowCount.Data);
+            AddChildBlockT(RopId, "RopId");
+            if (LogonId != null) AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(QueryRowsFlags, "QueryRowsFlags");
+            AddChildBlockT(ForwardRead, "ForwardRead");
+            AddChildBlockT(RowCount, "RowCount");
         }
     }
 
@@ -925,12 +925,12 @@
         protected override void ParseBlocks()
         {
             SetText("RopSeekRowRequest");
-            AddChild(RopId, "RopId:{0}", RopId.Data);
-            AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
-            AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
-            AddChild(Origin, "Origin:{0}", Origin.Data);
-            AddChild(RowCount, "RowCount:{0}", RowCount.Data);
-            AddChild(WantRowMovedCount, "WantRowMovedCount:{0}", WantRowMovedCount.Data);
+            AddChildBlockT(RopId, "RopId");
+            if (LogonId != null) AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(Origin, "Origin");
+            AddChildBlockT(RowCount, "RowCount");
+            AddChildBlockT(WantRowMovedCount, "WantRowMovedCount");
         }
     }
 
@@ -982,12 +982,12 @@
         protected override void ParseBlocks()
         {
             SetText("RopSeekRowResponse");
-            AddChild(RopId, "RopId:{0}", RopId.Data);
-            AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             var returnValue = HelpMethod.FormatErrorCode(ReturnValue.Data);
             AddChild(ReturnValue, "ReturnValue:{0}", returnValue);
-            if (HasSoughtLess != null) AddChild(HasSoughtLess, "HasSoughtLess:{0}", HasSoughtLess.Data);
-            if (RowsSought != null) AddChild(RowsSought, "RowsSought:{0}", RowsSought.Data);
+            if (HasSoughtLess != null) AddChildBlockT(HasSoughtLess, "HasSoughtLess");
+            if (RowsSought != null) AddChildBlockT(RowsSought, "RowsSought");
         }
     }
     #endregion

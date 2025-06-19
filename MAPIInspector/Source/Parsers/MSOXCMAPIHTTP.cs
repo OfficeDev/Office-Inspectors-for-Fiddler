@@ -4342,7 +4342,7 @@
             {
                 HasValue = ParseAs<byte, bool>();
             }
- 
+
             if (HasValue == null || HasValue.Data)
             {
                 _PropertyValue = PropertyValue.ReadPropertyValue(propertyDataType, parser, countWide);

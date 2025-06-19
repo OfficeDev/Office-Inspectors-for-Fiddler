@@ -30,7 +30,7 @@ namespace BlockParserTests
             protected override void ParseBlocks()
             {
                 SetText("ParentBlock");
-                AddChild(KidCount, "KidCount:{0}", KidCount.Data);
+                AddChildBlockT(KidCount, "KidCount");
                 AddLabeledChildren(Kids, "Kids");
             }
         }
@@ -47,7 +47,7 @@ namespace BlockParserTests
             protected override void ParseBlocks()
             {
                 SetText("ChildBlock");
-                AddChild(f2, "f2:{0}", f2.Data);
+                AddChildBlockT(f2, "f2");
             }
         }
 

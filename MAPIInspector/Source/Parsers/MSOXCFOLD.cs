@@ -1824,11 +1824,11 @@
         protected override void ParseBlocks()
         {
             SetText("RopGetContentsTableRequest");
-            AddChild(RopId, "RopId:{0}", RopId.Data);
-            AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
-            AddChild(InputHandleIndex, "InputHandleIndex:{0}", InputHandleIndex.Data);
-            AddChild(OutputHandleIndex, "OutputHandleIndex:{0}", OutputHandleIndex.Data);
-            AddChild(TableFlags, "TableFlags:{0}", TableFlags.Data);
+            AddChildBlockT(RopId, "RopId");
+            if (LogonId != null) AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
+            AddChildBlockT(TableFlags, "TableFlags");
         }
     }
 

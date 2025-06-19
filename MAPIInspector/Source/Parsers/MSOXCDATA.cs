@@ -4252,7 +4252,7 @@
         {
             SetText("FolderID");
             AddChildBlockT(ReplicaId, "ReplicaId");
-            AddChild(GlobalCounter, $"GlobalCounter:{GlobalCounter.ToHexString(false)}");
+            if (GlobalCounter != null) AddChild(GlobalCounter, $"GlobalCounter:{GlobalCounter.ToHexString(false)}");
         }
     }
 
@@ -4284,7 +4284,7 @@
         {
             SetText("MessageID");
             AddChildBlockT(ReplicaId, "ReplicaId");
-            AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
+            if (GlobalCounter != null) AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
         }
     }
 
@@ -4321,7 +4321,7 @@
         protected override void ParseBlocks()
         {
             AddChildBlockT(DatabaseGuid, "DatabaseGuid");
-            AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
+            if (GlobalCounter != null) AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
             AddChildBlockT(Pad, "Pad");
         }
     }
@@ -4390,7 +4390,7 @@
             AddChildBlockT(ProviderUID, "ProviderUID");
             AddChildBlockT(FolderType, "FolderType");
             AddChildBlockT(DatabaseGuid, "DatabaseGuid");
-            AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
+            if (GlobalCounter != null) AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
             AddChildBlockT(Pad, "Pad");
         }
     }
@@ -4870,7 +4870,7 @@
             if (bytes != null) AddChild(bytes, $"Bytes:{bytes.ToHexString(false)}");
             foreach (var propValue in ValueArray)
             {
-                AddChild(propValue, $"{propValue.GetType().Name}");
+                if (propValue != null) AddChild(propValue, $"{propValue.GetType().Name}");
             }
         }
     }
