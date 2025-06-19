@@ -108,7 +108,6 @@ namespace BlockParser
         }
 
         public BlockBytes ParseBytes(int cbBytes, int cbMaxBytes = -1) => ParseBytes(parser, cbBytes, cbMaxBytes);
-
         /// <summary>
         /// Parses a specified number of bytes from the binary parser and returns a <see cref="BlockBytes"/> instance.
         /// </summary>
@@ -128,6 +127,7 @@ namespace BlockParser
             return ret;
         }
 
+        public BlockStringW ParseStringW(int cchChar = -1) => ParseStringW(parser, cchChar);
         /// <summary>
         /// Parses a Unicode (wide) string from the binary parser and returns a <see cref="BlockStringW"/> instance.
         /// </summary>
@@ -146,6 +146,7 @@ namespace BlockParser
             return ret;
         }
 
+        public BlockStringA ParseStringA(int cchChar = -1) => ParseStringA(parser, cchChar);
         /// <summary>
         /// Parses an ANSI (narrow) string from the binary parser and returns a <see cref="BlockStringA"/> instance.
         /// </summary>

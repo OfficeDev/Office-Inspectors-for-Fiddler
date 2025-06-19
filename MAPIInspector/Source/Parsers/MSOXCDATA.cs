@@ -4132,11 +4132,11 @@
         {
             if (Encode == Encoding.Unicode)
             {
-                Value = ParseStringW(parser);
+                Value = ParseStringW();
             }
             else if (Encode == Encoding.ASCII)
             {
-                Value = ParseStringA(parser);
+                Value = ParseStringA();
             }
         }
 
@@ -5509,7 +5509,7 @@
 
             // If Count is -1, we don't know the size, so we parse until the null terminator.
             // If Count is >= 0, we parse that many bytes, so we divide by 2 to get the number of characters.
-            Value = ParseStringW(parser, Count == -1 ? Count : Count / 2);
+            Value = ParseStringW(Count == -1 ? Count : Count / 2);
         }
 
         protected override void ParseBlocks()
@@ -5574,7 +5574,7 @@
 
             // If Count is -1, we don't know the size, so we parse until the null terminator.
             // If Count is >= 0, we parse that many bytes, which is the same as the number of characters.
-            Value = ParseStringA(parser, Count == -1 ? Count : Count);
+            Value = ParseStringA(Count == -1 ? Count : Count);
         }
 
         protected override void ParseBlocks()
