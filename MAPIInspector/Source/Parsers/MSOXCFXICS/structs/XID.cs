@@ -38,7 +38,7 @@
         /// </summary>
         protected override void Parse()
         {
-            NamespaceGuid = ParseT<Guid>(parser);
+            NamespaceGuid = ParseT<Guid>();
             LocalId = ParseBytes(length - 16); // sizeof Guid is 16 bytes
         }
 

@@ -29,10 +29,10 @@ namespace MAPIInspector.Parsers
 
         protected override void Parse()
         {
-            StartMarker = ParseT<Markers>(parser);
+            StartMarker = ParseT<Markers>();
             if (StartMarker.Data == Markers.IncrSyncRead)
             {
-                PropList = Parse<PropList>(parser);
+                PropList = Parse<PropList>();
             }
         }
 

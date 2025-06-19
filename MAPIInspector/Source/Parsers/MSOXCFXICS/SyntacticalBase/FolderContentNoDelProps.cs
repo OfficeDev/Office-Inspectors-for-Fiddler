@@ -35,7 +35,7 @@
 
         protected override void Parse()
         {
-            PropList = Parse<PropList>(parser);
+            PropList = Parse<PropList>();
 
             if (!parser.Empty)
             {
@@ -43,18 +43,18 @@
 
                 if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagNewFXFolder))
                 {
-                    MetaTagNewFXFolder = Parse<MetaPropValue>(parser);
+                    MetaTagNewFXFolder = Parse<MetaPropValue>();
                 }
                 else
                 {
-                    FolderMessagesNoDelProps = Parse<FolderMessagesNoDelProps>(parser);
+                    FolderMessagesNoDelProps = Parse<FolderMessagesNoDelProps>();
                 }
 
                 if (!parser.Empty)
                 {
                     while (SubFolderNoDelProps.Verify(parser))
                     {
-                        interSubFolders.Add(Parse<SubFolderNoDelProps>(parser));
+                        interSubFolders.Add(Parse<SubFolderNoDelProps>());
                     }
 
                     SubFolderNoDelPropList = interSubFolders.ToArray();

@@ -31,12 +31,12 @@ namespace MAPIInspector.Parsers
 
         protected override void Parse()
         {
-            PropertySet = ParseT<Guid>(parser);
-            Flag = ParseT<byte>(parser);
+            PropertySet = ParseT<Guid>();
+            Flag = ParseT<byte>();
 
             if (Flag.Data == 0x00)
             {
-                Dispid = ParseT<uint>(parser);
+                Dispid = ParseT<uint>();
             }
             else if (Flag.Data == 0x01)
             {

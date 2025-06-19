@@ -36,7 +36,7 @@
             var interSizeXid = new List<SizedXid>();
             for (long i = 0; i < length;)
             {
-                var tmpSizedXid = Parse<SizedXid>(parser);
+                var tmpSizedXid = Parse<SizedXid>();
                 interSizeXid.Add(tmpSizedXid);
                 i += tmpSizedXid.Size;
             }

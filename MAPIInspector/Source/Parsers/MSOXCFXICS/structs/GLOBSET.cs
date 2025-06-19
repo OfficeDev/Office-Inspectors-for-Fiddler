@@ -25,7 +25,7 @@
             // A UInt list indicates the pushed or popped count of bytes in common stack.
             var commonStackCollection = new List<uint>();
 
-            var tmp = Block.TestParse<byte>(parser);
+            var tmp = TestParse<byte>();
 
             var commands = new List<Command>();
             while (tmp.Parsed && tmp.Data != 0x00)
@@ -38,7 +38,7 @@
                     case 0x04:
                     case 0x05:
                     case 0x06:
-                        var pushCommand = Parse<PushCommand>(parser);
+                        var pushCommand = Parse<PushCommand>();
                         commands.Add(pushCommand);
                         if ((commonStackLength + pushCommand.Command.Data) < 6)
                         {
@@ -48,12 +48,12 @@
 
                         break;
                     case 0x50:
-                        commands.Add(Parse<PopCommand>(parser));
+                        commands.Add(Parse<PopCommand>());
                         commonStackLength -= commonStackCollection[commonStackCollection.Count - 1];
                         commonStackCollection.RemoveAt(commonStackCollection.Count - 1);
                         break;
                     case 0x42:
-                        commands.Add(Parse<BitmaskCommand>(parser));
+                        commands.Add(Parse<BitmaskCommand>());
                         break;
                     case 0x52:
                         var rangeCommand = new RangeCommand(6 - commonStackLength);
@@ -64,10 +64,10 @@
                         break;
                 }
 
-                tmp = TestParse<byte>(parser);
+                tmp = TestParse<byte>();
             }
 
-            commands.Add(Parse<EndCommand>(parser));
+            commands.Add(Parse<EndCommand>());
             Commands = commands.ToArray();
         }
 

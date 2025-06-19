@@ -44,7 +44,7 @@
                     }
                     else
                     {
-                        Length = ParseT<int>(parser);
+                        Length = ParseT<int>();
                     }
 
                     // clear
@@ -58,7 +58,7 @@
                 }
                 else
                 {
-                    Length = ParseT<int>(parser);
+                    Length = ParseT<int>();
                 }
 
                 PropertyDataType typeValue = PropType.Parsed ? PropType.Data : ptype.Data;

@@ -14,8 +14,8 @@ namespace BlockParserTests
 
             protected override void Parse()
             {
-                f1 = ParseT<int>(parser);
-                f2 = ParseT<short>(parser);
+                f1 = ParseT<int>();
+                f2 = ParseT<short>();
             }
 
             protected override void ParseBlocks()
@@ -34,8 +34,8 @@ namespace BlockParserTests
 
             protected override void Parse()
             {
-                f1 = ParseT<int>(parser);
-                f2 = ParseT<short>(parser);
+                f1 = ParseT<int>();
+                f2 = ParseT<short>();
                 tb = Parse<TestBlock>(parser, false);
             }
 
@@ -174,8 +174,8 @@ namespace BlockParserTests
             public BlockT<TestEnumNoType> f2;
             protected override void Parse()
             {
-                f1 = ParseT<TestEnum>(parser);
-                f2 = ParseT<TestEnumNoType>(parser);
+                f1 = ParseT<TestEnum>();
+                f2 = ParseT<TestEnumNoType>();
             }
             protected override void ParseBlocks()
             {

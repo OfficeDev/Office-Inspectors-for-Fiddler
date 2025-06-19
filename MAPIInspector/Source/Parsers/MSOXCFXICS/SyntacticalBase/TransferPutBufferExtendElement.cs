@@ -29,14 +29,14 @@ namespace MAPIInspector.Parsers
                 MapiInspector.MAPIParser.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
                 MapiInspector.MAPIParser.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
             {
-                var tmpMarker = TestParse<Markers>(parser);
+                var tmpMarker = TestParse<Markers>();
                 if (MarkersHelper.IsMarker(tmpMarker.Data))
                 {
-                    Marker = ParseT<Markers>(parser);
+                    Marker = ParseT<Markers>();
                 }
                 else if (LexicalTypeHelper.IsMetaPropertyID(MapiInspector.MAPIParser.PartialPutExtendId))
                 {
-                    MetaValue = Parse<MetaPropValuePutExtendPartial>(parser);
+                    MetaValue = Parse<MetaPropValuePutExtendPartial>();
                 }
                 else
                 {
@@ -45,56 +45,56 @@ namespace MAPIInspector.Parsers
                         if (MapiInspector.MAPIParser.PartialPutExtendType == PropertyDataType.PtypInteger32 &&
                             MapiInspector.MAPIParser.PartialPutExtendId == PidTagPropertyEnum.MetaTagIdsetGiven)
                         {
-                            PropValue = Parse<VarPropTypePropValuePutExtendPartial>(parser);
+                            PropValue = Parse<VarPropTypePropValuePutExtendPartial>();
                         }
                         else
                         {
-                            PropValue = Parse<FixedPropTypePropValuePutExtendPartial>(parser);
+                            PropValue = Parse<FixedPropTypePropValuePutExtendPartial>();
                         }
                     }
                     else if (LexicalTypeHelper.IsVarType((PropertyDataType)MapiInspector.MAPIParser.PartialPutExtendType) ||
                     LexicalTypeHelper.IsCodePageType(MapiInspector.MAPIParser.PartialPutExtendType))
                     {
-                        PropValue = Parse<VarPropTypePropValuePutExtendPartial>(parser);
+                        PropValue = Parse<VarPropTypePropValuePutExtendPartial>();
                     }
                     else if (LexicalTypeHelper.IsMVType((PropertyDataType)MapiInspector.MAPIParser.PartialPutExtendType))
                     {
-                        PropValue = Parse<MvPropTypePropValuePutExtendPartial>(parser);
+                        PropValue = Parse<MvPropTypePropValuePutExtendPartial>();
                     }
                 }
             }
             else
             {
-                var tmpMarker = TestParse<Markers>(parser);
+                var tmpMarker = TestParse<Markers>();
                 if (MarkersHelper.IsMarker(tmpMarker.Data))
                 {
-                    Marker = ParseT<Markers>(parser);
+                    Marker = ParseT<Markers>();
                 }
                 else if (MarkersHelper.IsMetaTag((MetaProperties)tmpMarker.Data))
                 {
-                    MetaValue = Parse<MetaPropValuePutExtendPartial>(parser);
+                    MetaValue = Parse<MetaPropValuePutExtendPartial>();
                 }
                 else
                 {
                     var offset = parser.Offset;
-                    PropValue propValue = Parse<PropValue>(parser);
+                    PropValue propValue = Parse<PropValue>();
                     parser.Offset = offset;
 
                     if (LexicalTypeHelper.IsFixedType(propValue.PropType.Data) &&
                         !PropValue.IsMetaTagIdsetGiven(parser))
                     {
-                        PropValue = Parse<FixedPropTypePropValuePutExtendPartial>(parser);
+                        PropValue = Parse<FixedPropTypePropValuePutExtendPartial>();
                     }
                     else if (LexicalTypeHelper.IsVarType(propValue.PropType.Data) ||
                         PropValue.IsMetaTagIdsetGiven(parser) ||
                         LexicalTypeHelper.IsCodePageType(propValue.PropType.Data))
                     {
-                        PropValue = Parse<VarPropTypePropValuePutExtendPartial>(parser);
+                        PropValue = Parse<VarPropTypePropValuePutExtendPartial>();
                     }
                     else if (LexicalTypeHelper.IsMVType(propValue.PropType.Data) &&
                         !PropValue.IsMetaTagIdsetGiven(parser))
                     {
-                        PropValue = Parse<MvPropTypePropValuePutExtendPartial>(parser);
+                        PropValue = Parse<MvPropTypePropValuePutExtendPartial>();
                     }
                 }
             }

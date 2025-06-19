@@ -51,25 +51,25 @@
         protected override void Parse()
         {
             List<SyncMessagePartialPropList> interMessagePartialList = new List<SyncMessagePartialPropList>();
-            GroupInfo = Parse<GroupInfo>(parser);
+            GroupInfo = Parse<GroupInfo>();
 
             if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagIncrSyncGroupId))
             {
-                MetaTagIncrSyncGroupId = Parse<MetaPropValue>(parser);
+                MetaTagIncrSyncGroupId = Parse<MetaPropValue>();
             }
 
-            Marker = ParseT<Markers>(parser);
+            Marker = ParseT<Markers>();
             if (Marker.Data == Markers.IncrSyncChgPartial)
             {
-                MessageChangeHeader = Parse<PropList>(parser);
+                MessageChangeHeader = Parse<PropList>();
 
                 while (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagIncrementalSyncMessagePartial))
                 {
-                    interMessagePartialList.Add(Parse<SyncMessagePartialPropList>(parser));
+                    interMessagePartialList.Add(Parse<SyncMessagePartialPropList>());
                 }
 
                 SyncMessagePartialPropList = interMessagePartialList.ToArray();
-                MessageChildren = Parse<MessageChildren>(parser);
+                MessageChildren = Parse<MessageChildren>();
             }
             else
             {

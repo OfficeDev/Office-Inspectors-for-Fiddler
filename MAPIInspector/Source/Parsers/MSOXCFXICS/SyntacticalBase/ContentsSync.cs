@@ -44,29 +44,29 @@
 
             if (ProgressTotal.Verify(parser))
             {
-                ProgressTotal = Parse<ProgressTotal>(parser);
+                ProgressTotal = Parse<ProgressTotal>();
             }
 
             while (ProgressPerMessageChange.Verify(parser))
             {
-                interProgressPerMessageChanges.Add(Parse<ProgressPerMessageChange>(parser));
+                interProgressPerMessageChanges.Add(Parse<ProgressPerMessageChange>());
             }
 
             ProgressPerMessageChanges = interProgressPerMessageChanges.ToArray();
 
             if (Deletions.Verify(parser))
             {
-                Deletions = Parse<Deletions>(parser);
+                Deletions = Parse<Deletions>();
             }
 
             if (ReadStateChanges.Verify(parser))
             {
-                ReadStateChanges = Parse<ReadStateChanges>(parser);
+                ReadStateChanges = Parse<ReadStateChanges>();
             }
 
-            State = Parse<State>(parser);
+            State = Parse<State>();
 
-            EndMarker = ParseT<Markers>(parser);
+            EndMarker = ParseT<Markers>();
             if (EndMarker.Data != Markers.IncrSyncEnd)
             {
                 Parsed = false;

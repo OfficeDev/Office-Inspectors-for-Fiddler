@@ -31,11 +31,11 @@ namespace MAPIInspector.Parsers
         {
             if (MessageChangeFull.Verify(parser))
             {
-                MessageChangeFull = Parse<MessageChangeFull>(parser);
+                MessageChangeFull = Parse<MessageChangeFull>();
             }
             else
             {
-                MesageChangePartial = Parse<MessageChangePartial>(parser);
+                MesageChangePartial = Parse<MessageChangePartial>();
             }
         }
 

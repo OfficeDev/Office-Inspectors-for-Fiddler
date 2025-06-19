@@ -31,15 +31,15 @@ namespace MAPIInspector.Parsers
         {
             if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagDnPrefix))
             {
-                MetaTagDnPrefix = Parse<MetaPropValue>(parser);
+                MetaTagDnPrefix = Parse<MetaPropValue>();
             }
 
-            StartMarker = ParseT<Markers>(parser);
+            StartMarker = ParseT<Markers>();
             if (StartMarker.Data == Markers.StartTopFld)
             {
-                FolderContentNoDelProps = Parse<FolderContentNoDelProps>(parser);
+                FolderContentNoDelProps = Parse<FolderContentNoDelProps>();
 
-                EndMarker = ParseT<Markers>(parser);
+                EndMarker = ParseT<Markers>();
                 if (EndMarker.Data != Markers.EndFolder)
                 {
                     Parsed = false;

@@ -20,11 +20,11 @@ namespace MAPIInspector.Parsers
 
         protected override void Parse()
         {
-            PropID = ParseT<PidTagPropertyEnum>(parser);
+            PropID = ParseT<PidTagPropertyEnum>();
 
             if ((ushort)PropID.Data >= 0x8000)
             {
-                NamedPropInfo = Parse<NamedPropInfo>(parser);
+                NamedPropInfo = Parse<NamedPropInfo>();
             }
         }
 

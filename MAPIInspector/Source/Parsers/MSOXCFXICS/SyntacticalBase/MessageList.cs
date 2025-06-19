@@ -30,7 +30,7 @@
 
             while (Verify(parser))
             {
-                interMessageList.Add(Parse<MetaTagMessage>(parser));
+                interMessageList.Add(Parse<MetaTagMessage>());
             }
 
             MetaTagMessages = interMessageList.ToArray();

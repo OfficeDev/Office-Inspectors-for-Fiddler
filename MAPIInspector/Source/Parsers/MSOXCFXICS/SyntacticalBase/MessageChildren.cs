@@ -35,7 +35,7 @@
 
             if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagFXDelProp))
             {
-                FxdelPropsBeforeRecipient = Parse<MetaPropValue>(parser);
+                FxdelPropsBeforeRecipient = Parse<MetaPropValue>();
             }
 
             if (Recipient.Verify(parser))
@@ -44,18 +44,18 @@
 
                 while (Recipient.Verify(parser))
                 {
-                    interRecipients.Add(Parse<Recipient>(parser));
+                    interRecipients.Add(Parse<Recipient>());
                 }
             }
 
             if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagFXDelProp))
             {
-                FxdelPropsBeforeAttachment = Parse<MetaPropValue>(parser);
+                FxdelPropsBeforeAttachment = Parse<MetaPropValue>();
             }
 
             while (Attachment.Verify(parser))
             {
-                interAttachments.Add(Parse<Attachment>(parser));
+                interAttachments.Add(Parse<Attachment>());
             }
 
             Attachments = interAttachments.ToArray();

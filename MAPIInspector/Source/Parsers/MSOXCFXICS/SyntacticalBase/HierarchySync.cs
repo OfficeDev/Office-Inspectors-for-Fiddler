@@ -34,19 +34,19 @@
 
             while (FolderChange.Verify(parser))
             {
-                interFolderChanges.Add(Parse<FolderChange>(parser));
+                interFolderChanges.Add(Parse<FolderChange>());
             }
 
             FolderChanges = interFolderChanges.ToArray();
 
             if (Deletions.Verify(parser))
             {
-                Deletions = Parse<Deletions>(parser);
+                Deletions = Parse<Deletions>();
             }
 
-            State = Parse<State>(parser);
+            State = Parse<State>();
 
-            EndMarker = ParseT<Markers>(parser);
+            EndMarker = ParseT<Markers>();
             if (EndMarker.Data == Markers.IncrSyncEnd)
             {
                 Parsed = false;

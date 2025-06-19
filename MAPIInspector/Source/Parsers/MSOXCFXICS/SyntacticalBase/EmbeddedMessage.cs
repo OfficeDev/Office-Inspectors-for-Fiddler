@@ -34,12 +34,12 @@
 
         protected override void Parse()
         {
-            StartMarker = ParseT<Markers>(parser);
+            StartMarker = ParseT<Markers>();
             if (StartMarker.Data == Markers.StartEmbed)
             {
-                MessageContent = Parse<MessageContent>(parser);
+                MessageContent = Parse<MessageContent>();
 
-                EndMarker = ParseT<Markers>(parser);
+                EndMarker = ParseT<Markers>();
                 if (EndMarker.Data != Markers.EndEmbed)
                 {
                     Parsed = false;

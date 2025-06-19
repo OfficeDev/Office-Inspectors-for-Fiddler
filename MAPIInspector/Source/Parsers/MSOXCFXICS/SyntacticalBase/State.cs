@@ -24,12 +24,12 @@
 
         protected override void Parse()
         {
-            StartMarker = ParseT<Markers>(parser);
+            StartMarker = ParseT<Markers>();
             if (StartMarker.Data == Markers.IncrSyncStateBegin)
             {
-                PropList = Parse<PropList>(parser);
+                PropList = Parse<PropList>();
 
-                EndMarker = ParseT<Markers>(parser);
+                EndMarker = ParseT<Markers>();
                 if (EndMarker.Data != Markers.IncrSyncStateEnd)
                 {
                     Parsed = false;

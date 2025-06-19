@@ -31,10 +31,10 @@ namespace MAPIInspector.Parsers
         {
             if (ProgressPerMessage.Verify(parser))
             {
-                ProgressPerMessage = Parse<ProgressPerMessage>(parser);
+                ProgressPerMessage = Parse<ProgressPerMessage>();
             }
 
-            MessageChange = Parse<MessageChange>(parser);
+            MessageChange = Parse<MessageChange>();
         }
 
         protected override void ParseBlocks()

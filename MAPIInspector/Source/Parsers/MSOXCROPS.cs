@@ -4146,9 +4146,9 @@
         /// </summary>
         protected override void Parse()
         {
-            RopId = ParseT<RopIdType>(parser);
-            LogonId = ParseT<byte>(parser);
-            InputHandleIndex = ParseT<byte>(parser);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
         }
 
         protected override void ParseBlocks()

@@ -23,7 +23,7 @@
         /// </summary>
         protected override void Parse()
         {
-            ReplicaId = ParseT<ushort>(parser);
+            ReplicaId = ParseT<ushort>();
             GlobalCounter = ParseBytes(6);
         }
 

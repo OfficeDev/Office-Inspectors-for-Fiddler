@@ -15,7 +15,7 @@ namespace BlockParserTests
 
             protected override void Parse()
             {
-                KidCount = ParseT<int>(parser);
+                KidCount = ParseT<int>();
                 List<ChildBlock> tempKids = new List<ChildBlock>();
                 for (int i = 0; i < KidCount.Data; i++)
                 {
@@ -41,7 +41,7 @@ namespace BlockParserTests
 
             protected override void Parse()
             {
-                f2 = ParseT<short>(parser);
+                f2 = ParseT<short>();
             }
 
             protected override void ParseBlocks()

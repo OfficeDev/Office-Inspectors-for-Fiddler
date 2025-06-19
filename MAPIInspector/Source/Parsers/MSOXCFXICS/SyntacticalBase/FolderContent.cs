@@ -42,10 +42,10 @@
         {
             if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagDnPrefix))
             {
-                MetaTagDnPrefix = Parse<MetaPropValue>(parser);
+                MetaTagDnPrefix = Parse<MetaPropValue>();
             }
 
-            PropList = Parse<PropList>(parser);
+            PropList = Parse<PropList>();
 
             if (!parser.Empty)
             {
@@ -53,23 +53,23 @@
 
                 if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagNewFXFolder))
                 {
-                    MetaTagNewFXFolder = Parse<MetaPropValue>(parser);
+                    MetaTagNewFXFolder = Parse<MetaPropValue>();
                 }
                 else
                 {
-                    FolderMessages = Parse<FolderMessages>(parser);
+                    FolderMessages = Parse<FolderMessages>();
                 }
 
                 if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagFXDelProp))
                 {
-                    MetaTagFXDelProp = Parse<MetaPropValue>(parser);
+                    MetaTagFXDelProp = Parse<MetaPropValue>();
                 }
 
                 if (!parser.Empty)
                 {
                     while (SubFolder.Verify(parser))
                     {
-                        interSubFolders.Add(Parse<SubFolder>(parser));
+                        interSubFolders.Add(Parse<SubFolder>());
                     }
 
                     SubFolders = interSubFolders.ToArray();

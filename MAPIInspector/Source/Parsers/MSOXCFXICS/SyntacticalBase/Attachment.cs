@@ -42,8 +42,8 @@
             StartMarker = new BlockT<Markers>(parser);
             if (StartMarker.Data == Markers.NewAttach)
             {
-                PidTagAttachNumber = Parse<FixedPropTypePropValue>(parser);
-                AttachmentContent = Parse<AttachmentContent>(parser);
+                PidTagAttachNumber = Parse<FixedPropTypePropValue>();
+                AttachmentContent = Parse<AttachmentContent>();
 
                 EndMarker = new BlockT<Markers>(parser);
                 if (EndMarker.Data == Markers.EndAttach)

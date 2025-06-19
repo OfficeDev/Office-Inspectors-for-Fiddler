@@ -22,7 +22,7 @@
             {
                 if (MessageList.Verify(parser))
                 {
-                    interMessageLists.Add(Parse<MessageList>(parser));
+                    interMessageLists.Add(Parse<MessageList>());
                 }
                 else
                 {

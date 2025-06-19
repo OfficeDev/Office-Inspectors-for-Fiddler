@@ -21,10 +21,10 @@ namespace MAPIInspector.Parsers
         {
             if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagIncrementalSyncMessagePartial))
             {
-                MetaSyncMessagePartial = Parse<MetaPropValue>(parser);
+                MetaSyncMessagePartial = Parse<MetaPropValue>();
             }
 
-            PropList = Parse<PropList>(parser);
+            PropList = Parse<PropList>();
         }
 
         protected override void ParseBlocks()

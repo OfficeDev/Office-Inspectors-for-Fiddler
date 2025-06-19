@@ -171,11 +171,11 @@
         /// <param name="s">A stream containing RopSetColumnsRequest structure.</param>
         protected override void Parse()
         {
-            RopId = ParseT<RopIdType>(parser);
-            LogonId = ParseT<byte>(parser);
-            InputHandleIndex = ParseT<byte>(parser);
-            SetColumnsFlags = ParseT<AsynchronousFlags>(parser);
-            PropertyTagCount = ParseT<ushort>(parser);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            SetColumnsFlags = ParseT<AsynchronousFlags>();
+            PropertyTagCount = ParseT<ushort>();
 
             List<PropertyTag> tempPropertyTags = new List<PropertyTag>();
             for (int i = 0; i < this.PropertyTagCount.Data; i++)
@@ -227,13 +227,13 @@
 
         protected override void Parse()
         {
-            RopId = ParseT<RopIdType>(parser);
-            InputHandleIndex = ParseT<byte>(parser);
-            ReturnValue = ParseT<uint>(parser);
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<uint>();
 
             if (ReturnValue.Data == (uint)ErrorCodes.Success)
             {
-                TableStatus = ParseT<TableStatus>(parser);
+                TableStatus = ParseT<TableStatus>();
             }
         }
 
@@ -303,17 +303,17 @@
         /// </summary>
         protected override void Parse()
         {
-            RopId = ParseT<RopIdType>(parser);
-            LogonId = ParseT<byte>(parser);
-            InputHandleIndex = ParseT<byte>(parser);
-            SortTableFlags = ParseT<AsynchronousFlags>(parser);
-            SortOrderCount = ParseT<ushort>(parser);
-            CategoryCount = ParseT<ushort>(parser);
-            ExpandedCount = ParseT<ushort>(parser);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            SortTableFlags = ParseT<AsynchronousFlags>();
+            SortOrderCount = ParseT<ushort>();
+            CategoryCount = ParseT<ushort>();
+            ExpandedCount = ParseT<ushort>();
             var tempSortOrders = new List<SortOrder>();
             for (int i = 0; i < SortOrderCount.Data; i++)
             {
-                tempSortOrders.Add(Parse<SortOrder>(parser));
+                tempSortOrders.Add(Parse<SortOrder>());
             }
 
             SortOrders = tempSortOrders.ToArray();
@@ -523,12 +523,12 @@
         /// <param name="s">A stream containing RopQueryRowsRequest structure.</param>
         protected override void Parse()
         {
-            RopId = ParseT<RopIdType>(parser);
-            LogonId = ParseT<byte>(parser);
-            InputHandleIndex = ParseT<byte>(parser);
-            QueryRowsFlags = ParseT<QueryRowsFlags>(parser);
-            ForwardRead = ParseAs<byte, bool>(parser);
-            RowCount = ParseT<ushort>(parser);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            QueryRowsFlags = ParseT<QueryRowsFlags>();
+            ForwardRead = ParseAs<byte, bool>();
+            RowCount = ParseT<ushort>();
         }
 
         protected override void ParseBlocks()
@@ -914,12 +914,12 @@
         /// <param name="s">A stream containing RopSeekRowRequest structure.</param>
         protected override void Parse()
         {
-            RopId = ParseT<RopIdType>(parser);
-            LogonId = ParseT<byte>(parser);
-            InputHandleIndex = ParseT<byte>(parser);
-            Origin = ParseT<Bookmarks>(parser);
-            RowCount = ParseT<int>(parser);
-            WantRowMovedCount = ParseAs<byte, bool>(parser);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            Origin = ParseT<Bookmarks>();
+            RowCount = ParseT<int>();
+            WantRowMovedCount = ParseAs<byte, bool>();
         }
 
         protected override void ParseBlocks()
@@ -969,13 +969,13 @@
         /// </summary>
         protected override void Parse()
         {
-            RopId = ParseT<RopIdType>(parser);
-            InputHandleIndex = ParseT<byte>(parser);
-            ReturnValue = ParseT<uint>(parser);
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<uint>();
             if (ReturnValue.Data == (uint)ErrorCodes.Success)
             {
-                HasSoughtLess = ParseAs<byte, bool>(parser);
-                RowsSought = ParseT<int>(parser);
+                HasSoughtLess = ParseAs<byte, bool>();
+                RowsSought = ParseT<int>();
             }
         }
 

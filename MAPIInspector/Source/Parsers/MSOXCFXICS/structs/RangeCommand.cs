@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            Command = ParseT<byte>(parser);
+            Command = ParseT<byte>();
             LowValue = ParseBytes((int)length);
             HighValue = ParseBytes((int)length);
         }

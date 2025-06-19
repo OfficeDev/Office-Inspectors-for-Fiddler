@@ -26,11 +26,11 @@ namespace MAPIInspector.Parsers
         {
             if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagDnPrefix))
             {
-                MetaTagDnPrefix = Parse<MetaPropValue>(parser);
+                MetaTagDnPrefix = Parse<MetaPropValue>();
             }
 
-            PropList = Parse<PropList>(parser);
-            MessageChildren = Parse<MessageChildren>(parser);
+            PropList = Parse<PropList>();
+            MessageChildren = Parse<MessageChildren>();
         }
 
         protected override void ParseBlocks()

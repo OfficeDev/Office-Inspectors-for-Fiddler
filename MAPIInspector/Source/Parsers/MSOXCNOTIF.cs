@@ -442,10 +442,10 @@
         /// </summary>
         protected override void Parse()
         {
-            NotificationFlags = ParseT<NotificationTypesEnum>(parser);
+            NotificationFlags = ParseT<NotificationTypesEnum>();
             if (NotificationFlags.Data.HasFlag(NotificationTypesEnum.TableModified))
             {
-                TableEventType = ParseT<TableEventTypeEnum>(parser);
+                TableEventType = ParseT<TableEventTypeEnum>();
             }
 
             // bit 0x8000 is set in the NotificationFlags field
@@ -487,17 +487,17 @@
                 var isAM = TableEventType.Data == TableEventTypeEnum.TableRowAdded ||
                     TableEventType.Data == TableEventTypeEnum.TableRowModified;
 
-                if (isADM) TableRowFolderID = Parse<FolderID>(parser);
-                if (isMessage && isADM) TableRowMessageID = Parse<MessageID>(parser);
-                if (isMessage && isADM) TableRowInstance = ParseT<uint>(parser);
+                if (isADM) TableRowFolderID = Parse<FolderID>();
+                if (isMessage && isADM) TableRowMessageID = Parse<MessageID>();
+                if (isMessage && isADM) TableRowInstance = ParseT<uint>();
 
-                if (isMessage && isAM) InsertAfterTableRowFolderID = Parse<FolderID>(parser);
-                if (isMessage && isAM) InsertAfterTableRowID = Parse<MessageID>(parser);
-                if (isMessage && isAM) InsertAfterTableRowInstance = ParseT<uint>(parser);
+                if (isMessage && isAM) InsertAfterTableRowFolderID = Parse<FolderID>();
+                if (isMessage && isAM) InsertAfterTableRowID = Parse<MessageID>();
+                if (isMessage && isAM) InsertAfterTableRowInstance = ParseT<uint>();
 
                 if (isAM)
                 {
-                    TableRowDataSize = ParseT<ushort>(parser);
+                    TableRowDataSize = ParseT<ushort>();
 
                     int parsingSessionID = MapiInspector.MAPIParser.ParsingSession.id;
                     if (MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
@@ -517,16 +517,16 @@
                 }
             }
 
-            if (notModifiedExtended) FolderId = Parse<FolderID>(parser);
-            if (notModifiedExtended && isMessage) MessageId = Parse<MessageID>(parser);
-            if (isCreateDeleteMovedCopied && (isSearchFolderMessage || isFolder)) ParentFolderId = Parse<FolderID>(parser);
-            if (isMovedCopied) OldFolderId = Parse<FolderID>(parser);
-            if (isMovedCopied && isMessage) OldMessageId = Parse<MessageID>(parser);
-            if (isMovedCopied && isMessage) OldParentFolderId = Parse<FolderID>(parser);
+            if (notModifiedExtended) FolderId = Parse<FolderID>();
+            if (notModifiedExtended && isMessage) MessageId = Parse<MessageID>();
+            if (isCreateDeleteMovedCopied && (isSearchFolderMessage || isFolder)) ParentFolderId = Parse<FolderID>();
+            if (isMovedCopied) OldFolderId = Parse<FolderID>();
+            if (isMovedCopied && isMessage) OldMessageId = Parse<MessageID>();
+            if (isMovedCopied && isMessage) OldParentFolderId = Parse<FolderID>();
 
             if (isCreateDelete)
             {
-                TagCount = ParseT<ushort>(parser);
+                TagCount = ParseT<ushort>();
 
                 if (TagCount.Data != 0x0000 && TagCount.Data != 0xFFFF)
                 {
@@ -534,27 +534,27 @@
 
                     for (int i = 0; i < TagCount.Data; i++)
                     {
-                        listTags.Add(Parse<PropertyTag>(parser));
+                        listTags.Add(Parse<PropertyTag>());
                     }
 
                     Tags = listTags.ToArray();
                 }
             }
 
-            if (isTotalMessageCount) TotalMessageCount = ParseT<uint>(parser);
-            if (isUnreadMessageCount) UnreadMessageCount = ParseT<uint>(parser);
+            if (isTotalMessageCount) TotalMessageCount = ParseT<uint>();
+            if (isUnreadMessageCount) UnreadMessageCount = ParseT<uint>();
 
             if (isNewMail)
             {
-                MessageFlags = ParseT<uint>(parser);
-                UnicodeFlag = ParseT<byte>(parser);
+                MessageFlags = ParseT<uint>();
+                UnicodeFlag = ParseT<byte>();
                 if (UnicodeFlag.Data == 0x00)
                 {
-                    MessageClass = Parse<PtypString8>(parser);
+                    MessageClass = Parse<PtypString8>();
                 }
                 else if (UnicodeFlag.Data == 0x01)
                 {
-                    MessageClass = Parse<PtypString>(parser);
+                    MessageClass = Parse<PtypString>();
                 }
             }
         }

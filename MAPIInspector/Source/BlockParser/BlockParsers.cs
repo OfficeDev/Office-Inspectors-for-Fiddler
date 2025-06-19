@@ -21,6 +21,7 @@ namespace BlockParser
             return block;
         }
 
+        public T Parse<T>(bool enableJunk = false) where T : Block, new() => Parse<T>(parser, enableJunk);
         /// <summary>
         /// Static parse function returns a parsing block based on a BinaryParser
         /// </summary>
@@ -33,6 +34,7 @@ namespace BlockParser
             return Parse<T>(parser, 0, enableJunk);
         }
 
+        public T Parse<T>(int cbBin, bool enableJunk = false) where T : Block, new() => Parse<T>(parser, cbBin, enableJunk);
         /// <summary>
         /// Static parse function returns a parsing block based on a BinaryParser
         /// </summary>
@@ -48,6 +50,7 @@ namespace BlockParser
             return ret;
         }
 
+        public BlockT<T> ParseT<T>() where T : struct => ParseT<T>();
         /// <summary>
         /// Parses binary data using the specified parser and returns a <see cref="BlockT{T}"/> instance containing the
         /// parsed data.
@@ -65,6 +68,7 @@ namespace BlockParser
             return ret;
         }
 
+        public BlockT<T> ParseAs<U, T>() where U : struct where T : struct => ParseAs<U, T>(parser);
         /// <summary>
         /// Parses binary data of type <typeparamref name="U"/> from the provided <see cref="BinaryParser"/> and converts it into 
         /// a block of type <typeparamref name="T"/>.
@@ -90,6 +94,7 @@ namespace BlockParser
             return CreateBlock((T)Convert.ChangeType(uData, typeof(T)), System.Runtime.InteropServices.Marshal.SizeOf(type), offset);
         }
 
+        public BlockT<T> TestParse<T>() where T : struct => TestParse<T>(parser);
         /// <summary>
         /// Read a block off our stream, but doesn't advance the stream position.
         /// </summary>

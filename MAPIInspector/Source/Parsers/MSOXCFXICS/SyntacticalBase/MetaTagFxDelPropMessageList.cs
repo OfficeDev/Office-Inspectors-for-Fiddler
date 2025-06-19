@@ -29,8 +29,8 @@ namespace MAPIInspector.Parsers
 
         protected override void Parse()
         {
-            MetaTagFXDelProp = Parse<MetaPropValue>(parser);
-            MessageLists = Parse<MessageList>(parser);
+            MetaTagFXDelProp = Parse<MetaPropValue>();
+            MessageLists = Parse<MessageList>();
         }
 
         protected override void ParseBlocks()

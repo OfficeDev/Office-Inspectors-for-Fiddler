@@ -27,14 +27,14 @@ namespace MAPIInspector.Parsers
         {
             if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagDnPrefix))
             {
-                MetaTagDnPrefix = Parse<MetaPropValue>(parser);
+                MetaTagDnPrefix = Parse<MetaPropValue>();
             }
 
-            PropList = Parse<PropList>(parser);
+            PropList = Parse<PropList>();
 
             if (EmbeddedMessage.Verify(parser))
             {
-                EmbeddedMessage = Parse<EmbeddedMessage>(parser);
+                EmbeddedMessage = Parse<EmbeddedMessage>();
             }
         }
 

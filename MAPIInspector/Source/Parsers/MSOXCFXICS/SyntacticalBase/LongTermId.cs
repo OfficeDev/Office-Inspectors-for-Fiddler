@@ -28,9 +28,9 @@
         /// </summary>
         protected override void Parse()
         {
-            DatabaseGuid = ParseT<Guid>(parser);
+            DatabaseGuid = ParseT<Guid>();
             GlobalCounter = ParseBytes(6, 6);
-            Pad = ParseT<ushort>(parser);
+            Pad = ParseT<ushort>();
         }
 
         protected override void ParseBlocks()

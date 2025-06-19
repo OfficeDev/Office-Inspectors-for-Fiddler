@@ -29,14 +29,14 @@ namespace MAPIInspector.Parsers
                 MapiInspector.MAPIParser.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
                 MapiInspector.MAPIParser.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
             {
-                var tmpMarker = TestParse<Markers>(parser);
+                var tmpMarker = TestParse<Markers>();
                 if (MarkersHelper.IsMarker(tmpMarker.Data))
                 {
-                    Marker = ParseT<Markers>(parser);
+                    Marker = ParseT<Markers>();
                 }
                 else if (LexicalTypeHelper.IsMetaPropertyID(MapiInspector.MAPIParser.PartialGetId))
                 {
-                    MetaValue = Parse<MetaPropValueGetPartial>(parser);
+                    MetaValue = Parse<MetaPropValueGetPartial>();
                 }
                 else
                 {
@@ -46,11 +46,11 @@ namespace MAPIInspector.Parsers
                         if (MapiInspector.MAPIParser.PartialGetType == PropertyDataType.PtypInteger32 &&
                             MapiInspector.MAPIParser.PartialGetId == PidTagPropertyEnum.MetaTagIdsetGiven)
                         {
-                            PropValue = Parse<VarPropTypePropValueGetPartial>(parser);
+                            PropValue = Parse<VarPropTypePropValueGetPartial>();
                         }
                         else
                         {
-                            PropValue = Parse<FixedPropTypePropValueGetPartial>(parser);
+                            PropValue = Parse<FixedPropTypePropValueGetPartial>();
                         }
                     }
                     else if (LexicalTypeHelper.IsVarType(MapiInspector.MAPIParser.PartialGetType) ||
@@ -58,45 +58,45 @@ namespace MAPIInspector.Parsers
                     (LexicalTypeHelper.IsFixedType(MapiInspector.MAPIParser.PartialGetType) &&
                     MapiInspector.MAPIParser.PartialGetRemainSize != -1))
                     {
-                        PropValue = Parse<VarPropTypePropValueGetPartial>(parser);
+                        PropValue = Parse<VarPropTypePropValueGetPartial>();
                     }
                     else if (LexicalTypeHelper.IsMVType(MapiInspector.MAPIParser.PartialGetType))
                     {
-                        PropValue = Parse<MvPropTypePropValueGetPartial>(parser);
+                        PropValue = Parse<MvPropTypePropValueGetPartial>();
                     }
                 }
             }
             else
             {
-                var tmpMarker = TestParse<Markers>(parser);
+                var tmpMarker = TestParse<Markers>();
                 if (MarkersHelper.IsMarker(tmpMarker.Data))
                 {
-                    Marker = ParseT<Markers>(parser);
+                    Marker = ParseT<Markers>();
                 }
                 else if (MarkersHelper.IsMetaTag((MetaProperties)tmpMarker.Data))
                 {
-                    MetaValue = Parse<MetaPropValueGetPartial>(parser);
+                    MetaValue = Parse<MetaPropValueGetPartial>();
                 }
                 else
                 {
                     var offset = parser.Offset;
-                    PropValue propValue = Parse<PropValue>(parser);
+                    PropValue propValue = Parse<PropValue>();
                     parser.Offset = offset;
 
                     if (LexicalTypeHelper.IsFixedType(propValue.PropType.Data) &&
                         !PropValue.IsMetaTagIdsetGiven(parser))
                     {
-                        PropValue = Parse<FixedPropTypePropValueGetPartial>(parser);
+                        PropValue = Parse<FixedPropTypePropValueGetPartial>();
                     }
                     else if (LexicalTypeHelper.IsVarType(propValue.PropType.Data) ||
                         PropValue.IsMetaTagIdsetGiven(parser) ||
                         LexicalTypeHelper.IsCodePageType(propValue.PropType.Data))
                     {
-                        PropValue = Parse<VarPropTypePropValueGetPartial>(parser);
+                        PropValue = Parse<VarPropTypePropValueGetPartial>();
                     }
                     else if (LexicalTypeHelper.IsMVType(propValue.PropType.Data))
                     {
-                        PropValue = Parse<MvPropTypePropValueGetPartial>(parser);
+                        PropValue = Parse<MvPropTypePropValueGetPartial>();
                     }
                 }
             }

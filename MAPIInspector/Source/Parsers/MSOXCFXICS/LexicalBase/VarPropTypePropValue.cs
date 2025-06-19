@@ -35,7 +35,7 @@
         protected override void Parse()
         {
             base.Parse();
-            Length = ParseT<int>(parser);
+            Length = ParseT<int>();
 
             if (LexicalTypeHelper.IsCodePageType(PropType.Data))
             {
@@ -44,14 +44,14 @@
                 switch (type)
                 {
                     case CodePageType.PtypCodePageUnicode:
-                        ValueArray = Parse<PtypString>(parser);
+                        ValueArray = Parse<PtypString>();
                         break;
                     case CodePageType.PtypCodePageUnicodeBigendian:
                     case CodePageType.PtypCodePageWesternEuropean:
-                        ValueArray = Parse<PtypString8>(parser);
+                        ValueArray = Parse<PtypString8>();
                         break;
                     default:
-                        ValueArray = Parse<PtypString8>(parser);
+                        ValueArray = Parse<PtypString8>();
                         break;
                 }
             }
@@ -92,7 +92,7 @@
                                 var InterIDSET_REPLID = new List<IDSET_REPLID>();
                                 while (EveLength > 0)
                                 {
-                                    var tmpIDSET_REPLID = Parse<IDSET_REPLID>(parser);
+                                    var tmpIDSET_REPLID = Parse<IDSET_REPLID>();
                                     ValueArray.AddChild(tmpIDSET_REPLID);
                                     InterIDSET_REPLID.Add(tmpIDSET_REPLID);
                                     EveLength -= tmpIDSET_REPLID.Size;
@@ -113,7 +113,7 @@
                                 var InterIDSET_REPLGUID = new List<IDSET_REPLGUID>();
                                 while (EveLength > 0)
                                 {
-                                    var tmpIDSET_REPLGUID = Parse<IDSET_REPLGUID>(parser);
+                                    var tmpIDSET_REPLGUID = Parse<IDSET_REPLGUID>();
                                     ValueArray.AddChild(tmpIDSET_REPLGUID);
                                     EveLength -= tmpIDSET_REPLGUID.Size;
                                 }
@@ -126,16 +126,16 @@
 
                         break;
                     case PropertyDataType.PtypString:
-                        ValueArray = Parse<PtypString>(parser);
+                        ValueArray = Parse<PtypString>();
                         break;
                     case PropertyDataType.PtypString8:
-                        ValueArray = Parse<PtypString8>(parser);
+                        ValueArray = Parse<PtypString8>();
                         break;
                     case PropertyDataType.PtypServerId:
-                        ValueArray = Parse<PtypServerId>(parser);
+                        ValueArray = Parse<PtypServerId>();
                         break;
                     case PropertyDataType.PtypObject_Or_PtypEmbeddedTable:
-                        ValueArray = Parse<PtypObject_Or_PtypEmbeddedTable>(parser);
+                        ValueArray = Parse<PtypObject_Or_PtypEmbeddedTable>();
                         break;
                     default:
                         ValueArray = ParseBytes(Length.Data);

@@ -64,17 +64,17 @@
         /// </summary>
         protected override void Parse()
         {
-            RopId = ParseT<RopIdType>(parser);
-            InputHandleIndex = ParseT<byte>(parser);
-            ReturnValue = ParseT<ErrorCodes>(parser);
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
             if (ReturnValue.Data == ErrorCodes.Success)
             {
-                TransferStatus = ParseT<TransferStatus>(parser);
-                InProgressCount = ParseT<ushort>(parser);
-                TotalStepCount = ParseT<ushort>(parser);
-                Reserved = ParseT<byte>(parser);
-                TransferBufferSize = ParseT<ushort>(parser);
+                TransferStatus = ParseT<TransferStatus>();
+                InProgressCount = ParseT<ushort>();
+                TotalStepCount = ParseT<ushort>();
+                Reserved = ParseT<byte>();
+                TransferBufferSize = ParseT<ushort>();
 
                 parser.PushCap(TransferBufferSize.Data);
                 if (TransferStatus.Data == Parsers.TransferStatus.Partial)
@@ -83,7 +83,7 @@
 
                     while (!parser.Empty)
                     {
-                        var element = Parse<TransferGetBufferElement>(parser);
+                        var element = Parse<TransferGetBufferElement>();
                         if (!element.Parsed || element.Size == 0) break;
                         transferBufferList.Add(element);
                     }
@@ -96,7 +96,7 @@
 
                     while (!parser.Empty)
                     {
-                        var element = Parse<TransferGetBufferElement>(parser);
+                        var element = Parse<TransferGetBufferElement>();
                         if (!element.Parsed || element.Size == 0) break;
                         transferBufferList.Add(element);
                     }
@@ -108,7 +108,7 @@
             }
             else if ((AdditionalErrorCodes)ReturnValue.Data == AdditionalErrorCodes.ServerBusy)
             {
-                BackoffTime = ParseT<uint>(parser);
+                BackoffTime = ParseT<uint>();
             }
         }
 

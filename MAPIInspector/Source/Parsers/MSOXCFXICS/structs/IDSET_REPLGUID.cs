@@ -24,8 +24,8 @@
         /// </summary>
         protected override void Parse()
         {
-            REPLGUID = ParseT<Guid>(parser);
-            GLOBSET = Parse<GLOBSET>(parser);
+            REPLGUID = ParseT<Guid>();
+            GLOBSET = Parse<GLOBSET>();
         }
 
         protected override void ParseBlocks()

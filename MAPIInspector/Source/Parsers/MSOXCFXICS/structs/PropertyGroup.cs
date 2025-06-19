@@ -24,11 +24,11 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            PropertyTagCount = ParseT<uint>(parser);
+            PropertyTagCount = ParseT<uint>();
             var tags = new List<PropertyTagWithGroupPropertyName>();
             for (int i = 0; i < PropertyTagCount.Data; i++)
             {
-                tags.Add(Parse<PropertyTagWithGroupPropertyName>(parser));
+                tags.Add(Parse<PropertyTagWithGroupPropertyName>());
             }
 
             PropertyTags = tags.ToArray();

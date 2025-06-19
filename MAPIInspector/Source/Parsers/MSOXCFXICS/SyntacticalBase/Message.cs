@@ -35,11 +35,11 @@
 
         protected override void Parse()
         {
-            StartMarker = ParseT<Markers>(parser);
+            StartMarker = ParseT<Markers>();
 
-            Content = Parse<MessageContent>(parser);
+            Content = Parse<MessageContent>();
 
-            EndMarker = ParseT<Markers>(parser);
+            EndMarker = ParseT<Markers>();
             if (EndMarker.Data != Markers.EndMessage)
             {
                 Parsed = false;

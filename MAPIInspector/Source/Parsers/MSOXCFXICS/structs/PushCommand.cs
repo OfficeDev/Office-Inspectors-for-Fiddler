@@ -23,7 +23,7 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            Command = ParseT<byte>(parser);
+            Command = ParseT<byte>();
             CommonBytes = ParseBytes(Command.Data, 6);
         }
 

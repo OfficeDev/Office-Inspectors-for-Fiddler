@@ -4340,7 +4340,7 @@
 
             if (hasValue)
             {
-                HasValue = ParseAs<byte, bool>(parser);
+                HasValue = ParseAs<byte, bool>();
             }
  
             if (HasValue == null || HasValue.Data)

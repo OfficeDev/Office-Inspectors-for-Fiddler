@@ -22,7 +22,7 @@
             {
                 if (MetaTagFxDelPropMessageList.Verify(parser))
                 {
-                    interMessageLists.Add(Parse<MetaTagFxDelPropMessageList>(parser));
+                    interMessageLists.Add(Parse<MetaTagFxDelPropMessageList>());
                 }
                 else
                 {

@@ -45,17 +45,17 @@ namespace MAPIInspector.Parsers
         {
             if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagDnPrefix))
             {
-                MetaTagDnPrefix = Parse<MetaPropValue>(parser);
+                MetaTagDnPrefix = Parse<MetaPropValue>();
             }
 
             if (MarkersHelper.VerifyMetaProperty(parser, MetaProperties.MetaTagEcWarning))
             {
-                MetaTagEcWaring = Parse<MetaPropValue>(parser);
+                MetaTagEcWaring = Parse<MetaPropValue>();
             }
 
             if (Message.Verify(parser))
             {
-                Message = Parse<Message>(parser);
+                Message = Parse<Message>();
             }
         }
 

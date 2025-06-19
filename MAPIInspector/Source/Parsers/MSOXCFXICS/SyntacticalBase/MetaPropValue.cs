@@ -24,23 +24,23 @@ namespace MAPIInspector.Parsers
 
         protected override void Parse()
         {
-            PropType = ParseT<PropertyDataType>(parser);
-            PropID = ParseT<PidTagPropertyEnum>(parser);
+            PropType = ParseT<PropertyDataType>();
+            PropID = ParseT<PidTagPropertyEnum>();
 
             if (PropID.Data != PidTagPropertyEnum.MetaTagNewFXFolder &&
                 PropID.Data != PidTagPropertyEnum.MetaTagDnPrefix)
             {
-                PropValue = ParseT<int>(parser);
+                PropValue = ParseT<int>();
             }
             else
             {
                 if (PropID.Data != PidTagPropertyEnum.MetaTagNewFXFolder)
                 {
-                    PropValue = Parse<FolderReplicaInfo>(parser);
+                    PropValue = Parse<FolderReplicaInfo>();
                 }
                 else
                 {
-                    PropValue = Parse<PtypString8>(parser);
+                    PropValue = Parse<PtypString8>();
                 }
             }
         }
