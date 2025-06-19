@@ -18,13 +18,13 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            Command = new BlockT<byte>();
+            Command = ParseT<byte>();
         }
 
         protected override void ParseBlocks()
         {
             SetText("EndCommand");
-            AddChild(Command, $"Command:{Command.Data}");
+            if (Command != null) AddChild(Command, $"Command:{Command.Data}");
         }
     }
 }

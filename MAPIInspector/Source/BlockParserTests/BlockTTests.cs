@@ -33,14 +33,6 @@ namespace BlockParserTests
         }
 
         [TestMethod]
-        public void BlockT_EmptyT_ReturnsEmptyBlock()
-        {
-            var empty = BlockT<int>.EmptyT<int>();
-            Assert.IsNotNull(empty);
-            Assert.AreEqual(default(int), empty.Data);
-        }
-
-        [TestMethod]
         public void BlockT_Parse_ReadsData()
         {
             // Arrange

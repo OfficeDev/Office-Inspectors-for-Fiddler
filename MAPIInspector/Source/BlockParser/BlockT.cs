@@ -57,7 +57,5 @@ namespace BlockParser
                 handle.Free();
             }
         }
-
-        public static BlockT<U> EmptyT<U>() where U : struct => new BlockT<U>();
     }
 }

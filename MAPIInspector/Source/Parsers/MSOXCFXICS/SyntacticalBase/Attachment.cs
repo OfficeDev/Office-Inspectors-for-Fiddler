@@ -39,13 +39,13 @@
 
         protected override void Parse()
         {
-            StartMarker = new BlockT<Markers>(parser);
+            StartMarker = ParseT<Markers>();
             if (StartMarker.Data == Markers.NewAttach)
             {
                 PidTagAttachNumber = Parse<FixedPropTypePropValue>();
                 AttachmentContent = Parse<AttachmentContent>();
 
-                EndMarker = new BlockT<Markers>(parser);
+                EndMarker = ParseT<Markers>();
                 if (EndMarker.Data == Markers.EndAttach)
                 {
                     Parsed = false;
