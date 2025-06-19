@@ -49,9 +49,9 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("PropertyGroupInfo");
-            if (GroupId != null) AddChild(GroupId, $"GroupId:{GroupId.Data}");
+            AddChildBlockT(GroupId, "GroupId");
             AddChild(Reserved, "Reserved:0x00000000");
-            if (GroupCount != null) AddChild(GroupCount, $"GroupCount:{GroupCount.Data}");
+            AddChildBlockT(GroupCount, "GroupCount");
             foreach (var group in Groups)
             {
                 AddChild(group);

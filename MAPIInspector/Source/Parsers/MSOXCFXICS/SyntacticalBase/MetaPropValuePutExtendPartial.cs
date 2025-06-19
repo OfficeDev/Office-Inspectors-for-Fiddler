@@ -135,10 +135,10 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("MetaPropValuePutExtendPartial");
-            if (PropType!= null) AddChild(PropType, $"PropType:{PropType.Data}");
+            if (PropType!= null) AddChildBlockT(PropType, "PropType");
             if (PropID != null) AddChild(PropID, $"PropID:{MapiInspector.Utilities.EnumToString(PropID.Data)}");
             if (PropValue != null) AddChild(PropValue, $"PropValue:{PropValue.GetType().Name}");
-            if (length != null) AddChild(length, $"Length:{length.Data}");
+            AddChildBlockT(length, "length");
         }
     }
 }

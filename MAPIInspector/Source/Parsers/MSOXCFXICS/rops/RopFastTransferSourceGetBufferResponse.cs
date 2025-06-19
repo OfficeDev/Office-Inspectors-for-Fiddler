@@ -115,16 +115,16 @@
         protected override void ParseBlocks()
         {
             SetText("RopFastTransferSourceGetBufferResponse");
-            if (RopId != null) AddChild(RopId, $"RopId:{RopId.Data}");
-            if (InputHandleIndex != null) AddChild(InputHandleIndex, $"InputHandleIndex:{InputHandleIndex.Data}");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data}");
-            if (TransferStatus != null) AddChild(TransferStatus, $"TransferStatus:{TransferStatus.Data}");
-            if (InProgressCount != null) AddChild(InProgressCount, $"InProgressCount:{InProgressCount.Data}");
-            if (TotalStepCount != null) AddChild(TotalStepCount, $"TotalStepCount:{TotalStepCount.Data}");
-            if (Reserved != null) AddChild(Reserved, $"Reserved:{Reserved.Data}");
-            if (TransferBufferSize != null) AddChild(TransferBufferSize, $"TransferBufferSize:{TransferBufferSize.Data}");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(ReturnValue, "ReturnValue");
+            AddChildBlockT(TransferStatus, "TransferStatus");
+            AddChildBlockT(InProgressCount, "InProgressCount");
+            AddChildBlockT(TotalStepCount, "TotalStepCount");
+            AddChildBlockT(Reserved, "Reserved");
+            AddChildBlockT(TransferBufferSize, "TransferBufferSize");
             AddLabeledChildren(TransferBuffer, "TransferBuffer");
-            if (BackoffTime != null) AddChild(BackoffTime, $"BackoffTime:{BackoffTime.Data}");
+            AddChildBlockT(BackoffTime, "BackoffTime");
         }
     }
 }

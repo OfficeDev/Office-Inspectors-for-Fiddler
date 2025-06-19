@@ -60,13 +60,13 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("ProgressInformation");
-            if (Version != null) AddChild(Version, $"Version:{Version.Data}");
-            if (Padding1 != null) AddChild(Padding1, $"Padding1:{Padding1.Data}");
-            if (FAIMessageCount != null) AddChild(FAIMessageCount, $"FAIMessageCount:{FAIMessageCount.Data}");
-            if (FAIMessageTotalSize != null) AddChild(FAIMessageTotalSize, $"FAIMessageTotalSize:{FAIMessageTotalSize.Data}");
-            if (NormalMessageCount != null) AddChild(NormalMessageCount, $"NormalMessageCount:{NormalMessageCount.Data}");
-            if (Padding2 != null) AddChild(Padding2, $"Padding2:{Padding2.Data}");
-            if (NormalMessageTotalSize != null) AddChild(NormalMessageTotalSize, $"NormalMessageTotalSize:{NormalMessageTotalSize.Data}");
+            AddChildBlockT(Version, "Version");
+            AddChildBlockT(Padding1, "Padding1");
+            AddChildBlockT(FAIMessageCount, "FAIMessageCount");
+            AddChildBlockT(FAIMessageTotalSize, "FAIMessageTotalSize");
+            AddChildBlockT(NormalMessageCount, "NormalMessageCount");
+            AddChildBlockT(Padding2, "Padding2");
+            AddChildBlockT(NormalMessageTotalSize, "NormalMessageTotalSize");
         }
     }
 }

@@ -307,7 +307,7 @@ namespace MAPIInspector.Parsers
         {
             base.ParseBlocks();
             SetText("VarPropTypePropValuePutPartial");
-            if (Length != null) AddChild(Length, $"Length:{Length.Data}");
+            AddChildBlockT(Length, "Length");
             AddChild(ValueArray, $"ValueArray: {ValueArray}");
         }
     }

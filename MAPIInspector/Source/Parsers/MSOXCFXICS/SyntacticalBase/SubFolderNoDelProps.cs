@@ -50,9 +50,9 @@
         protected override void ParseBlocks()
         {
             SetText("SubFolderNoDelProps");
-            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddChildBlockT(StartMarker, "StartMarker");
             if (FolderContentNoDelProps != null) AddChild(FolderContentNoDelProps, "FolderContentNoDelProps");
-            if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
+            AddChildBlockT(EndMarker, "EndMarker");
         }
     }
 }

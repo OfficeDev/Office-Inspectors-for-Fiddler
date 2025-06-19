@@ -217,8 +217,8 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(X, $"X:{X.Data}");
-            AddChild(R, $"R:{R.Data}");
+            AddChildBlockT(X, "X");
+            AddChildBlockT(R, "R");
         }
     }
 
@@ -686,9 +686,9 @@
         {
             SetText("ActionBlock");
             AddChild(_actionLength, $"ActionLength:{ActionLength}");
-            AddChild(_actionType, $"ActionType:{_actionType.Data}");
+            AddChildBlockT(_actionType, "_actionType");
             AddChild(ActionFlavor, "ActionFlavor");
-            AddChild(ActionFlags, $"ActionFlags:{ActionFlags.Data}");
+            AddChildBlockT(ActionFlags, "ActionFlags");
             if (ActionData != null)
             {
                 AddChild(ActionData, "ActionData");
@@ -756,11 +756,11 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Reservedbits0, $"Reservedbits0:{Reservedbits0.Data}");
-            AddChild(TM, $"TM:{TM.Data}");
-            AddChild(AT, $"AT:{AT.Data}");
-            AddChild(NC, $"NC:{NC.Data}");
-            AddChild(PR, $"PR:{PR.Data}");
+            AddChildBlockT(Reservedbits0, "Reservedbits0");
+            AddChildBlockT(TM, "TM");
+            AddChildBlockT(AT, "AT");
+            AddChildBlockT(NC, "NC");
+            AddChildBlockT(PR, "PR");
             AddChild(Reservedbits1,$"Reservedbits1:{Reservedbits1.ToHexString(false)}");
         }
 
@@ -810,9 +810,9 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Reservedbits0, $"Reservedbits0:{Reservedbits0.Data}");
-            AddChild(ST, $"ST:{ST.Data}");
-            AddChild(NS, $"NS:{NS.Data}");
+            AddChildBlockT(Reservedbits0, "Reservedbits0");
+            AddChildBlockT(ST, "ST");
+            AddChildBlockT(NS, "NS");
             AddChild(Reservedbits1, $"Reservedbits1:{Reservedbits1.ToHexString(false)}");
         }
     }
@@ -837,7 +837,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Reservedbits, $"Reservedbits:{Reservedbits.Data}");
+            AddChildBlockT(Reservedbits, "Reservedbits");
         }
     }
     #endregion
@@ -900,10 +900,10 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(FolderInThisStore, $"FolderInThisStore:{FolderInThisStore.Data}");
-            AddChild(StoreEIDSize, $"StoreEIDSize:{StoreEIDSize.Data}");
+            AddChildBlockT(FolderInThisStore, "FolderInThisStore");
+            AddChildBlockT(StoreEIDSize, "StoreEIDSize");
             AddChild(StoreEID, $"StoreEID:{StoreEID.ToHexString(false)}");
-            AddChild(FolderEIDSize, $"FolderEIDSize:{FolderEIDSize.Data}");
+            AddChildBlockT(FolderEIDSize, "FolderEIDSize");
             AddChild(FolderEID, "FolderEID");
         }
     }
@@ -946,9 +946,9 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(StoreEIDSize, $"StoreEIDSize:{StoreEIDSize.Data}");
+            AddChildBlockT(StoreEIDSize, "StoreEIDSize");
             AddChild(StoreEID, $"StoreEID:{StoreEID.ToHexString(false)}");
-            AddChild(FolderEIDSize, $"FolderEIDSize:{FolderEIDSize.Data}");
+            AddChildBlockT(FolderEIDSize, "FolderEIDSize");
             AddChild(FolderEID, "FolderEID");
         }
     }
@@ -991,10 +991,10 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Ours, $"Ours:{Ours.Data}");
+            AddChildBlockT(Ours, "Ours");
             AddChild(FolderId, "FolderId");
-            AddChild(MessageId, $"MessageId:{MessageId.Data}");
-            AddChild(Instance, $"Instance:{Instance.Data}");
+            AddChildBlockT(MessageId, "MessageId");
+            AddChildBlockT(Instance, "Instance");
         }
     }
 
@@ -1032,7 +1032,7 @@
         {
             AddLabeledChild(ReplyTemplateFID, "ReplyTemplateFID");
             AddLabeledChild(ReplyTemplateMID, "ReplyTemplateMID");
-            AddChild(ReplyTemplateGUID, $"ReplyTemplateGUID:{ReplyTemplateGUID.Data}");
+            AddChildBlockT(ReplyTemplateGUID, "ReplyTemplateGUID");
         }
     }
 
@@ -1068,9 +1068,9 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(MessageEIDSize, $"MessageEIDSize:{MessageEIDSize.Data}");
+            AddChildBlockT(MessageEIDSize, "MessageEIDSize");
             AddLabeledChild(ReplyTemplateMessageEID, "ReplyTemplateMessageEID");
-            AddChild(ReplyTemplateGUID, $"ReplyTemplateGUID:{ReplyTemplateGUID.Data}");
+            AddChildBlockT(ReplyTemplateGUID, "ReplyTemplateGUID");
         }
     }
 
@@ -1108,7 +1108,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(RecipientCount, $"RecipientCount:{RecipientCount.Data}");
+            AddChildBlockT(RecipientCount, "RecipientCount");
             AddLabeledChildren(RecipientBlocks, "RecipientBlocks");
         }
     }
@@ -1154,8 +1154,8 @@
         protected override void ParseBlocks()
         {
             SetText("RecipientBlockData");
-            AddChild(Reserved, $"Reserved:{Reserved.Data}");
-            AddChild(NoOfProperties, $"NoOfProperties:{NoOfProperties.Data}");
+            AddChildBlockT(Reserved, "Reserved");
+            AddChildBlockT(NoOfProperties, "NoOfProperties");
             AddLabeledChildren(PropertyValues, "PropertyValues");
         }
     }
@@ -1180,7 +1180,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(BounceCode, $"BounceCode:{BounceCode.Data}");
+            AddChildBlockT(BounceCode, "BounceCode");
         }
     }
 

@@ -4353,7 +4353,7 @@
         {
             if (HasValue != null && HasValue.Data)
             {
-                AddChild(HasValue, $"HasValue:{HasValue.Data}");
+                AddChildBlockT(HasValue, "HasValue");
                 if (_PropertyValue != null)
                 {
                     AddChild(_PropertyValue, $"PropertyValue:{_PropertyValue.Text}");

@@ -105,7 +105,7 @@ namespace MAPIInspector.Parsers
             SetText("TransferPutBufferElement");
             AddChild(MetaValue, "MetaValue");
             AddChild(PropValue, "PropValue");
-            if (Marker != null) AddChild(Marker, $"Marker:{Marker.Data}");
+            AddChildBlockT(Marker, "Marker");
         }
     }
 }

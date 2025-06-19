@@ -50,7 +50,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("RangeCommand");
-            if (Command != null) AddChild(Command, $"Command:{Command.Data}");
+            AddChildBlockT(Command, "Command");
             AddLabeledChild(LowValue, "LowValue");
             AddLabeledChild(HighValue, "HighValue");
         }

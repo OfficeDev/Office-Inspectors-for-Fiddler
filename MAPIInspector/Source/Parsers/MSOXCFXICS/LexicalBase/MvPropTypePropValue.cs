@@ -98,7 +98,7 @@
         protected override void ParseBlocks()
         {
             base.ParseBlocks();
-            if (Length != null) AddChild(Length, $"Length:{Length.Data} bytes");
+            AddChildBlockT(Length, "Length");
             AddLabeledChildren(ValueArray, "ValueArray");
         }
     }

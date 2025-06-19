@@ -40,9 +40,9 @@
         protected override void ParseBlocks()
         {
             SetText("State");
-            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddChildBlockT(StartMarker, "StartMarker");
             AddLabeledChild(PropList, "PropList");
-            if (EndMarker != null) if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
+            AddChildBlockT(EndMarker, "EndMarker");
         }
     }
 }

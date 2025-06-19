@@ -65,10 +65,10 @@
         protected override void ParseBlocks()
         {
             SetText("RopFastTransferDestinationPutBufferRequest");
-            if (RopId != null) AddChild(RopId, $"RopId:{RopId.Data}");
-            if (LogonId != null) AddChild(LogonId, $"LogonId:{LogonId.Data}");
-            if (InputHandleIndex != null) AddChild(InputHandleIndex, $"InputHandleIndex:{InputHandleIndex.Data}");
-            if (TransferDataSize != null) AddChild(TransferDataSize, $"TransferDataSize:{TransferDataSize.Data}");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(TransferDataSize, "TransferDataSize");
             if (TransferData != null)
             {
                 foreach (var transferData in TransferData)

@@ -37,7 +37,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("PropertyGroup");
-            if (PropertyTagCount != null) AddChild(PropertyTagCount, $"PropertyTagCount:{PropertyTagCount.Data}");
+            AddChildBlockT(PropertyTagCount, "PropertyTagCount");
             if (PropertyTags != null)
             {
                 foreach (var tag in PropertyTags)

@@ -49,9 +49,9 @@
         protected override void ParseBlocks()
         {
             SetText("Message");
-            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddChildBlockT(StartMarker, "StartMarker");
             AddLabeledChild(Content, "Content");
-            if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
+            AddChildBlockT(EndMarker, "EndMarker");
         }
     }
 }

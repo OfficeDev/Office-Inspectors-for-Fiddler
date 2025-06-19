@@ -31,7 +31,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("SizedXid");
-            if (XidSize != null) AddChild(XidSize, $"XidSize:{XidSize.Data}");
+            AddChildBlockT(XidSize, "XidSize");
             AddLabeledChild(Xid, "Xid");
         }
     }

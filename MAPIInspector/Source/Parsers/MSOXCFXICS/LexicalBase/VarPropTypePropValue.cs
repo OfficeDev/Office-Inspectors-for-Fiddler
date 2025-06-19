@@ -148,7 +148,7 @@
         {
             base.ParseBlocks();
             SetText("VarPropTypePropValue");
-            if (Length != null) AddChild(Length, $"Length: {Length.Data})");
+            AddChildBlockT(Length, "Length");
             AddChild(ValueArray);
         }
     }

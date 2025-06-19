@@ -56,10 +56,10 @@
         protected override void ParseBlocks()
         {
             SetText("Attachment");
-            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddChildBlockT(StartMarker, "StartMarker");
             AddChild(PidTagAttachNumber, "PidTagAttachNumber");
             AddChild(AttachmentContent, "AttachmentContent");
-            if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
+            AddChildBlockT(EndMarker, "EndMarker");
         }
     }
 }

@@ -37,7 +37,7 @@ namespace MAPIInspector.Parsers
         {
             SetText("BitmaskCommand");
             if (Command != null) AddChild(Command, $"Command: {Command.Data:X2}");
-            if (StartValue != null) AddChild(StartValue, $"StartValue: {StartValue.Data}");
+            AddChildBlockT(StartValue, "StartValue");
             if (Bitmask != null) AddChild(Bitmask, $"Bitmask: {Bitmask.Data:X2}");
         }
     }

@@ -45,7 +45,7 @@
         protected override void ParseBlocks()
         {
             SetText("XID");
-            if (NamespaceGuid != null) AddChild(NamespaceGuid, $"NamespaceGuid:{NamespaceGuid.Data}");
+            AddChildBlockT(NamespaceGuid, "NamespaceGuid");
             AddLabeledChild(LocalId, "LocalId");
         }
     }

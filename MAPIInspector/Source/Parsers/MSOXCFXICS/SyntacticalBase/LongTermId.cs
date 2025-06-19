@@ -36,9 +36,9 @@
         protected override void ParseBlocks()
         {
             SetText("LongTermId");
-            if (DatabaseGuid != null) AddChild(DatabaseGuid,$"DatabaseGuid:{DatabaseGuid.Data}");
+            AddChildBlockT(DatabaseGuid, "DatabaseGuid");
             if (GlobalCounter != null) AddChild(GlobalCounter, $"GlobalCounter:{GlobalCounter.ToHexString(false)}");
-            if (Pad != null) AddChild(Pad, $"Pad:{Pad.Data}");
+            AddChildBlockT(Pad, "Pad");
         }
     }
 }

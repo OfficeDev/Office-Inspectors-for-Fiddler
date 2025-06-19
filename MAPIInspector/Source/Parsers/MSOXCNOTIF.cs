@@ -564,13 +564,13 @@
             // Add NotificationFlags as a labeled child
             if (NotificationFlags != null)
             {
-                AddChild(NotificationFlags, $"NotificationFlags:{NotificationFlags.Data}");
+                AddChildBlockT(NotificationFlags, "NotificationFlags");
             }
 
             // Add TableEventType if present
             if (TableEventType != null)
             {
-                AddChild(TableEventType, $"TableEventType:{TableEventType.Data}");
+                AddChildBlockT(TableEventType, "TableEventType");
             }
 
             // Add TableRowFolderID, TableRowMessageID, TableRowInstance if present
@@ -578,7 +578,7 @@
             AddLabeledChild(TableRowMessageID, "TableRowMessageID");
             if (TableRowInstance != null)
             {
-                AddChild(TableRowInstance, $"TableRowInstance:{TableRowInstance.Data}");
+                AddChildBlockT(TableRowInstance, "TableRowInstance");
             }
 
             // Add InsertAfterTableRowFolderID, InsertAfterTableRowID, InsertAfterTableRowInstance if present
@@ -586,13 +586,13 @@
             AddLabeledChild(InsertAfterTableRowID, "InsertAfterTableRowID");
             if (InsertAfterTableRowInstance != null)
             {
-                AddChild(InsertAfterTableRowInstance, $"InsertAfterTableRowInstance:{InsertAfterTableRowInstance.Data}");
+                AddChildBlockT(InsertAfterTableRowInstance, "InsertAfterTableRowInstance");
             }
 
             // Add TableRowDataSize and TableRowData if present
             if (TableRowDataSize != null)
             {
-                AddChild(TableRowDataSize, $"TableRowDataSize:{TableRowDataSize.Data}");
+                AddChildBlockT(TableRowDataSize, "TableRowDataSize");
             }
 
             AddLabeledChild(TableRowData, "TableRowData");
@@ -608,28 +608,28 @@
             // Add TagCount and Tags if present
             if (TagCount != null)
             {
-                AddChild(TagCount, $"TagCount:{TagCount.Data}");
+                AddChildBlockT(TagCount, "TagCount");
                 AddLabeledChildren(Tags, "Tags");
             }
 
             // Add TotalMessageCount, UnreadMessageCount if present
             if (TotalMessageCount != null)
             {
-                AddChild(TotalMessageCount, $"TotalMessageCount:{TotalMessageCount.Data}");
+                AddChildBlockT(TotalMessageCount, "TotalMessageCount");
             }
             if (UnreadMessageCount != null)
             {
-                AddChild(UnreadMessageCount, $"UnreadMessageCount:{UnreadMessageCount.Data}");
+                AddChildBlockT(UnreadMessageCount, "UnreadMessageCount");
             }
 
             // Add MessageFlags, UnicodeFlag, MessageClass if present
             if (MessageFlags != null)
             {
-                AddChild(MessageFlags, $"MessageFlags:{MessageFlags.Data}");
+                AddChildBlockT(MessageFlags, "MessageFlags");
             }
             if (UnicodeFlag != null)
             {
-                AddChild(UnicodeFlag, $"UnicodeFlag:{UnicodeFlag.Data}");
+                AddChildBlockT(UnicodeFlag, "UnicodeFlag");
             }
 
             AddLabeledChild(MessageClass, "MessageClass");

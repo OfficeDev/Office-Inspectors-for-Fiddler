@@ -88,7 +88,7 @@
             AddChild(Deletions);
             AddChild(ReadStateChanges);
             AddChild(State);
-            if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
+            AddChildBlockT(EndMarker, "EndMarker");
         }
     }
 }

@@ -31,7 +31,7 @@
         protected override void ParseBlocks()
         {
             SetText("IDSET_REPLGUID");
-            if (REPLGUID != null) AddChild(REPLGUID, $"REPLGUID:{REPLGUID.Data}");
+            AddChildBlockT(REPLGUID, "REPLGUID");
             AddChild(GLOBSET, "GLOBSET");
         }
     }

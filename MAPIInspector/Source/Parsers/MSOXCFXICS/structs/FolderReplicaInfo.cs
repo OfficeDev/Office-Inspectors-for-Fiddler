@@ -63,11 +63,11 @@
         protected override void ParseBlocks()
         {
             SetText("FolderReplicaInfo");
-            if (Flags != null) AddChild(Flags, $"Flags:{Flags.Data}");
-            if (Depth != null) AddChild(Depth, $"Depth:{Depth.Data}");
+            AddChildBlockT(Flags, "Flags");
+            AddChildBlockT(Depth, "Depth");
             if (FolderLongTermId != null) AddChild(FolderLongTermId, "FolderLongTermId");
-            if (ServerDNCount != null) AddChild(ServerDNCount, $"ServerDNCount:{ServerDNCount.Data}");
-            if (CheapServerDNCount != null) AddChild(CheapServerDNCount, $"CheapServerDNCount:{CheapServerDNCount.Data}");
+            AddChildBlockT(ServerDNCount, "ServerDNCount");
+            AddChildBlockT(CheapServerDNCount, "CheapServerDNCount");
             foreach (var serverDN in ServerDNArray)
             {
                 if (serverDN != null) AddChild(serverDN, $"ServerDN");

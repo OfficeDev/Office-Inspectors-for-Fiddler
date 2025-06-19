@@ -51,9 +51,9 @@ namespace MAPIInspector.Parsers
         {
             SetText("TopFolder");
             AddChild(MetaTagDnPrefix, "MetaTagDnPrefix");
-            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddChildBlockT(StartMarker, "StartMarker");
             AddChild(FolderContentNoDelProps, "FolderContentNoDelProps");
-            if (EndMarker != null) AddChild(EndMarker, $"EndMarker:{EndMarker.Data}");
+            AddChildBlockT(EndMarker, "EndMarker");
         }
     }
 }

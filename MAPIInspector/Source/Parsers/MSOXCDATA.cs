@@ -4142,7 +4142,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(HasValue, $"HasValue:{HasValue.Data}");
+            AddChildBlockT(HasValue, "HasValue");
             AddChild(Value, $"Value:{Value}");
         }
     }
@@ -4251,7 +4251,7 @@
         protected override void ParseBlocks()
         {
             SetText("FolderID");
-            AddChild(ReplicaId, $"ReplicaId:{ReplicaId.Data}");
+            AddChildBlockT(ReplicaId, "ReplicaId");
             AddChild(GlobalCounter, $"GlobalCounter:{GlobalCounter.ToHexString(false)}");
         }
     }
@@ -4283,7 +4283,7 @@
         protected override void ParseBlocks()
         {
             SetText("MessageID");
-            AddChild(ReplicaId, $"ReplicaId:{ReplicaId.Data}");
+            AddChildBlockT(ReplicaId, "ReplicaId");
             AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
         }
     }
@@ -4320,9 +4320,9 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(DatabaseGuid, $"DatabaseGuid:{DatabaseGuid.Data}");
+            AddChildBlockT(DatabaseGuid, "DatabaseGuid");
             AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
-            AddChild(Pad, $"Pad:{Pad.Data}");
+            AddChildBlockT(Pad, "Pad");
         }
     }
     #endregion
@@ -4386,12 +4386,12 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Flags, $"Flags:{Flags.Data}");
-            AddChild(ProviderUID, $"ProviderUID:{ProviderUID.Data}");
-            AddChild(FolderType, $"FolderType:{FolderType.Data}");
-            AddChild(DatabaseGuid, $"DatabaseGuid:{DatabaseGuid.Data}");
+            AddChildBlockT(Flags, "Flags");
+            AddChildBlockT(ProviderUID, "ProviderUID");
+            AddChildBlockT(FolderType, "FolderType");
+            AddChildBlockT(DatabaseGuid, "DatabaseGuid");
             AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
-            AddChild(Pad, $"Pad:{Pad.Data}");
+            AddChildBlockT(Pad, "Pad");
         }
     }
 
@@ -4470,15 +4470,15 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Flags, $"Flags:{Flags.Data}");
-            AddChild(ProviderUID, $"ProviderUID:{ProviderUID.Data}");
-            AddChild(MessageType, $"MessageType:{MessageType.Data}");
-            AddChild(FolderDatabaseGuid, $"FolderDatabaseGuid:{FolderDatabaseGuid.Data}");
-            AddChild(FolderGlobalCounter, $"FolderGlobalCounter :{FolderGlobalCounter.ToHexString(false)}");
-            AddChild(Pad1, $"Pad1:{Pad1.Data}");
-            AddChild(MessageDatabaseGuid, $"MessageDatabaseGuid:{MessageDatabaseGuid.Data}");
-            AddChild(MessageGlobalCounter, $"MessageGlobalCounter :{MessageGlobalCounter.ToHexString(false)}");
-            AddChild(Pad2, $"Pad2:{Pad2.Data}");
+            AddChildBlockT(Flags, "Flags");
+            AddChildBlockT(ProviderUID, "ProviderUID");
+            AddChildBlockT(MessageType, "MessageType");
+            AddChildBlockT(FolderDatabaseGuid, "FolderDatabaseGuid");
+            if (FolderGlobalCounter != null) AddChild(FolderGlobalCounter, $"FolderGlobalCounter :{FolderGlobalCounter.ToHexString(false)}");
+            AddChildBlockT(Pad1, "Pad1");
+            AddChildBlockT(MessageDatabaseGuid, "MessageDatabaseGuid");
+            if (MessageGlobalCounter != null) AddChild(MessageGlobalCounter, $"MessageGlobalCounter :{MessageGlobalCounter.ToHexString(false)}");
+            AddChildBlockT(Pad2, "Pad2");
         }
     }
 
@@ -4866,7 +4866,7 @@
         protected override void ParseBlocks()
         {
             SetText("PropertyRow");
-            AddChild(Flag, $"Flag:{Flag.Data}");
+            AddChildBlockT(Flag, "Flag");
             if (bytes != null) AddChild(bytes, $"Bytes:{bytes.ToHexString(false)}");
             foreach (var propValue in ValueArray)
             {
@@ -5194,8 +5194,8 @@
         protected override void ParseBlocks()
         {
             SetText("PropertyTag");
-            AddChild(PropertyType, $"PropertyType:{PropertyType.Data}");
-            AddChild(PropertyId, $"PropertyId:{PropertyId.Data}");
+            AddChildBlockT(PropertyType, "PropertyType");
+            AddChildBlockT(PropertyId, "PropertyId");
         }
     }
     #endregion
@@ -5667,7 +5667,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Count, $"Count:{Count.Data}");
+            AddChildBlockT(Count, "Count");
             AddLabeledChild(ServerId, "ServerId");
         }
     }
@@ -5722,12 +5722,12 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Ours, $"Count:{Ours.Data}");
+            AddChildBlockT(Ours, "Ours");
             if (Ours.Data == 0x01)
             {
                 AddLabeledChild(FolderID, "FolderID");
                 AddLabeledChild(MessageID, "MessageID");
-                AddChild(Instance, $"Instance:{Instance.Data}");
+                AddChildBlockT(Instance, "Instance");
             }
             else
             {
@@ -5948,7 +5948,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Count, $"Count:{Count.Data}");
+            AddChildBlockT(Count, "Count");
             AddLabeledChildren(Value, "Value");
         }
     }
@@ -5987,7 +5987,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Count, $"Count:{Count.Data}");
+            AddChildBlockT(Count, "Count");
             AddLabeledChildren(Value, "Value");
         }
     }
@@ -6025,7 +6025,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Count, $"Count:{Count.Data}");
+            AddChildBlockT(Count, "Count");
             AddLabeledChildren(Value, "Value");
         }
     }
@@ -6063,7 +6063,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Count, $"Count:{Count.Data}");
+            AddChildBlockT(Count, "Count");
             AddLabeledChildren(Value, "Value");
         }
     }
@@ -6101,7 +6101,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Count, $"Count:{Count.Data}");
+            AddChildBlockT(Count, "Count");
             AddLabeledChildren(Value, "Value");
         }
     }
@@ -6139,7 +6139,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Count, $"Count:{Count.Data}");
+            AddChildBlockT(Count, "Count");
             AddLabeledChildren(Value, "Value");
         }
     }
@@ -6177,7 +6177,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Count, $"Count:{Count.Data}");
+            AddChildBlockT(Count, "Count");
             AddLabeledChildren(Value, "Value");
         }
     }
@@ -6215,7 +6215,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Count, $"Count:{Count.Data}");
+            AddChildBlockT(Count, "Count");
             AddLabeledChildren(Value, "Value");
         }
     }
@@ -6319,7 +6319,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Count, $"Count:{Count.Data}");
+            AddChildBlockT(Count, "Count");
             AddLabeledChildren(Value, "Value");
         }
     }
@@ -6357,7 +6357,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Count, $"Count:{Count.Data}");
+            AddChildBlockT(Count, "Count");
             AddLabeledChildren(Value, "Value");
         }
     }
@@ -6396,7 +6396,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Count, $"Count:{Count.Data}");
+            AddChildBlockT(Count, "Count");
             AddLabeledChildren(Value, "Value");
         }
     }
@@ -6450,7 +6450,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Count, $"Count:{Count.Data}");
+            AddChildBlockT(Count, "Count");
             AddLabeledChildren(Value, "Value");
         }
     }
@@ -6710,7 +6710,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(PropertyType, $"PropertyType:{PropertyType.Data}");
+            AddChildBlockT(PropertyType, "PropertyType");
             if (_PropertyValue != null)
             {
                 AddLabeledChild(_PropertyValue, "PropertyValue");
@@ -6852,7 +6852,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Flag, $"Flag:{Flag.Data}");
+            AddChildBlockT(Flag, "Flag");
             if (_PropertyValue != null)
             {
                 AddLabeledChild(_PropertyValue, "PropertyValue");
@@ -6919,7 +6919,7 @@
 
         protected override void ParseBlocks()
         {
-            AddChild(Flag, $"Flag:{Flag.Data}");
+            AddChildBlockT(Flag, "Flag");
             if (_PropertyValue != null)
             {
                 AddLabeledChild(_PropertyValue, "PropertyValue");
@@ -7207,7 +7207,7 @@
         protected override void ParseBlocks()
         {
             SetText("AndRestriction");
-            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChildBlockT(RestrictType, "RestrictType");
             AddChild(_restrictCount, $"RestrictCount:{RestrictCount}");
             AddLabeledChildren(Restricts, "Restricts");
         }
@@ -7281,7 +7281,7 @@
         protected override void ParseBlocks()
         {
             SetText("OrRestriction");
-            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChildBlockT(RestrictType, "RestrictType");
             AddChild(_restrictCount, $"RestrictCount:{_restrictCount}");
             AddLabeledChildren(Restricts, "Restricts");
         }
@@ -7329,7 +7329,7 @@
         protected override void ParseBlocks()
         {
             SetText("NotRestriction");
-            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChildBlockT(RestrictType, "RestrictType");
             AddLabeledChild(Restriction, "Restriction");
         }
     }
@@ -7394,9 +7394,9 @@
         protected override void ParseBlocks()
         {
             SetText("ContentRestriction");
-            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
-            AddChild(FuzzyLevelLow, $"FuzzyLevelLow:{FuzzyLevelLow.Data}");
-            AddChild(FuzzyLevelHigh, $"FuzzyLevelHigh:{FuzzyLevelHigh.Data}");
+            AddChildBlockT(RestrictType, "RestrictType");
+            AddChildBlockT(FuzzyLevelLow, "FuzzyLevelLow");
+            AddChildBlockT(FuzzyLevelHigh, "FuzzyLevelHigh");
             AddChild(PropertyTag);
             AddChild(TaggedValue, "TaggedValue");
         }
@@ -7456,8 +7456,8 @@
         protected override void ParseBlocks()
         {
             SetText("PropertyRestriction");
-            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
-            AddChild(RelOp, $"RelOp:{RelOp.Data}");
+            AddChildBlockT(RestrictType, "RestrictType");
+            AddChildBlockT(RelOp, "RelOp");
             AddChild(PropTag, "PropTag");
             AddLabeledChild(TaggedValue, "TaggedValue");
         }
@@ -7502,8 +7502,8 @@
         protected override void ParseBlocks()
         {
             SetText("ComparePropertiesRestriction");
-            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
-            AddChild(RelOp, $"RelOp:{RelOp.Data}");
+            AddChildBlockT(RestrictType, "RestrictType");
+            AddChildBlockT(RelOp, "RelOp");
             AddChild(PropTag1, "PropTag1");
             AddChild(PropTag2, "PropTag2");
         }
@@ -7548,10 +7548,10 @@
         protected override void ParseBlocks()
         {
             SetText("BitMaskRestriction");
-            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
-            AddChild(BitmapRelOp, $"BitmapRelOp:{BitmapRelOp.Data}");
+            AddChildBlockT(RestrictType, "RestrictType");
+            AddChildBlockT(BitmapRelOp, "BitmapRelOp");
             AddChild(PropTag, "PropTag");
-            AddChild(Mask, $"Mask:{Mask.Data}");
+            AddChildBlockT(Mask, "Mask");
         }
     }
 
@@ -7594,10 +7594,10 @@
         protected override void ParseBlocks()
         {
             SetText("SizeRestriction");
-            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
-            AddChild(RelOp, $"RelOp:{RelOp.Data}");
+            AddChildBlockT(RestrictType, "RestrictType");
+            AddChildBlockT(RelOp, "RelOp");
             AddChild(PropTag, "PropTag");
-            AddChild(_Size, $"Size:{_Size.Data}");
+            AddChildBlockT(_Size, "_Size");
         }
     }
 
@@ -7628,7 +7628,7 @@
         protected override void ParseBlocks()
         {
             SetText("ExistRestriction");
-            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChildBlockT(RestrictType, "RestrictType");
             AddChild(PropTag, "PropTag");
         }
     }
@@ -7681,7 +7681,7 @@
         protected override void ParseBlocks()
         {
             SetText("SubObjectRestriction");
-            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
+            AddChildBlockT(RestrictType, "RestrictType");
             AddChild(Subobject, "Subobject");
             AddLabeledChild(Restriction, $"Restriction");
         }
@@ -7758,10 +7758,10 @@
         protected override void ParseBlocks()
         {
             SetText("CommentRestriction");
-            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
-            AddChild(TaggedValuesCount, $"TaggedValuesCount:{TaggedValuesCount.Data}");
+            AddChildBlockT(RestrictType, "RestrictType");
+            AddChildBlockT(TaggedValuesCount, "TaggedValuesCount");
             AddLabeledChildren(TaggedValues, "TaggedValues");
-            AddChild(RestrictionPresent, $"RestrictionPresent:{RestrictionPresent.Data}");
+            AddChildBlockT(RestrictionPresent, "RestrictionPresent");
             if (Restriction != null)
             {
                 AddChild(Restriction);
@@ -7817,8 +7817,8 @@
         protected override void ParseBlocks()
         {
             SetText("CountRestriction");
-            AddChild(RestrictType, $"RestrictType:{RestrictType.Data}");
-            AddChild(Count, $"Count:{Count.Data}");
+            AddChildBlockT(RestrictType, "RestrictType");
+            AddChildBlockT(Count, "Count");
             AddLabeledChild(SubRestriction, "SubRestriction");
         }
     }
@@ -7859,9 +7859,9 @@
         protected override void ParseBlocks()
         {
             SetText("SortOrder");
-            AddChild(PropertyType, $"PropertyType:{PropertyType.Data}");
-            AddChild(PropertyId, $"PropertyId:{PropertyId.Data}");
-            AddChild(Order, $"Order:{Order.Data}");
+            AddChildBlockT(PropertyType, "PropertyType");
+            AddChildBlockT(PropertyId, "PropertyId");
+            AddChildBlockT(Order, "Order");
         }
     }
 
@@ -7911,9 +7911,9 @@
         protected override void ParseBlocks()
         {
             SetText("SortOrderSet");
-            AddChild(SortOrderCount, $"SortOrderCount:{SortOrderCount.Data}");
-            AddChild(CategorizedCount, $"CategorizedCount:{CategorizedCount.Data}");
-            AddChild(ExpandedCount, $"ExpandedCount:{ExpandedCount.Data}");
+            AddChildBlockT(SortOrderCount, "SortOrderCount");
+            AddChildBlockT(CategorizedCount, "CategorizedCount");
+            AddChildBlockT(ExpandedCount, "ExpandedCount");
             AddLabeledChildren(SortOrders, "SortOrders");
         }
     }

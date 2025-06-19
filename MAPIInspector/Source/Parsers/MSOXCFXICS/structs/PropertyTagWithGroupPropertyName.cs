@@ -39,8 +39,8 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("PropertyTagWithGroupPropertyName");
-            if (PropertyType != null) AddChild(PropertyType, $"PropertyType:{PropertyType.Data}");
-            if (PropertyId != null) AddChild(PropertyId, $"PropertyId:{PropertyId.Data}");
+            AddChildBlockT(PropertyType, "PropertyType");
+            AddChildBlockT(PropertyId, "PropertyId");
             if (PropertyId.Data >= 0x8000)
             {
                 AddChild(GroupPropertyName);

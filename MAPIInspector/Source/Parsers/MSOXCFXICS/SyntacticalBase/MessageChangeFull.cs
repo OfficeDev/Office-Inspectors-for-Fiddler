@@ -66,9 +66,9 @@
         protected override void ParseBlocks()
         {
             SetText("MessageChangeFull");
-            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddChildBlockT(StartMarker, "StartMarker");
             AddLabeledChild(MessageChangeHeader, "MessageChangeHeader");
-            if (SecondMarker != null) AddChild(SecondMarker, $"SecondMarker:{SecondMarker.Data}");
+            AddChildBlockT(SecondMarker, "SecondMarker");
             AddLabeledChild(PropList, "PropList");
             AddLabeledChild(MessageChildren, "MessageChildren");
         }

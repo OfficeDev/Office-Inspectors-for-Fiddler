@@ -82,7 +82,7 @@
         {
             base.ParseBlocks();
             SetText("MvPropTypePropValuePutPartial");
-            AddChild(Length, $"Length: {Length.Data} bytes");
+            AddChildBlockT(Length, "Length");
             AddLabeledChildren(ValueArray, "ValueArray");
         }
     }

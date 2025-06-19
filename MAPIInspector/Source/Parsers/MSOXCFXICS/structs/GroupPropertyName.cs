@@ -57,10 +57,10 @@
         protected override void ParseBlocks()
         {
             SetText("GroupPropertyName");
-            if (Guid != null) AddChild(Guid, $"Guid:{Guid.Data}");
-            if (Kind != null) AddChild(Kind, $"Kind:{Kind.Data}");
-            if (Lid != null) AddChild(Lid, $"Lid:{Lid.Data}");
-            if (NameSize != null) AddChild(NameSize, $"NameSize:{NameSize.Data}");
+            AddChildBlockT(Guid, "Guid");
+            AddChildBlockT(Kind, "Kind");
+            AddChildBlockT(Lid, "Lid");
+            AddChildBlockT(NameSize, "NameSize");
             AddChild(Name, "Name");
         }
     }

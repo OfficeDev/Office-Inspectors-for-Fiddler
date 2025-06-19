@@ -82,7 +82,7 @@
             SetText("MessageChangePartial");
             AddChild(GroupInfo, "GroupInfo");
             AddChild(MetaTagIncrSyncGroupId, "MetaTagIncrSyncGroupId");
-            if (Marker != null) AddChild(Marker, $"Marker:{Marker.Data}");
+            AddChildBlockT(Marker, "Marker");
             AddChild(MessageChangeHeader, "MessageChangeHeader");
             if (SyncMessagePartialPropList != null)
             {

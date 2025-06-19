@@ -39,7 +39,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("ReadStateChanges");
-            if (StartMarker != null) AddChild(StartMarker, $"StartMarker:{StartMarker.Data}");
+            AddChildBlockT(StartMarker, "StartMarker");
             AddLabeledChild(PropList, "PropList");
         }
     }
