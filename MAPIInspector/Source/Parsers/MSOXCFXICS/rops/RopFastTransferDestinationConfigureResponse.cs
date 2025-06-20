@@ -1,39 +1,44 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     ///  A class indicates the RopFastTransferDestinationConfigure ROP Response Buffer.
     ///  2.2.3.1.2.1.2 RopFastTransferDestinationConfigure ROP Response Buffer
     /// </summary>
-    public class RopFastTransferDestinationConfigureResponse : BaseStructure
+    public class RopFastTransferDestinationConfigureResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
         /// </summary>
-        public byte OutputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// Parse the RopFastTransferDestinationConfigureResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopFastTransferDestinationConfigureResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
+        }
 
-            this.RopId = (RopIdType)this.ReadByte();
-            this.OutputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+        protected override void ParseBlocks()
+        {
+            SetText("RopFastTransferDestinationConfigure");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(ReturnValue, "ReturnValue");
         }
     }
 }

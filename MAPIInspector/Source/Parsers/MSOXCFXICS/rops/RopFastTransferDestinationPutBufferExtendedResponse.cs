@@ -1,68 +1,79 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     ///  A class indicates the RopFastTransferDestinationPutBufferExtended ROP Response Buffer.
     ///  2.2.3.1.2.3.2 RopFastTransferDestinationPutBufferExtended ROP Response Buffer
     /// </summary>
-    public class RopFastTransferDestinationPutBufferExtendedResponse : BaseStructure
+    public class RopFastTransferDestinationPutBufferExtendedResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// The current status of the transfer.
         /// </summary>
-        public ushort TransferStatus;
+        public BlockT<ushort> TransferStatus;
 
         /// <summary>
         /// An unsigned integer that specifies the number of steps that have been completed in the current operation.
         /// </summary>
-        public uint InProgressCount;
+        public BlockT<uint> InProgressCount;
 
         /// <summary>
         /// An unsigned integer that specifies the approximate total number of steps to be completed in the current operation.
         /// </summary>
-        public uint TotalStepCount;
+        public BlockT<uint> TotalStepCount;
 
         /// <summary>
         /// A reserved field
         /// </summary>
-        public byte Reserved;
+        public BlockT<byte> Reserved;
 
         /// <summary>
         /// An unsigned integer that specifies the buffer size that was used.
         /// </summary>
-        public ushort BufferUsedSize;
+        public BlockT<ushort> BufferUsedSize;
 
         /// <summary>
         /// Parse the RopFastTransferDestinationPutBufferExtendedResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopFastTransferDestinationPutBufferExtendedResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            this.RopId = (RopIdType)this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
-            this.TransferStatus = this.ReadUshort();
-            this.InProgressCount = this.ReadUint();
-            this.TotalStepCount = this.ReadUint();
-            this.Reserved = this.ReadByte();
-            this.BufferUsedSize = this.ReadUshort();
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
+            TransferStatus = ParseT<ushort>();
+            InProgressCount = ParseT<uint>();
+            TotalStepCount = ParseT<uint>();
+            Reserved = ParseT<byte>();
+            BufferUsedSize = ParseT<ushort>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopFastTransferSourceGetBufferResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(ReturnValue, "ReturnValue");
+            AddChildBlockT(TransferStatus, "TransferStatus");
+            AddChildBlockT(InProgressCount, "InProgressCount");
+            AddChildBlockT(TotalStepCount, "TotalStepCount");
+            AddChildBlockT(Reserved, "Reserved");
+            AddChildBlockT(BufferUsedSize, "BufferUsedSize");
         }
     }
 }

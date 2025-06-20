@@ -1,5 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System.Collections.Generic;
     using System.IO;
 
@@ -7,32 +8,32 @@
     ///  A class indicates the RopFastTransferSourceCopyMessages ROP Request Buffer.
     ///  2.2.3.1.1.3.1 RopFastTransferSourceCopyMessages ROP Request Buffer
     /// </summary>
-    public class RopFastTransferSourceCopyMessagesRequest : BaseStructure
+    public class RopFastTransferSourceCopyMessagesRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
         /// </summary>
-        public byte OutputHandleIndex;
+        public BlockT<byte> OutputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the number of identifiers in the MessageIds field.
         /// </summary>
-        public ushort MessageIdCount;
+        public BlockT<ushort> MessageIdCount;
 
         /// <summary>
         /// An array of 64-bit identifiers that specifies the messages to copy. 
@@ -42,38 +43,50 @@
         /// <summary>
         /// A flags structure that contains flags that control the type of operation. 
         /// </summary>
-        public CopyFlags_CopyMessages CopyFlags;
+        public BlockT<CopyFlags_CopyMessages> CopyFlags;
 
         /// <summary>
         /// A flags structure that contains flags that control the behavior of the operation. 
         /// </summary>
-        public SendOptions SendOptions;
+        public BlockT<SendOptions> SendOptions;
 
         /// <summary>
         /// Parse the RopFastTransferSourceCopyMessagesRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopFastTransferSourceCopyMessagesRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            OutputHandleIndex = ParseT<byte>();
+            MessageIdCount = ParseT<ushort>();
 
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.OutputHandleIndex = this.ReadByte();
-            this.MessageIdCount = this.ReadUshort();
-
-            List<MessageID> messageIdList = new List<MessageID>();
-            for (int i = 0; i < this.MessageIdCount; i++)
+            var messageIdList = new List<MessageID>();
+            for (int i = 0; i < MessageIdCount.Data; i++)
             {
-                MessageID messageId = new MessageID();
-                messageId.Parse(s);
-                messageIdList.Add(messageId);
+                messageIdList.Add(Parse<MessageID>());
             }
 
-            this.MessageIds = messageIdList.ToArray();
-            this.CopyFlags = (CopyFlags_CopyMessages)ReadByte();
-            this.SendOptions = (SendOptions)ReadByte();
+            MessageIds = messageIdList.ToArray();
+            CopyFlags = ParseT<CopyFlags_CopyMessages>();
+            SendOptions = ParseT<SendOptions>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopFastTransferSourceCopyMessagesRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
+            AddChildBlockT(MessageIdCount, "MessageIdCount");
+            foreach (var messageId in MessageIds)
+            {
+                AddChild(messageId);
+            }
+
+            AddChildBlockT(CopyFlags, "CopyFlags");
+            AddChildBlockT(SendOptions, "SendOptions");
         }
     }
 }
