@@ -180,8 +180,8 @@ namespace BlockParserTests
             protected override void ParseBlocks()
             {
                 SetText("TestBlock");
-                AddChild(f1, "f1 = {0}", f1.Data);
-                AddChild(f2, "f2 = {0}", f2.Data);
+                AddChildBlockT(f1, "f1");
+                AddChildBlockT(f2, "f2");
             }
         }
 
@@ -201,8 +201,8 @@ namespace BlockParserTests
             Assert.AreEqual(TestEnumNoType.Value1, block.f2.Data);
             Assert.AreEqual("TestBlock", block.Text);
             Assert.AreEqual("TestBlock\r\n" +
-                "\tf1 = Value1\r\n" +
-                "\tf2 = Value1",
+                "\tf1:Value1\r\n" +
+                "\tf2:Value1",
                 block.FullString);
         }
     }

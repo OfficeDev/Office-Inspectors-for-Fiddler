@@ -50,7 +50,7 @@ namespace BlockParser
             return ret;
         }
 
-        public BlockT<T> ParseT<T>() where T : struct => ParseT<T>();
+        public BlockT<T> ParseT<T>() where T : struct => ParseT<T>(parser);
         /// <summary>
         /// Parses binary data using the specified parser and returns a <see cref="BlockT{T}"/> instance containing the
         /// parsed data.
