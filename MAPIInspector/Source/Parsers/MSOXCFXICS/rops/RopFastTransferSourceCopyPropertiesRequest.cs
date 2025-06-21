@@ -1,53 +1,53 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using System.IO;
+    using System.Collections.Generic;
 
     /// <summary>
     ///  A class indicates the RopFastTransferSourceCopyProperties ROP Request Buffer.
     ///  2.2.3.1.1.2.1 RopFastTransferSourceCopyProperties ROP Request Buffer
     /// </summary>
-    public class RopFastTransferSourceCopyPropertiesRequest : BaseStructure
+    public class RopFastTransferSourceCopyPropertiesRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
         /// </summary>
-        public byte OutputHandleIndex;
+        public BlockT<byte> OutputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies whether descendant subobjects are copied
         /// </summary>
-        public byte Level;
+        public BlockT<byte> Level;
 
         /// <summary>
         /// A flags structure that contains flags that control the type of operation. 
         /// </summary>
-        public CopyFlags_CopyProperties CopyFlags;
+        public BlockT<CopyFlags_CopyProperties> CopyFlags;
 
         /// <summary>
         /// A flags structure that contains flags that control the behavior of the operation. 
         /// </summary>
-        public SendOptions SendOptions;
+        public BlockT<SendOptions> SendOptions;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures in the PropertyTags field.
         /// </summary>
-        public ushort PropertyTagCount;
+        public BlockT<ushort> PropertyTagCount;
 
         /// <summary>
         /// An array of PropertyTag structures that specifies the properties to exclude during the copy.
@@ -57,26 +57,37 @@
         /// <summary>
         /// Parse the RopFastTransferSourceCopyPropertiesRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopFastTransferSourceCopyPropertiesRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.OutputHandleIndex = this.ReadByte();
-            this.Level = this.ReadByte();
-            this.CopyFlags = (CopyFlags_CopyProperties)this.ReadByte();
-            this.SendOptions = (SendOptions)this.ReadByte();
-            this.PropertyTagCount = this.ReadUshort();
-            PropertyTag[] interTag = new PropertyTag[(int)this.PropertyTagCount];
-            for (int i = 0; i < this.PropertyTagCount; i++)
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            OutputHandleIndex = ParseT<byte>();
+            Level = ParseT<byte>();
+            CopyFlags = ParseT<CopyFlags_CopyProperties>();
+            SendOptions = ParseT<SendOptions>();
+            PropertyTagCount = ParseT<ushort>();
+            var interTag = new List<PropertyTag>();
+            for (int i = 0; i < PropertyTagCount.Data; i++)
             {
-                interTag[i] = Block.Parse<PropertyTag>(s);
+                interTag.Add(Parse<PropertyTag>());
             }
 
-            this.PropertyTags = interTag;
+            PropertyTags = interTag.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopFastTransferSourceCopyPropertiesRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
+            AddChildBlockT(Level, "Level");
+            AddChildBlockT(CopyFlags, "CopyFlags");
+            AddChildBlockT(SendOptions, "SendOptions");
+            AddChildBlockT(PropertyTagCount, "PropertyTagCount");
+            AddLabeledChildren(PropertyTags, "PropertyTags");
         }
     }
 }

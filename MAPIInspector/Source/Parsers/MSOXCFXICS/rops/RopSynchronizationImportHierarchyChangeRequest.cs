@@ -1,32 +1,33 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the RopSynchronizationImportHierarchyChange ROP Request Buffer.
     ///  2.2.3.2.4.3.1 RopSynchronizationImportHierarchyChange ROP Request Buffer
     /// </summary>
-    public class RopSynchronizationImportHierarchyChangeRequest : BaseStructure
+    public class RopSynchronizationImportHierarchyChangeRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures present in the HierarchyValues field.
         /// </summary>
-        public ushort HierarchyValueCount;
+        public BlockT<ushort> HierarchyValueCount;
 
         /// <summary>
         /// An array of TaggedPropertyValue structures that specify hierarchy-related properties of the folder.
@@ -36,7 +37,7 @@
         /// <summary>
         /// An unsigned integer that specifies the number of structures present in the PropertyValues field.
         /// </summary>
-        public ushort PropertyValueCount;
+        public BlockT<ushort> PropertyValueCount;
 
         /// <summary>
         /// An array of TaggedPropertyValue structures that specify the folders or messages to delete.
@@ -46,34 +47,44 @@
         /// <summary>
         /// Parse the RopSynchronizationImportHierarchyChangeRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSynchronizationImportHierarchyChangeRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            HierarchyValueCount = ParseT<ushort>();
 
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.HierarchyValueCount = this.ReadUshort();
-            TaggedPropertyValue[] interHierarchyValues = new TaggedPropertyValue[(int)this.HierarchyValueCount];
-
-            for (int i = 0; i < this.HierarchyValueCount; i++)
+            var interHierarchyValues = new List<TaggedPropertyValue>();
+            for (int i = 0; i < HierarchyValueCount.Data; i++)
             {
-                interHierarchyValues[i] = new TaggedPropertyValue();
-                interHierarchyValues[i].Parse(s);
+                var val = new TaggedPropertyValue();
+                val.Parse(parser);
+                interHierarchyValues.Add(val);
             }
+            HierarchyValues = interHierarchyValues.ToArray();
 
-            this.HierarchyValues = interHierarchyValues;
-            this.PropertyValueCount = this.ReadUshort();
-            TaggedPropertyValue[] interValue = new TaggedPropertyValue[(int)this.PropertyValueCount];
+            PropertyValueCount = ParseT<ushort>();
 
-            for (int i = 0; i < this.PropertyValueCount; i++)
+            var interValue = new List<TaggedPropertyValue>();
+            for (int i = 0; i < PropertyValueCount.Data; i++)
             {
-                interValue[i] = new TaggedPropertyValue();
-                interValue[i].Parse(s);
+                var val = new TaggedPropertyValue();
+                val.Parse(parser);
+                interValue.Add(val);
             }
+            PropertyValues = interValue.ToArray();
+        }
 
-            this.PropertyValues = interValue;
+        protected override void ParseBlocks()
+        {
+            SetText("RopSynchronizationImportHierarchyChangeRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(HierarchyValueCount, "HierarchyValueCount");
+            AddLabeledChildren(HierarchyValues, "HierarchyValues");
+            AddChildBlockT(PropertyValueCount, "PropertyValueCount");
+            AddLabeledChildren(PropertyValues, "PropertyValues");
         }
     }
 }

@@ -35,7 +35,7 @@
 
         protected override void ParseBlocks()
         {
-            SetText("RopFastTransferDestinationConfigure");
+            SetText("RopFastTransferDestinationConfigureResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(ReturnValue, "ReturnValue");

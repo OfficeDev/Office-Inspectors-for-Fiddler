@@ -1,51 +1,58 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the RopSynchronizationOpenCollector ROP Request Buffer.
     ///  2.2.3.2.4.1.1 RopSynchronizationOpenCollector ROP Request Buffer
     /// </summary>
-    public class RopSynchronizationOpenCollectorRequest : BaseStructure
+    public class RopSynchronizationOpenCollectorRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
         /// </summary>
-        public byte OutputHandleIndex;
+        public BlockT<byte> OutputHandleIndex;
 
         /// <summary>
-        /// A Boolean that specifies whether this synchronization upload context is for contents or for hierarchy.
+        /// A Boolean that specifies whether synchronization upload context is for contents or for hierarchy.
         /// </summary>
-        public bool IsContentsCollector;
+        public BlockT<bool> IsContentsCollector;
 
         /// <summary>
         /// Parse the RopSynchronizationOpenCollectorRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSynchronizationOpenCollectorRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            OutputHandleIndex = ParseT<byte>();
+            IsContentsCollector = ParseAs<byte, bool>();
+        }
 
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.OutputHandleIndex = this.ReadByte();
-            this.IsContentsCollector = this.ReadBoolean();
+        protected override void ParseBlocks()
+        {
+            SetText("RopSynchronizationOpenCollectorRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
+            AddChildBlockT(IsContentsCollector, "IsContentsCollector");
         }
     }
 }

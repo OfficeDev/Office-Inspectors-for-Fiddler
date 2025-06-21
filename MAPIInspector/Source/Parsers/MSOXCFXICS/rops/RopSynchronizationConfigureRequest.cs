@@ -1,68 +1,68 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using System.IO;
+    using System.Collections.Generic;
 
     /// <summary>
     ///  A class indicates the RopSynchronizationConfigure ROP Request Buffer.
     ///  2.2.3.2.1.1.1 RopSynchronizationConfigure ROP Request Buffer
     /// </summary>
-    public class RopSynchronizationConfigureRequest : BaseStructure
+    public class RopSynchronizationConfigureRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
         /// </summary>
-        public byte OutputHandleIndex;
+        public BlockT<byte> OutputHandleIndex;
 
         /// <summary>
         /// An enumeration that controls the type of synchronization.
         /// </summary>
-        public SynchronizationType SynchronizationType;
+        public BlockT<SynchronizationType> SynchronizationType;
 
         /// <summary>
         /// A flags structure that contains flags that control the behavior of the operation.
         /// </summary>
-        public SendOptions SendOptions;
+        public BlockT<SendOptions> SendOptions;
 
         /// <summary>
         /// A flags structure that contains flags that control the behavior of the synchronization.
         /// </summary>
-        public SynchronizationFlags SynchronizationFlags;
+        public BlockT<SynchronizationFlags> SynchronizationFlags;
 
         /// <summary>
         /// An unsigned integer that specifies the length, in bytes, of the RestrictionData field.
         /// </summary>
-        public ushort RestrictionDataSize;
+        public BlockT<ushort> RestrictionDataSize;
 
         /// <summary>
-        /// A restriction packet,that specifies the filter for this synchronization object.
+        /// A restriction packet,that specifies the filter for synchronization object.
         /// </summary>
         public RestrictionType RestrictionData;
 
         /// <summary>
         /// A flags structure that contains flags control the additional behavior of the synchronization. 
         /// </summary>
-        public SynchronizationExtraFlags SynchronizationExtraFlags;
+        public BlockT<SynchronizationExtraFlags> SynchronizationExtraFlags;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures in the PropertyTags field.
         /// </summary>
-        public ushort PropertyTagCount;
+        public BlockT<ushort> PropertyTagCount;
 
         /// <summary>
         ///  An array of PropertyTag structures that specifies the properties to exclude during the copy.
@@ -72,36 +72,51 @@
         /// <summary>
         /// Parse the RopSynchronizationConfigureRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSynchronizationConfigureRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.OutputHandleIndex = this.ReadByte();
-            this.SynchronizationType = (SynchronizationType)this.ReadByte();
-            this.SendOptions = (SendOptions)this.ReadByte();
-            this.SynchronizationFlags = (SynchronizationFlags)this.ReadUshort();
-            this.RestrictionDataSize = this.ReadUshort();
-
-            if (this.RestrictionDataSize > 0)
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            OutputHandleIndex = ParseT<byte>();
+            SynchronizationType = ParseT<SynchronizationType>();
+            SendOptions = ParseT<SendOptions>();
+            SynchronizationFlags = ParseT<SynchronizationFlags>();
+            RestrictionDataSize = ParseT<ushort>();
+            if (RestrictionDataSize.Data > 0)
             {
-                this.RestrictionData = new RestrictionType();
-                this.RestrictionData.Parse(s);
+                parser.PushCap(RestrictionDataSize.Data);
+                RestrictionData = new RestrictionType();
+                RestrictionData.Parse(parser);
+                parser.PopCap();
             }
 
-            this.SynchronizationExtraFlags = (SynchronizationExtraFlags)this.ReadUint();
-            this.PropertyTagCount = this.ReadUshort();
-            PropertyTag[] interTag = new PropertyTag[(int)this.PropertyTagCount];
+            SynchronizationExtraFlags = ParseT<SynchronizationExtraFlags>();
+            PropertyTagCount = ParseT<ushort>();
 
-            for (int i = 0; i < this.PropertyTagCount; i++)
+            var interTag = new List<PropertyTag>();
+            for (int i = 0; i < PropertyTagCount.Data; i++)
             {
-                interTag[i] = Block.Parse<PropertyTag>(s);
+                interTag.Add(Parse<PropertyTag>());
             }
 
-            this.PropertyTags = interTag;
+            PropertyTags = interTag.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopSynchronizationConfigureRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
+            AddChildBlockT(SynchronizationType, "SynchronizationType");
+            AddChildBlockT(SendOptions, "SendOptions");
+            AddChildBlockT(SynchronizationFlags, "SynchronizationFlags");
+            AddChildBlockT(RestrictionDataSize, "RestrictionDataSize");
+            AddChild(RestrictionData, "RestrictionData");
+            AddChildBlockT(SynchronizationExtraFlags, "SynchronizationExtraFlags");
+            AddChildBlockT(PropertyTagCount, "PropertyTagCount");
+            AddLabeledChildren(PropertyTags, "PropertyTags");
         }
     }
 }

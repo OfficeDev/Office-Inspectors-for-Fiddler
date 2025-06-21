@@ -1,12 +1,12 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     ///  A class indicates the LongTermIdRange structure.
     ///  2.2.13.12.1.1 LongTermIdRange Structure
     /// </summary>
-    public class LongTermIdRange : BaseStructure
+    public class LongTermIdRange : Block
     {
         /// <summary>
         /// A LongTermId structure that specifies the beginning of a range. 
@@ -21,15 +21,16 @@
         /// <summary>
         /// Parse the LongTermIdRange structure.
         /// </summary>
-        /// <param name="s">A stream containing LongTermIdRange structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            MinLongTermId = Parse<LongTermID>();
+            MaxLongTermId = Parse<LongTermID>();
+        }
 
-            this.MinLongTermId = new LongTermID();
-            this.MinLongTermId.Parse(s);
-            this.MaxLongTermId = new LongTermID();
-            this.MaxLongTermId.Parse(s);
+        protected override void ParseBlocks()
+        {
+            AddChild(MinLongTermId, "MinLongTermId");
+            AddChild(MaxLongTermId, "MaxLongTermId");
         }
     }
 }

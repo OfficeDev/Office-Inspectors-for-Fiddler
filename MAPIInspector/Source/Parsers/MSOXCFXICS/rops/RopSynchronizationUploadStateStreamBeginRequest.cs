@@ -1,28 +1,27 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using System.IO;
 
     /// <summary>
     ///  A class indicates the RopSynchronizationUploadStateStreamBegin ROP Request Buffer.
     ///  2.2.3.2.2.1.1 RopSynchronizationUploadStateStreamBegin ROP Request Buffer
     /// </summary>
-    public class RopSynchronizationUploadStateStreamBeginRequest : BaseStructure
+    public class RopSynchronizationUploadStateStreamBeginRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// A PropertyTag structure.
@@ -32,22 +31,28 @@
         /// <summary>
         /// An unsigned integer that specifies the size of the stream to be uploaded.
         /// </summary>
-        public uint TransferBufferSize;
+        public BlockT<uint> TransferBufferSize;
 
         /// <summary>
         /// Parse the RopSynchronizationUploadStateStreamBeginRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSynchronizationUploadStateStreamBeginRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            StateProperty = Parse<PropertyTag>();
+            TransferBufferSize = ParseT<uint>();
+        }
 
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.StateProperty = Block.Parse<PropertyTag>(s);
-
-            this.TransferBufferSize = this.ReadUint();
+        protected override void ParseBlocks()
+        {
+            SetText("RopSynchronizationUploadStateStreamBeginRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChild(StateProperty, "StateProperty");
+            AddChildBlockT(TransferBufferSize, "TransferBufferSize");
         }
     }
 }

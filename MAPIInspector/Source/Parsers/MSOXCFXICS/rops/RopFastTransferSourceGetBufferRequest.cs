@@ -1,54 +1,61 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the RopFastTransferSourceGetBuffer ROP Request Buffer.
     ///  2.2.3.1.1.5.1 RopFastTransferSourceGetBuffer ROP Request Buffer
     /// </summary>
-    public class RopFastTransferSourceGetBufferRequest : BaseStructure
+    public class RopFastTransferSourceGetBufferRequest : Block
     {
         /// <summary>
         /// A byte that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// A byte that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// A byte that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An UShort that specifies the buffer size requested.
         /// </summary>
-        public ushort BufferSize;
+        public BlockT<ushort> BufferSize;
 
         /// <summary>
         /// An UShort that is present when the BufferSize field is set to 0xBABE.
         /// </summary>
-        public ushort? MaximumBufferSize;
+        public BlockT<ushort> MaximumBufferSize;
 
         /// <summary>
         /// Parse the RopFastTransferSourceGetBufferRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopFastTransferSourceGetBufferRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.BufferSize = this.ReadUshort();
-            if (this.BufferSize == 0xBABE)
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            BufferSize = ParseT<ushort>();
+            if (BufferSize.Data == 0xBABE)
             {
-                this.MaximumBufferSize = this.ReadUshort();
+                MaximumBufferSize = ParseT<ushort>();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopFastTransferSourceGetBufferRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(BufferSize, "BufferSize");
+            AddChildBlockT(MaximumBufferSize, "MaximumBufferSize ");
         }
     }
 }

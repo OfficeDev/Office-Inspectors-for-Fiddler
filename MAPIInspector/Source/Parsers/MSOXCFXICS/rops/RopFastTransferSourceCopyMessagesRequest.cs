@@ -2,7 +2,6 @@
 {
     using BlockParser;
     using System.Collections.Generic;
-    using System.IO;
 
     /// <summary>
     ///  A class indicates the RopFastTransferSourceCopyMessages ROP Request Buffer.

@@ -65,7 +65,7 @@
 
         protected override void ParseBlocks()
         {
-            SetText("RopFastTransferSourceGetBufferResponse");
+            SetText("RopFastTransferDestinationPutBufferExtendedResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(ReturnValue, "ReturnValue");

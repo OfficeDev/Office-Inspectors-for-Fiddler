@@ -1,37 +1,38 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the RopSynchronizationImportDeletes ROP Request Buffer.
     ///  2.2.3.2.4.5.1 RopSynchronizationImportDeletes ROP Request Buffer
     /// </summary>
-    public class RopSynchronizationImportDeletesRequest : BaseStructure
+    public class RopSynchronizationImportDeletesRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// A flags structure that contains flags that specify options for the imported deletions.
         /// </summary>
-        public ImportDeleteFlags ImportDeleteFlags;
+        public BlockT<ImportDeleteFlags> ImportDeleteFlags;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures present in the PropertyValues field.
         /// </summary>
-        public ushort PropertyValueCount;
+        public BlockT<ushort> PropertyValueCount;
 
         /// <summary>
         /// An array of TaggedPropertyValue structures that specify the folders or messages to delete.
@@ -41,25 +42,34 @@
         /// <summary>
         /// Parse the RopSynchronizationImportDeletesRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSynchronizationImportDeletesRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            ImportDeleteFlags = ParseT<ImportDeleteFlags>();
+            PropertyValueCount = ParseT<ushort>();
+            var interValue = new List<TaggedPropertyValue>();
 
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.ImportDeleteFlags = (ImportDeleteFlags)this.ReadByte();
-            this.PropertyValueCount = this.ReadUshort();
-            TaggedPropertyValue[] interValue = new TaggedPropertyValue[(int)this.PropertyValueCount];
-
-            for (int i = 0; i < this.PropertyValueCount; i++)
+            for (int i = 0; i < PropertyValueCount.Data; i++)
             {
-                interValue[i] = new TaggedPropertyValue();
-                interValue[i].Parse(s);
+                var value = new TaggedPropertyValue();
+                value.Parse(parser);
+                interValue.Add(value);
             }
 
-            this.PropertyValues = interValue;
+            PropertyValues = interValue.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopSynchronizationImportDeletesRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(ImportDeleteFlags, "ImportDeleteFlags");
+            AddChildBlockT(PropertyValueCount, "PropertyValueCount");
+            AddLabeledChildren(PropertyValues, "PropertyValues");
         }
     }
 }
