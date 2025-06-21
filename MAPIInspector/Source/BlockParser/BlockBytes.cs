@@ -17,7 +17,7 @@ namespace BlockParser
 
         public string ToTextStringA(bool multiLine = false) => Strings.StripCharacter(Strings.BinToTextStringA(_data, multiLine), '\0');
 
-        public string ToHexString(bool multiLine = false, int limit = 128) => Strings.BinToHexString(_data, multiLine, limit);
+        public string ToHexString(bool multiLine = false) => Strings.BinToHexString(_data, multiLine, 0);
 
         public bool Equal(int cb, byte[] bin)
         {

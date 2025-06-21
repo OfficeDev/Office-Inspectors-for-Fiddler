@@ -135,7 +135,7 @@ namespace BlockParser
             else
             {
                 if (limit < 0) limit = 0;
-                int count = Math.Min(bin.Count, limit);
+                int count = limit == 0 ? bin.Count : Math.Min(bin.Count, limit);
                 for (int i = 0; i < count; i++)
                 {
                     byte b = bin[i];
@@ -145,7 +145,7 @@ namespace BlockParser
                     sb.Append(low);
                 }
 
-                if (bin.Count > limit)
+                if (limit != 0 && bin.Count > limit)
                 {
                     sb.Append("...");
                 }

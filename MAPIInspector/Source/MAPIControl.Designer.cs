@@ -1,6 +1,7 @@
 ﻿using System.Windows.Forms;
 using System;
 using System.Text;
+using BlockParser;
 
 namespace MapiInspector
 {
@@ -209,12 +210,19 @@ namespace MapiInspector
             return text.TrimEnd('\0').Replace("\0", "\\0");
         }
 
+        private string GetNodeText(TreeNode node)
+        {
+            if (node == null) return string.Empty;
+            if (node.Tag is global::MAPIInspector.Parsers.BaseStructure.Position position && position.SourceBlock != null)
+            {
+                return CleanString(position.SourceBlock.Text);
+            }
+            return CleanString(node.Text);
+        }
+
         private void MapiTreeViewMenuItem1_Click(object sender, EventArgs e)
         {
-            if (this.mapiTreeView.SelectedNode != null)
-            {
-                Clipboard.SetText(CleanString(this.mapiTreeView.SelectedNode.Text));
-            }
+            Clipboard.SetText(GetNodeText(this.mapiTreeView.SelectedNode));
         }
 
         private void MapiTreeViewMenuItem2_Click(object sender, EventArgs e)
@@ -241,7 +249,7 @@ namespace MapiInspector
             var indents = ++count;
             for (int i = 0; i < indents; i++)
                 sb.Append("   ");
-            sb.AppendLine(CleanString(node.Text));
+            sb.AppendLine(GetNodeText(node));
             foreach (var n in node.Nodes)
                 GetNodeTreeText(sb, n as TreeNode, indents);
         }

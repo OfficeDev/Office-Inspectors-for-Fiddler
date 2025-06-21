@@ -1,5 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using MapiInspector;
     using System;
     using System.IO;
@@ -145,11 +146,19 @@
         {
             // Clean up embedded null characters in the block text for display purposes
             var text = block.Text.Replace("\0", "\\0");
+            const int maxNodeLength = 256;
+            // Truncate the text if it exceeds 256 characters for display purposes
+            if (text.Length > maxNodeLength)
+            {
+                text = text.Substring(0, maxNodeLength) + "...";
+            }
             TreeNode node = new TreeNode(text);
             node.BackColor = System.Drawing.Color.LightPink; // TODO: This is just for debugging
             var blockOffset = blockRootOffset + (int)block.Offset;
             //node.Text = $"{text}::{blockOffset}::{block.Size}"; // Enable this when troubleshooting highlight issues
-            node.Tag = new Position(blockOffset, (int)block.Size);
+            var position = new Position(blockOffset, (int)block.Size);
+            position.SourceBlock = block;
+            node.Tag = position;
             foreach (var child in block.Children)
             {
                 node.Nodes.Add(AddBlock(child, blockRootOffset));
@@ -989,6 +998,11 @@
             /// Int value specifies the buffer index of a field
             /// </summary>
             public int BufferIndex = 0;
+
+            /// <summary>
+            /// Source block
+            /// </summary>
+            public Block SourceBlock = null;
 
             /// <summary>
             /// Initializes a new instance of the Position class
