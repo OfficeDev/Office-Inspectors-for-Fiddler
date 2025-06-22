@@ -191,7 +191,7 @@
     /// </summary>
     public class ModifyRulesFlags : Block
     {
-        public BlockT<byte> Byte0;
+        private BlockT<byte> Byte0;
 
         /// <summary>
         /// Unused. This bit MUST be set to zero (0) when sent.

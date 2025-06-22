@@ -108,14 +108,14 @@
             base.Parse(s);
             RecipientFlags = new RecipientFlags();
             RecipientFlags.Parse(s);
-            if (RecipientFlags.Type == AddressTypeEnum.X500DN)
+            if (RecipientFlags.Type.Data == AddressTypeEnum.X500DN)
             {
                 AddressPrefixUsed = ReadByte();
                 DisplayType = (DisplayType)ReadByte();
                 X500DN = new MAPIString(Encoding.ASCII);
                 X500DN.Parse(s);
             }
-            else if (RecipientFlags.Type == AddressTypeEnum.PersonalDistributionList1 || RecipientFlags.Type == AddressTypeEnum.PersonalDistributionList2)
+            else if (RecipientFlags.Type.Data == AddressTypeEnum.PersonalDistributionList1 || RecipientFlags.Type.Data == AddressTypeEnum.PersonalDistributionList2)
             {
                 EntryIdSize = ReadUshort();
                 EntryID = new AddressBookEntryID();
@@ -123,33 +123,33 @@
                 SearchKeySize = ReadUshort();
                 SearchKey = ConvertArray(ReadBytes((int)SearchKeySize));
             }
-            else if (RecipientFlags.Type == AddressTypeEnum.NoType && RecipientFlags.O == 0x1)
+            else if (RecipientFlags.Type.Data == AddressTypeEnum.NoType && RecipientFlags.O.Data)
             {
                 AddressType = new MAPIString(Encoding.ASCII);
                 AddressType.Parse(s);
             }
 
-            if (RecipientFlags.E == 0x1)
+            if (RecipientFlags.E.Data)
             {
-                EmailAddress = new MAPIString((RecipientFlags.U == 0x1) ? Encoding.Unicode : Encoding.ASCII);
+                EmailAddress = new MAPIString((RecipientFlags.U.Data) ? Encoding.Unicode : Encoding.ASCII);
                 EmailAddress.Parse(s);
             }
 
-            if (RecipientFlags.D == 0x1)
+            if (RecipientFlags.D.Data)
             {
-                DisplayName = new MAPIString((RecipientFlags.U == 0x1) ? Encoding.Unicode : Encoding.ASCII);
+                DisplayName = new MAPIString((RecipientFlags.U.Data) ? Encoding.Unicode : Encoding.ASCII);
                 DisplayName.Parse(s);
             }
 
-            if (RecipientFlags.I == 0x1)
+            if (RecipientFlags.I.Data)
             {
-                SimpleDisplayName = new MAPIString((RecipientFlags.U == 0x1) ? Encoding.Unicode : Encoding.ASCII);
+                SimpleDisplayName = new MAPIString((RecipientFlags.U.Data) ? Encoding.Unicode : Encoding.ASCII);
                 SimpleDisplayName.Parse(s);
             }
 
-            if (RecipientFlags.T == 0x1)
+            if (RecipientFlags.T.Data)
             {
-                TransmittableDisplayName = new MAPIString((RecipientFlags.U == 0x1) ? Encoding.Unicode : Encoding.ASCII);
+                TransmittableDisplayName = new MAPIString((RecipientFlags.U.Data) ? Encoding.Unicode : Encoding.ASCII);
                 TransmittableDisplayName.Parse(s);
             }
 
