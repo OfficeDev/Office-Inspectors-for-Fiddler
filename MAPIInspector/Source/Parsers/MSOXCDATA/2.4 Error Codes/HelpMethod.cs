@@ -4,24 +4,25 @@
 
     public static class HelpMethod
     {
-        public static string FormatErrorCode(this ErrorCodes errorCodeUint)
+        // TODO: Make this a string later
+        public static object FormatErrorCode(this ErrorCodes errorCodeUint)
         {
-            string errorCode = null;
+            object errorCode = null;
             if (Enum.IsDefined(typeof(ErrorCodes), errorCodeUint))
             {
-                errorCode = $"{errorCodeUint}";
+                errorCode = errorCodeUint;
             }
             else if (Enum.IsDefined(typeof(AdditionalErrorCodes), errorCodeUint))
             {
-                errorCode = $"{(AdditionalErrorCodes)errorCodeUint}";
+                errorCode = (AdditionalErrorCodes)errorCodeUint;
             }
             else if (Enum.IsDefined(typeof(WarningCodes), errorCodeUint))
             {
-                errorCode = $"{(WarningCodes)errorCodeUint}";
+                errorCode = (WarningCodes)errorCodeUint;
             }
             else
             {
-                errorCode = $"{errorCodeUint:X}";
+                errorCode = errorCodeUint;
             }
 
             return errorCode;

@@ -1,14 +1,13 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
 
     /// <summary>
     /// 2.8.3.2 RecipientRow Structure
     /// </summary>
-    public class RecipientRow : BaseStructure
+    public class RecipientRow : Block
     {
         /// <summary>
         /// A RecipientFlags structure, as specified in section 2.8.3.1.
@@ -18,22 +17,22 @@
         /// <summary>
         /// Unsigned integer. This field MUST be present when the Type field of the RecipientFlags field is set to X500DN (0x1) and MUST NOT be present otherwise.
         /// </summary>
-        public byte? AddressPrefixUsed;
+        public BlockT<byte> AddressPrefixUsed;
 
         /// <summary>
         /// An enumeration. This field MUST be present when the Type field of the RecipientFlags field is set to X500DN (0x1) and MUST NOT be present otherwise.
         /// </summary>
-        public DisplayType? DisplayType;
+        public BlockT<DisplayType> DisplayType;
 
         /// <summary>
         /// A null-terminated ASCII string.
         /// </summary>
-        public MAPIString X500DN;
+        public BlockStringA X500DN;
 
         /// <summary>
         /// An unsigned integer. This field MUST be present when the Type field of the RecipientFlags field is set to PersonalDistributionList1 (0x6) or PersonalDistributionList2 (0x7).
         /// </summary>
-        public ushort? EntryIdSize;
+        public BlockT<ushort> EntryIdSize;
 
         /// <summary>
         /// An array of bytes. This field MUST be present when the Type field of the RecipientFlags field is set to PersonalDistributionList1 (0x6) or PersonalDistributionList2 (0x7).
@@ -43,42 +42,42 @@
         /// <summary>
         /// This value specifies the size of the SearchKey field.
         /// </summary>
-        public ushort? SearchKeySize;
+        public BlockT<ushort> SearchKeySize;
 
         /// <summary>
         /// This array specifies the search key of the distribution list.
         /// </summary>
-        public byte?[] SearchKey;
+        public BlockBytes SearchKey;
 
         /// <summary>
         /// This string specifies the address type of the recipient (1).
         /// </summary>
-        public MAPIString AddressType;
+        public BlockStringA AddressType;
 
         /// <summary>
         /// This string specifies the email address of the recipient (1).
         /// </summary>
-        public MAPIString EmailAddress;
+        public BlockString EmailAddress;
 
         /// <summary>
         /// This string specifies the display name of the recipient (1).
         /// </summary>
-        public MAPIString DisplayName;
+        public BlockString DisplayName;
 
         /// <summary>
         /// This string specifies the simple display name of the recipient (1).
         /// </summary>
-        public MAPIString SimpleDisplayName;
+        public BlockString SimpleDisplayName;
 
         /// <summary>
         /// This string specifies the transmittable display name of the recipient (1).
         /// </summary>
-        public MAPIString TransmittableDisplayName;
+        public BlockString TransmittableDisplayName;
 
         /// <summary>
         /// This value specifies the number of columns from the RecipientColumns field([MS-OXCROPS] section 2.2.6.16.2) that are included in the RecipientProperties field.
         /// </summary>
-        public ushort? RecipientColumnCount;
+        public BlockT<ushort> RecipientColumnCount;
 
         /// <summary>
         /// The columns used for this row are those specified in RecipientProperties.
@@ -102,62 +101,80 @@
         /// <summary>
         /// Parse the RecipientRow structure.
         /// </summary>
-        /// <param name="s">A stream containing the RecipientRow structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RecipientFlags = new RecipientFlags();
-            RecipientFlags.Parse(s);
+            RecipientFlags = Parse<RecipientFlags>();
             if (RecipientFlags.Type.Data == AddressTypeEnum.X500DN)
             {
-                AddressPrefixUsed = ReadByte();
-                DisplayType = (DisplayType)ReadByte();
-                X500DN = new MAPIString(Encoding.ASCII);
-                X500DN.Parse(s);
+                AddressPrefixUsed = ParseT<byte>();
+                DisplayType = ParseT<DisplayType>();
+                X500DN = ParseStringA();
             }
             else if (RecipientFlags.Type.Data == AddressTypeEnum.PersonalDistributionList1 || RecipientFlags.Type.Data == AddressTypeEnum.PersonalDistributionList2)
             {
-                EntryIdSize = ReadUshort();
-                EntryID = new AddressBookEntryID();
-                EntryID.Parse(s);
-                SearchKeySize = ReadUshort();
-                SearchKey = ConvertArray(ReadBytes((int)SearchKeySize));
+                EntryIdSize = ParseT<ushort>();
+                EntryID = Parse<AddressBookEntryID>();
+                SearchKeySize = ParseT<ushort>();
+                SearchKey = ParseBytes(SearchKeySize.Data);
             }
             else if (RecipientFlags.Type.Data == AddressTypeEnum.NoType && RecipientFlags.O.Data)
             {
-                AddressType = new MAPIString(Encoding.ASCII);
-                AddressType.Parse(s);
+                AddressType = ParseStringA();
             }
 
             if (RecipientFlags.E.Data)
             {
-                EmailAddress = new MAPIString((RecipientFlags.U.Data) ? Encoding.Unicode : Encoding.ASCII);
-                EmailAddress.Parse(s);
+                if (RecipientFlags.U.Data)
+                {
+                    EmailAddress = ParseStringW();
+                }
+                else
+                {
+                    EmailAddress = ParseStringA();
+                }
             }
 
             if (RecipientFlags.D.Data)
             {
-                DisplayName = new MAPIString((RecipientFlags.U.Data) ? Encoding.Unicode : Encoding.ASCII);
-                DisplayName.Parse(s);
+                if (RecipientFlags.U.Data)
+                {
+                    DisplayName = ParseStringW();
+                }
+                else
+                {
+                    DisplayName = ParseStringA();
+                }
             }
 
             if (RecipientFlags.I.Data)
             {
-                SimpleDisplayName = new MAPIString((RecipientFlags.U.Data) ? Encoding.Unicode : Encoding.ASCII);
-                SimpleDisplayName.Parse(s);
+                if (RecipientFlags.U.Data)
+                {
+                    SimpleDisplayName = ParseStringW();
+                }
+                else
+                {
+                    SimpleDisplayName = ParseStringA();
+                }
             }
 
             if (RecipientFlags.T.Data)
             {
-                TransmittableDisplayName = new MAPIString((RecipientFlags.U.Data) ? Encoding.Unicode : Encoding.ASCII);
-                TransmittableDisplayName.Parse(s);
+                if (RecipientFlags.U.Data)
+                {
+                    TransmittableDisplayName = ParseStringW();
+                }
+                else
+                {
+                    TransmittableDisplayName = ParseStringA();
+                }
             }
 
-            RecipientColumnCount = ReadUshort();
-            List<PropertyTag> propTagsActually = new List<PropertyTag>();
-            if (propTags.Length >= RecipientColumnCount)
+            RecipientColumnCount = ParseT<ushort>();
+            var propTagsActually = new List<PropertyTag>();
+            if (propTags.Length >= RecipientColumnCount.Data)
             {
-                for (int i = 0; i < RecipientColumnCount; i++)
+                for (int i = 0; i < RecipientColumnCount.Data; i++)
                 {
                     propTagsActually.Add(propTags[i]);
                 }
@@ -167,9 +184,28 @@
                 throw new Exception(string.Format("Request format error: the RecipientColumnCount {0} should be less than RecipientColumns count {1}", RecipientColumnCount, propTags.Length));
             }
 
-            PropertyRow tempPropertyRow = new PropertyRow(propTagsActually.ToArray());
-            RecipientProperties = tempPropertyRow;
-            RecipientProperties.Parse(s);
+            RecipientProperties = new PropertyRow(propTagsActually.ToArray());
+            RecipientProperties.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RecipientRow");
+            AddChild(RecipientFlags, "RecipientFlags");
+            AddChildBlockT(AddressPrefixUsed, "AddressPrefixUsed");
+            AddChildBlockT(DisplayType, "DisplayType");
+            AddChild(X500DN, $"X500DN:{X500DN}");
+            AddChildBlockT(EntryIdSize, "EntryIdSize");
+            AddChild(EntryID, $"EntryID:{EntryID}");
+            AddChild(EntryID, $"SearchKeySize:{SearchKeySize}");
+            if (SearchKey != null) AddChild(SearchKey, $"SearchKey:{SearchKey.ToHexString()}");
+            AddChild(AddressType, $"AddressType:{AddressType}");
+            AddChild(EmailAddress, $"EmailAddress:{EmailAddress}");
+            AddChild(DisplayName, $"DisplayName:{DisplayName}");
+            AddChild(SimpleDisplayName, $"SimpleDisplayName:{SimpleDisplayName}");
+            AddChild(TransmittableDisplayName, $"TransmittableDisplayName:{TransmittableDisplayName}");
+            AddChildBlockT(RecipientColumnCount, "RecipientColumnCount");
+            AddChild(RecipientProperties, "RecipientProperties");
         }
     }
 }

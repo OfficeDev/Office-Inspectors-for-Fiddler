@@ -2,17 +2,8 @@
 
 namespace BlockParser
 {
-    public class BlockStringA : Block
+    public class BlockStringA : BlockString
     {
-        private string data = string.Empty;
-        internal int cchChar = -1;
-
-        public static implicit operator string(BlockStringA block) => block.data;
-
-        public string Data => data;
-        public int Length => data.Length;
-        public bool Empty => string.IsNullOrEmpty(data);
-
         protected override void Parse()
         {
             Parsed = false;
