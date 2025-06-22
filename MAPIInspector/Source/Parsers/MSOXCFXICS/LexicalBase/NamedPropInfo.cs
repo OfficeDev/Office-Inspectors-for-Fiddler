@@ -1,11 +1,11 @@
 ﻿using BlockParser;
-using System;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The NamedPropInfo class.
     /// 2.2.4.1 Lexical structure namedPropInfo
+    /// See PropertyName for more information.
     /// </summary>
     public class NamedPropInfo : Block
     {
@@ -17,7 +17,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// The flag variable.
         /// </summary>
-        public BlockT<byte> Flag;
+        public BlockT<KindEnum> Flag;
 
         /// <summary>
         /// The Dispid in lexical definition.
@@ -32,13 +32,13 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             PropertySet = Parse<BlockGuid>();
-            Flag = ParseT<byte>();
+            Flag = ParseT<KindEnum>();
 
-            if (Flag.Data == 0x00)
+            if (Flag.Data == KindEnum.LID)
             {
                 Dispid = ParseT<uint>();
             }
-            else if (Flag.Data == 0x01)
+            else if (Flag.Data == KindEnum.Name)
             {
                 Name = ParseStringW();
             }
@@ -48,8 +48,8 @@ namespace MAPIInspector.Parsers
         {
             SetText("NamedPropInfo");
 
-            if (PropertySet != null) AddChild(PropertySet, $"PropertySet: {PropertySet}");
-            if (Flag != null) AddChild(Flag, $"Flag:{Flag.Data:X}");
+            AddChild(PropertySet, $"PropertySet: {PropertySet}");
+            AddChildBlockT(Flag, "Flag");
 
             NamedProperty namedProp = null;
             if (PropertySet != null && Dispid != null)
