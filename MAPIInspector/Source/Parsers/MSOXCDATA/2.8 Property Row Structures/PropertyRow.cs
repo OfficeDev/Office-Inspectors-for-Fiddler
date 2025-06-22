@@ -37,21 +37,21 @@
         /// <summary>
         /// Initializes a new instance of the PropertyRow class
         /// </summary>
-        /// <param name="propTags">The array of property tag.</param>
-        public PropertyRow(PropertyTag[] propTags)
+        /// <param name="_propTags">The array of property tag.</param>
+        public PropertyRow(PropertyTag[] _propTags)
         {
-            propTags = propTags;
+            propTags = _propTags;
         }
 
         /// <summary>
         /// Initializes a new instance of the PropertyRow class
         /// </summary>
         /// <param name="size">The size of the structure.</param>
-        /// <param name="propTags">The array of property tag.</param>
-        public PropertyRow(int size, PropertyTag[] propTags)
+        /// <param name="_propTags">The array of property tag.</param>
+        public PropertyRow(int _size, PropertyTag[] _propTags)
         {
-            size = size;
-            propTags = propTags;
+            size = _size;
+            propTags = _propTags;
         }
 
         /// <summary>

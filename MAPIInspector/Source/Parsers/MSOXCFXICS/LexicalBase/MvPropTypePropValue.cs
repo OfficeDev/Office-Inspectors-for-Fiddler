@@ -72,7 +72,7 @@
                         tmpBlock = Parse<PtypGuid>(parser);
                         break;
                     case PropertyDataType.PtypMultipleBinary:
-                        tmpBlock = new PtypBinaryBlock(CountWideEnum.fourBytes);
+                        tmpBlock = new PtypBinary(CountWideEnum.fourBytes);
                         tmpBlock.Parse(parser);
                         break;
                     case PropertyDataType.PtypMultipleString:

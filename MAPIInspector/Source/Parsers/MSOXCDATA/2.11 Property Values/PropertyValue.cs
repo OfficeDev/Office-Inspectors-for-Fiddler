@@ -116,7 +116,7 @@
                 case PropertyDataType.PtypNull: return Parse<PtypNull>(parser);
                 case PropertyDataType.PtypBinary:
                     {
-                        var tempPropertyValue = new PtypBinaryBlock(ptypMultiCountSize);
+                        var tempPropertyValue = new PtypBinary(ptypMultiCountSize);
                         tempPropertyValue.Parse(parser);
                         return tempPropertyValue;
                     }

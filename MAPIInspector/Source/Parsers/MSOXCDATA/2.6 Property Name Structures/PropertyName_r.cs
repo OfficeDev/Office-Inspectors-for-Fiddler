@@ -1,38 +1,45 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System;
     using System.IO;
 
     /// <summary>
     /// 2.6.2 PropertyName_r Structure
     /// </summary>
-    public class PropertyName_r : BaseStructure
+    public class PropertyName_r : Block
     {
         /// <summary>
         /// Encodes the GUID field of the PropertyName structure, as specified in section 2.6.1.
         /// </summary>
-        public Guid GUID;
+        public BlockT<Guid> GUID;
 
         /// <summary>
         /// All clients and servers MUST set this value to 0x00000000.
         /// </summary>
-        public uint Reserved;
+        public BlockT<uint> Reserved;
 
         /// <summary>
         /// This value encodes the LID field in the PropertyName structure, as specified in section 2.6.1.
         /// </summary>
-        public uint LID;
+        public BlockT<uint> LID;
 
         /// <summary>
         /// Parse the PropertyName_r structure.
         /// </summary>
-        /// <param name="s">A stream containing the PropertyName_r structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            GUID = ReadGuid();
-            Reserved = ReadUint();
-            LID = ReadUint();
+            GUID = ParseT<Guid>();
+            Reserved = ParseT<uint>();
+            LID = ParseT<uint>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("PropertyName_r");
+            AddChildBlockT(GUID, "GUID");
+            AddChildBlockT(Reserved, "Reserved");
+            AddChildBlockT(LID, "LID");
         }
     }
 }

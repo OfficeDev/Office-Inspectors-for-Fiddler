@@ -6,12 +6,12 @@
     /// <summary>
     /// 2.7 PropertyProblem Structure
     /// </summary>
-    public class PropertyProblem : BaseStructure
+    public class PropertyProblem : Block
     {
         /// <summary>
         /// An unsigned integer. This value specifies an index into an array of property tags.
         /// </summary>
-        public ushort Index;
+        public BlockT<ushort> Index;
 
         /// <summary>
         /// A PropertyTag structure, as specified in section 2.9.
@@ -21,18 +21,24 @@
         /// <summary>
         /// An unsigned integer. This value specifies the error that occurred when processing this property.
         /// </summary>
-        public PropertyErrorCodes ErrorCode;
+        public BlockT<PropertyErrorCodes> ErrorCode;
 
         /// <summary>
         /// Parse the PropertyProblem structure.
         /// </summary>
-        /// <param name="s">A stream containing the PropertyProblem structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Index = ReadUshort();
-            PropertyTag = Block.Parse<PropertyTag>(s);
-            ErrorCode = (PropertyErrorCodes)ReadUint();
+            Index = ParseT<ushort>();
+            PropertyTag = Parse<PropertyTag>();
+            ErrorCode = ParseT<PropertyErrorCodes>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("PropertyProblem");
+            AddChildBlockT(Index, "Index");
+            AddChild(PropertyTag, "PropertyTag");
+            AddChildBlockT(ErrorCode, "ErrorCode");
         }
     }
 }

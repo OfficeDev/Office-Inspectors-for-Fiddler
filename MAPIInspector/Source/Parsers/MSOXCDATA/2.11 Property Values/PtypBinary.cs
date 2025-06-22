@@ -1,22 +1,23 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     /// 2.11.1 Property Data Types
     /// Variable size; a COUNT field followed by that many bytes.
     /// </summary>
-    public class PtypBinary : BaseStructure
+    public class PtypBinary : Block
     {
         /// <summary>
         /// COUNT values are typically used to specify the size of an associated field.
         /// </summary>
-        public object Count;
+        private Block _count;
+        public uint Count;
 
         /// <summary>
         /// The binary value.
         /// </summary>
-        public byte[] Value;
+        public BlockBytes Value;
 
         /// <summary>
         /// The Count wide size.
@@ -35,13 +36,27 @@
         /// <summary>
         /// Parse the PtypBinary structure.
         /// </summary>
-        /// <param name="s">A stream containing the PtypBinary structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            HelpMethod help = new HelpMethod();
-            Count = help.ReadCount(countWide, s);
-            Value = ReadBytes(Count.GetHashCode());
+            switch (countWide)
+            {
+                case CountWideEnum.twoBytes:
+                    _count = ParseT<ushort>();
+                    Count = (_count as BlockT<ushort>).Data;
+                    break;
+                default:
+                case CountWideEnum.fourBytes:
+                    _count = ParseT<uint>();
+                    Count = (_count as BlockT<uint>).Data;
+                    break;
+            }
+            Value = ParseBytes((int)Count);
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(_count, $"Count:{Count}");
+            AddChild(Value, $"Value:{Value.ToHexString(false)}");
         }
     }
 }

@@ -93,10 +93,10 @@
         /// <summary>
         /// Initializes a new instance of the RecipientRow class
         /// </summary>
-        /// <param name="propTags">The property Tags</param>
-        public RecipientRow(PropertyTag[] propTags)
+        /// <param name="_propTags">The property Tags</param>
+        public RecipientRow(PropertyTag[] _propTags)
         {
-            propTags = propTags;
+            propTags = _propTags;
         }
 
         /// <summary>

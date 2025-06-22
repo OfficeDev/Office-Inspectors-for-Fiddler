@@ -153,7 +153,6 @@
     <Compile Include="Parsers\MSOXCDATA\2.9 PropertyTag Structure\PropertyTag.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PropertyValue.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PtypBinary.cs" />
-    <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PtypBinaryBlock.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PtypBoolean.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PtypBooleanShort.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PtypCurrency.cs" />

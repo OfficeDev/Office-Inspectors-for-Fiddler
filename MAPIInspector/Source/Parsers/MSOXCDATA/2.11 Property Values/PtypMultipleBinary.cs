@@ -27,7 +27,7 @@
         /// <summary>
         /// The array of binary value.
         /// </summary>
-        public PtypBinaryBlock[] Value;
+        public PtypBinary[] Value;
 
         /// <summary>
         /// The Count wide size.
@@ -50,10 +50,10 @@
         {
             Count = ParseT<uint>();
 
-            List<PtypBinaryBlock> tempvalue = new List<PtypBinaryBlock>();
+            List<PtypBinary> tempvalue = new List<PtypBinary>();
             for (int i = 0; i < Count.Data; i++)
             {
-                var binary = new PtypBinaryBlock(countWide);
+                var binary = new PtypBinary(countWide);
                 binary.Parse(parser);
                 tempvalue.Add(binary);
             }

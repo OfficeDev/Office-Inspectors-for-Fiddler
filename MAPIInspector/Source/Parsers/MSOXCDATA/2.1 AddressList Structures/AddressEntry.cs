@@ -1,18 +1,18 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System.Collections.Generic;
-    using System.IO;
 
     /// <summary>
     /// 2.1 AddressList Structures
     /// 2.1.1 AddressEntry Structure
     /// </summary>
-    public class AddressEntry : BaseStructure
+    public class AddressEntry : Block
     {
         /// <summary>
         /// An unsigned integer whose value is equal to the number of associated TaggedPropertyValue structures, as specified in section 2.11.4.
         /// </summary>
-        public uint PropertyCount;
+        public BlockT<uint> PropertyCount;
 
         /// <summary>
         /// A set of TaggedPropertyValue structures representing one addressee.
@@ -22,20 +22,25 @@
         /// <summary>
         /// Parse the AddressEntry structure.
         /// </summary>
-        /// <param name="s">A stream containing the AddressEntry structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            PropertyCount = ReadUint();
-            List<TaggedPropertyValue> tempArray = new List<TaggedPropertyValue>();
-            for (int i = 0; i < PropertyCount; i++)
+            PropertyCount = ParseT<uint>();
+            var tempArray = new List<TaggedPropertyValue>();
+            for (int i = 0; i < PropertyCount.Data; i++)
             {
-                TaggedPropertyValue tempproperty = new TaggedPropertyValue();
-                tempproperty.Parse(s);
+                var tempproperty = new TaggedPropertyValue();
+                tempproperty.Parse(parser);
                 tempArray.Add(tempproperty);
             }
 
             Values = tempArray.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AddressEntry");
+            AddChildBlockT(PropertyCount, "PropertyCount");
+            AddLabeledChildren(Values, "Values");
         }
     }
 }

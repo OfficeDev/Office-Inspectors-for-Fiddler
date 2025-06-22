@@ -1,17 +1,18 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System.Collections.Generic;
     using System.IO;
 
     /// <summary>
     ///  2.1.2 AddressList Structure
     /// </summary>
-    public class AddressList : BaseStructure
+    public class AddressList : Block
     {
         /// <summary>
         /// An unsigned integer whose value is equal to the number of associated addressees.
         /// </summary>
-        public uint AddressCount;
+        public BlockT<uint> AddressCount;
 
         /// <summary>
         /// An array of AddressEntry structures. The number of structures is indicated by the AddressCount field.
@@ -21,20 +22,23 @@
         /// <summary>
         /// Parse the AddressList structure.
         /// </summary>
-        /// <param name="s">A stream containing the AddressList structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            AddressCount = ReadUint();
-            List<AddressEntry> tempArray = new List<AddressEntry>();
-            for (int i = 0; i < AddressCount; i++)
+            AddressCount = ParseT<uint>();
+            var tempArray = new List<AddressEntry>();
+            for (int i = 0; i < AddressCount.Data; i++)
             {
-                AddressEntry tempAddress = new AddressEntry();
-                tempAddress.Parse(s);
-                tempArray.Add(tempAddress);
+                tempArray.Add(Parse<AddressEntry>());
             }
 
             Addresses = tempArray.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AddressList");
+            AddChildBlockT(AddressCount, "AddressCount");
+            AddLabeledChildren(Addresses, "Addresses");
         }
     }
 }
