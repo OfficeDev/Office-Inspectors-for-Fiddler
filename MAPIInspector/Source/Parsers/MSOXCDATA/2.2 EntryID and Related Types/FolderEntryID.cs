@@ -17,7 +17,7 @@
         /// <summary>
         /// The value of this field is determined by where the folder is located.
         /// </summary>
-        public BlockT<Guid> ProviderUID;
+        public BlockGuid ProviderUID;
 
         /// <summary>
         /// One of several Store object types specified in the table in section 2.2.4.
@@ -27,7 +27,7 @@
         /// <summary>
         /// A GUID associated with the Store object and corresponding to the ReplicaId field of the Folder ID structure.
         /// </summary>
-        public BlockT<Guid> DatabaseGuid;
+        public BlockGuid DatabaseGuid;
 
         /// <summary>
         /// An unsigned integer identifying the folder. 6 bytes
@@ -45,7 +45,7 @@
         protected override void Parse()
         {
             Flags = ParseT<uint>();
-            ProviderUID = ParseT<Guid>();
+            ProviderUID = Parse<BlockGuid>();
             // Original implementation looked for this but didn't appear to do anything with it.
             // Provider UID (16 bytes): The value of this field is determined by where the folder is located. For a folder in a
             // private mailbox, this value MUST be set to value of the MailboxGuid field from the RopLogon ROP response buffer
@@ -54,7 +54,7 @@
             // byte[] verifyProviderUID = { 0x1A, 0x44, 0x73, 0x90, 0xAA, 0x66, 0x11, 0xCD, 0x9B, 0xC8, 0x00, 0xAA, 0x00, 0x2F, 0xC4, 0x5A };
 
             FolderType = ParseT<StoreObjectType>();
-            DatabaseGuid = ParseT<Guid>();
+            DatabaseGuid = Parse<BlockGuid>();
             GlobalCounter = ParseBytes(6);
             Pad = ParseT<ushort>();
         }
@@ -62,9 +62,9 @@
         protected override void ParseBlocks()
         {
             AddChildBlockT(Flags, "Flags");
-            AddChildBlockT(ProviderUID, "ProviderUID");
+            AddChild(ProviderUID, $"ProviderUID:{ProviderUID}");
             AddChildBlockT(FolderType, "FolderType");
-            AddChildBlockT(DatabaseGuid, "DatabaseGuid");
+            AddChild(DatabaseGuid, $"DatabaseGuid:{DatabaseGuid}");
             if (GlobalCounter != null) AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
             AddChildBlockT(Pad, "Pad");
         }

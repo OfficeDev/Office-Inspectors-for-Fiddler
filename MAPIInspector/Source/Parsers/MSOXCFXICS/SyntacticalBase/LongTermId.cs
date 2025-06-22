@@ -11,7 +11,7 @@
         /// <summary>
         /// A 128-bit unsigned integer identifying a Store object.
         /// </summary>
-        public BlockT<Guid> DatabaseGuid;
+        public BlockGuid DatabaseGuid;
 
         /// <summary>
         /// An unsigned 48-bit integer identifying the folder within its Store object.
@@ -28,7 +28,7 @@
         /// </summary>
         protected override void Parse()
         {
-            DatabaseGuid = ParseT<Guid>();
+            DatabaseGuid = Parse<BlockGuid>();
             GlobalCounter = ParseBytes(6, 6);
             Pad = ParseT<ushort>();
         }
@@ -36,7 +36,7 @@
         protected override void ParseBlocks()
         {
             SetText("LongTermId");
-            AddChildBlockT(DatabaseGuid, "DatabaseGuid");
+            AddChild(DatabaseGuid, $"DatabaseGuid:{DatabaseGuid}");
             if (GlobalCounter != null) AddChild(GlobalCounter, $"GlobalCounter:{GlobalCounter.ToHexString(false)}");
             AddChildBlockT(Pad, "Pad");
         }

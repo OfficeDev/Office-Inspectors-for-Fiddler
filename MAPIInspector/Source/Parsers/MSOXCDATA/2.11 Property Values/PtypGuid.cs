@@ -12,19 +12,19 @@
         /// <summary>
         /// A GUID value.
         /// </summary>
-        public BlockT<Guid> Value;
+        public BlockGuid Value;
 
         /// <summary>
         /// Parse the PtypGuid structure.
         /// </summary>
         protected override void Parse()
         {
-            Value = ParseT<Guid>();
+            Value = Parse<BlockGuid>();
         }
 
         protected override void ParseBlocks()
         {
-            Text = $"{Value.Data}";
+            Text = Value.ToString();
         }
     }
 }

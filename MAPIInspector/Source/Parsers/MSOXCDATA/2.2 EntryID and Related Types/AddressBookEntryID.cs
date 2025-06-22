@@ -16,7 +16,7 @@
         /// <summary>
         /// The identifier for the provider that created the EntryID.
         /// </summary>
-        public BlockT<Guid> ProviderUID;
+        public BlockGuid ProviderUID;
 
         /// <summary>
         /// This value MUST be set to %x01.00.00.00.
@@ -39,7 +39,7 @@
         protected override void Parse()
         {
             Flags = ParseT<uint>();
-            ProviderUID = ParseT<Guid>();
+            ProviderUID = Parse<BlockGuid>();
             Version = ParseT<uint>();
             Type = ParseT<AddressbookEntryIDtype>();
             X500DN = ParseStringA();
@@ -49,7 +49,7 @@
         {
             SetText("AddressBookEntryID");
             AddChildBlockT(Flags, "Flags");
-            AddChildBlockT(ProviderUID, "ProviderUID");
+            AddChild(ProviderUID, $"ProviderUID:{ProviderUID}");
             AddChildBlockT(Version, "Version");
             AddChildBlockT(Type, "Type");
             if (X500DN != null)

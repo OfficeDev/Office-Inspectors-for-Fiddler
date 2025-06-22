@@ -12,7 +12,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// The PropertySet item in lexical definition.
         /// </summary>
-        public BlockT<Guid> PropertySet;
+        public BlockGuid PropertySet;
 
         /// <summary>
         /// The flag variable.
@@ -31,7 +31,7 @@ namespace MAPIInspector.Parsers
 
         protected override void Parse()
         {
-            PropertySet = ParseT<Guid>();
+            PropertySet = Parse<BlockGuid>();
             Flag = ParseT<byte>();
 
             if (Flag.Data == 0x00)
@@ -48,13 +48,13 @@ namespace MAPIInspector.Parsers
         {
             SetText("NamedPropInfo");
 
-            if (PropertySet != null) AddChild(PropertySet, $"PropertySet: {Guids.ToString(PropertySet.Data)}");
+            if (PropertySet != null) AddChild(PropertySet, $"PropertySet: {PropertySet}");
             if (Flag != null) AddChild(Flag, $"Flag:{Flag.Data:X}");
 
             NamedProperty namedProp = null;
             if (PropertySet != null && Dispid != null)
             {
-                namedProp = NamedProperty.Lookup(PropertySet.Data, Dispid.Data);
+                namedProp = NamedProperty.Lookup(PropertySet.value.Data, Dispid.Data);
             }
 
             if (Dispid != null)

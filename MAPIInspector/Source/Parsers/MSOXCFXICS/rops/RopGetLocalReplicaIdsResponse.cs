@@ -27,7 +27,7 @@
         /// <summary>
         /// This field contains the replica GUID that is shared by the IDs.
         /// </summary>
-        public BlockT<Guid> ReplGuid;
+        public BlockGuid ReplGuid;
 
         /// <summary>
         /// An array of bytes that specifies the first value in the reserved range.
@@ -45,7 +45,7 @@
 
             if (ReturnValue.Data == ErrorCodes.Success)
             {
-                ReplGuid = ParseT<Guid>();
+                ReplGuid = Parse<BlockGuid>();
                 GlobalCount = ParseBytes(6);
             }
         }
@@ -56,7 +56,7 @@
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
             AddChildBlockT(ReturnValue, "ReturnValue");
-            AddChildBlockT(ReplGuid, "ReplGuid");
+            AddChild(ReplGuid, $"ReplGuid:{ReplGuid}");
             AddChild(GlobalCount, "GlobalCount");
         }
     }

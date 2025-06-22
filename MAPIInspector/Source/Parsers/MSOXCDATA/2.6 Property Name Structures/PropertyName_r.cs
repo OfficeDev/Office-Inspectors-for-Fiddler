@@ -12,7 +12,7 @@
         /// <summary>
         /// Encodes the GUID field of the PropertyName structure, as specified in section 2.6.1.
         /// </summary>
-        public BlockT<Guid> GUID;
+        public BlockGuid GUID;
 
         /// <summary>
         /// All clients and servers MUST set this value to 0x00000000.
@@ -29,7 +29,7 @@
         /// </summary>
         protected override void Parse()
         {
-            GUID = ParseT<Guid>();
+            GUID = Parse<BlockGuid>();
             Reserved = ParseT<uint>();
             LID = ParseT<uint>();
         }
@@ -37,7 +37,7 @@
         protected override void ParseBlocks()
         {
             SetText("PropertyName_r");
-            AddChildBlockT(GUID, "GUID");
+            AddChild(GUID, $"GUID:{GUID}");
             AddChildBlockT(Reserved, "Reserved");
             AddChildBlockT(LID, "LID");
         }

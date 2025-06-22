@@ -12,7 +12,7 @@
         /// <summary>
         /// The GUID that identifies the property set for the named property.
         /// </summary>
-        public BlockT<Guid> Guid;
+        public BlockGuid Guid;
 
         /// <summary>
         /// A value that identifies the type of property. 
@@ -39,7 +39,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Guid = ParseT<Guid>();
+            Guid = Parse<BlockGuid>();
             Kind = ParseT<uint>();
 
             if (Kind.Data == 0x00000000)
@@ -57,7 +57,7 @@
         protected override void ParseBlocks()
         {
             SetText("GroupPropertyName");
-            AddChildBlockT(Guid, "Guid");
+            AddChild(Guid, $"Guid:{Guid}");
             AddChildBlockT(Kind, "Kind");
             AddChildBlockT(Lid, "Lid");
             AddChildBlockT(NameSize, "NameSize");

@@ -11,7 +11,7 @@
         /// <summary>
         /// An unsigned integer identifying a Store object.
         /// </summary>
-        public BlockT<Guid> DatabaseGuid;
+        public BlockGuid DatabaseGuid;
 
         /// <summary>
         /// An unsigned integer identifying the folder or message within its Store object. 6 bytes
@@ -28,14 +28,14 @@
         /// </summary>
         protected override void Parse()
         {
-            DatabaseGuid = ParseT<Guid>();
+            DatabaseGuid = Parse<BlockGuid>();
             GlobalCounter = ParseBytes(6);
             Pad = ParseT<ushort>();
         }
 
         protected override void ParseBlocks()
         {
-            AddChildBlockT(DatabaseGuid, "DatabaseGuid");
+            AddChild(DatabaseGuid, $"DatabaseGuid:{DatabaseGuid}");
             if (GlobalCounter != null) AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
             AddChildBlockT(Pad, "Pad");
         }

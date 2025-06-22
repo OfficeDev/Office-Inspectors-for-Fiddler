@@ -17,7 +17,7 @@
         /// <summary>
         /// The GUID that identifies the property set for the named property.
         /// </summary>
-        public AnnotatedGuid GUID;
+        public BlockGuid GUID;
 
         /// <summary>
         /// This field is present only if the value of the Kind field is equal to 0x00.
@@ -42,13 +42,14 @@
         {
             base.Parse(s);
             Kind = (KindEnum)ReadByte();
-            GUID = new AnnotatedGuid(s);
+            GUID = new BlockGuid();
+            GUID.Parse(s);
             switch (Kind)
             {
                 case KindEnum.LID:
                     {
                         LID = new AnnotatedUint(s);
-                        var namedProp = NamedProperty.Lookup(GUID.value, LID.value);
+                        var namedProp = NamedProperty.Lookup(GUID.value.Data, LID.value);
                         if (namedProp != null)
                             LID.ParsedValue = $"{namedProp.Name} = 0x{LID.value:X4}";
                         else

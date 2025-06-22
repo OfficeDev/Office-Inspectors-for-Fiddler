@@ -12,7 +12,7 @@
         /// <summary>
         /// A GUID that identifies the nameSpace that the identifier specified by LocalId belongs to
         /// </summary>
-        public BlockT<Guid> NamespaceGuid;
+        public BlockGuid NamespaceGuid;
 
         /// <summary>
         /// A variable binary value that contains the ID of the entity in the nameSpace specified by NamespaceGuid.
@@ -38,14 +38,14 @@
         /// </summary>
         protected override void Parse()
         {
-            NamespaceGuid = ParseT<Guid>();
+            NamespaceGuid = Parse<BlockGuid>();
             LocalId = ParseBytes(length - 16); // sizeof Guid is 16 bytes
         }
 
         protected override void ParseBlocks()
         {
             SetText("XID");
-            AddChildBlockT(NamespaceGuid, "NamespaceGuid");
+            AddChild(NamespaceGuid, $"NamespaceGuid:{NamespaceGuid}");
             AddLabeledChild(LocalId, "LocalId");
         }
     }

@@ -18,7 +18,7 @@
         /// <summary>
         /// The identifier for the provider that created the EntryID.
         /// </summary>
-        public BlockT<Guid> ProviderUID;
+        public BlockGuid ProviderUID;
 
         /// <summary>
         /// This value MUST be set to zero.
@@ -43,7 +43,7 @@
         /// <summary>
         /// This Wrapped Provider UID.
         /// </summary>
-        public BlockT<Guid> WrappedProviderUID;
+        public BlockGuid WrappedProviderUID;
 
         /// <summary>
         /// The value of this field is determined by where the folder is located.
@@ -66,12 +66,12 @@
         protected override void Parse()
         {
             Flags = ParseT<uint>();
-            ProviderUID = ParseT<Guid>();
+            ProviderUID = Parse<BlockGuid>();
             Version = ParseT<byte>();
             Flag = ParseT<byte>();
             DLLFileName = ParseBytes(14);
             WrappedFlags = ParseT<uint>();
-            WrappedProviderUID = ParseT<Guid>();
+            WrappedProviderUID = Parse<BlockGuid>();
             WrappedType = ParseT<uint>();
             ServerShortname = ParseStringA();
             MailboxDN = ParseStringA();
@@ -81,12 +81,12 @@
         {
             SetText("StoreObjectEntryID");
             AddChildBlockT(Flags, "Flags");
-            AddChildBlockT(ProviderUID, "ProviderUID");
+            AddChild(ProviderUID, $"ProviderUID:{ProviderUID}");
             AddChildBlockT(Version, "Version");
             AddChildBlockT(Flag, "Flag");
             if (DLLFileName != null) AddChild(DLLFileName, $"DLLFileName:{DLLFileName.ToHexString(false)}");
             AddChildBlockT(WrappedFlags, "WrappedFlags");
-            AddChildBlockT(WrappedProviderUID, "WrappedProviderUID");
+            AddChild(WrappedProviderUID, $"WrappedProviderUID:{WrappedProviderUID}");
             AddChildBlockT(WrappedType, "WrappedType");
             if (ServerShortname != null) AddChild(ServerShortname, $"ServerShortname:{ServerShortname}");
             if (MailboxDN != null) AddChild(MailboxDN, $"MailboxDN:{MailboxDN}");

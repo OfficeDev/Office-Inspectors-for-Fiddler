@@ -12,7 +12,7 @@
         /// <summary>
         /// A GUID that identifies a REPLGUID structure. 
         /// </summary>
-        public BlockT<Guid> REPLGUID;
+        public BlockGuid REPLGUID;
 
         /// <summary>
         /// A serialized GLOBSET structure.
@@ -24,14 +24,14 @@
         /// </summary>
         protected override void Parse()
         {
-            REPLGUID = ParseT<Guid>();
+            REPLGUID = Parse<BlockGuid>();
             GLOBSET = Parse<GLOBSET>();
         }
 
         protected override void ParseBlocks()
         {
             SetText("IDSET_REPLGUID");
-            AddChildBlockT(REPLGUID, "REPLGUID");
+            AddChild(REPLGUID, $"REPLGUID:{REPLGUID}");
             AddChild(GLOBSET, "GLOBSET");
         }
     }
