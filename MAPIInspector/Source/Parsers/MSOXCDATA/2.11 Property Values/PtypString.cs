@@ -15,7 +15,7 @@
         /// <summary>
         /// A string of Unicode characters in UTF-16LE format encoding with terminating null character (0x0000).
         /// </summary>
-        public BlockStringW Value;
+        public BlockString Value;
 
         /// <summary>
         /// The Count wide size.

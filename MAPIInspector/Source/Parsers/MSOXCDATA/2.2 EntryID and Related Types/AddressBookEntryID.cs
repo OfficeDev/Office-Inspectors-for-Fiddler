@@ -31,7 +31,7 @@
         /// <summary>
         /// The X500 DN of the Address Book object.
         /// </summary>
-        public BlockStringA X500DN;
+        public BlockString X500DN; // Ascii
 
         /// <summary>
         /// Parse the AddressBookEntryID structure.
@@ -52,10 +52,7 @@
             AddChild(ProviderUID, $"ProviderUID:{ProviderUID}");
             AddChildBlockT(Version, "Version");
             AddChildBlockT(Type, "Type");
-            if (X500DN != null)
-            {
-                AddChild(X500DN, $"X500DN:{X500DN}");
-            }
+            AddChild(X500DN, $"X500DN:{X500DN}");
         }
     }
 }

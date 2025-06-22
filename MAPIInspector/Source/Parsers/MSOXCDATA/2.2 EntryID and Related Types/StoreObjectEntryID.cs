@@ -53,12 +53,12 @@
         /// <summary>
         /// A string of single-byte characters terminated by a single zero byte, indicating the short name or NetBIOS name of the server.
         /// </summary>
-        public BlockStringA ServerShortname;
+        public BlockString ServerShortname;
 
         /// <summary>
         /// A string of single-byte characters terminated by a single zero byte and representing the X500 DN of the mailbox, as specified in [MS-OXOAB].
         /// </summary>
-        public BlockStringA MailboxDN;
+        public BlockString MailboxDN;
 
         /// <summary>
         /// Parse the StoreObjectEntryID structure.
@@ -88,8 +88,8 @@
             AddChildBlockT(WrappedFlags, "WrappedFlags");
             AddChild(WrappedProviderUID, $"WrappedProviderUID:{WrappedProviderUID}");
             AddChildBlockT(WrappedType, "WrappedType");
-            if (ServerShortname != null) AddChild(ServerShortname, $"ServerShortname:{ServerShortname}");
-            if (MailboxDN != null) AddChild(MailboxDN, $"MailboxDN:{MailboxDN}");
+            AddChild(ServerShortname, $"ServerShortname:{ServerShortname}");
+            AddChild(MailboxDN, $"MailboxDN:{MailboxDN}");
         }
     }
 }

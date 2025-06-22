@@ -32,7 +32,7 @@
         /// <summary>
         /// This field is present only if Kind is equal to 0x01.
         /// </summary>
-        public BlockStringW Name;
+        public BlockString Name; // Unicode
 
         /// <summary>
         /// Parse the PropertyName structure.
@@ -78,7 +78,7 @@
                     AddChild(LID, $"Dispid: 0x{LID.Data:X4}");
             }
 
-            if (Name != null) AddChild(Name, $"Name: {Name.Data}");
+            AddChild(Name, $"Name: {Name.Data}");
         }
     }
 }

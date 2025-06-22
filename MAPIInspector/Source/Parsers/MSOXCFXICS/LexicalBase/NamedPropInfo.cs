@@ -27,7 +27,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// The name of the NamedPropInfo.
         /// </summary>
-        public BlockStringW Name;
+        public BlockString Name; // Unicode;
 
         protected override void Parse()
         {
@@ -65,7 +65,7 @@ namespace MAPIInspector.Parsers
                     AddChild(Dispid, $"Dispid: 0x{Dispid.Data:X4}");
             }
 
-            if (Name != null) AddChild(Name, $"Name: {Name.Data}");
+            AddChild(Name, $"Name: {Name}");
         }
     }
 }

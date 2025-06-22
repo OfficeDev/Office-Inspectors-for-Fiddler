@@ -15,7 +15,7 @@
         /// <summary>
         /// A string of multibyte characters in externally specified encoding with terminating null character (single 0 byte).
         /// </summary>
-        public BlockStringA Value;
+        public BlockString Value;
 
         /// <summary>
         /// The Count wide size.

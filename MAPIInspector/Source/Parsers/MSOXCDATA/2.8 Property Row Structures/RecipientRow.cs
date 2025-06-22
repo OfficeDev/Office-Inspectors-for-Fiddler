@@ -27,7 +27,7 @@
         /// <summary>
         /// A null-terminated ASCII string.
         /// </summary>
-        public BlockStringA X500DN;
+        public BlockString X500DN;
 
         /// <summary>
         /// An unsigned integer. This field MUST be present when the Type field of the RecipientFlags field is set to PersonalDistributionList1 (0x6) or PersonalDistributionList2 (0x7).
@@ -52,7 +52,7 @@
         /// <summary>
         /// This string specifies the address type of the recipient (1).
         /// </summary>
-        public BlockStringA AddressType;
+        public BlockString AddressType; // Ascii
 
         /// <summary>
         /// This string specifies the email address of the recipient (1).
@@ -122,53 +122,10 @@
                 AddressType = ParseStringA();
             }
 
-            if (RecipientFlags.E.Data)
-            {
-                if (RecipientFlags.U.Data)
-                {
-                    EmailAddress = ParseStringW();
-                }
-                else
-                {
-                    EmailAddress = ParseStringA();
-                }
-            }
-
-            if (RecipientFlags.D.Data)
-            {
-                if (RecipientFlags.U.Data)
-                {
-                    DisplayName = ParseStringW();
-                }
-                else
-                {
-                    DisplayName = ParseStringA();
-                }
-            }
-
-            if (RecipientFlags.I.Data)
-            {
-                if (RecipientFlags.U.Data)
-                {
-                    SimpleDisplayName = ParseStringW();
-                }
-                else
-                {
-                    SimpleDisplayName = ParseStringA();
-                }
-            }
-
-            if (RecipientFlags.T.Data)
-            {
-                if (RecipientFlags.U.Data)
-                {
-                    TransmittableDisplayName = ParseStringW();
-                }
-                else
-                {
-                    TransmittableDisplayName = ParseStringA();
-                }
-            }
+            if (RecipientFlags.E.Data) EmailAddress = RecipientFlags.U.Data ? ParseStringW() : ParseStringA();
+            if (RecipientFlags.D.Data) DisplayName = RecipientFlags.U.Data ? ParseStringW() : ParseStringA();
+            if (RecipientFlags.I.Data) SimpleDisplayName = RecipientFlags.U.Data ? ParseStringW() : ParseStringA();
+            if (RecipientFlags.T.Data) TransmittableDisplayName = RecipientFlags.U.Data ? ParseStringW() : ParseStringA();
 
             RecipientColumnCount = ParseT<ushort>();
             var propTagsActually = new List<PropertyTag>();
