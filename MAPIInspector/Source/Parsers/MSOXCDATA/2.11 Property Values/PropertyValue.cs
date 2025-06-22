@@ -4,6 +4,7 @@
 
     /// <summary>
     /// 2.11.2 Property Value Structures
+    /// 2.11.2.1 PropertyValue Structure
     /// </summary>
     public class PropertyValue : Block
     {
@@ -25,12 +26,7 @@
         /// <summary>
         /// Bool value indicates if this property value is for address book.
         /// </summary>
-        private bool isAddressBook;
-
-        /// <summary>
-        /// Source property tag information
-        /// </summary>
-        public AnnotatedComment PropertyTag;
+        private readonly bool isAddressBook;
 
         /// <summary>
         /// Initializes a new instance of the PropertyValue class
@@ -42,15 +38,6 @@
         {
             countWide = ptypMultiCountSize;
             propertyType = _propertyType;
-            isAddressBook = addressBook;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the PropertyValue class.
-        /// </summary>
-        /// <param name="addressBook">The AddressBook</param>
-        public PropertyValue(bool addressBook = false)
-        {
             isAddressBook = addressBook;
         }
 
@@ -79,7 +66,7 @@
         /// The method to return the object of PropertyValue.
         /// </summary>
         /// <param name="dataType">The Property data type.</param>
-        /// <param name="s">A stream containing the PropertyValue structure</param>
+        /// <param name="parser">A BinaryParser containing the PropertyValue structure</param>
         /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
         /// <returns>The object of PropertyValue.</returns>
         static public Block ReadPropertyValue(PropertyDataType dataType, BinaryParser parser, CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes, bool bIsAddressBook = false)

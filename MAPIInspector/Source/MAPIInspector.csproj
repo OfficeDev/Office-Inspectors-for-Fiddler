@@ -199,7 +199,6 @@
     <Compile Include="Parsers\MSOXCDATA\AnnotatedComment.cs" />
     <Compile Include="Parsers\MSOXCDATA\AnnotatedData.cs" />
     <Compile Include="Parsers\MSOXCDATA\BlockGuid.cs" />
-    <Compile Include="Parsers\MSOXCDATA\AnnotatedUint.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\CountWideEnum.cs" />
     <Compile Include="Parsers\MSOXCDATA\HelpMethod.cs" />
     <Compile Include="Parsers\MSOXCDATA\MAPIString.cs" />
