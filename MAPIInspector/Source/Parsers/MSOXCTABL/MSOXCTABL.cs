@@ -218,7 +218,7 @@
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public BlockT<uint> ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An enumeration that specifies the status of the table.
@@ -229,7 +229,7 @@
         {
             RopId = ParseT<RopIdType>();
             InputHandleIndex = ParseT<byte>();
-            ReturnValue = ParseT<uint>();
+            ReturnValue = ParseT<ErrorCodes>();
 
             if (ReturnValue.Data == (uint)ErrorCodes.Success)
             {
@@ -242,8 +242,7 @@
             SetText("RopSetColumnsResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            var returnValue = HelpMethod.FormatErrorCode(ReturnValue.Data);
-            AddChild(ReturnValue, "ReturnValue:{0}", returnValue);
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             if (TableStatus.Parsed)
             {
                 AddChildBlockT(TableStatus, "TableStatus");
@@ -368,7 +367,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -471,7 +470,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -602,7 +601,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -696,7 +695,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -776,7 +775,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -861,7 +860,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -952,7 +951,7 @@
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public BlockT<uint> ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// A Boolean that specifies whether the full number of rows sought past was less than the number that was requested.
@@ -971,7 +970,7 @@
         {
             RopId = ParseT<RopIdType>();
             InputHandleIndex = ParseT<byte>();
-            ReturnValue = ParseT<uint>();
+            ReturnValue = ParseT<ErrorCodes>();
             if (ReturnValue.Data == (uint)ErrorCodes.Success)
             {
                 HasSoughtLess = ParseAs<byte, bool>();
@@ -984,8 +983,7 @@
             SetText("RopSeekRowResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            var returnValue = HelpMethod.FormatErrorCode(ReturnValue.Data);
-            AddChild(ReturnValue, "ReturnValue:{0}", returnValue);
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             if (HasSoughtLess != null) AddChildBlockT(HasSoughtLess, "HasSoughtLess");
             if (RowsSought != null) AddChildBlockT(RowsSought, "RowsSought");
         }
@@ -1096,7 +1094,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -1185,7 +1183,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
         }
     }
     #endregion
@@ -1265,7 +1263,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -1351,7 +1349,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -1505,7 +1503,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -1600,7 +1598,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
         }
     }
     #endregion
@@ -1670,7 +1668,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
         }
     }
     #endregion
@@ -1781,7 +1779,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -1877,7 +1875,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -1974,7 +1972,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -2072,7 +2070,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {

@@ -1,5 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
+
     /// <summary>
     /// 2.4 Error Codes
     /// </summary>

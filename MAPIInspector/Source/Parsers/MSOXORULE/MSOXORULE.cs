@@ -251,7 +251,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
         }
     }
 
@@ -377,7 +377,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
         }
     }
     #endregion
@@ -469,7 +469,7 @@
             base.Parse(s);
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
         }
     }
     #endregion

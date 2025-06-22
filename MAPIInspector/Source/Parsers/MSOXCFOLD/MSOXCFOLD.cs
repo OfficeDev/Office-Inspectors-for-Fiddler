@@ -337,7 +337,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -517,7 +517,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.OutputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -632,7 +632,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
             this.PartialCompletion = this.ReadBoolean();
         }
     }
@@ -747,7 +747,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
         }
     }
 
@@ -866,7 +866,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -1008,7 +1008,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.SourceHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
             if ((AdditionalErrorCodes)this.ReturnValue == AdditionalErrorCodes.NullDestinationObject)
             {
                 this.DestHandleIndex = this.ReadUint();
@@ -1138,7 +1138,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.SourceHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
             if ((AdditionalErrorCodes)this.ReturnValue == AdditionalErrorCodes.NullDestinationObject)
             {
                 this.DestHandleIndex = this.ReadUint();
@@ -1274,7 +1274,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.SourceHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
             if ((AdditionalErrorCodes)this.ReturnValue == AdditionalErrorCodes.NullDestinationObject)
             {
                 this.DestHandleIndex = this.ReadUint();
@@ -1371,7 +1371,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
             this.PartialCompletion = this.ReadBoolean();
         }
     }
@@ -1460,7 +1460,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
             this.PartialCompletion = this.ReadBoolean();
         }
     }
@@ -1569,7 +1569,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
             this.PartialCompletion = this.ReadBoolean();
         }
     }
@@ -1678,7 +1678,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
             this.PartialCompletion = this.ReadBoolean();
         }
     }
@@ -1767,7 +1767,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
@@ -1867,7 +1867,7 @@
 
             this.RopId = (RopIdType)this.ReadByte();
             this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode(this.ReadUint());
+            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
 
             if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
             {
