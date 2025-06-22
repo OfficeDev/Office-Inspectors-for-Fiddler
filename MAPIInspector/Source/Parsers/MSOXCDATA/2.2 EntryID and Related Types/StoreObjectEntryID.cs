@@ -1,82 +1,95 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
+    using System;
     using System.IO;
     using System.Text;
 
     /// <summary>
     /// 2.2.4.3 Store Object EntryID Structure
     /// </summary>
-    public class StoreObjectEntryID : BaseStructure
+    public class StoreObjectEntryID : Block
     {
         /// <summary>
         /// This value MUST be set to 0x00000000. Bits in this field indicate under what circumstances a short-term EntryID is valid.
         /// </summary>
-        public uint Flags;
+        public BlockT<uint> Flags;
 
         /// <summary>
         /// The identifier for the provider that created the EntryID.
         /// </summary>
-        public byte[] ProviderUID;
+        public BlockT<Guid> ProviderUID;
 
         /// <summary>
         /// This value MUST be set to zero.
         /// </summary>
-        public byte Version;
+        public BlockT<byte> Version;
 
         /// <summary>
         /// This value MUST be set to zero.
         /// </summary>
-        public byte Flag;
+        public BlockT<byte> Flag;
 
         /// <summary>
         /// This field MUST be set to the following value, which represents "emsmdb.dll": %x45.4D.53.4D.44.42.2E.44.4C.4C.00.00.00.00.
         /// </summary>
-        public byte[] DLLFileName;
+        public BlockBytes DLLFileName; // 14 bytes
 
         /// <summary>
         /// This value MUST be set to 0x00000000
         /// </summary>
-        public uint WrappedFlags;
+        public BlockT<uint> WrappedFlags;
 
         /// <summary>
         /// This Wrapped Provider UID.
         /// </summary>
-        public byte[] WrappedProviderUID;
+        public BlockT<Guid> WrappedProviderUID;
 
         /// <summary>
         /// The value of this field is determined by where the folder is located.
         /// </summary>
-        public uint WrappedType;
+        public BlockT<uint> WrappedType;
 
         /// <summary>
         /// A string of single-byte characters terminated by a single zero byte, indicating the short name or NetBIOS name of the server.
         /// </summary>
-        public MAPIString ServerShortname;
+        public BlockStringA ServerShortname;
 
         /// <summary>
         /// A string of single-byte characters terminated by a single zero byte and representing the X500 DN of the mailbox, as specified in [MS-OXOAB].
         /// </summary>
-        public MAPIString MailboxDN;
+        public BlockStringA MailboxDN;
 
         /// <summary>
         /// Parse the StoreObjectEntryID structure.
         /// </summary>
-        /// <param name="s">A stream containing the StoreObjectEntryID structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Flags = ReadUint();
-            ProviderUID = ReadBytes(16);
-            Version = ReadByte();
-            Flag = ReadByte();
-            DLLFileName = ReadBytes(14);
-            WrappedFlags = ReadUint();
-            WrappedProviderUID = ReadBytes(16);
-            WrappedType = ReadUint();
-            ServerShortname = new MAPIString(Encoding.ASCII);
-            ServerShortname.Parse(s);
-            MailboxDN = new MAPIString(Encoding.ASCII);
-            MailboxDN.Parse(s);
+            Flags = ParseT<uint>();
+            ProviderUID = ParseT<Guid>();
+            Version = ParseT<byte>();
+            Flag = ParseT<byte>();
+            DLLFileName = ParseBytes(14);
+            WrappedFlags = ParseT<uint>();
+            WrappedProviderUID = ParseT<Guid>();
+            WrappedType = ParseT<uint>();
+            ServerShortname = ParseStringA();
+            MailboxDN = ParseStringA();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("StoreObjectEntryID");
+            AddChildBlockT(Flags, "Flags");
+            AddChildBlockT(ProviderUID, "ProviderUID");
+            AddChildBlockT(Version, "Version");
+            AddChildBlockT(Flag, "Flag");
+            if (DLLFileName != null) AddChild(DLLFileName, $"DLLFileName:{DLLFileName.ToHexString(false)}");
+            AddChildBlockT(WrappedFlags, "WrappedFlags");
+            AddChildBlockT(WrappedProviderUID, "WrappedProviderUID");
+            AddChildBlockT(WrappedType, "WrappedType");
+            if (ServerShortname != null) AddChild(ServerShortname, $"ServerShortname:{ServerShortname}");
+            if (MailboxDN != null) AddChild(MailboxDN, $"MailboxDN:{MailboxDN}");
         }
     }
 }

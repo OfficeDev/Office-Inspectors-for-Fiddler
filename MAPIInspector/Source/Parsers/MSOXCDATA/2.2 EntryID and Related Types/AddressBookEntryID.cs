@@ -1,51 +1,61 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
-    using System.Text;
+    using BlockParser;
+    using System;
 
     /// <summary>
     /// 2.2.5.2  Address Book EntryID Structure
     /// </summary>
-    public class AddressBookEntryID : BaseStructure
+    public class AddressBookEntryID : Block
     {
         /// <summary>
         /// This value MUST be set to 0x00000000, indicating a long-term EntryID.
         /// </summary>
-        public uint Flags;
+        public BlockT<uint> Flags;
 
         /// <summary>
         /// The identifier for the provider that created the EntryID.
         /// </summary>
-        public byte[] ProviderUID;
+        public BlockT<Guid> ProviderUID;
 
         /// <summary>
         /// This value MUST be set to %x01.00.00.00.
         /// </summary>
-        public uint Version;
+        public BlockT<uint> Version;
 
         /// <summary>
         /// An integer representing the type of the object.
         /// </summary>
-        public AddressbookEntryIDtype Type;
+        public BlockT<AddressbookEntryIDtype> Type;
 
         /// <summary>
         /// The X500 DN of the Address Book object.
         /// </summary>
-        public MAPIString X500DN;
+        public BlockStringA X500DN;
 
         /// <summary>
         /// Parse the AddressBookEntryID structure.
         /// </summary>
-        /// <param name="s">A stream containing the AddressBookEntryID structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Flags = ReadUint();
-            ProviderUID = ReadBytes(16);
-            Version = ReadUint();
-            Type = (AddressbookEntryIDtype)ReadUint();
-            X500DN = new MAPIString(Encoding.ASCII);
-            X500DN.Parse(s);
+            Flags = ParseT<uint>();
+            ProviderUID = ParseT<Guid>();
+            Version = ParseT<uint>();
+            Type = ParseT<AddressbookEntryIDtype>();
+            X500DN = ParseStringA();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AddressBookEntryID");
+            AddChildBlockT(Flags, "Flags");
+            AddChildBlockT(ProviderUID, "ProviderUID");
+            AddChildBlockT(Version, "Version");
+            AddChildBlockT(Type, "Type");
+            if (X500DN != null)
+            {
+                AddChild(X500DN, $"X500DN:{X500DN}");
+            }
         }
     }
 }
