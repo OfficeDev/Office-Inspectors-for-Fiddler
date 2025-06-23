@@ -2,7 +2,6 @@
 {
     using BlockParser;
     using System.Collections.Generic;
-    using System.IO;
 
     /// <summary>
     ///  2.1.2 AddressList Structure

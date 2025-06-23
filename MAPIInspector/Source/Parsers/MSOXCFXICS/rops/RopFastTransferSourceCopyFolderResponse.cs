@@ -38,7 +38,7 @@
             SetText("RopFastTransferSourceCopyFolderResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
-            AddChildBlockT(ReturnValue, "ReturnValue");
+            AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
         }
     }
 }

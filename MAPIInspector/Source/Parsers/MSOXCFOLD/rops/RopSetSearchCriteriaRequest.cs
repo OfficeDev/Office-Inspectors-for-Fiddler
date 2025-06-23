@@ -1,33 +1,33 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System.Collections.Generic;
-    using System.IO;
 
     /// <summary>
     /// 2.2.1.4 RopSetSearchCriteria ROP
     /// The RopSetSearchCriteria ROP ([MS-OXCROPS] section 2.2.4.4) establishes search criteria for a search folder.
     /// </summary>
-    public class RopSetSearchCriteriaRequest : BaseStructure
+    public class RopSetSearchCriteriaRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the length of the RestrictionData field.
         /// </summary>
-        public ushort RestrictionDataSize;
+        public BlockT<ushort> RestrictionDataSize;
 
         /// <summary>
         /// A restriction packet, as specified in [MS-OXCDATA] section 2.12, that specifies the filter for this search folder. 
@@ -37,7 +37,7 @@
         /// <summary>
         /// An unsigned integer that specifies the number of identifiers in the FolderIds field.
         /// </summary>
-        public ushort FolderIdCount;
+        public BlockT<ushort> FolderIdCount;
 
         /// <summary>
         /// An array of 64-bit identifiers that specifies which folders are searched. 
@@ -47,37 +47,45 @@
         /// <summary>
         /// A flags structure that contains flags that control the search for a search folder.
         /// </summary>
-        public SearchRequestFlags SearchFlags;
+        public BlockT<SearchRequestFlags> SearchFlags;
 
         /// <summary>
         /// Parse the RopSetSearchCriteriaRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSetSearchCriteriaRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            InputHandleIndex = ReadByte();
-            RestrictionDataSize = ReadUshort();
-            if (RestrictionDataSize > 0)
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            RestrictionDataSize = ParseT<ushort>();
+            if (RestrictionDataSize.Data > 0)
             {
                 RestrictionData = new RestrictionType();
-                RestrictionData.Parse(s);
+                RestrictionData.Parse(parser);
             }
 
-            FolderIdCount = ReadUshort();
-            List<FolderID> tempFolderIDs = new List<FolderID>();
-            for (int i = 0; i < FolderIdCount; i++)
+            FolderIdCount = ParseT<ushort>();
+            var tempFolderIDs = new List<FolderID>();
+            for (int i = 0; i < FolderIdCount.Data; i++)
             {
-                FolderID folderID = new FolderID();
-                folderID.Parse(s);
-                tempFolderIDs.Add(folderID);
+                tempFolderIDs.Add(Parse<FolderID>());
             }
 
             FolderIds = tempFolderIDs.ToArray();
-            SearchFlags = (SearchRequestFlags)ReadUint();
+            SearchFlags = ParseT<SearchRequestFlags>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopSetSearchCriteriaRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(RestrictionDataSize, "RestrictionDataSize");
+            AddChild(RestrictionData);
+            AddChildBlockT(FolderIdCount, "FolderIdCount");
+            AddLabeledChildren(FolderIds, "FolderIds");
+            AddChildBlockT(SearchFlags, "SearchFlags");
         }
     }
 }

@@ -68,7 +68,7 @@
             SetText("RopFastTransferDestinationPutBufferExtendedResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            AddChildBlockT(ReturnValue, "ReturnValue");
+            AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(TransferStatus, "TransferStatus");
             AddChildBlockT(InProgressCount, "InProgressCount");
             AddChildBlockT(TotalStepCount, "TotalStepCount");

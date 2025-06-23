@@ -1,35 +1,32 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
-    using System.IO;
-    #region 2.2.1.2 RopCreateFolder ROP
-
-    #endregion
-
     /// <summary>
     /// 2.2.1.3 RopDeleteFolder ROP
     /// The RopDeleteFolder ROP ([MS-OXCROPS] section 2.2.4.3) removes a folder. 
     /// </summary>
-    public class RopDeleteFolderRequest : BaseStructure
+    public class RopDeleteFolderRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// A flags structure that contains flags that control how to delete the folder. 
         /// </summary>
-        public DeleteFolderFlags DeleteFolderFlags;
+        public BlockT<DeleteFolderFlags> DeleteFolderFlags;
 
         /// <summary>
         /// An identifier that specifies the folder to be deleted.
@@ -39,17 +36,23 @@
         /// <summary>
         /// Parse the RopDeleteFolderRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopDeleteFolderRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            DeleteFolderFlags = ParseT<DeleteFolderFlags>();
+            FolderId = Parse<FolderID>();
+        }
 
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            InputHandleIndex = ReadByte();
-            DeleteFolderFlags = (DeleteFolderFlags)ReadByte();
-            FolderId = new FolderID();
-            FolderId.Parse(s);
+        protected override void ParseBlocks()
+        {
+            SetText("RopDeleteFolderRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(DeleteFolderFlags, "DeleteFolderFlags");
+            AddChild(FolderId, "FolderId");
         }
     }
 }

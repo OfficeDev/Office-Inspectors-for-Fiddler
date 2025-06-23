@@ -39,7 +39,7 @@ namespace MAPIInspector.Parsers
             SetText("RopTellVersionResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            AddChildBlockT(ReturnValue, "ReturnValue");
+            AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
         }
     }
 }

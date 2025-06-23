@@ -48,7 +48,7 @@ namespace MAPIInspector.Parsers
             SetText("RopSynchronizationImportHierarchyChangeResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            AddChildBlockT(ReturnValue, "ReturnValue");
+            AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             AddChild(FolderId, "FolderId");
         }
     }

@@ -1,7 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using System;
 
     /// <summary>
     /// 2.2.5.2  Address Book EntryID Structure

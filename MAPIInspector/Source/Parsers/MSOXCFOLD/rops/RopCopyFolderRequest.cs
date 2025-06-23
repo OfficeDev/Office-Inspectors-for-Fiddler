@@ -1,48 +1,47 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
-    using System.Text;
+    using BlockParser;
 
     /// <summary>
     /// 2.2.1.8 RopCopyFolder ROP
     /// The RopCopyFolder ROP ([MS-OXCROPS] section 2.2.4.8) copies a folder from one parent folder to another parent folder. 
     /// </summary>
-    public class RopCopyFolderRequest : BaseStructure
+    public class RopCopyFolderRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the source Server object is stored. 
         /// </summary>
-        public byte SourceHandleIndex;
+        public BlockT<byte> SourceHandleIndex;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the destination Server object is stored. 
         /// </summary>
-        public byte DestHandleIndex;
+        public BlockT<byte> DestHandleIndex;
 
         /// <summary>
         /// A Boolean that specifies whether the operation is to be processed asynchronously with status reported via the RopProgress ROP (section 2.2.8.13).
         /// </summary>
-        public bool WantAsynchronous;
+        public BlockT<bool> WantAsynchronous;
 
         /// <summary>
         /// A Boolean that specifies that the copy is recursive.
         /// </summary>
-        public bool WantRecursive;
+        public BlockT<bool> WantRecursive;
 
         /// <summary>
         /// A Boolean that specifies whether the NewFolderName field contains Unicode characters.
         /// </summary>
-        public bool UseUnicode;
+        public BlockT<bool> UseUnicode;
 
         /// <summary>
         /// An identifier that specifies the folder to be moved.
@@ -52,35 +51,36 @@
         /// <summary>
         /// A null-terminated string that specifies the name for the new moved folder. 
         /// </summary>
-        public MAPIString NewFolderName;
+        public BlockString NewFolderName;
 
         /// <summary>
         /// Parse the RopCopyFolderRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopCopyFolderRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            SourceHandleIndex = ParseT<byte>();
+            DestHandleIndex = ParseT<byte>();
+            WantAsynchronous = ParseAs<byte, bool>();
+            WantRecursive = ParseAs<byte, bool>();
+            UseUnicode = ParseAs<byte, bool>();
+            FolderId = Parse<FolderID>();
+            NewFolderName = UseUnicode.Data ? ParseStringW() : ParseStringA();
+        }
 
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            SourceHandleIndex = ReadByte();
-            DestHandleIndex = ReadByte();
-            WantAsynchronous = ReadBoolean();
-            WantRecursive = ReadBoolean();
-            UseUnicode = ReadBoolean();
-            FolderId = new FolderID();
-            FolderId.Parse(s);
-            if (UseUnicode)
-            {
-                NewFolderName = new MAPIString(Encoding.Unicode);
-                NewFolderName.Parse(s);
-            }
-            else
-            {
-                NewFolderName = new MAPIString(Encoding.ASCII);
-                NewFolderName.Parse(s);
-            }
+        protected override void ParseBlocks()
+        {
+            SetText("RopCopyFolderRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(SourceHandleIndex, "SourceHandleIndex");
+            AddChildBlockT(DestHandleIndex, "DestHandleIndex");
+            AddChildBlockT(WantAsynchronous, "WantAsynchronous");
+            AddChildBlockT(WantRecursive, "WantRecursive");
+            AddChildBlockT(UseUnicode, "UseUnicode");
+            AddChild(FolderId, "FolderId");
+            AddChild(NewFolderName, $"NewFolderName:{NewFolderName}");
         }
     }
 }

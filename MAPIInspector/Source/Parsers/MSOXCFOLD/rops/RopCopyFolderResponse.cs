@@ -1,58 +1,67 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
+
 
     /// <summary>
     /// 2.2.1.8 RopCopyFolder ROP
     /// A class indicates the RopCopyFolder ROP Response Buffer.
     /// </summary>
-    public class RopCopyFolderResponse : BaseStructure
+    public class RopCopyFolderResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the SourceHandleIndex field in the request. 
         /// </summary>
-        public byte SourceHandleIndex;
+        public BlockT<byte> SourceHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the DestHandleIndex field in the request.
         /// </summary>
-        public uint? DestHandleIndex;
+        public BlockT<uint> DestHandleIndex;
 
         /// <summary>
         /// A Boolean that indicates whether the operation was only partially completed.
         /// </summary>
-        public bool PartialCompletion;
+        public BlockT<bool> PartialCompletion;
 
         /// <summary>
         /// Parse the RopCopyFolderResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopCopyFolderResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
-            RopId = (RopIdType)ReadByte();
-            SourceHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
-            if ((AdditionalErrorCodes)ReturnValue == AdditionalErrorCodes.NullDestinationObject)
+            RopId = ParseT<RopIdType>();
+            SourceHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
+            //ParseT<ErrorCodes>();
+            if ((AdditionalErrorCodes)ReturnValue.Data == AdditionalErrorCodes.NullDestinationObject)
             {
-                DestHandleIndex = ReadUint();
-                PartialCompletion = ReadBoolean();
+                DestHandleIndex = ParseT<uint>();
+                PartialCompletion = ParseAs<byte, bool>();
             }
             else
             {
-                PartialCompletion = ReadBoolean();
+                PartialCompletion = ParseAs<byte, bool>();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopCopyFolderResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(SourceHandleIndex, "SourceHandleIndex");
+            AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(DestHandleIndex, "DestHandleIndex");
+            AddChildBlockT(PartialCompletion, "PartialCompletion");
         }
     }
 }

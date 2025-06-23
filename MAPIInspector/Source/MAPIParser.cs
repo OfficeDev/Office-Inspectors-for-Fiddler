@@ -871,7 +871,7 @@
                                                             (rop is RopGetAttachmentTableRequest && ((rop as RopGetAttachmentTableRequest).OutputHandleIndex == handleIndex)) ||
                                                             (rop is RopGetPermissionsTableRequest && ((rop as RopGetAttachmentTableRequest).OutputHandleIndex == handleIndex)) ||
                                                             (rop is RopGetContentsTableRequest && ((rop as RopGetContentsTableRequest).OutputHandleIndex.Data == handleIndex)) ||
-                                                            (rop is RopGetHierarchyTableRequest && ((rop as RopGetHierarchyTableRequest).OutputHandleIndex == handleIndex)))
+                                                            (rop is RopGetHierarchyTableRequest && ((rop as RopGetHierarchyTableRequest).OutputHandleIndex.Data == handleIndex)))
                                                             {
                                                                 // Update the fourth parameter of Notify_handlePropertyTags
                                                                 if (DecodingContext.Notify_handlePropertyTags.Count > 0)
@@ -895,7 +895,7 @@
                                                             if ((parameters[0] != 0 && rop is RopGetContentsTableRequest &&
                                                                 (rop as RopGetContentsTableRequest).OutputHandleIndex.Data == handleIndex) ||
                                                                 (parameters[0] == 0 && rop is RopGetHierarchyTableRequest &&
-                                                                (rop as RopGetHierarchyTableRequest).OutputHandleIndex == handleIndex))
+                                                                (rop as RopGetHierarchyTableRequest).OutputHandleIndex.Data == handleIndex))
                                                             {
                                                                 // Break the looper
                                                                 isFound = true;

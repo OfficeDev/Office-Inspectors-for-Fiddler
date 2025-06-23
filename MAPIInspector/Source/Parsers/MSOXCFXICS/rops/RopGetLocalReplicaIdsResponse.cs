@@ -55,7 +55,7 @@
             SetText("RopGetLocalReplicaIdsResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
-            AddChildBlockT(ReturnValue, "ReturnValue");
+            AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             AddChild(ReplGuid, $"ReplGuid:{ReplGuid}");
             AddChild(GlobalCount, "GlobalCount");
         }
