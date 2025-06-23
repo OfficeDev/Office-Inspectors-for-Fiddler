@@ -48,7 +48,7 @@ namespace MAPIInspector.Parsers
         {
             SetText("NamedPropInfo");
 
-            AddChild(PropertySet, $"PropertySet: {PropertySet}");
+            this.AddChildGuid(PropertySet, "PropertySet");
             AddChildBlockT(Flag, "Flag");
 
             NamedProperty namedProp = null;

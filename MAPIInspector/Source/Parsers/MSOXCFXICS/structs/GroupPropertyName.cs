@@ -1,7 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using System;
 
     /// <summary>
     /// The GroupPropertyName.
@@ -57,7 +56,7 @@
         protected override void ParseBlocks()
         {
             SetText("GroupPropertyName");
-            AddChild(Guid, $"Guid:{Guid}");
+            this.AddChildGuid(Guid, "Guid");
             AddChildBlockT(Kind, "Kind");
             AddChildBlockT(Lid, "Lid");
             AddChildBlockT(NameSize, "NameSize");

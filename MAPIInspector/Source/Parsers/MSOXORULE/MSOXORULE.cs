@@ -1070,7 +1070,7 @@
         {
             AddChildBlockT(MessageEIDSize, "MessageEIDSize");
             AddLabeledChild(ReplyTemplateMessageEID, "ReplyTemplateMessageEID");
-            AddChild(ReplyTemplateGUID, $"ReplyTemplateGUID:{ReplyTemplateGUID}");
+            this.AddChildGuid(ReplyTemplateGUID, "ReplyTemplateGUID");
         }
     }
 

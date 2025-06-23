@@ -1,7 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using System;
 
     /// <summary>
     /// Represents a REPLGUID and GLOBSET structure pair. 
@@ -31,7 +30,7 @@
         protected override void ParseBlocks()
         {
             SetText("IDSET_REPLGUID");
-            AddChild(REPLGUID, $"REPLGUID:{REPLGUID}");
+            this.AddChildGuid(REPLGUID, "REPLGUID");
             AddChild(GLOBSET, "GLOBSET");
         }
     }

@@ -1,8 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using System;
-    using System.IO;
 
     /// <summary>
     /// 2.6.2 PropertyName_r Structure
@@ -37,7 +35,7 @@
         protected override void ParseBlocks()
         {
             SetText("PropertyName_r");
-            AddChild(GUID, $"GUID:{GUID}");
+            this.AddChildGuid(GUID, "GUID");
             AddChildBlockT(Reserved, "Reserved");
             AddChildBlockT(LID, "LID");
         }

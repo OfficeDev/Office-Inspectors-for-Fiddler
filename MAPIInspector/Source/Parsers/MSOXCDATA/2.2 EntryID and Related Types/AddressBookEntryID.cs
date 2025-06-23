@@ -48,7 +48,7 @@
         {
             SetText("AddressBookEntryID");
             AddChildBlockT(Flags, "Flags");
-            AddChild(ProviderUID, $"ProviderUID:{ProviderUID}");
+            this.AddChildGuid(ProviderUID, "ProviderUID");
             AddChildBlockT(Version, "Version");
             AddChildBlockT(Type, "Type");
             AddChild(X500DN, $"X500DN:{X500DN}");

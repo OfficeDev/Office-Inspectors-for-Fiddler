@@ -1,7 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using System;
 
     /// <summary>
     ///  A class indicates the RopGetLocalReplicaIds ROP Response Buffer.
@@ -56,7 +55,7 @@
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
             AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
-            AddChild(ReplGuid, $"ReplGuid:{ReplGuid}");
+            this.AddChildGuid(ReplGuid, "ReplGuid");
             AddChild(GlobalCount, "GlobalCount");
         }
     }

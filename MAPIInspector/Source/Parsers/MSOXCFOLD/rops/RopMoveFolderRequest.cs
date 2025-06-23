@@ -1,7 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using System.Text;
 
     /// <summary>
     /// 2.2.1.7 RopMoveFolder ROP

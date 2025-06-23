@@ -1,7 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using System;
 
     /// <summary>
     /// 2.2.4 Messaging Object EntryIDs Structures
@@ -62,9 +61,9 @@
         protected override void ParseBlocks()
         {
             AddChildBlockT(Flags, "Flags");
-            AddChild(ProviderUID, $"ProviderUID:{ProviderUID}");
+            this.AddChildGuid(ProviderUID, "ProviderUID}");
             AddChildBlockT(FolderType, "FolderType");
-            AddChild(DatabaseGuid, $"DatabaseGuid:{DatabaseGuid}");
+            this.AddChildGuid(DatabaseGuid, "DatabaseGuid");
             if (GlobalCounter != null) AddChild(GlobalCounter, $"GlobalCounter :{GlobalCounter.ToHexString(false)}");
             AddChildBlockT(Pad, "Pad");
         }

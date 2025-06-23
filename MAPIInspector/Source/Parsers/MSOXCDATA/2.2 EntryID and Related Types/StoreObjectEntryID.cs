@@ -1,9 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using System;
-    using System.IO;
-    using System.Text;
 
     /// <summary>
     /// 2.2.4.3 Store Object EntryID Structure
@@ -81,12 +78,12 @@
         {
             SetText("StoreObjectEntryID");
             AddChildBlockT(Flags, "Flags");
-            AddChild(ProviderUID, $"ProviderUID:{ProviderUID}");
+            this.AddChildGuid(ProviderUID, "ProviderUID");
             AddChildBlockT(Version, "Version");
             AddChildBlockT(Flag, "Flag");
             if (DLLFileName != null) AddChild(DLLFileName, $"DLLFileName:{DLLFileName.ToHexString(false)}");
             AddChildBlockT(WrappedFlags, "WrappedFlags");
-            AddChild(WrappedProviderUID, $"WrappedProviderUID:{WrappedProviderUID}");
+            this.AddChildGuid(WrappedProviderUID, "WrappedProviderUID");
             AddChildBlockT(WrappedType, "WrappedType");
             AddChild(ServerShortname, $"ServerShortname:{ServerShortname}");
             AddChild(MailboxDN, $"MailboxDN:{MailboxDN}");

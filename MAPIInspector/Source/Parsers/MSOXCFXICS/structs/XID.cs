@@ -1,7 +1,6 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using System;
 
     /// <summary>
     /// Represents an external identifier for an entity within a data store.
@@ -11,7 +10,6 @@
     {
         /// <summary>
         /// A GUID that identifies the nameSpace that the identifier specified by LocalId belongs to
-        /// </summary>
         public BlockGuid NamespaceGuid;
 
         /// <summary>
@@ -45,7 +43,7 @@
         protected override void ParseBlocks()
         {
             SetText("XID");
-            AddChild(NamespaceGuid, $"NamespaceGuid:{NamespaceGuid}");
+            this.AddChildGuid(NamespaceGuid, "NamespaceGuid");
             AddLabeledChild(LocalId, "LocalId");
         }
     }
