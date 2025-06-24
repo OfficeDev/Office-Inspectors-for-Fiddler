@@ -530,8 +530,15 @@
     <Compile Include="Parsers\MSOXCNOTIF\rops\RopRegisterNotificationRequest.cs" />
     <Compile Include="Parsers\MSOXCNOTIF\rops\RopRegisterNotificationResponse.cs" />
     <Compile Include="Parsers\MSOXCNOTIF\enums\TableEventTypeEnum.cs" />
-    <Compile Include="Parsers\MSOXCPERM\MSOXCPERM.cs" />
+    <Compile Include="Parsers\MSOXCPERM\enums\ModifyFlags.cs" />
+    <Compile Include="Parsers\MSOXCPERM\rops\RopModifyPermissionsResponse.cs" />
     <Compile Include="Parsers\MSOXCMSG\structs\RecipientType.cs" />
+    <Compile Include="Parsers\MSOXCPERM\structs\PermissionData.cs" />
+    <Compile Include="Parsers\MSOXCPERM\enums\PermissionDataFlags.cs" />
+    <Compile Include="Parsers\MSOXCPERM\rops\RopGetPermissionsTableRequest.cs" />
+    <Compile Include="Parsers\MSOXCPERM\rops\RopGetPermissionsTableResponse.cs" />
+    <Compile Include="Parsers\MSOXCPERM\rops\RopModifyPermissionsRequest.cs" />
+    <Compile Include="Parsers\MSOXCPERM\enums\TableFlagsRopGetPermissionsTable.cs" />
     <Compile Include="Parsers\MSOXCPRPT\MSOXCPRPT.cs" />
     <Compile Include="Parsers\MSOXCROPS\MSOXCROPS.cs" />
     <Compile Include="Parsers\MSOXCSTOR\MSOXCSTOR.cs" />
