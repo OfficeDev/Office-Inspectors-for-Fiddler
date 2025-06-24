@@ -113,6 +113,15 @@ namespace BlockParser
             }
         }
 
+        public void AddChildString(BlockString child, string label)
+        {
+            if (child != null && child.Parsed)
+            {
+                child.SetText($"{label}:{child.Data}");
+                children.Add(child);
+            }
+        }
+
         // Add a text only node with no size/offset and no children
         public void AddHeader(string text) => AddChild(Create(text));
 

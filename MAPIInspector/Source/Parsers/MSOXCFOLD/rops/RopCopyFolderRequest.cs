@@ -80,7 +80,7 @@
             AddChildBlockT(WantRecursive, "WantRecursive");
             AddChildBlockT(UseUnicode, "UseUnicode");
             AddChild(FolderId, "FolderId");
-            AddChild(NewFolderName, $"NewFolderName:{NewFolderName}");
+            AddChildString(NewFolderName, "NewFolderName");
         }
     }
 }

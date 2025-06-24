@@ -80,7 +80,7 @@
             AddChildBlockT(WantAsynchronous, "WantAsynchronous");
             AddChildBlockT(UseUnicode, "UseUnicode");
             AddChild(FolderId);
-            AddChild(NewFolderName, $"NewFolderName:{NewFolderName}");
+            AddChildString(NewFolderName, "NewFolderName");
         }
     }
 }

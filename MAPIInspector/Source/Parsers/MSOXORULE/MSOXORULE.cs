@@ -1032,7 +1032,7 @@
         {
             AddLabeledChild(ReplyTemplateFID, "ReplyTemplateFID");
             AddLabeledChild(ReplyTemplateMID, "ReplyTemplateMID");
-            AddChild(ReplyTemplateGUID, $"ReplyTemplateGUID:{ReplyTemplateGUID}");
+            this.AddChildGuid(ReplyTemplateGUID, "ReplyTemplateGUID");
         }
     }
 

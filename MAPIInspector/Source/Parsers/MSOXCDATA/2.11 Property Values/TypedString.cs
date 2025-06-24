@@ -15,7 +15,7 @@
         /// <summary>
         /// If the StringType field is set to 0x02, 0x03, or 0x04, then this field MUST be present and in the format specified by the Type field. Otherwise, this field MUST NOT be present.
         /// </summary>
-        public Block String;
+        public BlockString String;
 
         /// <summary>
         /// Parse the TypedString structure.
@@ -51,7 +51,7 @@
         {
             SetText("TypedString");
             AddChildBlockT(StringType, "StringType");
-            if (String != null) AddChild(String, $"String:{String}");
+            AddChildString(String, "String");
         }
     }
 }

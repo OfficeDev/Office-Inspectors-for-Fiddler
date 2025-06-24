@@ -62,15 +62,15 @@
             SetText("PropertyName");
 
             AddChildBlockT(Kind, "Kind");
-            AddChild(GUID, $"GUID: {GUID}");
+            this.AddChildGuid(GUID, "GUID");
 
             NamedProperty namedProp = null;
-            if (GUID!= null && LID != null)
+            if (GUID != null && LID != null)
             {
                 namedProp = NamedProperty.Lookup(GUID.value.Data, LID.Data);
             }
 
-            if (LID!= null)
+            if (LID != null)
             {
                 if (namedProp != null)
                     AddChild(LID, $"Dispid: {namedProp.Name} = 0x{LID.Data:X4}");
@@ -78,7 +78,7 @@
                     AddChild(LID, $"Dispid: 0x{LID.Data:X4}");
             }
 
-            AddChild(Name, $"Name: {Name.Data}");
+            AddChildString(Name, "Name");
         }
     }
 }

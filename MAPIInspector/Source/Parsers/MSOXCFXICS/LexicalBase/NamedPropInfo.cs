@@ -65,7 +65,7 @@ namespace MAPIInspector.Parsers
                     AddChild(Dispid, $"Dispid: 0x{Dispid.Data:X4}");
             }
 
-            AddChild(Name, $"Name: {Name}");
+            AddChildString(Name, "Name");
         }
     }
 }

@@ -151,16 +151,16 @@
             AddChild(RecipientFlags, "RecipientFlags");
             AddChildBlockT(AddressPrefixUsed, "AddressPrefixUsed");
             AddChildBlockT(DisplayType, "DisplayType");
-            AddChild(X500DN, $"X500DN:{X500DN}");
+            AddChildString(X500DN, "X500DN");
             AddChildBlockT(EntryIdSize, "EntryIdSize");
-            AddChild(EntryID, $"EntryID:{EntryID}");
-            AddChild(EntryID, $"SearchKeySize:{SearchKeySize}");
+            AddChild(EntryID, "EntryID");
+            AddChildBlockT(SearchKeySize, "SearchKeySize");
             if (SearchKey != null) AddChild(SearchKey, $"SearchKey:{SearchKey.ToHexString()}");
-            AddChild(AddressType, $"AddressType:{AddressType}");
-            AddChild(EmailAddress, $"EmailAddress:{EmailAddress}");
-            AddChild(DisplayName, $"DisplayName:{DisplayName}");
-            AddChild(SimpleDisplayName, $"SimpleDisplayName:{SimpleDisplayName}");
-            AddChild(TransmittableDisplayName, $"TransmittableDisplayName:{TransmittableDisplayName}");
+            AddChildString(AddressType, "AddressType");
+            AddChildString(EmailAddress, "EmailAddress");
+            AddChildString(DisplayName, "DisplayName");
+            AddChildString(SimpleDisplayName, "SimpleDisplayName");
+            AddChildString(TransmittableDisplayName, "TransmittableDisplayName");
             AddChildBlockT(RecipientColumnCount, "RecipientColumnCount");
             AddChild(RecipientProperties, "RecipientProperties");
         }

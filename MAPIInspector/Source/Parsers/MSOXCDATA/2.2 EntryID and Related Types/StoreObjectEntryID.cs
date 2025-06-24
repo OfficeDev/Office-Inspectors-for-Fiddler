@@ -85,8 +85,8 @@
             AddChildBlockT(WrappedFlags, "WrappedFlags");
             this.AddChildGuid(WrappedProviderUID, "WrappedProviderUID");
             AddChildBlockT(WrappedType, "WrappedType");
-            AddChild(ServerShortname, $"ServerShortname:{ServerShortname}");
-            AddChild(MailboxDN, $"MailboxDN:{MailboxDN}");
+            AddChildString(ServerShortname, "ServerShortname");
+            AddChildString(MailboxDN, "MailboxDN");
         }
     }
 }

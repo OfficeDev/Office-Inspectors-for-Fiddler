@@ -11,7 +11,7 @@
         /// <summary>
         /// The string value
         /// </summary>
-        public Block Value;
+        public BlockString Value;
 
         /// <summary>
         /// TDI#76879 tell us the real MapiHttp traffic will add the magic byte 'FF' for the string or binary based property value.
@@ -50,7 +50,7 @@
         protected override void ParseBlocks()
         {
             AddChildBlockT(HasValue, "HasValue");
-            AddChild(Value, $"Value:{Value}");
+            AddChildString(Value, "Value");
         }
     }
 }

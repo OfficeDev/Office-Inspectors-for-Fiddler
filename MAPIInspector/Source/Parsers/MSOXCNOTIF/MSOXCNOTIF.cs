@@ -416,7 +416,7 @@
         /// <summary>
         /// A null-terminated string containing the message class of the new mail.
         /// </summary>
-        public Block MessageClass;
+        public BlockString MessageClass;
 
         /// <summary>
         /// A Server object handle that specifies the notification Server object associated with this notification event.
@@ -550,89 +550,40 @@
                 UnicodeFlag = ParseT<byte>();
                 if (UnicodeFlag.Data == 0x00)
                 {
-                    MessageClass = Parse<PtypString8>();
+                    MessageClass = ParseStringA();
                 }
                 else if (UnicodeFlag.Data == 0x01)
                 {
-                    MessageClass = Parse<PtypString>();
+                    MessageClass = ParseStringW();
                 }
             }
         }
 
         protected override void ParseBlocks()
         {
-            // Add NotificationFlags as a labeled child
-            if (NotificationFlags != null)
-            {
-                AddChildBlockT(NotificationFlags, "NotificationFlags");
-            }
-
-            // Add TableEventType if present
-            if (TableEventType != null)
-            {
-                AddChildBlockT(TableEventType, "TableEventType");
-            }
-
-            // Add TableRowFolderID, TableRowMessageID, TableRowInstance if present
+            AddChildBlockT(NotificationFlags, "NotificationFlags");
+            AddChildBlockT(TableEventType, "TableEventType");
             AddLabeledChild(TableRowFolderID, "TableRowFolderID");
             AddLabeledChild(TableRowMessageID, "TableRowMessageID");
-            if (TableRowInstance != null)
-            {
-                AddChildBlockT(TableRowInstance, "TableRowInstance");
-            }
-
-            // Add InsertAfterTableRowFolderID, InsertAfterTableRowID, InsertAfterTableRowInstance if present
+            AddChildBlockT(TableRowInstance, "TableRowInstance");
             AddLabeledChild(InsertAfterTableRowFolderID, "InsertAfterTableRowFolderID");
             AddLabeledChild(InsertAfterTableRowID, "InsertAfterTableRowID");
-            if (InsertAfterTableRowInstance != null)
-            {
-                AddChildBlockT(InsertAfterTableRowInstance, "InsertAfterTableRowInstance");
-            }
-
-            // Add TableRowDataSize and TableRowData if present
-            if (TableRowDataSize != null)
-            {
-                AddChildBlockT(TableRowDataSize, "TableRowDataSize");
-            }
-
+            AddChildBlockT(InsertAfterTableRowInstance, "InsertAfterTableRowInstance");
+            AddChildBlockT(TableRowDataSize, "TableRowDataSize");
             AddLabeledChild(TableRowData, "TableRowData");
-
-            // Add FolderId, MessageId, ParentFolderId, OldFolderId, OldMessageId, OldParentFolderId if present
             AddLabeledChild(FolderId, "FolderId");
             AddLabeledChild(MessageId, "MessageId");
             AddLabeledChild(ParentFolderId, "ParentFolderId");
             AddLabeledChild(OldFolderId, "OldFolderId");
             AddLabeledChild(OldMessageId, "OldMessageId");
             AddLabeledChild(OldParentFolderId, "OldParentFolderId");
-
-            // Add TagCount and Tags if present
-            if (TagCount != null)
-            {
-                AddChildBlockT(TagCount, "TagCount");
-                AddLabeledChildren(Tags, "Tags");
-            }
-
-            // Add TotalMessageCount, UnreadMessageCount if present
-            if (TotalMessageCount != null)
-            {
-                AddChildBlockT(TotalMessageCount, "TotalMessageCount");
-            }
-            if (UnreadMessageCount != null)
-            {
-                AddChildBlockT(UnreadMessageCount, "UnreadMessageCount");
-            }
-
-            // Add MessageFlags, UnicodeFlag, MessageClass if present
-            if (MessageFlags != null)
-            {
-                AddChildBlockT(MessageFlags, "MessageFlags");
-            }
-            if (UnicodeFlag != null)
-            {
-                AddChildBlockT(UnicodeFlag, "UnicodeFlag");
-            }
-
-            AddLabeledChild(MessageClass, "MessageClass");
+            AddChildBlockT(TagCount, "TagCount");
+            AddLabeledChildren(Tags, "Tags");
+            AddChildBlockT(TotalMessageCount, "TotalMessageCount");
+            AddChildBlockT(UnreadMessageCount, "UnreadMessageCount");
+            AddChildBlockT(MessageFlags, "MessageFlags");
+            AddChildBlockT(UnicodeFlag, "UnicodeFlag");
+            AddChildString(MessageClass, "MessageClass");
         }
     }
 

@@ -1,7 +1,7 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using BlockParser;
-    using System;
+
     /// <summary>
     /// The structure of LongTermId
     /// 2.2.1.3.1 LongTermID Structure
@@ -36,7 +36,7 @@
         protected override void ParseBlocks()
         {
             SetText("LongTermId");
-            AddChild(DatabaseGuid, $"DatabaseGuid:{DatabaseGuid}");
+            this.AddChildGuid(DatabaseGuid, "DatabaseGuid");
             if (GlobalCounter != null) AddChild(GlobalCounter, $"GlobalCounter:{GlobalCounter.ToHexString(false)}");
             AddChildBlockT(Pad, "Pad");
         }

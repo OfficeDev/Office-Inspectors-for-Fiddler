@@ -51,7 +51,7 @@
             this.AddChildGuid(ProviderUID, "ProviderUID");
             AddChildBlockT(Version, "Version");
             AddChildBlockT(Type, "Type");
-            AddChild(X500DN, $"X500DN:{X500DN}");
+            AddChildString(X500DN, "X500DN");
         }
     }
 }

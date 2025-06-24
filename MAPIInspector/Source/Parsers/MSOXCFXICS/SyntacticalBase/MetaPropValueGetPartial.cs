@@ -126,7 +126,7 @@ namespace MAPIInspector.Parsers
                 }
                 else
                 {
-                    PropValue = Parse< PtypString8>();
+                    PropValue = Parse<PtypString8>();
                 }
             }
         }

@@ -94,8 +94,8 @@
             AddChildBlockT(UseUnicodeStrings, "UseUnicodeStrings");
             AddChildBlockT(OpenExisting, "OpenExisting");
             AddChildBlockT(Reserved, "Reserved");
-            AddChild(DisplayName, $"DisplayName:{DisplayName}");
-            AddChild(Comment, $"Comment:{Comment}");
+            AddChildString(DisplayName, "DisplayName");
+            AddChildString(Comment, "Comment");
         }
     }
 }
