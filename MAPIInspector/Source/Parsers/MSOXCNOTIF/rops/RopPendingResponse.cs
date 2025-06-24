@@ -1,0 +1,37 @@
+﻿namespace MAPIInspector.Parsers
+{
+    using BlockParser;
+
+    /// <summary>
+    /// 2.2.1.3.4 RopPending ROP
+    /// A class indicates the RopPending ROP Response Buffer.
+    /// </summary>
+    public class RopPendingResponse : Block
+    {
+        /// <summary>
+        /// An unsigned integer that specifies the type of ROP. For this operation this field is set to 0x6E.
+        /// </summary>
+        public BlockT<RopIdType> RopId;
+
+        /// <summary>
+        /// An unsigned integer index that specifies which session has pending notifications.
+        /// </summary>
+        public BlockT<ushort> SessionIndex;
+
+        /// <summary>
+        /// Parse the RopPendingResponse structure.
+        /// </summary>
+        protected override void Parse()
+        {
+            RopId = ParseT<RopIdType>();
+            SessionIndex = ParseT<ushort>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopPendingResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(SessionIndex, "SessionIndex");
+        }
+    }
+}

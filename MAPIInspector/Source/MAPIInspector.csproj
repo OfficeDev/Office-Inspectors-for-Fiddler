@@ -523,7 +523,13 @@
     <Compile Include="Parsers\MSOXCMSG\rops\RopSetMessageStatusResponse.cs" />
     <Compile Include="Parsers\MSOXCMSG\rops\RopSetReadFlagsRequest.cs" />
     <Compile Include="Parsers\MSOXCMSG\rops\RopSetReadFlagsResponse.cs" />
-    <Compile Include="Parsers\MSOXCNOTIF\MSOXCNOTIF.cs" />
+    <Compile Include="Parsers\MSOXCNOTIF\structs\NotificationData.cs" />
+    <Compile Include="Parsers\MSOXCNOTIF\enums\NotificationTypesEnum.cs" />
+    <Compile Include="Parsers\MSOXCNOTIF\rops\RopNotifyResponse.cs" />
+    <Compile Include="Parsers\MSOXCNOTIF\rops\RopPendingResponse.cs" />
+    <Compile Include="Parsers\MSOXCNOTIF\rops\RopRegisterNotificationRequest.cs" />
+    <Compile Include="Parsers\MSOXCNOTIF\rops\RopRegisterNotificationResponse.cs" />
+    <Compile Include="Parsers\MSOXCNOTIF\enums\TableEventTypeEnum.cs" />
     <Compile Include="Parsers\MSOXCPERM\MSOXCPERM.cs" />
     <Compile Include="Parsers\MSOXCMSG\structs\RecipientType.cs" />
     <Compile Include="Parsers\MSOXCPRPT\MSOXCPRPT.cs" />
