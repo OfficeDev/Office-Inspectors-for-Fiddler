@@ -152,13 +152,26 @@
             {
                 text = text.Substring(0, maxNodeLength) + "...";
             }
-            TreeNode node = new TreeNode(text);
-            node.BackColor = System.Drawing.Color.LightPink; // TODO: This is just for debugging
             var blockOffset = blockRootOffset + (int)block.Offset;
-            //node.Text = $"{text}::{blockOffset}::{block.Size}"; // Enable this when troubleshooting highlight issues
-            var position = new Position(blockOffset, (int)block.Size);
-            position.SourceBlock = block;
-            node.Tag = position;
+            var position = new Position(blockOffset, (int)block.Size)
+            {
+                SourceBlock = block
+            };
+            TreeNode node = new TreeNode(text)
+            {
+                BackColor = System.Drawing.Color.LightPink, // TODO: This is just for debugging
+                Tag = position
+            };
+
+            // Add a child node with debug information on the block. Make the text smaller but bold, with a light blue background
+            var debugNode = new TreeNode($"Block: {block.GetType().Name} at {blockOffset} with size {block.Size} bytes")
+            {
+                BackColor = System.Drawing.Color.LightBlue,
+                NodeFont = new System.Drawing.Font("Arial", 8, System.Drawing.FontStyle.Bold),
+                Tag = "ignore"
+            };
+            node.Nodes.Add(debugNode);
+
             foreach (var child in block.Children)
             {
                 node.Nodes.Add(AddBlock(child, blockRootOffset));
@@ -177,7 +190,7 @@
         /// <returns>The TreeNode with object value information</returns>
         public static TreeNode AddNodesForTree(string nodeName, object obj, int startIndex, out int offset)
         {
-            if (obj is BlockParser.Block block)
+            if (obj is Block block)
             {
                 offset = (int)block.Size;
                 return AddBlock(block, startIndex);
@@ -507,10 +520,12 @@
                             {
                                 RPC_HEADER_EXT header = (RPC_HEADER_EXT)info[0].GetValue(obj);
                                 node = AddNodesForTree(fieldName, info[i].GetValue(obj), current, out os);
-                                Position nodePosition = (Position)node.Tag;
-                                nodePosition.Offset = header.Size;
-                                os = nodePosition.Offset;
-                                node.Tag = nodePosition;
+                                if (node.Tag is Position nodePosition && nodePosition != null)
+                                {
+                                    nodePosition.Offset = header.Size;
+                                    os = nodePosition.Offset;
+                                    node.Tag = nodePosition;
+                                }
                                 fieldName = "Payload(CompressedOrObfuscated)";
                                 node.Text = fieldName;
                                 node = TreeNodeForCompressed(node, current, compressBufferindex - 1);
@@ -572,11 +587,11 @@
             {
                 TreeNode nd = n;
 
-                if (nd.Tag != null)
+                if (nd.Tag is Position pos)
                 {
-                    ((Position)nd.Tag).IsCompressedXOR = true;
-                    ((Position)nd.Tag).StartIndex -= current;
-                    ((Position)nd.Tag).BufferIndex = compressBufferindex;
+                    pos.IsCompressedXOR = true;
+                    pos.StartIndex -= current;
+                    pos.BufferIndex = compressBufferindex;
                 }
 
                 if (nd.Nodes.Count != 0)

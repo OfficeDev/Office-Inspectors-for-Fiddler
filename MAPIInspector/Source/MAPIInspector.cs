@@ -159,36 +159,40 @@
             }
             else
             {
-                if (((BaseStructure.Position)e.Node.Tag).IsCompressedXOR)
+                var pos = e.Node.Tag as BaseStructure.Position;
+                if (pos != null)
                 {
-                    if (((BaseStructure.Position)e.Node.Tag).IsAuxiliayPayload)
+                    if (pos.IsCompressedXOR)
                     {
-                        this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(MAPIParser.AuxPayLoadCompressedXOR);
-                    }
-                    else
-                    {
-                        if (request > response)
+                        if (pos.IsAuxiliayPayload)
                         {
-                            this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(MAPIParser.InputPayLoadCompressedXOR[((BaseStructure.Position)e.Node.Tag).BufferIndex]);
+                            this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(MAPIParser.AuxPayLoadCompressedXOR);
                         }
                         else
                         {
-                            this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(MAPIParser.OutputPayLoadCompressedXOR[((BaseStructure.Position)e.Node.Tag).BufferIndex]);
+                            if (request > response)
+                            {
+                                this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(MAPIParser.InputPayLoadCompressedXOR[pos.BufferIndex]);
+                            }
+                            else
+                            {
+                                this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(MAPIParser.OutputPayLoadCompressedXOR[pos.BufferIndex]);
+                            }
                         }
-                    }
 
-                    this.MAPIControl.CROPSHexBox.Select(((BaseStructure.Position)e.Node.Tag).StartIndex, ((BaseStructure.Position)e.Node.Tag).Offset);
-                    this.MAPIControl.MAPIHexBox.Select(0, 0);
-                    this.MAPIControl.CROPSHexBox.Visible = true;
-                    ToolTip toolTip = new ToolTip();
-                    toolTip.SetToolTip(this.MAPIControl.CROPSHexBox, "This is decompressed payload data.");
-                    this.MAPIControl.SplitContainer.Panel2Collapsed = false;
-                }
-                else
-                {
-                    this.MAPIControl.MAPIHexBox.Select(((BaseStructure.Position)e.Node.Tag).StartIndex, ((BaseStructure.Position)e.Node.Tag).Offset);
-                    this.MAPIControl.CROPSHexBox.Visible = false;
-                    this.MAPIControl.SplitContainer.Panel2Collapsed = true;
+                        this.MAPIControl.CROPSHexBox.Select(pos.StartIndex, pos.Offset);
+                        this.MAPIControl.MAPIHexBox.Select(0, 0);
+                        this.MAPIControl.CROPSHexBox.Visible = true;
+                        ToolTip toolTip = new ToolTip();
+                        toolTip.SetToolTip(this.MAPIControl.CROPSHexBox, "This is decompressed payload data.");
+                        this.MAPIControl.SplitContainer.Panel2Collapsed = false;
+                    }
+                    else
+                    {
+                        this.MAPIControl.MAPIHexBox.Select(pos.StartIndex, pos.Offset);
+                        this.MAPIControl.CROPSHexBox.Visible = false;
+                        this.MAPIControl.SplitContainer.Panel2Collapsed = true;
+                    }
                 }
             }
         }

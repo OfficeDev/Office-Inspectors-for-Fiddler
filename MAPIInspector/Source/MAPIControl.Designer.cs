@@ -251,7 +251,10 @@ namespace MapiInspector
                 sb.Append("   ");
             sb.AppendLine(GetNodeText(node));
             foreach (var n in node.Nodes)
+            {
+                if (n is TreeNode tn && tn.Tag is String tag && tag == "ignore") continue; // Skip nodes that are marked to be ignored
                 GetNodeTreeText(sb, n as TreeNode, indents);
+            }
         }
 
         private void MAPI_CopyWithSpaces(object sender, EventArgs e)
