@@ -142,7 +142,7 @@
         /// <param name="block">The block to add as a node.</param>
         /// <param name="blockRootOffset">The root offset to calculate the absolute position of the block.</param>
         /// <returns>The TreeNode representing the block and its children.</returns>
-        private static TreeNode AddBlock(BlockParser.Block block, int blockRootOffset)
+        private static TreeNode AddBlock(Block block, int blockRootOffset)
         {
             // Clean up embedded null characters in the block text for display purposes
             var text = block.Text.Replace("\0", "\\0");
@@ -159,14 +159,21 @@
             };
             TreeNode node = new TreeNode(text)
             {
-                BackColor = System.Drawing.Color.LightPink, // TODO: This is just for debugging
+                BackColor = System.Drawing.Color.PaleGreen, // TODO: This is just for debugging
                 Tag = position
             };
 
-            // Add a child node with debug information on the block. Make the text smaller but bold, with a light blue background
-            var debugNode = new TreeNode($"Block: {block.GetType().Name} at {blockOffset} with size {block.Size} bytes")
+            var type = block.GetType();
+            var typeName = type.Name;
+            var args = type.GetGenericArguments();
+            if (args.Length > 0)
             {
-                BackColor = System.Drawing.Color.LightBlue,
+                typeName += $"({args[0].FullName})";
+            }
+
+            var debugNode = new TreeNode($"Block: {typeName} at {blockOffset} with size {block.Size} bytes")
+            {
+                BackColor = string.IsNullOrEmpty(text) ? System.Drawing.Color.Tomato : System.Drawing.Color.SkyBlue,
                 NodeFont = new System.Drawing.Font("Arial", 8, System.Drawing.FontStyle.Bold),
                 Tag = "ignore"
             };

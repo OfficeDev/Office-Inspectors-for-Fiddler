@@ -59,7 +59,7 @@
             AddChildBlockT(Flag, "Flag");
             if (_PropertyValue != null)
             {
-                AddLabeledChild(_PropertyValue, "PropertyValue");
+                AddChild(_PropertyValue, $"PropertyValue:{_PropertyValue}");
             }
             else
             {
