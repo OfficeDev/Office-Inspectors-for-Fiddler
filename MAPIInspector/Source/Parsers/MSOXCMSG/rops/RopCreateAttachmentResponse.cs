@@ -1,48 +1,55 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     /// 2.2.6.13 RopCreateAttachment ROP
     /// A class indicates the RopCreateAttachment ROP response Buffer.
     /// </summary>
-    public class RopCreateAttachmentResponse : BaseStructure
+    public class RopCreateAttachmentResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
         /// </summary>
-        public byte OutputHandleIndex;
+        public BlockT<byte> OutputHandleIndex;
 
         /// <summary>
-        /// An unsigned integer that specifies the status of the ROP. 
+        /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer identifier that refers to the attachment created.
         /// </summary>
-        public uint? AttachmentID;
+        public BlockT<uint> AttachmentID;
 
         /// <summary>
         /// Parse the RopCreateAttachmentResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopCreateAttachmentResponse structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            OutputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            OutputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                AttachmentID = ReadUint();
+                AttachmentID = ParseT<uint>();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopCreateAttachmentResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(AttachmentID, "AttachmentID");
         }
     }
 }

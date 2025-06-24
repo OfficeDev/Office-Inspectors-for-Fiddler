@@ -686,7 +686,7 @@
         {
             SetText("ActionBlock");
             AddChild(_actionLength, $"ActionLength:{ActionLength}");
-            AddChildBlockT(_actionType, "_actionType");
+            AddChildBlockT(_actionType, "ActionType");
             AddChild(ActionFlavor, "ActionFlavor");
             AddChildBlockT(ActionFlags, "ActionFlags");
             if (ActionData != null)
@@ -959,9 +959,9 @@
     public class ServerEid : Block
     {
         /// <summary>
-        /// The value 0x01 indicates that the remaining bytes conform to this structure; 
+        /// The value 0x01 indicates that the remaining bytes conform to this structure;
         /// </summary>
-        public BlockT<byte> Ours;
+        public BlockT<bool> Ours;
 
         /// <summary>
         /// A Folder ID structure, as specified in [MS-OXCDATA] section 2.2.1.1, that identifies the destination folder.
@@ -983,7 +983,7 @@
         /// </summary>
         protected override void Parse()
         {
-            Ours = ParseT<byte>();
+            Ours = ParseAs<byte, bool>();
             FolderId = Parse<FolderID>();
             MessageId = ParseT<ulong>();
             Instance = ParseT<int>();

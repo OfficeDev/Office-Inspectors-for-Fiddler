@@ -2,111 +2,121 @@
 {
     using BlockParser;
     using System.Collections.Generic;
-    using System.IO;
 
     /// <summary>
     /// 2.2.3.1 RopOpenMessage
     ///  A class indicates the RopOpenMessage ROP response Buffer.
     /// </summary>
-    public class RopOpenMessageResponse : BaseStructure
+    public class RopOpenMessageResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
         /// </summary>
-        public byte OutputHandleIndex;
+        public BlockT<byte> OutputHandleIndex;
 
         /// <summary>
-        /// An unsigned integer that specifies the status of the ROP. 
+        /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// A Boolean that specifies whether the message has named properties.
         /// </summary>
-        public bool? HasNamedProperties;
+        public BlockT<bool> HasNamedProperties;
 
         /// <summary>
-        /// A TypedString structure that specifies the subject prefix of the message. 
+        /// A TypedString structure that specifies the subject prefix of the message.
         /// </summary>
         public TypedString SubjectPrefix;
 
         /// <summary>
-        /// A TypedString structure that specifies the normalized subject of the message. 
+        /// A TypedString structure that specifies the normalized subject of the message.
         /// </summary>
         public TypedString NormalizedSubject;
 
         /// <summary>
         /// An unsigned integer that specifies the number of recipients (1) on the message.
         /// </summary>
-        public ushort? RecipientCount;
+        public BlockT<ushort> RecipientCount;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures in the RecipientColumns field.
         /// </summary>
-        public ushort? ColumnCount;
+        public BlockT<ushort> ColumnCount;
 
         /// <summary>
-        /// An array of PropertyTag structures that specifies the property values that can be included in each row that is specified in the RecipientRows field. 
+        /// An array of PropertyTag structures that specifies the property values that can be included in each row that is specified in the RecipientRows field.
         /// </summary>
         public PropertyTag[] RecipientColumns;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures in the RecipientRows field.
         /// </summary>
-        public byte? RowCount;
+        public BlockT<byte> RowCount;
 
         /// <summary>
-        /// A list of OpenRecipientRow structures. 
+        /// A list of OpenRecipientRow structures.
         /// </summary>
         public OpenRecipientRow[] RecipientRows;
 
         /// <summary>
         /// Parse the RopOpenMessageResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopOpenMessageResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
 
-            RopId = (RopIdType)ReadByte();
-            OutputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            OutputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                HasNamedProperties = ReadBoolean();
-                SubjectPrefix = new TypedString();
-                SubjectPrefix.Parse(s);
-                NormalizedSubject = new TypedString();
-                NormalizedSubject.Parse(s);
-                RecipientCount = ReadUshort();
-                ColumnCount = ReadUshort();
-                List<PropertyTag> propertyTags = new List<PropertyTag>();
+                HasNamedProperties = ParseAs<byte, bool>();
+                SubjectPrefix = Parse<TypedString>();
+                NormalizedSubject = Parse<TypedString>();
+                RecipientCount = ParseT<ushort>();
+                ColumnCount = ParseT<ushort>();
+                var propertyTags = new List<PropertyTag>();
 
-                for (int i = 0; i < ColumnCount; i++)
+                for (int i = 0; i < ColumnCount.Data; i++)
                 {
-                    PropertyTag propertyTag = Block.Parse<PropertyTag>(s);
-                    propertyTags.Add(propertyTag);
+                    propertyTags.Add(Parse<PropertyTag>());
                 }
 
                 RecipientColumns = propertyTags.ToArray();
-                RowCount = ReadByte();
-                List<OpenRecipientRow> openRecipientRows = new List<OpenRecipientRow>();
+                RowCount = ParseT<byte>();
+                var openRecipientRows = new List<OpenRecipientRow>();
 
-                for (int i = 0; i < RowCount; i++)
+                for (int i = 0; i < RowCount.Data; i++)
                 {
-                    OpenRecipientRow openRecipientRow = new OpenRecipientRow(RecipientColumns);
-                    openRecipientRow.Parse(s);
+                    var openRecipientRow = new OpenRecipientRow(RecipientColumns);
+                    openRecipientRow.Parse(parser);
                     openRecipientRows.Add(openRecipientRow);
                 }
 
                 RecipientRows = openRecipientRows.ToArray();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopOpenMessageResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(HasNamedProperties, "HasNamedProperties");
+            AddChild(SubjectPrefix, "SubjectPrefix");
+            AddChild(NormalizedSubject, "NormalizedSubject");
+            AddChildBlockT(RecipientCount, "RecipientCount");
+            AddChildBlockT(ColumnCount, "ColumnCount");
+            AddLabeledChildren(RecipientColumns, "RecipientColumns");
+            AddChildBlockT(RowCount, "RowCount");
+            AddLabeledChildren(RecipientRows, "RecipientRows");
         }
     }
 }

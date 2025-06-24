@@ -532,7 +532,7 @@
 
         protected override void ParseBlocks()
         {
-            SetText("RopSeekRowRequest");
+            SetText("RopQueryRowsRequest");
             AddChildBlockT(RopId, "RopId");
             if (LogonId != null) AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");

@@ -136,6 +136,8 @@
             DateTime
         }
 
+        static System.Drawing.Font DebugFont = new System.Drawing.Font("Arial", 8, System.Drawing.FontStyle.Bold);
+
         /// <summary>
         /// Recursively adds a BlockParser.Block and its children to a TreeNode structure.
         /// </summary>
@@ -146,8 +148,8 @@
         {
             // Clean up embedded null characters in the block text for display purposes
             var text = block.Text.Replace("\0", "\\0");
-            const int maxNodeLength = 256;
-            // Truncate the text if it exceeds 256 characters for display purposes
+            const int maxNodeLength = 100;
+            // Truncate the text if it exceeds 100 characters for display purposes
             if (text.Length > maxNodeLength)
             {
                 text = text.Substring(0, maxNodeLength) + "...";
@@ -157,7 +159,7 @@
             {
                 SourceBlock = block
             };
-            TreeNode node = new TreeNode(text)
+            var node = new TreeNode(text)
             {
                 BackColor = System.Drawing.Color.PaleGreen, // TODO: This is just for debugging
                 Tag = position
@@ -171,10 +173,20 @@
                 typeName += $"({args[0].FullName})";
             }
 
+            System.Drawing.Color backColor;
+            if (string.IsNullOrEmpty(text))
+            {
+                backColor = System.Drawing.Color.Tomato;
+            }
+            else
+            {
+                backColor = System.Drawing.Color.SkyBlue;
+            }
+
             var debugNode = new TreeNode($"Block: {typeName} at {blockOffset} with size {block.Size} bytes")
             {
-                BackColor = string.IsNullOrEmpty(text) ? System.Drawing.Color.Tomato : System.Drawing.Color.SkyBlue,
-                NodeFont = new System.Drawing.Font("Arial", 8, System.Drawing.FontStyle.Bold),
+                BackColor = backColor,
+                NodeFont = DebugFont,
                 Tag = "ignore"
             };
             node.Nodes.Add(debugNode);

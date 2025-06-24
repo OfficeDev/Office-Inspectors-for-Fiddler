@@ -868,8 +868,8 @@
                                                         foreach (var rop in rops)
                                                         {
                                                             if ((rop is RopGetRulesTableRequest && ((rop as RopGetRulesTableRequest).OutputHandleIndex == handleIndex)) ||
-                                                            (rop is RopGetAttachmentTableRequest && ((rop as RopGetAttachmentTableRequest).OutputHandleIndex == handleIndex)) ||
-                                                            (rop is RopGetPermissionsTableRequest && ((rop as RopGetAttachmentTableRequest).OutputHandleIndex == handleIndex)) ||
+                                                            (rop is RopGetAttachmentTableRequest && ((rop as RopGetAttachmentTableRequest).OutputHandleIndex.Data == handleIndex)) ||
+                                                            (rop is RopGetPermissionsTableRequest && ((rop as RopGetAttachmentTableRequest).OutputHandleIndex.Data == handleIndex)) ||
                                                             (rop is RopGetContentsTableRequest && ((rop as RopGetContentsTableRequest).OutputHandleIndex.Data == handleIndex)) ||
                                                             (rop is RopGetHierarchyTableRequest && ((rop as RopGetHierarchyTableRequest).OutputHandleIndex.Data == handleIndex)))
                                                             {

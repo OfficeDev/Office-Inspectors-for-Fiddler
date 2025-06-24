@@ -1,64 +1,70 @@
 ﻿namespace MAPIInspector.Parsers
 {
+    using BlockParser;
     using System.Collections.Generic;
-    using System.IO;
 
     /// <summary>
     /// 2.2.6.6 RopReadRecipients ROP
     /// A class indicates the RopReadRecipients ROP response Buffer.
     /// </summary>
-    public class RopReadRecipientsResponse : BaseStructure
+    public class RopReadRecipientsResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures in the RecipientRows field.
         /// </summary>
-        public byte? RowCount;
+        public BlockT<byte> RowCount;
 
         /// <summary>
-        /// A list of ReadRecipientRow structures. 
+        /// A list of ReadRecipientRow structures.
         /// </summary>
         public ReadRecipientRow[] RecipientRows;
 
         /// <summary>
         /// Parse the RopReadRecipientsResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopReadRecipientsResponse structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                RowCount = ReadByte();
-                List<ReadRecipientRow> readRecipientRows = new List<ReadRecipientRow>();
+                RowCount = ParseT<byte>();
+                var readRecipientRows = new List<ReadRecipientRow>();
 
-                for (int i = 0; i < RowCount; i++)
+                for (int i = 0; i < RowCount.Data; i++)
                 {
-                    ReadRecipientRow readRecipientRow = new ReadRecipientRow();
-                    readRecipientRow.Parse(s);
-                    readRecipientRows.Add(readRecipientRow);
+                    readRecipientRows.Add(Parse<ReadRecipientRow>());
                 }
 
                 RecipientRows = readRecipientRows.ToArray();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopReadRecipientsResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(RowCount, "RowCount");
+            AddLabeledChildren(RecipientRows, "RecipientRows");
         }
     }
 }

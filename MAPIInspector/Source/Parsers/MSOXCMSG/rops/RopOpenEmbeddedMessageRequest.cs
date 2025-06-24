@@ -1,56 +1,66 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
+    using System.Net.Mail;
 
     /// <summary>
     /// 2.2.6.16 RopOpenEmbeddedMessage ROP
     /// A class indicates the RopOpenEmbeddedMessage ROP request Buffer.
     /// </summary>
-    public class RopOpenEmbeddedMessageRequest : BaseStructure
+    public class RopOpenEmbeddedMessageRequest : Block
     {
         /// <summary>
-        /// An unsigned integer that specifies the type of ROP. 
+        /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the RopLogon associated with this operation.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
         /// </summary>
-        public byte OutputHandleIndex;
+        public BlockT<byte> OutputHandleIndex;
 
         /// <summary>
         /// An identifier that specifies which code page is used for string values associated with the message.
         /// </summary>
-        public ushort CodePageId;
+        public BlockT<ushort> CodePageId;
 
         /// <summary>
         /// A flags structure that contains flags that control the access to the message.
         /// </summary>
-        public OpenMessageModeFlags OpenModeFlags;
+        public BlockT<OpenMessageModeFlags> OpenModeFlags;
 
         /// <summary>
         /// Parse the RopOpenEmbeddedMessageRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopOpenEmbeddedMessageRequest structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            InputHandleIndex = ReadByte();
-            OutputHandleIndex = ReadByte();
-            CodePageId = ReadUshort();
-            OpenModeFlags = (OpenMessageModeFlags)ReadByte();
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            OutputHandleIndex = ParseT<byte>();
+            CodePageId = ParseT<ushort>();
+            OpenModeFlags = ParseT<OpenMessageModeFlags>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopOpenEmbeddedMessageRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
+            AddChildBlockT(CodePageId, "CodePageId");
+            AddChildBlockT(OpenModeFlags, "OpenModeFlags");
         }
     }
 }

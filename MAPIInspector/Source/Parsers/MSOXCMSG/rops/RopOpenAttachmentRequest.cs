@@ -1,56 +1,65 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     /// 2.2.6.12 RopOpenAttachment ROP
     /// A class indicates the RopOpenAttachment ROP request Buffer.
     /// </summary>
-    public class RopOpenAttachmentRequest : BaseStructure
+    public class RopOpenAttachmentRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the RopLogon associated with this operation.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
         /// </summary>
-        public byte OutputHandleIndex;
+        public BlockT<byte> OutputHandleIndex;
 
         /// <summary>
         /// A flags structure that contains flags for opening attachments.
         /// </summary>
-        public OpenAttachmentFlags OpenAttachmentFlags;
+        public BlockT<OpenAttachmentFlags> OpenAttachmentFlags;
 
         /// <summary>
-        /// An unsigned integer index that identifies the attachment to be opened. 
+        /// An unsigned integer index that identifies the attachment to be opened.
         /// </summary>
-        public uint AttachmentID;
+        public BlockT<uint> AttachmentID;
 
         /// <summary>
         /// Parse the RopOpenAttachmentRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopOpenAttachmentRequest structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            InputHandleIndex = ReadByte();
-            OutputHandleIndex = ReadByte();
-            OpenAttachmentFlags = (OpenAttachmentFlags)ReadByte();
-            AttachmentID = ReadUint();
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            OutputHandleIndex = ParseT<byte>();
+            OpenAttachmentFlags = ParseT<OpenAttachmentFlags>();
+            AttachmentID = ParseT<uint>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopOpenAttachmentRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
+            AddChildBlockT(OpenAttachmentFlags, "OpenAttachmentFlags");
+            AddChildBlockT(AttachmentID, "AttachmentID");
         }
     }
 }

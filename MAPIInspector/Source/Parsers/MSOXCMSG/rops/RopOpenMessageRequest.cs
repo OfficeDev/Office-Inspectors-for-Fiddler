@@ -1,37 +1,37 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     /// 2.2.3.1 RopOpenMessage
     ///  A class indicates the RopOpenMessage ROP Request Buffer.
     /// </summary>
-    public class RopOpenMessageRequest : BaseStructure
+    public class RopOpenMessageRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the RopLogon associated with this operation.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
         /// </summary>
-        public byte OutputHandleIndex;
+        public BlockT<byte> OutputHandleIndex;
 
         /// <summary>
         /// An identifier that specifies which code page will be used for string values associated with the message.
         /// </summary>
-        public short CodePageId;
+        public BlockT<short> CodePageId;
 
         /// <summary>
         /// An identifier that identifies the parent folder of the message to be opened.
@@ -39,9 +39,9 @@
         public FolderID FolderId;
 
         /// <summary>
-        /// A flags structure that contains flags that control the access to the message. 
+        /// A flags structure that contains flags that control the access to the message.
         /// </summary>
-        public OpenMessageModeFlags OpenModeFlags;
+        public BlockT<OpenMessageModeFlags> OpenModeFlags;
 
         /// <summary>
         /// An identifier that identifies the message to be opened.
@@ -51,20 +51,28 @@
         /// <summary>
         /// Parse the RopOpenMessageRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopOpenMessageRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            InputHandleIndex = ReadByte();
-            OutputHandleIndex = ReadByte();
-            CodePageId = ReadINT16();
-            FolderId = new FolderID();
-            FolderId.Parse(s);
-            OpenModeFlags = (OpenMessageModeFlags)ReadByte();
-            MessageId = new MessageID();
-            MessageId.Parse(s);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            OutputHandleIndex = ParseT<byte>();
+            CodePageId = ParseT<short>();
+            FolderId = Parse<FolderID>();
+            OpenModeFlags = ParseT<OpenMessageModeFlags>();
+            MessageId = Parse<MessageID>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopOpenMessageRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
+            AddChild(FolderId, "FolderId");
+            AddChildBlockT(OpenModeFlags, "OpenModeFlags");
+            AddChild(MessageId, "MessageId");
         }
     }
 }

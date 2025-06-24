@@ -1,38 +1,38 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     /// 2.2.6.1.2.1 OpenRecipientRow Structure
     /// A class indicates the OpenRecipientRow structure.
     /// </summary>
-    public class OpenRecipientRow : BaseStructure
+    public class OpenRecipientRow : Block
     {
         /// <summary>
-        /// An enumeration that specifies the type of recipient (2). 
+        /// An enumeration that specifies the type of recipient (2).
         /// </summary>
         public RecipientType RecipientType;
 
         /// <summary>
         /// An identifier that specifies the code page for the recipient (2).
         /// </summary>
-        public ushort CodePageId;
+        public BlockT<ushort> CodePageId;
 
         /// <summary>
         /// Reserved. The server MUST set this field to 0x0000.
         /// </summary>
-        public ushort Reserved;
+        public BlockT<ushort> Reserved;
 
         /// <summary>
         /// An unsigned integer that specifies the size of the RecipientRow field.
         /// </summary>
-        public ushort RecipientRowSize;
+        public BlockT<ushort> RecipientRowSize;
 
         /// <summary>
-        /// A RecipientRow structure. 
+        /// A RecipientRow structure.
         /// </summary>
         public RecipientRow RecipientRow;
-        
+
         /// <summary>
         /// Array of PropertyTag used to initialize the class.
         /// </summary>
@@ -50,17 +50,24 @@
         /// <summary>
         /// Parse the OpenRecipientRow structure.
         /// </summary>
-        /// <param name="s">A stream containing OpenRecipientRow structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RecipientType = new RecipientType();
-            RecipientType.Parse(s);
-            CodePageId = ReadUshort();
-            Reserved = ReadUshort();
-            RecipientRowSize = ReadUshort();
+            RecipientType = Parse<RecipientType>();
+            CodePageId = ParseT<ushort>();
+            Reserved = ParseT<ushort>();
+            RecipientRowSize = ParseT<ushort>();
             RecipientRow = new RecipientRow(propTags);
-            RecipientRow.Parse(s);
+            RecipientRow.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("OpenRecipientRow");
+            AddChild(RecipientType, "RecipientType");
+            AddChildBlockT(CodePageId, "CodePageId");
+            AddChildBlockT(Reserved, "Reserved");
+            AddChildBlockT(RecipientRowSize, "RecipientRowSize");
+            AddChild(RecipientRow, $"RecipientRow");
         }
     }
 }

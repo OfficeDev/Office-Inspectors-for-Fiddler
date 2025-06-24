@@ -1,36 +1,43 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
-    using System.IO;
-
-
     /// <summary>
     /// 2.2.3.1.2 RopOpenMessage ROP Response Buffer
     /// An enumeration that specifies the type of recipient (2).
     /// </summary>
-    public class RecipientType : BaseStructure
+    public class RecipientType : Block
     {
+        private BlockT<byte> Byte0;
+
         /// <summary>
         /// RecipientType flag
         /// </summary>
-        [BitAttribute(4)]
-        public RecipientTypeFlag Flag;
+        public BlockT<RecipientTypeFlag> Flag;
 
         /// <summary>
         /// RecipientType type
         /// </summary>
-        [BitAttribute(4)]
-        public RecipientTypeType Type;
+        public BlockT<RecipientTypeType> Type;
 
         /// <summary>
         /// Parse RecipientType structure
         /// </summary>
-        /// <param name="s">A stream containing RecipientType structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            byte bitWise = ReadByte();
-            Flag = (RecipientTypeFlag)(bitWise & 0xF0);
-            Type = (RecipientTypeType)(bitWise & 0x0F);
+            Byte0 = ParseT<byte>();
+            int index = 0;
+            Flag = CreateBlock((RecipientTypeFlag)(BaseStructure.GetBits(Byte0.Data, index, 4) & 0xF0), Byte0.Size, Byte0.Offset);
+            index = index + 4;
+            Type = CreateBlock((RecipientTypeType)(BaseStructure.GetBits(Byte0.Data, index, 4) & 0x0F), Byte0.Size, Byte0.Offset);
+            index = index + 4;
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RecipientType");
+            AddChildBlockT(Flag, "Flag");
+            AddChildBlockT(Type, "Type");
         }
     }
 }

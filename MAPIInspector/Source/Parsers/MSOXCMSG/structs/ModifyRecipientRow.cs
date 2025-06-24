@@ -1,27 +1,27 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
-    /// 2.2.6.5 RopModifyRecipients ROP
+    /// 2.2.6.5.1.1 ModifyRecipientRow Structure
     /// A class indicates the ModifyRecipientRow structure.
     /// </summary>
-    public class ModifyRecipientRow : BaseStructure
+    public class ModifyRecipientRow : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the ID of the recipient (1).
         /// </summary>
-        public uint RowId;
+        public BlockT<uint> RowId;
 
         /// <summary>
         /// An enumeration that specifies the type of recipient (1).
         /// </summary>
-        public byte RecipientType;
+        public RecipientType RecipientType;
 
         /// <summary>
         /// An unsigned integer that specifies the size of the RecipientRow field.
         /// </summary>
-        public ushort RecipientRowSize;
+        public BlockT<ushort> RecipientRowSize;
 
         /// <summary>
         /// A RecipientRow structure.
@@ -45,19 +45,26 @@
         /// <summary>
         /// Parse the ModifyRecipientRow structure.
         /// </summary>
-        /// <param name="s">A stream containing ModifyRecipientRow structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RowId = ReadUint();
-            RecipientType = ReadByte();
-            RecipientRowSize = ReadUshort();
+            RowId = ParseT<uint>();
+            RecipientType = Parse<RecipientType>();
+            RecipientRowSize = ParseT<ushort>();
 
-            if (RecipientRowSize > 0)
+            if (RecipientRowSize.Data > 0)
             {
                 RecipientRow = new RecipientRow(propTags);
-                RecipientRow.Parse(s);
+                RecipientRow.Parse(parser);
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ModifyRecipientRow");
+            AddChildBlockT(RowId, "RowId");
+            AddChild(RecipientType, "RecipientType");
+            AddChildBlockT(RecipientRowSize, "RecipientRowSize");
+            AddChild(RecipientRow, "RecipientRow");
         }
     }
 }

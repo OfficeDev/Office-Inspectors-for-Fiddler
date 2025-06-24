@@ -1,64 +1,73 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     /// 2.2.6.11 RopSetMessageReadFlag ROP
     /// A class indicates the RopSetMessageReadFlag ROP response Buffer.
     /// </summary>
-    public class RopSetMessageReadFlagResponse : BaseStructure
+    public class RopSetMessageReadFlagResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the ResponseHandleIndex field in the request.
         /// </summary>
-        public byte ResponseHandleIndex;
+        public BlockT<byte> ResponseHandleIndex;
 
         /// <summary>
-        /// An unsigned integer that specifies the status of the ROP. 
+        /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// A Boolean that specifies whether the read status of a public folder's message has changed.
         /// </summary>
-        public bool? ReadStatusChanged;
+        public BlockT<bool> ReadStatusChanged;
 
         /// <summary>
         /// An unsigned integer index that is present when the value in the ReadStatusChanged field is nonzero and is not present
         /// </summary>
-        public byte? LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
-        /// An array of bytes that is present when the value in the ReadStatusChanged field is nonzero and is not present 
+        /// An array of bytes that is present when the value in the ReadStatusChanged field is nonzero and is not present
         /// </summary>
-        public byte?[] ClientData;
+        public BlockBytes ClientData;
 
         /// <summary>
         /// Parse the RopSetMessageReadFlagResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSetMessageReadFlagResponse structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            ResponseHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            ResponseHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                ReadStatusChanged = ReadBoolean();
+                ReadStatusChanged = ParseAs<byte, bool>();
 
-                if ((bool)ReadStatusChanged)
+                if (ReadStatusChanged.Data)
                 {
-                    LogonId = ReadByte();
-                    ClientData = ConvertArray(ReadBytes(24));
+                    LogonId = ParseT<byte>();
+                    ClientData = ParseBytes(24);
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopSetMessageReadFlagResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(ResponseHandleIndex, "ResponseHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(ReadStatusChanged, "ReadStatusChanged");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChild(ClientData, "ClientData");
         }
     }
 }

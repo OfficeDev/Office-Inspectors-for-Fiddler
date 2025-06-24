@@ -1,56 +1,65 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     /// 2.2.6.6.2.1 ReadRecipientRow Structure
     /// A class indicates the ReadRecipientRow structure.
     /// </summary>
-    public class ReadRecipientRow : BaseStructure
+    public class ReadRecipientRow : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the row ID of the recipient (2).
         /// </summary>
-        public uint RowId;
+        public BlockT<uint> RowId;
 
         /// <summary>
         /// An enumeration that specifies the type of recipient (2).
         /// </summary>
-        public byte RecipientType;
+        public RecipientType RecipientType;
 
         /// <summary>
         /// An identifier that specifies the code page for the recipient (2).
         /// </summary>
-        public ushort CodePageId;
+        public BlockT<ushort> CodePageId;
 
         /// <summary>
         /// Reserved. The server MUST set this field to 0x0000.
         /// </summary>
-        public ushort Reserved;
+        public BlockT<ushort> Reserved;
 
         /// <summary>
         /// An unsigned integer that specifies the size of the RecipientRow field.
         /// </summary>
-        public ushort RecipientRowSize;
+        public BlockT<ushort> RecipientRowSize;
 
         /// <summary>
         /// A RecipientRow structure. //TODO: put the raw bytes here temporarily and we need to refine it later once we get the key which is required by RecipientRow.
         /// </summary>
-        public byte[] RecipientRow;
+        public BlockBytes RecipientRow;
 
         /// <summary>
         /// Parse the ReadRecipientRow structure.
         /// </summary>
-        /// <param name="s">A stream containing ReadRecipientRow structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RowId = ReadUint();
-            RecipientType = ReadByte();
-            CodePageId = ReadUshort();
-            Reserved = ReadUshort();
-            RecipientRowSize = ReadUshort();
-            RecipientRow = ReadBytes(RecipientRowSize);
+            RowId = ParseT<uint>();
+            RecipientType = Parse<RecipientType>();
+            CodePageId = ParseT<ushort>();
+            Reserved = ParseT<ushort>();
+            RecipientRowSize = ParseT<ushort>();
+            RecipientRow = ParseBytes(RecipientRowSize.Data);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ReadRecipientRow");
+            AddChildBlockT(RowId, "RowId");
+            AddChild(RecipientType, "RecipientType");
+            AddChildBlockT(CodePageId, "CodePageId");
+            AddChildBlockT(Reserved, "Reserved");
+            AddChildBlockT(RecipientRowSize, "RecipientRowSize");
+            if (RecipientRow != null) AddChild(RecipientRow, $"RecipientRow:{RecipientRow.ToHexString()}");
         }
     }
 }

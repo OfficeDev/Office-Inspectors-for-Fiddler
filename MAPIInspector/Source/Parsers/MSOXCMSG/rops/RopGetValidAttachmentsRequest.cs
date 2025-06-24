@@ -1,38 +1,44 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     /// 2.2.6.18 RopGetValidAttachments ROP
     /// A class indicates the RopGetValidAttachments ROP request Buffer.
     /// </summary>
-    public class RopGetValidAttachmentsRequest : BaseStructure
+    public class RopGetValidAttachmentsRequest : Block
     {
         /// <summary>
-        /// An unsigned integer that specifies the type of ROP. 
+        /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the RopLogon associated with this operation.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// Parse the RopGetValidAttachmentsRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopGetValidAttachmentsRequest structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            InputHandleIndex = ReadByte();
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopGetValidAttachmentsRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
         }
     }
 }

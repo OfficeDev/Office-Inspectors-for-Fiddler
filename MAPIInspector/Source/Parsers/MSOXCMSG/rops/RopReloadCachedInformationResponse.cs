@@ -2,33 +2,32 @@
 {
     using BlockParser;
     using System.Collections.Generic;
-    using System.IO;
 
     /// <summary>
     /// 2.2.6.7 RopReloadCachedInformation ROP
     /// A class indicates the RopReloadCachedInformation ROP response Buffer.
     /// </summary>
-    public class RopReloadCachedInformationResponse : BaseStructure
+    public class RopReloadCachedInformationResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex specified field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// A Boolean that specifies whether the message has named properties.
         /// </summary>
-        public bool? HasNamedProperties;
+        public BlockT<bool> HasNamedProperties;
 
         /// <summary>
         /// A TypedString structure that specifies the subject prefix of the message.
@@ -43,12 +42,12 @@
         /// <summary>
         /// An unsigned integer that specifies the number of recipients (2) on the message.
         /// </summary>
-        public ushort? RecipientCount;
+        public BlockT<ushort> RecipientCount;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures in the RecipientColumns field.
         /// </summary>
-        public ushort? ColumnCount;
+        public BlockT<ushort> ColumnCount;
 
         /// <summary>
         /// An array of PropertyTag structures that specifies the property values that can be included for each recipient (2).
@@ -58,7 +57,7 @@
         /// <summary>
         /// An unsigned integer that specifies the number of rows in the RecipientRows field.
         /// </summary>
-        public byte? RowCount;
+        public BlockT<byte> RowCount;
 
         /// <summary>
         /// A list of OpenRecipientRow structures.
@@ -68,44 +67,54 @@
         /// <summary>
         /// Parse the RopReloadCachedInformationResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopReloadCachedInformationResponse structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                HasNamedProperties = ReadBoolean();
-                SubjectPrefix = new TypedString();
-                SubjectPrefix.Parse(s);
-                NormalizedSubject = new TypedString();
-                NormalizedSubject.Parse(s);
-                RecipientCount = ReadUshort();
-                ColumnCount = ReadUshort();
-                List<PropertyTag> propertyTags = new List<PropertyTag>();
+                HasNamedProperties = ParseAs<byte, bool>();
+                SubjectPrefix = Parse<TypedString>();
+                NormalizedSubject = Parse<TypedString>();
+                RecipientCount = ParseT<ushort>();
+                ColumnCount = ParseT<ushort>();
+                var propertyTags = new List<PropertyTag>();
 
-                for (int i = 0; i < ColumnCount; i++)
+                for (int i = 0; i < ColumnCount.Data; i++)
                 {
-                    PropertyTag propertyTag = Block.Parse<PropertyTag>(s);
-                    propertyTags.Add(propertyTag);
+                    propertyTags.Add(Parse<PropertyTag>());
                 }
 
                 RecipientColumns = propertyTags.ToArray();
-                RowCount = ReadByte();
-                List<OpenRecipientRow> openRecipientRows = new List<OpenRecipientRow>();
+                RowCount = ParseT<byte>();
+                var openRecipientRows = new List<OpenRecipientRow>();
 
-                for (int i = 0; i < RowCount; i++)
+                for (int i = 0; i < RowCount.Data; i++)
                 {
                     OpenRecipientRow openRecipientRow = new OpenRecipientRow(RecipientColumns);
-                    openRecipientRow.Parse(s);
+                    openRecipientRow.Parse(parser);
                     openRecipientRows.Add(openRecipientRow);
                 }
 
                 RecipientRows = openRecipientRows.ToArray();
             }
+        }
+        protected override void ParseBlocks()
+        {
+            SetText("RopReloadCachedInformationResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(HasNamedProperties, "HasNamedProperties");
+            AddChild(SubjectPrefix, "SubjectPrefix");
+            AddChild(NormalizedSubject, "NormalizedSubject");
+            AddChildBlockT(RecipientCount, "RecipientCount");
+            AddChildBlockT(ColumnCount, "ColumnCount");
+            AddLabeledChildren(RecipientColumns, "RecipientColumns");
+            AddChildBlockT(RowCount, "RowCount");
+            AddLabeledChildren(RecipientRows, "RecipientRows");
         }
     }
 }

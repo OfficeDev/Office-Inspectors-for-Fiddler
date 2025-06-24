@@ -1,50 +1,57 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     /// 2.2.6.15 RopSaveChangesAttachment ROP
     /// A class indicates the RopSaveChangesAttachment ROP request Buffer.
     /// </summary>
-    public class RopSaveChangesAttachmentRequest : BaseStructure
+    public class RopSaveChangesAttachmentRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the RopLogon associated with this operation.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table that is referenced in the response. 
+        /// An unsigned integer index that specifies the location in the Server object handle table that is referenced in the response.
         /// </summary>
-        public byte ResponseHandleIndex;
+        public BlockT<byte> ResponseHandleIndex;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// A flags structure. The possible values for these flags are specified in [MS-OXCMSG] section 2.2.3.11.1.
         /// </summary>
-        public SaveFlags SaveFlags;
+        public BlockT<SaveFlags> SaveFlags;
 
         /// <summary>
         /// Parse the RopSaveChangesAttachmentRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSaveChangesAttachmentRequest structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            ResponseHandleIndex = ReadByte();
-            InputHandleIndex = ReadByte();
-            SaveFlags = (SaveFlags)ReadByte();
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            ResponseHandleIndex = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            SaveFlags = ParseT<SaveFlags>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopSaveChangesAttachmentRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(SaveFlags, "SaveFlags");
         }
     }
 }
