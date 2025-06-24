@@ -52,30 +52,30 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.ColumnCount = this.ReadUshort();
+            RopId = (RopIdType)ReadByte();
+            LogonId = ReadByte();
+            InputHandleIndex = ReadByte();
+            ColumnCount = ReadUshort();
             List<PropertyTag> propertyTags = new List<PropertyTag>();
 
-            for (int i = 0; i < this.ColumnCount; i++)
+            for (int i = 0; i < ColumnCount; i++)
             {
                 PropertyTag propertyTag = Block.Parse<PropertyTag>(s);
                 propertyTags.Add(propertyTag);
             }
 
-            this.RecipientColumns = propertyTags.ToArray();
-            this.RowCount = this.ReadUshort();
+            RecipientColumns = propertyTags.ToArray();
+            RowCount = ReadUshort();
             List<ModifyRecipientRow> modifyRecipientRows = new List<ModifyRecipientRow>();
 
-            for (int i = 0; i < this.RowCount; i++)
+            for (int i = 0; i < RowCount; i++)
             {
-                ModifyRecipientRow modifyRecipientRow = new ModifyRecipientRow(this.RecipientColumns);
+                ModifyRecipientRow modifyRecipientRow = new ModifyRecipientRow(RecipientColumns);
                 modifyRecipientRow.Parse(s);
                 modifyRecipientRows.Add(modifyRecipientRow);
             }
 
-            this.RecipientRows = modifyRecipientRows.ToArray();
+            RecipientRows = modifyRecipientRows.ToArray();
         }
     }
 }

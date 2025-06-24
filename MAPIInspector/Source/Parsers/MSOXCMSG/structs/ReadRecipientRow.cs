@@ -45,12 +45,12 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RowId = this.ReadUint();
-            this.RecipientType = this.ReadByte();
-            this.CodePageId = this.ReadUshort();
-            this.Reserved = this.ReadUshort();
-            this.RecipientRowSize = this.ReadUshort();
-            this.RecipientRow = this.ReadBytes(this.RecipientRowSize);
+            RowId = ReadUint();
+            RecipientType = ReadByte();
+            CodePageId = ReadUshort();
+            Reserved = ReadUshort();
+            RecipientRowSize = ReadUshort();
+            RecipientRow = ReadBytes(RecipientRowSize);
         }
     }
 }

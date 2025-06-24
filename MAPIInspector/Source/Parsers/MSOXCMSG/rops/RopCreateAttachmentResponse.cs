@@ -35,13 +35,13 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)this.ReadByte();
-            this.OutputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
+            RopId = (RopIdType)ReadByte();
+            OutputHandleIndex = ReadByte();
+            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
 
-            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
             {
-                this.AttachmentID = this.ReadUint();
+                AttachmentID = ReadUint();
             }
         }
     }

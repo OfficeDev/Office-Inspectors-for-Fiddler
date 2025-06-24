@@ -50,14 +50,14 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.OutputHandleIndex = this.ReadByte();
-            this.CodePageId = this.ReadUshort();
-            this.FolderId = new FolderID();
-            this.FolderId.Parse(s);
-            this.AssociatedFlag = this.ReadBoolean();
+            RopId = (RopIdType)ReadByte();
+            LogonId = ReadByte();
+            InputHandleIndex = ReadByte();
+            OutputHandleIndex = ReadByte();
+            CodePageId = ReadUshort();
+            FolderId = new FolderID();
+            FolderId.Parse(s);
+            AssociatedFlag = ReadBoolean();
         }
     }
 }

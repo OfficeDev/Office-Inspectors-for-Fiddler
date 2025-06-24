@@ -45,18 +45,18 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)this.ReadByte();
-            this.ResponseHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
+            RopId = (RopIdType)ReadByte();
+            ResponseHandleIndex = ReadByte();
+            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
 
-            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
             {
-                this.ReadStatusChanged = this.ReadBoolean();
+                ReadStatusChanged = ReadBoolean();
 
-                if ((bool)this.ReadStatusChanged)
+                if ((bool)ReadStatusChanged)
                 {
-                    this.LogonId = this.ReadByte();
-                    this.ClientData = this.ConvertArray(this.ReadBytes(24));
+                    LogonId = ReadByte();
+                    ClientData = ConvertArray(ReadBytes(24));
                 }
             }
         }

@@ -51,22 +51,22 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.WantAsynchronous = this.ReadBoolean();
-            this.ReadFlags = (ReadFlags)this.ReadByte();
-            this.MessageIdCount = this.ReadUshort();
+            RopId = (RopIdType)ReadByte();
+            LogonId = ReadByte();
+            InputHandleIndex = ReadByte();
+            WantAsynchronous = ReadBoolean();
+            ReadFlags = (ReadFlags)ReadByte();
+            MessageIdCount = ReadUshort();
             List<MessageID> messageIDs = new List<MessageID>();
 
-            for (int i = 0; i < this.MessageIdCount; i++)
+            for (int i = 0; i < MessageIdCount; i++)
             {
                 MessageID messageID = new MessageID();
                 messageID.Parse(s);
                 messageIDs.Add(messageID);
             }
 
-            this.MessageIds = messageIDs.ToArray();
+            MessageIds = messageIDs.ToArray();
         }
     }
 }

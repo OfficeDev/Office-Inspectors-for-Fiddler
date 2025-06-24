@@ -82,42 +82,42 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)this.ReadByte();
-            this.OutputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
+            RopId = (RopIdType)ReadByte();
+            OutputHandleIndex = ReadByte();
+            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
 
-            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
             {
-                this.Reserved = this.ReadByte();
-                this.MessageId = new MessageID();
-                this.MessageId.Parse(s);
-                this.HasNamedProperties = this.ReadBoolean();
-                this.SubjectPrefix = new TypedString();
-                this.SubjectPrefix.Parse(s);
-                this.NormalizedSubject = new TypedString();
-                this.NormalizedSubject.Parse(s);
-                this.RecipientCount = this.ReadUshort();
-                this.ColumnCount = this.ReadUshort();
+                Reserved = ReadByte();
+                MessageId = new MessageID();
+                MessageId.Parse(s);
+                HasNamedProperties = ReadBoolean();
+                SubjectPrefix = new TypedString();
+                SubjectPrefix.Parse(s);
+                NormalizedSubject = new TypedString();
+                NormalizedSubject.Parse(s);
+                RecipientCount = ReadUshort();
+                ColumnCount = ReadUshort();
                 List<PropertyTag> propertyTags = new List<PropertyTag>();
 
-                for (int i = 0; i < this.ColumnCount; i++)
+                for (int i = 0; i < ColumnCount; i++)
                 {
                     PropertyTag propertyTag = Block.Parse<PropertyTag>(s);
                     propertyTags.Add(propertyTag);
                 }
 
-                this.RecipientColumns = propertyTags.ToArray();
-                this.RowCount = this.ReadByte();
+                RecipientColumns = propertyTags.ToArray();
+                RowCount = ReadByte();
                 List<OpenRecipientRow> openRecipientRows = new List<OpenRecipientRow>();
 
-                for (int i = 0; i < this.RowCount; i++)
+                for (int i = 0; i < RowCount; i++)
                 {
-                    OpenRecipientRow openRecipientRow = new OpenRecipientRow(this.RecipientColumns);
+                    OpenRecipientRow openRecipientRow = new OpenRecipientRow(RecipientColumns);
                     openRecipientRow.Parse(s);
                     openRecipientRows.Add(openRecipientRow);
                 }
 
-                this.RecipientRows = openRecipientRows.ToArray();
+                RecipientRows = openRecipientRows.ToArray();
             }
         }
     }

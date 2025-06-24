@@ -41,21 +41,21 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)this.ReadByte();
-            this.OutputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
+            RopId = (RopIdType)ReadByte();
+            OutputHandleIndex = ReadByte();
+            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
 
-            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
             {
-                this.AttachmentIdCount = this.ReadUshort();
+                AttachmentIdCount = ReadUshort();
                 List<int> attachmentIdArrays = new List<int>();
 
-                for (int i = 0; i < this.AttachmentIdCount; i++)
+                for (int i = 0; i < AttachmentIdCount; i++)
                 {
-                    attachmentIdArrays.Add(this.ReadINT32());
+                    attachmentIdArrays.Add(ReadINT32());
                 }
 
-                this.AttachmentIdArray = this.ConvertArray(attachmentIdArrays.ToArray());
+                AttachmentIdArray = ConvertArray(attachmentIdArrays.ToArray());
             }
         }
     }

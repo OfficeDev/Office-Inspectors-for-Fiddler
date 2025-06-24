@@ -45,12 +45,12 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.OutputHandleIndex = this.ReadByte();
-            this.CodePageId = this.ReadUshort();
-            this.OpenModeFlags = (OpenMessageModeFlags)this.ReadByte();
+            RopId = (RopIdType)ReadByte();
+            LogonId = ReadByte();
+            InputHandleIndex = ReadByte();
+            OutputHandleIndex = ReadByte();
+            CodePageId = ReadUshort();
+            OpenModeFlags = (OpenMessageModeFlags)ReadByte();
         }
     }
 }

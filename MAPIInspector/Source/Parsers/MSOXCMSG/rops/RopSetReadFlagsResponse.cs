@@ -35,10 +35,10 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
-            this.PartialCompletion = this.ReadBoolean();
+            RopId = (RopIdType)ReadByte();
+            InputHandleIndex = ReadByte();
+            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            PartialCompletion = ReadBoolean();
         }
     }
 }

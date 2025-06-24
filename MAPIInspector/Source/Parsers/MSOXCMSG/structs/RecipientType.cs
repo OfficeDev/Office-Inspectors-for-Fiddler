@@ -28,9 +28,9 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            byte bitWise = this.ReadByte();
-            this.Flag = (RecipientTypeFlag)(bitWise & 0xF0);
-            this.Type = (RecipientTypeType)(bitWise & 0x0F);
+            byte bitWise = ReadByte();
+            Flag = (RecipientTypeFlag)(bitWise & 0xF0);
+            Type = (RecipientTypeType)(bitWise & 0x0F);
         }
     }
 }

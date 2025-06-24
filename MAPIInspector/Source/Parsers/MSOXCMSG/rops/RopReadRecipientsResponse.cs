@@ -41,23 +41,23 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
+            RopId = (RopIdType)ReadByte();
+            InputHandleIndex = ReadByte();
+            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
 
-            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
             {
-                this.RowCount = this.ReadByte();
+                RowCount = ReadByte();
                 List<ReadRecipientRow> readRecipientRows = new List<ReadRecipientRow>();
 
-                for (int i = 0; i < this.RowCount; i++)
+                for (int i = 0; i < RowCount; i++)
                 {
                     ReadRecipientRow readRecipientRow = new ReadRecipientRow();
                     readRecipientRow.Parse(s);
                     readRecipientRows.Add(readRecipientRow);
                 }
 
-                this.RecipientRows = readRecipientRows.ToArray();
+                RecipientRows = readRecipientRows.ToArray();
             }
         }
     }

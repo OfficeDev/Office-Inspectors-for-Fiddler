@@ -54,13 +54,13 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RecipientType = new RecipientType();
-            this.RecipientType.Parse(s);
-            this.CodePageId = this.ReadUshort();
-            this.Reserved = this.ReadUshort();
-            this.RecipientRowSize = this.ReadUshort();
-            this.RecipientRow = new RecipientRow(this.propTags);
-            this.RecipientRow.Parse(s);
+            RecipientType = new RecipientType();
+            RecipientType.Parse(s);
+            CodePageId = ReadUshort();
+            Reserved = ReadUshort();
+            RecipientRowSize = ReadUshort();
+            RecipientRow = new RecipientRow(propTags);
+            RecipientRow.Parse(s);
         }
     }
 }

@@ -49,14 +49,14 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RowId = this.ReadUint();
-            this.RecipientType = this.ReadByte();
-            this.RecipientRowSize = this.ReadUshort();
+            RowId = ReadUint();
+            RecipientType = ReadByte();
+            RecipientRowSize = ReadUshort();
 
-            if (this.RecipientRowSize > 0)
+            if (RecipientRowSize > 0)
             {
-                this.RecipientRow = new RecipientRow(this.propTags);
-                this.RecipientRow.Parse(s);
+                RecipientRow = new RecipientRow(propTags);
+                RecipientRow.Parse(s);
             }
         }
     }

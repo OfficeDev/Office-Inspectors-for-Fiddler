@@ -40,17 +40,17 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)this.ReadByte();
-            this.OutputHandleIndex = this.ReadByte();
-            this.ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)this.ReadUint());
+            RopId = (RopIdType)ReadByte();
+            OutputHandleIndex = ReadByte();
+            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
 
-            if ((ErrorCodes)this.ReturnValue == ErrorCodes.Success)
+            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
             {
-                this.HasMessageId = this.ReadBoolean();
-                if ((bool)this.HasMessageId)
+                HasMessageId = ReadBoolean();
+                if ((bool)HasMessageId)
                 {
-                    this.MessageId = new MessageID();
-                    this.MessageId.Parse(s);
+                    MessageId = new MessageID();
+                    MessageId.Parse(s);
                 }
             }
         }

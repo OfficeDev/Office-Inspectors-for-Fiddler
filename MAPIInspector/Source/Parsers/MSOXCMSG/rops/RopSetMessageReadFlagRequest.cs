@@ -45,23 +45,23 @@
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            this.RopId = (RopIdType)this.ReadByte();
-            this.LogonId = this.ReadByte();
-            this.ResponseHandleIndex = this.ReadByte();
-            this.InputHandleIndex = this.ReadByte();
-            this.ReadFlags = (ReadFlags)this.ReadByte();
+            RopId = (RopIdType)ReadByte();
+            LogonId = ReadByte();
+            ResponseHandleIndex = ReadByte();
+            InputHandleIndex = ReadByte();
+            ReadFlags = (ReadFlags)ReadByte();
             if(!MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
             {
-                if (((byte)DecodingContext.SessionLogonFlagMapLogId[MapiInspector.MAPIParser.ParsingSession.id][this.LogonId] & (byte)LogonFlags.Private) != (byte)LogonFlags.Private)
+                if (((byte)DecodingContext.SessionLogonFlagMapLogId[MapiInspector.MAPIParser.ParsingSession.id][LogonId] & (byte)LogonFlags.Private) != (byte)LogonFlags.Private)
                 {
-                    this.ClientData = this.ConvertArray(this.ReadBytes(24));
+                    ClientData = ConvertArray(ReadBytes(24));
                 }
             }
             else
             {
-                if (((byte)DecodingContext.SessionLogonFlagMapLogId[int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"])][this.LogonId] & (byte)LogonFlags.Private) != (byte)LogonFlags.Private)
+                if (((byte)DecodingContext.SessionLogonFlagMapLogId[int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"])][LogonId] & (byte)LogonFlags.Private) != (byte)LogonFlags.Private)
                 {
-                    this.ClientData = this.ConvertArray(this.ReadBytes(24));
+                    ClientData = ConvertArray(ReadBytes(24));
                 }
             }
         }
