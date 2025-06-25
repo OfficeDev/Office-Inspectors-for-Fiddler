@@ -115,16 +115,6 @@ namespace BlockParserTests
         }
 
         [TestMethod]
-        public void AddChild_WithFormat_SetsFormattedText()
-        {
-            var b = Block.Create();
-            var child = Block.Create();
-            b.AddChild(child, "val={0}", 7);
-            Assert.AreEqual("val=7", child.Text);
-            Assert.AreEqual(1, b.Children.Count);
-        }
-
-        [TestMethod]
         public void AddHeader_AddsTextOnlyNode()
         {
             var b = Block.Create();
@@ -159,14 +149,6 @@ namespace BlockParserTests
             Assert.AreEqual("sub", b.Children[0].Text);
             Assert.AreEqual(2, b.Children[0].Offset);
             Assert.AreEqual(3, b.Children[0].Size);
-        }
-
-        [TestMethod]
-        public void AddSubHeader_Format_AddsFormattedNode()
-        {
-            var b = Block.Create();
-            b.AddSubHeader("s{0}", 9);
-            Assert.AreEqual("s9", b.Children[0].Text);
         }
 
         [TestMethod]

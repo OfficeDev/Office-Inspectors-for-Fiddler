@@ -31,11 +31,11 @@
         /// <param name="child">The child block to add. Should not be <see langword="null"/> and should be parsed.</param>
         /// <param name="format">A composite format string used to set the text of the child block.</param>
         /// <param name="args">An array of objects to format into the <paramref name="format"/> string.</param>
-        public void AddChild(Block child, string format, params object[] args)
+        public void AddChild(Block child, string label)
         {
             if (child != null && child.Parsed)
             {
-                child.SetText(format, args);
+                child.SetText(label);
                 children.Add(child);
             }
         }
@@ -100,14 +100,11 @@
         /// <remarks>The subheader node inherits the current offset and size values and is added as a
         /// child to the current structure.
         /// </remarks>
-        /// <param name="format">A composite format string that specifies the text to set for the subheader. The format string can include
-        /// placeholders for arguments, which are replaced by the values in <paramref name="args"/>.</param>
-        /// <param name="args">An array of objects to format and include in the subheader text. Each placeholder in <paramref
-        /// name="format"/> is replaced by the corresponding element in this array.</param>
-        public void AddSubHeader(string format, params object[] args)
+        /// <param name="text">The text to set for the subheader node. This text will be used as the label for the node.</param>
+        public void AddSubHeader(string text)
         {
             var node = Create();
-            node.SetText(format, args);
+            node.SetText(text);
             node.Offset = Offset;
             node.Size = Size;
             AddChild(node);

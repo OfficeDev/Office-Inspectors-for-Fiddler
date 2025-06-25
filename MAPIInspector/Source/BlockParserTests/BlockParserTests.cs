@@ -21,8 +21,8 @@ namespace BlockParserTests
             protected override void ParseBlocks()
             {
                 SetText("TestBlock");
-                AddChild(f1, "f1 = 0x{0:X8}", f1.Data);
-                AddChild(f2, "f2 = 0x{0:X4}", f2.Data);
+                AddChild(f1, $"f1 = 0x{f1.Data:X8}");
+                AddChild(f2, $"f2 = 0x{f2.Data:X4}");
             }
         }
 
@@ -42,8 +42,8 @@ namespace BlockParserTests
             protected override void ParseBlocks()
             {
                 SetText("TestBlock2");
-                AddChild(f1, "f1 = 0x{0:X8}", f1.Data);
-                AddChild(f2, "f2 = 0x{0:X4}", f2.Data);
+                AddChild(f1, $"f1 = 0x{f1.Data:X8}");
+                AddChild(f2, $"f2 = 0x{f2.Data:X4}");
                 AddChild(tb);
             }
         }

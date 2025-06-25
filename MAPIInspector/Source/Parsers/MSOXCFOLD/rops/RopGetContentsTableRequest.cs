@@ -49,7 +49,7 @@
         {
             SetText("RopGetContentsTableRequest");
             AddChildBlockT(RopId, "RopId");
-            if (LogonId != null) AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
+            if (LogonId != null) AddChild(LogonId, $"LogonId:0x{LogonId.Data:X2}");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
             AddChildBlockT(TableFlags, "TableFlags");

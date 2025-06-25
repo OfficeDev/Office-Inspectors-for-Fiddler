@@ -192,7 +192,7 @@
         {
             SetText("RopSetColumnsRequest");
             AddChildBlockT(RopId, "RopId");
-            if (LogonId != null) AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
+            if (LogonId != null) AddChild(LogonId, $"LogonId:0x{LogonId.Data:X2}");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(SetColumnsFlags, "SetColumnsFlags");
             AddChildBlockT(PropertyTagCount, "PropertyTagCount");
@@ -534,7 +534,7 @@
         {
             SetText("RopQueryRowsRequest");
             AddChildBlockT(RopId, "RopId");
-            if (LogonId != null) AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
+            if (LogonId != null) AddChild(LogonId, $"LogonId:0x{LogonId.Data:X2}");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(QueryRowsFlags, "QueryRowsFlags");
             AddChildBlockT(ForwardRead, "ForwardRead");
@@ -925,7 +925,7 @@
         {
             SetText("RopSeekRowRequest");
             AddChildBlockT(RopId, "RopId");
-            if (LogonId != null) AddChild(LogonId, "LogonId:0x{0:X2}", LogonId.Data);
+            if (LogonId != null) AddChild(LogonId, $"LogonId:0x{LogonId.Data:X2}");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(Origin, "Origin");
             AddChildBlockT(RowCount, "RowCount");
