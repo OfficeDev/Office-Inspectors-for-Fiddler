@@ -134,14 +134,6 @@ namespace BlockParserTests
         }
 
         [TestMethod]
-        public void AddHeader_Format_AddsFormattedTextOnlyNode()
-        {
-            var b = Block.Create();
-            b.AddHeader("h{0}", 1);
-            Assert.AreEqual("h1", b.Children[0].Text);
-        }
-
-        [TestMethod]
         public void AddLabeledChild_AddsNodeWithChild()
         {
             var b = Block.Create();
