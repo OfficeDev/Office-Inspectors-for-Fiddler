@@ -22,15 +22,14 @@
         }
 
         /// <summary>
-        /// Adds a child block to the current block and sets its text using the specified format string and arguments.
+        /// Adds a child block to the current block and sets its text label
         /// </summary>
         /// <remarks>The method adds the specified child block to the collection of children if the block
         /// is not <see langword="null"/>  and has been successfully parsed. The text of the child block is set using
-        /// the provided format string and arguments.
+        /// the provided label.
         /// </remarks>
         /// <param name="child">The child block to add. Should not be <see langword="null"/> and should be parsed.</param>
-        /// <param name="format">A composite format string used to set the text of the child block.</param>
-        /// <param name="args">An array of objects to format into the <paramref name="format"/> string.</param>
+        /// <param name="label">The label to use in the text of the child block.</param>
         public void AddChild(Block child, string label)
         {
             if (child != null && child.Parsed)
@@ -91,20 +90,20 @@
         /// 
         /// This node will not have any size or offset, and it is typically used to represent a header in a structured format.
         /// </remarks>
-        /// <param name="text">The text content of the header element. Should not be null or empty.</param>
-        public void AddHeader(string text) => AddChild(Create(text));
+        /// <param name="header">The text content of the header element. Should not be null or empty.</param>
+        public void AddHeader(string header) => AddChild(Create(header));
 
         /// <summary>
-        /// Adds a subheader node with formatted text to the current structure.
+        /// Adds a subheader node with a label to the current structure.
         /// </summary>
         /// <remarks>The subheader node inherits the current offset and size values and is added as a
         /// child to the current structure.
         /// </remarks>
-        /// <param name="text">The text to set for the subheader node. This text will be used as the label for the node.</param>
-        public void AddSubHeader(string text)
+        /// <param name="header">The text to set for the subheader node. This text will be used as the label for the node.</param>
+        public void AddSubHeader(string header)
         {
             var node = Create();
-            node.SetText(text);
+            node.SetText(header);
             node.Offset = Offset;
             node.Size = Size;
             AddChild(node);
