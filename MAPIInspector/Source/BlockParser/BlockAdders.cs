@@ -1,18 +1,17 @@
 ﻿namespace BlockParser
 {
     /// <summary>
-    /// Routines for chaining blocks together to form a tree rooted at a BlockParser.Block instance.
+    /// Provides methods for adding and labeling child blocks to form a tree structure rooted at a <see cref="Block"/> instance.
     /// </summary>
     public partial class Block
     {
         /// <summary>
-        /// Adds a child block to the current block.
+        /// Adds a child block to this block.
         /// </summary>
-        /// <remarks>The child block is added to the internal collection only if it is not <see
-        /// langword="null"/> and has been successfully parsed.
+        /// <remarks>
+        /// The child is added only if it is not <c>null</c> and has been successfully parsed (<see cref="Parsed"/> is <c>true</c>).
         /// </remarks>
-        /// <param name="child">The child block to add. Should not be <see langword="null"/> and should have its <see cref="Block.Parsed"/>
-        /// property set to <see langword="true"/>.</param>
+        /// <param name="child">The child block to add. Must not be <c>null</c> and must be parsed.</param>
         public void AddChild(Block child)
         {
             if (child != null && child.Parsed)
@@ -22,14 +21,13 @@
         }
 
         /// <summary>
-        /// Adds a child block to the current block and sets its text label
+        /// Adds a child block to this block and sets its text label.
         /// </summary>
-        /// <remarks>The method adds the specified child block to the collection of children if the block
-        /// is not <see langword="null"/>  and has been successfully parsed. The text of the child block is set using
-        /// the provided label.
+        /// <remarks>
+        /// The child is added only if it is not <c>null</c> and has been successfully parsed. The child's text is set to the provided label.
         /// </remarks>
-        /// <param name="child">The child block to add. Should not be <see langword="null"/> and should be parsed.</param>
-        /// <param name="label">The label to use in the text of the child block.</param>
+        /// <param name="child">The child block to add. Must not be <c>null</c> and must be parsed.</param>
+        /// <param name="label">The label to set as the child's text.</param>
         public void AddChild(Block child, string label)
         {
             if (child != null && child.Parsed)
@@ -40,16 +38,14 @@
         }
 
         /// <summary>
-        /// Adds a child block of type <see cref="BlockT{T}"/> to the current block with a specified label.
+        /// Adds a child block of type <see cref="BlockT{T}"/> to this block with a specified label.
         /// </summary>
         /// <remarks>
-        /// The child block's text is set to the label followed by its data value.
+        /// The child's text is set to the label followed by its data value (e.g., "Label:Value").
         /// </remarks>
-        /// <example>If the label is "Value" and the data is 42, the text will be "Value:42".
-        /// </example>
         /// <typeparam name="T">The value type of the data contained in the child block.</typeparam>
-        /// <param name="child">The child block to add. Should not be <see langword="null"/> and should be parsed.</param>
-        /// <param name="label">The label to use in the text of the child block.</param>
+        /// <param name="child">The child block to add. Must not be <c>null</c> and must be parsed.</param>
+        /// <param name="label">The label to use in the child's text.</param>
         public void AddChildBlockT<T>(BlockT<T> child, string label) where T : struct
         {
             if (child != null && child.Parsed)
@@ -60,18 +56,13 @@
         }
 
         /// <summary>
-        /// Adds a child string to the current block with a specified label.
+        /// Adds a <see cref="BlockString"/> child to this block with a specified label.
         /// </summary>
-        /// <remarks>The method updates the text of the <paramref name="child"/> by prepending the
-        /// specified <paramref name="label"/> followed by a colon (":") to the child's data. The updated child is then
-        /// added to the collection of children.
+        /// <remarks>
+        /// The child's text is set to the label followed by its data (e.g., "Label:Data").
         /// </remarks>
-        /// <example>
-        /// For example, if the label is "Description" and the child's data is "This is a test",
-        /// then the child's text will be set to "Description:This is a test".
-        /// </example>
-        /// <param name="child">The <see cref="BlockString"/> instance to add as a child. Should not be null and should have been parsed.</param>
-        /// <param name="label">The label to prepend to the child's data when setting its text.</param>
+        /// <param name="child">The <see cref="BlockString"/> to add. Must not be <c>null</c> and must be parsed.</param>
+        /// <param name="label">The label to prepend to the child's data in its text.</param>
         public void AddChildString(BlockString child, string label)
         {
             if (child != null && child.Parsed)
@@ -82,24 +73,21 @@
         }
 
         /// <summary>
-        /// Adds a header element with the specified text to the current object.
+        /// Adds a header node with the specified text to this block.
         /// </summary>
-        /// <remarks>This method creates a new header element using the provided text and adds it as a
-        /// child to the current object. Ensure that <paramref name="text"/> is a valid, non-empty string to avoid
-        /// unexpected behavior.
-        /// 
-        /// This node will not have any size or offset, and it is typically used to represent a header in a structured format.
+        /// <remarks>
+        /// The header node is created with the given text and added as a child. The node has no size or offset.
         /// </remarks>
-        /// <param name="header">The text content of the header element. Should not be null or empty.</param>
+        /// <param name="header">The subheader text to set as the node's label.</param>
         public void AddHeader(string header) => AddChild(Create(header));
 
         /// <summary>
-        /// Adds a subheader node with a label to the current structure.
+        /// Adds a subheader node with the specified label to this block.
         /// </summary>
-        /// <remarks>The subheader node inherits the current offset and size values and is added as a
-        /// child to the current structure.
+        /// <remarks>
+        /// The subheader node inherits this block's offset and size, and is added as a child.
         /// </remarks>
-        /// <param name="header">The text to set for the subheader node. This text will be used as the label for the node.</param>
+        /// <param name="header">The subheader text to set as the node's label.</param>
         public void AddSubHeader(string header)
         {
             var node = Create();
@@ -110,14 +98,14 @@
         }
 
         /// <summary>
-        /// Adds a labeled child node to the current node based on the specified block and text.
+        /// Adds a labeled child node to this block, containing the specified block as its child.
         /// </summary>
-        /// <remarks>This method creates a new node, sets its label text, and assigns the offset and size
-        /// of the specified block. The block is then added as a child to the newly created node, which is subsequently
-        /// added to the current node.
+        /// <remarks>
+        /// A new node is created with the given label, and its offset and size are set to match the provided block.
+        /// The block is added as a child to the new node, which is then added to this block.
         /// </remarks>
-        /// <param name="block">The block to be added as a child. Must not be null and must have been parsed.</param>
-        /// <param name="text">The label text to associate with the child node.</param>
+        /// <param name="block">The block to add as a child. Must not be <c>null</c> and must be parsed.</param>
+        /// <param name="text">The label text for the new node.</param>
         public void AddLabeledChild(Block block, string text)
         {
             if (block != null && block.Parsed)
@@ -132,14 +120,15 @@
         }
 
         /// <summary>
-        /// Adds a labeled child node to the current node, based on the provided blocks and text.
+        /// Adds a labeled node to this block, containing the specified blocks as its children.
         /// </summary>
-        /// <remarks>If <paramref name="blocks"/> is null, no action is performed. If <paramref
-        /// name="blocks"/> is empty, the created node will not have any children. The size and offset of the newly
-        /// created node are calculated based on the provided blocks.</remarks>
-        /// <param name="blocks">An array of <see cref="Block"/> objects to be added as children. Each block will be labeled using its <see
-        /// cref="Block.Text"/> property or its type name if <see cref="Block.Text"/> is null or empty.</param>
-        /// <param name="text">The text to set for the newly created node that will contain the labeled children.</param>
+        /// <remarks>
+        /// If <paramref name="blocks"/> is <c>null</c>, no action is taken. If it is empty, the created node will have no children.
+        /// The node's offset and size are set based on the provided blocks.
+        /// Each child block is labeled using its <see cref="Text"/> property, or its type name if <see cref="Text"/> is <c>null</c> or empty.
+        /// </remarks>
+        /// <param name="blocks">The blocks to add as children. Each must be parsed.</param>
+        /// <param name="text">The label for the new node.</param>
         public void AddLabeledChildren(Block[] blocks, string text)
         {
             if (blocks != null)
