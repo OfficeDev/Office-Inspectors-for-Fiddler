@@ -45,7 +45,7 @@ namespace MAPIInspector.Parsers
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (Version != null) AddChild(Version, $"Version : {Version.ToHexString(false)}");
+            AddChildBytes(Version, "Version");
         }
     }
 }

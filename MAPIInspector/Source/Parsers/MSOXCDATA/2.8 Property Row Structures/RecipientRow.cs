@@ -155,7 +155,7 @@
             AddChildBlockT(EntryIdSize, "EntryIdSize");
             AddChild(EntryID, "EntryID");
             AddChildBlockT(SearchKeySize, "SearchKeySize");
-            if (SearchKey != null) AddChild(SearchKey, $"SearchKey:{SearchKey.ToHexString()}");
+            AddChildBytes(SearchKey, "SearchKey");
             AddChildString(AddressType, "AddressType");
             AddChildString(EmailAddress, "EmailAddress");
             AddChildString(DisplayName, "DisplayName");

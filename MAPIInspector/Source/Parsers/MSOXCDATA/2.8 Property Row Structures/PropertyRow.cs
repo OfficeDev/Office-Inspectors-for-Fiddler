@@ -118,7 +118,8 @@
         {
             SetText("PropertyRow");
             AddChildBlockT(Flag, "Flag");
-            if (bytes != null) AddChild(bytes, $"Bytes:{bytes.ToHexString(false)}");
+
+            AddChildBytes(bytes, "Bytes");
             foreach (var propValue in ValueArray)
             {
                 if (propValue != null) AddChild(propValue, $"{propValue.GetType().Name}");

@@ -32,7 +32,7 @@
         {
             SetText("FolderID");
             AddChildBlockT(ReplicaId, "ReplicaId");
-            if (GlobalCounter != null) AddChild(GlobalCounter, $"GlobalCounter:{GlobalCounter.ToHexString(false)}");
+            AddChildBytes(GlobalCounter, "GlobalCounter");
         }
     }
 }

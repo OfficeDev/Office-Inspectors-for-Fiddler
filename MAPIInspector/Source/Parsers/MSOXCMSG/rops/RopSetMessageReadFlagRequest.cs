@@ -71,7 +71,7 @@
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(ReadFlags, "ReadFlags");
-            if (ClientData != null) AddChild(ClientData, $"ClientData:{ClientData.ToHexString(false)}");
+            AddChildBytes(ClientData, "ClientData");
         }
     }
 }

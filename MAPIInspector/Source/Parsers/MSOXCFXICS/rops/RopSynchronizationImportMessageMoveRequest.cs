@@ -100,15 +100,15 @@ namespace MAPIInspector.Parsers
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(SourceFolderIdSize, "SourceFolderIdSize");
-            if (SourceFolderId != null) AddChild(SourceFolderId, $"SourceFolderId: {SourceFolderId.ToHexString(false)}");
+            AddChildBytes(SourceFolderId, "SourceFolderId");
             AddChildBlockT(SourceMessageIdSize, "SourceMessageIdSize");
-            if (SourceMessageId != null) AddChild(SourceMessageId, $"SourceMessageId: {SourceMessageId.ToHexString(false)}");
+            AddChildBytes(SourceMessageId, "SourceMessageId");
             AddChildBlockT(PredecessorChangeListSize, "PredecessorChangeListSize");
-            if (PredecessorChangeList != null) AddChild(PredecessorChangeList, $"PredecessorChangeList: {PredecessorChangeList.ToHexString(false)}");
+            AddChildBytes(PredecessorChangeList, "PredecessorChangeList");
             AddChildBlockT(DestinationMessageIdSize, "DestinationMessageIdSize");
-            if (DestinationMessageId != null) AddChild(DestinationMessageId, $"DestinationMessageId: {DestinationMessageId.ToHexString(false)}");
+            AddChildBytes(DestinationMessageId, "DestinationMessageId");
             AddChildBlockT(ChangeNumberSize, "ChangeNumberSize");
-            if (ChangeNumber != null) AddChild(ChangeNumber, $"ChangeNumber: {ChangeNumber.ToHexString(false)}");
+            AddChildBytes(ChangeNumber, "ChangeNumber");
         }
     }
 }

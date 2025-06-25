@@ -52,7 +52,7 @@
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             if (ReturnValue.Data != 0) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(DataSize, "DataSize");
-            if (Data != null) AddChild(Data, $"Data:{Data.ToHexString()}");
+            AddChildBytes(Data, "Data");
         }
     }
 }

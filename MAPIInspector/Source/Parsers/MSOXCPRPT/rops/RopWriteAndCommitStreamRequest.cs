@@ -52,7 +52,7 @@
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(DataSize, "DataSize");
-            if (Data != null) AddChild(Data, $"Data:{Data.ToHexString()}");
+            AddChildBytes(Data, "Data");
         }
     }
 }

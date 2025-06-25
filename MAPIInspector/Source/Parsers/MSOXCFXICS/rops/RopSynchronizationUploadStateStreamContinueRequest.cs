@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(StreamDataSize, "StreamDataSize");
-            if (StreamData != null) AddChild(StreamData, $"StreamData : {StreamData.ToHexString(false)}");
+            AddChildBytes(StreamData, "StreamData");
         }
     }
 }

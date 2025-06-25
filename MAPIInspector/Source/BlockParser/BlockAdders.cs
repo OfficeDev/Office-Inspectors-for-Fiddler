@@ -73,6 +73,24 @@
         }
 
         /// <summary>
+        /// Adds a <see cref="BlockBytes"/> child to this block with a specified label.
+        /// </summary>
+        /// <remarks>
+        /// The child's text is set to the label followed by its data in hex format (e.g., "Label:01020304").
+        /// </remarks>
+        /// <param name="child">The <see cref="BlockBytes"/> to add. Must not be <c>null</c> and must be parsed.</param>
+        /// <param name="label">The label to prepend to the child's data in its text.</param>
+        public void AddChildBytes(BlockBytes child, string label)
+        {
+            if (child != null && child.Parsed)
+            {
+                child.SetText($"{label}:{child.ToHexString()}");
+                children.Add(child);
+            }
+        }
+
+
+        /// <summary>
         /// Adds a header node with the specified text to this block.
         /// </summary>
         /// <remarks>

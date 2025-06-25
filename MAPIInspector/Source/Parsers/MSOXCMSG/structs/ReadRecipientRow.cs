@@ -59,7 +59,7 @@
             AddChildBlockT(CodePageId, "CodePageId");
             AddChildBlockT(Reserved, "Reserved");
             AddChildBlockT(RecipientRowSize, "RecipientRowSize");
-            if (RecipientRow != null) AddChild(RecipientRow, $"RecipientRow:{RecipientRow.ToHexString()}");
+            AddChildBytes(RecipientRow, "RecipientRow");
         }
     }
 }

@@ -761,7 +761,7 @@
             AddChildBlockT(AT, "AT");
             AddChildBlockT(NC, "NC");
             AddChildBlockT(PR, "PR");
-            if (Reservedbits1 != null) AddChild(Reservedbits1, $"Reservedbits1:{Reservedbits1.ToHexString(false)}");
+            AddChildBytes(Reservedbits1, "Reservedbits1");
         }
 
     }
@@ -813,7 +813,7 @@
             AddChildBlockT(Reservedbits0, "Reservedbits0");
             AddChildBlockT(ST, "ST");
             AddChildBlockT(NS, "NS");
-            if (Reservedbits1 != null) AddChild(Reservedbits1, $"Reservedbits1:{Reservedbits1.ToHexString(false)}");
+            AddChildBytes(Reservedbits1, "Reservedbits1");
         }
     }
 
@@ -902,7 +902,7 @@
         {
             AddChildBlockT(FolderInThisStore, "FolderInThisStore");
             AddChildBlockT(StoreEIDSize, "StoreEIDSize");
-            if (StoreEID != null) AddChild(StoreEID, $"StoreEID:{StoreEID.ToHexString(false)}");
+            AddChildBytes(StoreEID, "StoreEID");
             AddChildBlockT(FolderEIDSize, "FolderEIDSize");
             AddChild(FolderEID, "FolderEID");
         }
@@ -947,7 +947,7 @@
         protected override void ParseBlocks()
         {
             AddChildBlockT(StoreEIDSize, "StoreEIDSize");
-            if (StoreEID != null) AddChild(StoreEID, $"StoreEID:{StoreEID.ToHexString(false)}");
+            AddChildBytes(StoreEID, "StoreEID");
             AddChildBlockT(FolderEIDSize, "FolderEIDSize");
             AddChild(FolderEID, "FolderEID");
         }
@@ -1218,7 +1218,7 @@
 
         protected override void ParseBlocks()
         {
-            if (DeferActionData != null) AddChild(DeferActionData, $"DeferActionData:{DeferActionData.ToHexString(false)}");
+            AddChildBytes(DeferActionData, "DeferActionData");
         }
     }
 

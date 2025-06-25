@@ -56,7 +56,7 @@
         protected override void ParseBlocks()
         {
             AddChild(_count, $"Count:{Count}");
-            AddChild(Value, $"Value:{Value.ToHexString(false)}");
+            AddChildBytes(Value, "Value");
         }
     }
 }

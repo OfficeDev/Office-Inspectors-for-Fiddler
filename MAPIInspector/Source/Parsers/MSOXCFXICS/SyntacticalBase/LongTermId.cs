@@ -37,7 +37,7 @@
         {
             SetText("LongTermId");
             this.AddChildGuid(DatabaseGuid, "DatabaseGuid");
-            if (GlobalCounter != null) AddChild(GlobalCounter, $"GlobalCounter:{GlobalCounter.ToHexString(false)}");
+            AddChildBytes(GlobalCounter, "GlobalCounter");
             AddChildBlockT(Pad, "Pad");
         }
     }

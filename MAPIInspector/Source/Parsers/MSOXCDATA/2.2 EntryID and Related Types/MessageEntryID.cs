@@ -81,10 +81,10 @@
             this.AddChildGuid(ProviderUID, "ProviderUID");
             AddChildBlockT(MessageType, "MessageType");
             this.AddChildGuid(FolderDatabaseGuid, "FolderDatabaseGuid");
-            if (FolderGlobalCounter != null) AddChild(FolderGlobalCounter, $"FolderGlobalCounter :{FolderGlobalCounter.ToHexString(false)}");
+            AddChildBytes(FolderGlobalCounter, "FolderGlobalCounter");
             AddChildBlockT(Pad1, "Pad1");
             this.AddChildGuid(MessageDatabaseGuid, "MessageDatabaseGuid");
-            if (MessageGlobalCounter != null) AddChild(MessageGlobalCounter, $"MessageGlobalCounter :{MessageGlobalCounter.ToHexString(false)}");
+            AddChildBytes(MessageGlobalCounter, "MessageGlobalCounter");
             AddChildBlockT(Pad2, "Pad2");
         }
     }

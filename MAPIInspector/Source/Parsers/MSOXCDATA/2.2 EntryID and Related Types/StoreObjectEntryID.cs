@@ -81,7 +81,7 @@
             this.AddChildGuid(ProviderUID, "ProviderUID");
             AddChildBlockT(Version, "Version");
             AddChildBlockT(Flag, "Flag");
-            if (DLLFileName != null) AddChild(DLLFileName, $"DLLFileName:{DLLFileName.ToHexString(false)}");
+            AddChildBytes(DLLFileName, "DLLFileName");
             AddChildBlockT(WrappedFlags, "WrappedFlags");
             this.AddChildGuid(WrappedProviderUID, "WrappedProviderUID");
             AddChildBlockT(WrappedType, "WrappedType");
