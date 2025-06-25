@@ -1,59 +1,70 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
+    using System.Collections.Generic;
 
     /// <summary>
     ///  2.2.2.12 RopGetPropertyIdsFromNames
     ///  A class indicates the RopGetPropertyIdsFromNames ROP Response Buffer.
     /// </summary>
-    public class RopGetPropertyIdsFromNamesResponse : BaseStructure
+    public class RopGetPropertyIdsFromNamesResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer that specifies the number of integers contained in the PropertyIds field.
         /// </summary>
-        public ushort? PropertyIdCount;
+        public BlockT<ushort> PropertyIdCount;
 
         /// <summary>
         /// An array of unsigned 16-bit integers. Each integer in the array is the property ID associated with a property name
         /// </summary>
-        public ushort?[] PropertyIds;
+        public BlockT<ushort>[] PropertyIds;
 
         /// <summary>
         /// Parse the RopGetPropertyIdsFromNamesResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopGetPropertyIdsFromNamesResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                PropertyIdCount = ReadUshort();
-                PropertyIds = ConvertArray(new ushort[(int)PropertyIdCount]);
+                PropertyIdCount = ParseT<ushort>();
+                var tmpPropertyIds = new List<BlockT<ushort>>();
 
-                for (int i = 0; i < PropertyIdCount; i++)
+                for (int i = 0; i < PropertyIdCount.Data; i++)
                 {
-                    PropertyIds[i] = ReadUshort();
+                    tmpPropertyIds.Add(ParseT<ushort>());
                 }
+
+                PropertyIds = tmpPropertyIds.ToArray();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopGetPropertyIdsFromNamesResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue.Data != 0) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(PropertyIdCount, "PropertyIdCount");
+            AddLabeledChildren(PropertyIds, "PropertyIds");
         }
     }
 }

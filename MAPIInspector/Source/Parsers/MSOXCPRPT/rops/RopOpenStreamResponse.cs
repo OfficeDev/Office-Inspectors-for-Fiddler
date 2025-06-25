@@ -1,48 +1,55 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     ///  2.2.2.14 RopOpenStream
     ///  A class indicates the RopOpenStream ROP Response Buffer.
     /// </summary>
-    public class RopOpenStreamResponse : BaseStructure
+    public class RopOpenStreamResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
         /// </summary>
-        public byte OutputHandleIndex;
+        public BlockT<byte> OutputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer that indicates the size of the stream opened.
         /// </summary>
-        public uint? StreamSize;
+        public BlockT<uint> StreamSize;
 
         /// <summary>
         /// Parse the RopOpenStreamResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopOpenStreamResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            OutputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            OutputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                StreamSize = ReadUint();
+                StreamSize = ParseT<uint>();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopOpenStreamResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
+            if (ReturnValue.Data != 0) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(StreamSize, "StreamSize");
         }
     }
 }

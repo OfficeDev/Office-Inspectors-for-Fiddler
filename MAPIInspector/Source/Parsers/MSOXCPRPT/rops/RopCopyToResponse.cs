@@ -1,71 +1,80 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
+    using System.Collections.Generic;
 
     /// <summary>
     ///  2.2.2.11 RopCopyTo
     ///  A class indicates the RopCopyTo ROP Response Buffer.
     /// </summary>
-    public class RopCopyToResponse : BaseStructure
+    public class RopCopyToResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the SourceHandleIndex field specified in the request.
         /// </summary>
-        public byte SourceHandleIndex;
+        public BlockT<byte> SourceHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of PropertyProblem structures in the PropertyProblems field. 
+        /// An unsigned integer that specifies the number of PropertyProblem structures in the PropertyProblems field.
         /// </summary>
-        public ushort? PropertyProblemCount;
+        public BlockT<ushort> PropertyProblemCount;
 
         /// <summary>
-        /// An array of PropertyProblem structures. 
+        /// An array of PropertyProblem structures.
         /// </summary>
         public PropertyProblem[] PropertyProblems;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the DestHandleIndex field in the request.
         /// </summary>
-        public uint? DestHandleIndex;
+        public BlockT<uint> DestHandleIndex;
 
         /// <summary>
         /// Parse the RopCopyToResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopCopyToResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            SourceHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            SourceHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                PropertyProblemCount = ReadUshort();
-                PropertyProblem[] interPropertyProblem = new PropertyProblem[(int)PropertyProblemCount];
+                PropertyProblemCount = ParseT<ushort>();
+                var interPropertyProblem = new List<PropertyProblem>();
 
-                for (int i = 0; i < PropertyProblemCount; i++)
+                for (int i = 0; i < PropertyProblemCount.Data; i++)
                 {
-                    interPropertyProblem[i] = new PropertyProblem();
-                    interPropertyProblem[i].Parse(s);
+                    interPropertyProblem.Add(Parse<PropertyProblem>());
                 }
 
-                PropertyProblems = interPropertyProblem;
+                PropertyProblems = interPropertyProblem.ToArray();
             }
-            else if ((AdditionalErrorCodes)ReturnValue == AdditionalErrorCodes.NullDestinationObject)
+            else if ((AdditionalErrorCodes)ReturnValue.Data == AdditionalErrorCodes.NullDestinationObject)
             {
-                DestHandleIndex = ReadUint();
+                DestHandleIndex = ParseT<uint>();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopCopyToResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(SourceHandleIndex, "SourceHandleIndex");
+            if (ReturnValue.Data != 0) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(PropertyProblemCount, "PropertyProblemCount");
+            AddLabeledChildren(PropertyProblems, "PropertyProblems");
+            AddChildBlockT(DestHandleIndex, "DestHandleIndex");
         }
     }
 }

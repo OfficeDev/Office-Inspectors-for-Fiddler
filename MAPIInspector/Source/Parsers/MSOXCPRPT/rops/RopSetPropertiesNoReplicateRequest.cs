@@ -1,64 +1,74 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
+    using System.Collections.Generic;
 
     /// <summary>
     ///  2.2.2.6 RopSetPropertiesNoReplicate
     ///  A class indicates the RopSetPropertiesNoReplicate ROP Request Buffer.
     /// </summary>
-    public class RopSetPropertiesNoReplicateRequest : BaseStructure
+    public class RopSetPropertiesNoReplicateRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the number of bytes used for the PropertyValueCount field and the PropertyValues field.
         /// </summary>
-        public ushort PropertyValueSize;
+        public BlockT<ushort> PropertyValueSize;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures listed in the PropertyValues field.
         /// </summary>
-        public ushort PropertyValueCount;
+        public BlockT<ushort> PropertyValueCount;
 
         /// <summary>
-        /// PropertyValues (variable):  An array of TaggedPropertyValue structures that specifies the property values to be set on the object. 
+        /// PropertyValues (variable):  An array of TaggedPropertyValue structures that specifies the property values to be set on the object.
         /// </summary>
         public TaggedPropertyValue[] PropertyValues;
 
         /// <summary>
         /// Parse the RopSetPropertiesNoReplicateRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSetPropertiesNoReplicateRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            InputHandleIndex = ReadByte();
-            PropertyValueSize = ReadUshort();
-            PropertyValueCount = ReadUshort();
-            TaggedPropertyValue[] interValue = new TaggedPropertyValue[(int)PropertyValueCount];
-
-            for (int i = 0; i < PropertyValueCount; i++)
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            PropertyValueSize = ParseT<ushort>();
+            PropertyValueCount = ParseT<ushort>();
+            var interValue = new List<TaggedPropertyValue>();
+            for (int i = 0; i < PropertyValueCount.Data; i++)
             {
-                interValue[i] = new TaggedPropertyValue();
-                interValue[i].Parse(s);
+                var value = new TaggedPropertyValue();
+                value.Parse(parser);
+                interValue.Add(value);
             }
 
-            PropertyValues = interValue;
+            PropertyValues = interValue.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopSetPropertiesNoReplicateRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(PropertyValueSize, "PropertyValueSize");
+            AddChildBlockT(PropertyValueCount, "PropertyValueCount");
+            AddLabeledChildren(PropertyValues, "PropertyValues");
         }
     }
 }

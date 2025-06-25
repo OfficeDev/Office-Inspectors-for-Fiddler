@@ -1,50 +1,58 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     ///  2.2.2.21 RopSeekStream
     ///  A class indicates the RopSeekStream ROP Request Buffer.
     /// </summary>
-    public class RopSeekStreamRequest : BaseStructure
+    public class RopSeekStreamRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An enumeration that specifies the origin location for the seek operation.
         /// </summary>
-        public Origin Origin;
+        public BlockT<Origin> Origin;
 
         /// <summary>
         /// An unsigned integer that specifies the seek offset.
         /// </summary>
-        public ulong Offset;
+        public BlockT<ulong> _Offset;
 
         /// <summary>
         /// Parse the RopSeekStreamRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSeekStreamRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            InputHandleIndex = ReadByte();
-            Origin = (Origin)ReadByte();
-            Offset = ReadUlong();
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            Origin = ParseT<Origin>();
+            _Offset = ParseT<ulong>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopSeekStreamRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(Origin, "Origin");
+            AddChildBlockT(_Offset, "Offset");
         }
     }
 }

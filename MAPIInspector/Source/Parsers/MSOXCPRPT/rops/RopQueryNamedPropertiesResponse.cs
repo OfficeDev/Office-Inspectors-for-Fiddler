@@ -1,71 +1,82 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
+    using System.Collections.Generic;
 
     /// <summary>
     ///  2.2.2.9 RopQueryNamedProperties
     ///  A class indicates the RopQueryNamedProperties ROP Response Buffer.
     /// </summary>
-    public class RopQueryNamedPropertiesResponse : BaseStructure
+    public class RopQueryNamedPropertiesResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer that specifies the number of elements contained in the PropertyIds and PropertyNames fields.
         /// </summary>
-        public ushort? IdCount;
+        public BlockT<ushort> IdCount;
 
         /// <summary>
         /// An array of unsigned 16-bit integers. Each integer in the array is the property ID associated with a property name.
         /// </summary>
-        public ushort?[] PropertyIds;
+        public BlockT<ushort>[] PropertyIds;
 
         /// <summary>
-        /// A list of PropertyName structures that specifies the property names for the property IDs specified in the PropertyIds field. 
+        /// A list of PropertyName structures that specifies the property names for the property IDs specified in the PropertyIds field.
         /// </summary>
         public PropertyName[] PropertyNames;
 
         /// <summary>
         /// Parse the RopQueryNamedPropertiesResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopQueryNamedPropertiesResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                IdCount = ReadUshort();
-                PropertyIds = ConvertArray(new ushort[(int)IdCount]);
-                PropertyNames = new PropertyName[(int)IdCount];
+                IdCount = ParseT<ushort>();
+                var tmpPropertyIds = new List<BlockT<ushort>>();
+                var tmpPropertyNames = new List<PropertyName>();
 
-                for (int i = 0; i < IdCount; i++)
+                for (int i = 0; i < IdCount.Data; i++)
                 {
-                    PropertyIds[i] = ReadUshort();
+                    tmpPropertyIds.Add(ParseT<ushort>());
                 }
+                PropertyIds = tmpPropertyIds.ToArray();
 
-                for (int i = 0; i < IdCount; i++)
+                for (int i = 0; i < IdCount.Data; i++)
                 {
-                    PropertyNames[i] = new PropertyName();
-                    PropertyNames[i].Parse(s);
+                    tmpPropertyNames.Add(Parse<PropertyName>());
                 }
+                PropertyNames = tmpPropertyNames.ToArray();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopQueryNamedPropertiesResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue.Data != 0) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(IdCount, "IdCount");
+            AddLabeledChildren(PropertyIds, "PropertyIds");
+            AddLabeledChildren(PropertyNames, "PropertyNames");
         }
     }
 }

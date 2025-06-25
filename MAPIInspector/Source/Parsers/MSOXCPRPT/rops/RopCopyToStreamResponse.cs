@@ -1,61 +1,70 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     ///  2.2.2.22 RopCopyToStream
     ///  A class indicates the RopCopyToStream ROP Response Buffer.
     /// </summary>
-    public class RopCopyToStreamResponse : BaseStructure
+    public class RopCopyToStreamResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the SourceHandleIndex field in the request.
         /// </summary>
-        public byte SourceHandleIndex;
+        public BlockT<byte> SourceHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the DestHandleIndex field in the request.
         /// </summary>
-        public uint? DestHandleIndex;
+        public BlockT<uint> DestHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the number of bytes read from the source object.
         /// </summary>
-        public ulong ReadByteCount;
+        public BlockT<ulong> ReadByteCount;
 
         /// <summary>
         /// An unsigned integer that specifies the number of bytes written to the destination object.
         /// </summary>
-        public ulong WrittenByteCount;
+        public BlockT<ulong> WrittenByteCount;
 
         /// <summary>
         /// Parse the RopCopyToStreamResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopCopyToStreamResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            SourceHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            SourceHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            if ((AdditionalErrorCodes)ReturnValue == AdditionalErrorCodes.NullDestinationObject)
+            if ((AdditionalErrorCodes)ReturnValue.Data == AdditionalErrorCodes.NullDestinationObject)
             {
-                DestHandleIndex = ReadUint();
+                DestHandleIndex = ParseT<uint>();
             }
 
-            ReadByteCount = ReadUlong();
-            WrittenByteCount = ReadUlong();
+            ReadByteCount = ParseT<ulong>();
+            WrittenByteCount = ParseT<ulong>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopCopyToStreamResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(SourceHandleIndex, "SourceHandleIndex");
+            if (ReturnValue.Data != 0) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(DestHandleIndex, "DestHandleIndex");
+            AddChildBlockT(ReadByteCount, "ReadByteCount");
+            AddChildBlockT(WrittenByteCount, "WrittenByteCount");
         }
     }
 }

@@ -1,50 +1,58 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     ///  2.2.2.16 RopWriteStream
     ///  A class indicates the RopWriteStream ROP Request Buffer.
     /// </summary>
-    public class RopWriteStreamRequest : BaseStructure
+    public class RopWriteStreamRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the size of the Data field.
         /// </summary>
-        public ushort DataSize;
+        public BlockT<ushort> DataSize;
 
         /// <summary>
         /// An array of bytes that specifies the bytes to be written to the stream. The size of this field, in bytes, is specified by the DataSize field.
         /// </summary>
-        public byte[] Data;
+        public BlockBytes Data;
 
         /// <summary>
         /// Parse the RopWriteStreamRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopWriteStreamRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            InputHandleIndex = ReadByte();
-            DataSize = ReadUshort();
-            Data = ReadBytes((int)DataSize);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            DataSize = ParseT<ushort>();
+            Data = ParseBytes(DataSize.Data);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopWriteStreamRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(DataSize, "DataSize");
+            if (Data != null) AddChild(Data, $"Data:{Data.ToHexString()}");
         }
     }
 }

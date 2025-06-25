@@ -2,59 +2,66 @@
 {
     using BlockParser;
     using System.Collections.Generic;
-    using System.IO;
 
     /// <summary>
     ///  2.2.2.7 RopDeleteProperties
     ///  A class indicates the RopDeleteProperties ROP Request Buffer.
     /// </summary>
-    public class RopDeletePropertiesRequest : BaseStructure
+    public class RopDeletePropertiesRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of PropertyTag structures in the PropertyTags field. 
+        /// An unsigned integer that specifies the number of PropertyTag structures in the PropertyTags field.
         /// </summary>
-        public ushort PropertyTagCount;
+        public BlockT<ushort> PropertyTagCount;
 
         /// <summary>
-        /// An array of PropertyTag structures that specifies the property values to be deleted from the object. 
+        /// An array of PropertyTag structures that specifies the property values to be deleted from the object.
         /// </summary>
         public PropertyTag[] PropertyTags;
 
         /// <summary>
         /// Parse the RopDeletePropertiesRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopDeletePropertiesRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            InputHandleIndex = ReadByte();
-            PropertyTagCount = ReadUshort();
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            PropertyTagCount = ParseT<ushort>();
             List<PropertyTag> tmpPropertyTags = new List<PropertyTag>();
 
-            for (int i = 0; i < PropertyTagCount; i++)
+            for (int i = 0; i < PropertyTagCount.Data; i++)
             {
-                PropertyTag tmppropertytag = Block.Parse<PropertyTag>(s);
+                PropertyTag tmppropertytag = Parse<PropertyTag>();
                 tmpPropertyTags.Add(tmppropertytag);
             }
 
             PropertyTags = tmpPropertyTags.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopDeletePropertiesRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(PropertyTagCount, "PropertyTagCount");
+            AddLabeledChildren(PropertyTags, "PropertyTags");
         }
     }
 }

@@ -1,50 +1,58 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     ///  2.2.2.15 RopReadStream
     ///  A class indicates the RopReadStream ROP Response Buffer.
     /// </summary>
-    public class RopReadStreamResponse : BaseStructure
+    public class RopReadStreamResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the Data field.
         /// </summary>
-        public ushort DataSize;
+        public BlockT<ushort> DataSize;
 
         /// <summary>
         /// An array of bytes that are the bytes read from the stream.
         /// </summary>
-        public byte[] Data;
+        public BlockBytes Data;
 
         /// <summary>
         /// Parse the RopReadStreamResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopReadStreamResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
-            DataSize = ReadUshort();
-            Data = ReadBytes((int)DataSize);
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
+            DataSize = ParseT<ushort>();
+            Data = ParseBytes(DataSize.Data);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopReadStreamResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue.Data != 0) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(DataSize, "DataSize");
+            if (Data != null) AddChild(Data, $"Data:{Data.ToHexString()}");
         }
     }
 }

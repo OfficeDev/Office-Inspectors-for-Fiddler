@@ -1,44 +1,51 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     ///  2.2.2.16 RopWriteStream
     ///  A class indicates the RopWriteStream ROP Response Buffer.
     /// </summary>
-    public class RopWriteStreamResponse : BaseStructure
+    public class RopWriteStreamResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer that specifies the number of bytes actually written.
         /// </summary>
-        public ushort WrittenSize;
+        public BlockT<ushort> WrittenSize;
 
         /// <summary>
         /// Parse the RopWriteStreamResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopWriteStreamResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
-            WrittenSize = ReadUshort();
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
+            WrittenSize = ParseT<ushort>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopWriteStreamResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue.Data != 0) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(WrittenSize, "WrittenSize");
         }
     }
 }

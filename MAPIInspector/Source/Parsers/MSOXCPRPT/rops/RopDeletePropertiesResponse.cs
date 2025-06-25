@@ -1,62 +1,70 @@
 ﻿namespace MAPIInspector.Parsers
 {
-    using System.IO;
+    using BlockParser;
+    using System.Collections.Generic;
 
     /// <summary>
     ///  2.2.2.7 RopDeleteProperties
     ///  A class indicates the RopDeleteProperties ROP Response Buffer.
     /// </summary>
-    public class RopDeletePropertiesResponse : BaseStructure
+    public class RopDeletePropertiesResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of PropertyProblem structures in the PropertyProblems field. 
+        /// An unsigned integer that specifies the number of PropertyProblem structures in the PropertyProblems field.
         /// </summary>
-        public ushort? PropertyProblemCount;
+        public BlockT<ushort> PropertyProblemCount;
 
         /// <summary>
-        /// An array of PropertyProblem structures. The number of structures contained in this field is specified by the PropertyProblemCount field. 
+        /// An array of PropertyProblem structures. The number of structures contained in this field is specified by the PropertyProblemCount field.
         /// </summary>
         public PropertyProblem[] PropertyProblems;
 
         /// <summary>
         /// Parse the RopDeletePropertiesResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopDeletePropertiesResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                PropertyProblemCount = ReadUshort();
-                PropertyProblem[] interPropertyProblem = new PropertyProblem[(int)PropertyProblemCount];
+                PropertyProblemCount = ParseT<ushort>();
+                var interPropertyProblem = new List<PropertyProblem>();
 
-                for (int i = 0; i < PropertyProblemCount; i++)
+                for (int i = 0; i < PropertyProblemCount.Data; i++)
                 {
-                    interPropertyProblem[i] = new PropertyProblem();
-                    interPropertyProblem[i].Parse(s);
+                    interPropertyProblem.Add(Parse<PropertyProblem>());
                 }
 
-                PropertyProblems = interPropertyProblem;
+                PropertyProblems = interPropertyProblem.ToArray();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopDeletePropertiesResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue.Data != 0) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(PropertyProblemCount, "PropertyProblemCount");
+            AddLabeledChildren(PropertyProblems, "PropertyProblems");
         }
     }
 }

@@ -1,61 +1,70 @@
 ﻿namespace MAPIInspector.Parsers
 {
     using System;
-    using System.IO;
+    using BlockParser;
 
     /// <summary>
     ///  2.2.2.9 RopQueryNamedProperties
     ///  A class indicates the RopQueryNamedProperties ROP Request Buffer.
     /// </summary>
-    public class RopQueryNamedPropertiesRequest : BaseStructure
+    public class RopQueryNamedPropertiesRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// A flags structure that contains flags control how this ROP behaves.
         /// </summary>
-        public byte QueryFlags;
+        public BlockT<byte> QueryFlags;
 
         /// <summary>
         /// A Boolean that specifies whether the PropertyGuid field is present.
         /// </summary>
-        public byte HasGuid;
+        public BlockT<byte> HasGuid;
 
         /// <summary>
         /// A GUID that is present if HasGuid is nonzero and is not present if the value of the HasGuid field is zero.
         /// </summary>
-        public Guid? PropertyGuid;
+        public BlockGuid PropertyGuid;
 
         /// <summary>
         /// Parse the RopQueryNamedPropertiesRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopQueryNamedPropertiesRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            InputHandleIndex = ReadByte();
-            QueryFlags = ReadByte();
-            HasGuid = ReadByte();
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            QueryFlags = ParseT<byte>();
+            HasGuid = ParseT<byte>();
 
-            if (HasGuid != 0)
+            if (HasGuid.Data != 0)
             {
-                PropertyGuid = ReadGuid();
+                PropertyGuid = Parse<BlockGuid>();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopQueryNamedPropertiesRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBlockT(QueryFlags, "QueryFlags");
+            AddChildBlockT(HasGuid, "HasGuid");
+            this.AddChildGuid(PropertyGuid, "PropertyGuid");
         }
     }
 }

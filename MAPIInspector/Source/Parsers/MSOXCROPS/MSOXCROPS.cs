@@ -1594,21 +1594,21 @@
                                 ropGetPropertiesSpecificRequest.Parse(s);
                                 ropsList.Add(ropGetPropertiesSpecificRequest);
 
-                                if (propertyTagsForGetPropertiesSpec.ContainsKey(ropGetPropertiesSpecificRequest.InputHandleIndex))
+                                if (propertyTagsForGetPropertiesSpec.ContainsKey(ropGetPropertiesSpecificRequest.InputHandleIndex.Data))
                                 {
-                                    if (propertyTagsForGetPropertiesSpec[ropGetPropertiesSpecificRequest.InputHandleIndex].Count == 1)
+                                    if (propertyTagsForGetPropertiesSpec[ropGetPropertiesSpecificRequest.InputHandleIndex.Data].Count == 1)
                                     {
-                                        proDics.Enqueue(propertyTagsForGetPropertiesSpec[ropGetPropertiesSpecificRequest.InputHandleIndex].Dequeue());
+                                        proDics.Enqueue(propertyTagsForGetPropertiesSpec[ropGetPropertiesSpecificRequest.InputHandleIndex.Data].Dequeue());
                                     }
 
                                     proDics.Enqueue(ropGetPropertiesSpecificRequest.PropertyTags);
-                                    propertyTagsForGetPropertiesSpec[ropGetPropertiesSpecificRequest.InputHandleIndex] = proDics;
+                                    propertyTagsForGetPropertiesSpec[ropGetPropertiesSpecificRequest.InputHandleIndex.Data] = proDics;
                                 }
                                 else
                                 {
                                     Queue<PropertyTag[]> proDic0 = new Queue<PropertyTag[]>();
                                     proDic0.Enqueue(ropGetPropertiesSpecificRequest.PropertyTags);
-                                    propertyTagsForGetPropertiesSpec.Add(ropGetPropertiesSpecificRequest.InputHandleIndex, proDic0);
+                                    propertyTagsForGetPropertiesSpec.Add(ropGetPropertiesSpecificRequest.InputHandleIndex.Data, proDic0);
                                 }
 
                                 if (propertyTagsForGetPropertiesSpec.Count > 0)
