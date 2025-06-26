@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
+﻿using System.IO;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the AUX_ENDPOINT_CAPABILITIES Auxiliary Block Structure
     ///  Section 2.2.2.2 AUX_HEADER Structure

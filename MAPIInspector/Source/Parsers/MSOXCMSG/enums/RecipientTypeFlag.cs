@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System;
+﻿using System;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.2.3.1.2 RopOpenMessage ROP Response Buffer
     /// An enumeration that specifies the flag of RecipientType.

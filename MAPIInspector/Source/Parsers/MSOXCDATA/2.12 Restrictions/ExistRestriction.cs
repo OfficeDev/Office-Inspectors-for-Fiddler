@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.12.9 Exist Restriction Structures
     /// </summary>

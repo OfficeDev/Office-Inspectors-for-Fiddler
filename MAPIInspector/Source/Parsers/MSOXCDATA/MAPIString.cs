@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
-    using System.Text;
+﻿using System.IO;
+using System.Text;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// The MAPIString class to record the related attributes of string.
     /// </summary>

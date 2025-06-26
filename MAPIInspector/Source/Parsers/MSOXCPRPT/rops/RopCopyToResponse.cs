@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using System.Collections.Generic;
+﻿using BlockParser;
+using System.Collections.Generic;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  2.2.2.11 RopCopyTo
     ///  A class indicates the RopCopyTo ROP Response Buffer.

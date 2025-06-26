@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using System.Collections.Generic;
+﻿using BlockParser;
+using System.Collections.Generic;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the RopSynchronizationImportReadStateChanges ROP Request Buffer.
     ///  2.2.3.2.4.6.1 RopSynchronizationImportReadStateChanges ROP Request Buffer

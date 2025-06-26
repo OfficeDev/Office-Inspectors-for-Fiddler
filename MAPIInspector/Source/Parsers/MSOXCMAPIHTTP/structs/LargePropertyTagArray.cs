@@ -1,9 +1,9 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using System.Collections.Generic;
-    using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
+using System.IO;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the LargePropertyTagArray structure.
     ///  2.2.1 Common Data Types

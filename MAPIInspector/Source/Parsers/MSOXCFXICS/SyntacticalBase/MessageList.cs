@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using System.Collections.Generic;
+﻿using BlockParser;
+using System.Collections.Generic;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// The MessageList element contains a list of messages, which is determined by the scope of the operation.
     /// </summary>

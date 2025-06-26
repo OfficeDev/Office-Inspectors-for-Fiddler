@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.11.1 Property Data Types
     /// 2 bytes; restricted to 1 or 0.

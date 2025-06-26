@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.2.1.4 RopSetSearchCriteria ROP
     /// A class indicates the RopSetSearchCriteria ROP Response Buffer.

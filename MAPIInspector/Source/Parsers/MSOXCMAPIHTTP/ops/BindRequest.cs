@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
+﻿using System.IO;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the Bind request type request body.
     ///  2.2.5 Request Types for Address Book Server Endpoint

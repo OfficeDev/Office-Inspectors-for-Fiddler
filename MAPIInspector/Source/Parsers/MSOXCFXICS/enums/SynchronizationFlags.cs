@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System;
+﻿using System;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// A flags structure that contains flags that control the behavior of the synchronization.
     /// 2.2.3.2.1.1.1 RopSynchronizationConfigure ROP Request Buffer

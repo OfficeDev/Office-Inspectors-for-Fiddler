@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.2.1.8 RopCopyFolder ROP
     /// The RopCopyFolder ROP ([MS-OXCROPS] section 2.2.4.8) copies a folder from one parent folder to another parent folder. 

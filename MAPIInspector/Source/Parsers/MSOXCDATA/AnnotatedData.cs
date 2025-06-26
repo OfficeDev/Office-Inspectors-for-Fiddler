@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// The AnnotatedData class. Base class for annotated data. Allows us to specify an alternate display string for parsed data
     /// </summary>

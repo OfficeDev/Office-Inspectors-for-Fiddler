@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the RopGetLocalReplicaIds ROP Response Buffer.
     ///  2.2.13.13.2 RopGetLocalReplicaIds ROP Success Response Buffer

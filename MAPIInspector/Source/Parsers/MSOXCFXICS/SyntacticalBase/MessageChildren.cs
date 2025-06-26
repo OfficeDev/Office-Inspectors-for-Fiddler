@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using System.Collections.Generic;
+﻿using BlockParser;
+using System.Collections.Generic;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// The MessageChildren element represents children of the Message objects: Recipient and Attachment objects.
     /// </summary>

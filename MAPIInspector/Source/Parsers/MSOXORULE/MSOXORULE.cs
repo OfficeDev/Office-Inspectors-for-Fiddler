@@ -1,10 +1,10 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
+﻿using BlockParser;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// The enum value of RuleDataFlags
     /// </summary>

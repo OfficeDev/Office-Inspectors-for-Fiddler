@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.Collections.Generic;
-    using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the CompareMinIdsResponse structure.
     ///  2.2.5 Request Types for Address Book Server Endpoint 

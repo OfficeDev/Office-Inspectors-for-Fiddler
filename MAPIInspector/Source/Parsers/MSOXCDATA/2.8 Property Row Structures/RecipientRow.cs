@@ -1,9 +1,9 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using System;
-    using System.Collections.Generic;
+﻿using BlockParser;
+using System;
+using System.Collections.Generic;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.8.3.2 RecipientRow Structure
     /// </summary>

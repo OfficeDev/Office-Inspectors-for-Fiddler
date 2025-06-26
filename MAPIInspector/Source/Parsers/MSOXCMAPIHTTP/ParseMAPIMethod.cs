@@ -1,9 +1,9 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// Parse the additional headers in Common Response Format
     /// </summary>

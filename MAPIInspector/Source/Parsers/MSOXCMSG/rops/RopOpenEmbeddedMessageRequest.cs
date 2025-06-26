@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using System.Net.Mail;
+﻿using BlockParser;
+using System.Net.Mail;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.2.6.16 RopOpenEmbeddedMessage ROP
     /// A class indicates the RopOpenEmbeddedMessage ROP request Buffer.

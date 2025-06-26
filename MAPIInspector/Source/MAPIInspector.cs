@@ -1,15 +1,15 @@
-﻿namespace MapiInspector
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
-    using System.Windows.Forms;
-    using Be.Windows.Forms;
-    using Fiddler;
-    using global::MAPIInspector.Parsers;
-    using static MapiInspector.MAPIParser;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Windows.Forms;
+using Be.Windows.Forms;
+using Fiddler;
+using global::MAPIInspector.Parsers;
+using static MapiInspector.MAPIParser;
 
+namespace MapiInspector
+{
     /// <summary>
     /// MAPIInspector Class
     /// </summary>

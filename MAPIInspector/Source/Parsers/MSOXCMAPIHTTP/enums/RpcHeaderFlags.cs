@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System;
+﻿using System;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// The enum flags that specify how data that follows this header MUST be interpreted. It is defined in section 2.2.2.1 of MS-OXCRPC. 
     /// </summary>

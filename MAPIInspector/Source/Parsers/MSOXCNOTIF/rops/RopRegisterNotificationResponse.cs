@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.2.1.2.1 RopRegisterNotification ROP
     /// A class indicates the RopRegisterNotification ROP Response Buffer.

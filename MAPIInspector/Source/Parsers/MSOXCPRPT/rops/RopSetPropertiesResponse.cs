@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.Collections.Generic;
-    using BlockParser;
+﻿using System.Collections.Generic;
+using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  2.2.2.5 RopSetProperties
     ///  A class indicates the RopSetProperties ROP Response Buffer.

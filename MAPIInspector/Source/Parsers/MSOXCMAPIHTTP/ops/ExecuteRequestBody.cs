@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
+﻿using System.IO;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the Execute request type.
     ///  2.2.4 Request Types for Mailbox Server Endpoint

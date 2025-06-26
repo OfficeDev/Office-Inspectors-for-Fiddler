@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// Represents a REPLGUID and GLOBSET structure pair. 
     /// 2.2.2.4.2 Serialized IDSET Structure Containing a REPLGUID Structure

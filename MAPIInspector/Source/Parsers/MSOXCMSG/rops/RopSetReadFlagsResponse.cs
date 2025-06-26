@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.2.6.10 RopSetReadFlags ROP
     /// A class indicates the RopSetReadFlags ROP response Buffer.

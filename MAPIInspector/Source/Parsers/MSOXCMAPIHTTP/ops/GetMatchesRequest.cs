@@ -1,9 +1,9 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the GetMatchesRequest structure.
     ///  2.2.5.5 GetMatches

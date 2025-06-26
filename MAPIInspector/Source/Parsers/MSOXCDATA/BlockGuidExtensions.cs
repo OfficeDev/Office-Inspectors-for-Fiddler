@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     public static class BlockGuidExtensions
     {
         public static void AddChildGuid(this Block parent, BlockGuid child, string label)

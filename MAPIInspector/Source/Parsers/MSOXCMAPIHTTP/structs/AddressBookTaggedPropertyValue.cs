@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using MapiInspector;
-    using System.IO;
+﻿using MapiInspector;
+using System.IO;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the AddressBookTaggedPropertyValue structure.
     ///  2.2.1 Common Data Types 

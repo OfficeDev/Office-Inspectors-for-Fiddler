@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.2.6.13 RopCreateAttachment ROP
     /// A class indicates the RopCreateAttachment ROP request Buffer.

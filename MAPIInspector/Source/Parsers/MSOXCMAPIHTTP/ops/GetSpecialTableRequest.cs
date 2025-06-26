@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
+﻿using System.IO;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the GetSpecialTableRequest structure.
     ///  2.2.5.8 GetSpecialTable

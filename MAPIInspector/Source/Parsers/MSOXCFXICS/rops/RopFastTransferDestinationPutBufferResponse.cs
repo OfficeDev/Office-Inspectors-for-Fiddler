@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the RopFastTransferDestinationPutBuffer ROP Response Buffer.
     ///  2.2.3.1.2.2.2 RopFastTransferDestinationPutBuffer ROP Response Buffer

@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.Collections.Generic;
-    using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the ResortRestrictionResponse structure.
     ///  2.2.5.15 ResortRestriction

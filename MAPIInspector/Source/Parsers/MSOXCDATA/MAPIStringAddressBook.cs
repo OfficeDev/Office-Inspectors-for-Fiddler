@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using System.Text;
+﻿using BlockParser;
+using System.Text;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// The MAPIString class to record the related attributes of string.
     /// </summary>

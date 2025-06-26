@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System;
+﻿using System;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.2.1.8 PidTagMessageStatus Property
     /// The enum specifies the status of a message in a contents table.

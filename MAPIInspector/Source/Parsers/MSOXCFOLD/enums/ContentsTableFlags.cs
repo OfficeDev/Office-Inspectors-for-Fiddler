@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System;
+﻿using System;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// Section 2.2.1.14.1   RopGetContentsTable ROP Request Buffer
     /// </summary>

@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System;
+﻿using System;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.2.3.10.1 RopSetReadFlags ROP Request Buffer
     /// The enum specifies the flags to set.

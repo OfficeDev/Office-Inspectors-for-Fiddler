@@ -1,8 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
-    using BlockParser;
-
-
     /// <summary>
     /// 2.2.1.8 RopCopyFolder ROP
     /// A class indicates the RopCopyFolder ROP Response Buffer.

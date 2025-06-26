@@ -1,9 +1,9 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using MapiInspector;
-    using System.Collections.Generic;
-    using System.IO;
+﻿using MapiInspector;
+using System.Collections.Generic;
+using System.IO;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the AddressBookPropertyRow structure.
     ///  2.2.1 Common Data Types

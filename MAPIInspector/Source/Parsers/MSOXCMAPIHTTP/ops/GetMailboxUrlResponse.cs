@@ -1,9 +1,9 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the GetMailboxUrlResponse structure.
     ///  2.2.5.18 GetMailboxUrl

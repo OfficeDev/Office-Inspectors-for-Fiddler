@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// Supply help functions for lexical enumerations.
     /// </summary>

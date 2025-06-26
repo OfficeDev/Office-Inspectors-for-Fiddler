@@ -1,10 +1,10 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
+﻿using BlockParser;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
+namespace MAPIInspector.Parsers
+{
     #region 2.2.2.1	Table ROP Constants
     /// <summary>
     /// 2.2.2.1.1 Predefined Bookmarks

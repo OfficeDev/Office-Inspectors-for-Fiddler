@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  2.2.2.19 RopGetStreamSize
     ///  A class indicates the RopGetStreamSize ROP Request Buffer.

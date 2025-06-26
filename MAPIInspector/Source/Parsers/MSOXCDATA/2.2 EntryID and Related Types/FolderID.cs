@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.2 EntryID and Related Types
     /// 2.2.1 Folder ID, Message ID, and Global Identifier Structures

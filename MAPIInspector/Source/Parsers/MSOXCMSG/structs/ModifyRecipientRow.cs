@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.2.6.5.1.1 ModifyRecipientRow Structure
     /// A class indicates the ModifyRecipientRow structure.

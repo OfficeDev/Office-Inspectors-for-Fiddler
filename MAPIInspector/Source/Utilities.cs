@@ -1,10 +1,10 @@
-﻿namespace MapiInspector
-{
-    using Newtonsoft.Json;
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
+namespace MapiInspector
+{
     /// <summary>
     /// The utilities class for MAPI Inspector.
     /// </summary>

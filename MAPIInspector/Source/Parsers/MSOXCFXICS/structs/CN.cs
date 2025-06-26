@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// Represents CN structure contains a change number that identifies a version of a messaging object. 
     /// 2.2.2.1 CN Structure

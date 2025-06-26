@@ -1,9 +1,9 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System;
-    using System.IO;
-    using System.Text;
+﻿using System;
+using System.IO;
+using System.Text;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the AUX_CLIENT_CONNECTION_INFO Auxiliary Block Structure
     ///  Section 2.2.2.2 AUX_HEADER Structure

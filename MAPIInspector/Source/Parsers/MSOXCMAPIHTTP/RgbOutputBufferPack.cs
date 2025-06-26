@@ -1,9 +1,9 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 3.1.4.1.1.1.2 rgbAuxOut Output Buffer
     /// The rgbOutputBufferPack contains multiple rgbOutputBuffer structure. It is defined in section 3.1.4.2.1.1.2 of MS-OXCRPC.

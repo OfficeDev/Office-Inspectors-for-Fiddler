@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  2.2.2.2 RopGetPropertiesSpecific
     ///  A class indicates the RopGetPropertiesSpecific ROP Response Buffer.

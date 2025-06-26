@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.2.1.14 RopGetContentsTable ROP
     /// The RopGetContentsTable ROP ([MS-OXCROPS] section 2.2.4.14) is used to retrieve the contents table for a folder. 

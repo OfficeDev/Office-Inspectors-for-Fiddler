@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.2.6.4 RopRemoveAllRecipients ROP
     /// A class indicates the RopRemoveAllRecipients ROP response Buffer.

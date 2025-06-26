@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
+﻿using System.IO;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// The AnnotatedBytes class to a byte stream with an alternate version of it (typically ConvertByteArrayToString)
     /// </summary>

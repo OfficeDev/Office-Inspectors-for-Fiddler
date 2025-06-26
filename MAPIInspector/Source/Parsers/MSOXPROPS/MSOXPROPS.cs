@@ -1,8 +1,8 @@
+using System;
+using System.Collections.Generic;
+
 namespace MAPIInspector.Parsers
 {
-    using System;
-    using System.Collections.Generic;
-
     /// <summary>
     /// The array of Property long ID (LID) related to Canonical name and guid
     /// </summary>

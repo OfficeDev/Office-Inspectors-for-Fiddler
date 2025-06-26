@@ -1,10 +1,10 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
+namespace MAPIInspector.Parsers
+{
     #region Enums values
 
     #region 2.2.3 Display Type Values

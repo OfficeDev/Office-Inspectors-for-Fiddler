@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using System.Net.Mail;
+﻿using BlockParser;
+using System.Net.Mail;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.2.6.17 RopGetAttachmentTable ROP
     /// A class indicates the RopGetAttachmentTable ROP request Buffer.

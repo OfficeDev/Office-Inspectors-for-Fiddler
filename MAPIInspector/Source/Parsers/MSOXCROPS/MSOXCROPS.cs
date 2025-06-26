@@ -1,14 +1,14 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using Fiddler;
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-    using System.Xml;
+﻿using BlockParser;
+using Fiddler;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Xml;
 
+namespace MAPIInspector.Parsers
+{
     #region Enums defined in MS-OXOMSG
 
     /// <summary>

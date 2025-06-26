@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
-    using System.Text;
+﻿using System.IO;
+using System.Text;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the AUX_PERF_SERVERINFO Auxiliary Block Structure
     ///  Section 2.2.2.2 AUX_HEADER Structure

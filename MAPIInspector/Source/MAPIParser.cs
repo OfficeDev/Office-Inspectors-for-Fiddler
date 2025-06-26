@@ -1,15 +1,15 @@
-﻿namespace MapiInspector
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-    using Fiddler;
-    using global::MAPIInspector;
-    using global::MAPIInspector.Parsers;
-    using Newtonsoft.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using Fiddler;
+using global::MAPIInspector;
+using global::MAPIInspector.Parsers;
+using Newtonsoft.Json;
 
+namespace MapiInspector
+{
     /// <summary>
     /// MAPIParser Class
     /// </summary>

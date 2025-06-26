@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using System;
+﻿using BlockParser;
+using System;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// The BlockGuid  class.
     /// </summary>

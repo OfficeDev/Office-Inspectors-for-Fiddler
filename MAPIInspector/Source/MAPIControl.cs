@@ -1,8 +1,8 @@
-﻿namespace MapiInspector
-{
-    using System.Windows.Forms;
-    using Be.Windows.Forms;
+﻿using System.Windows.Forms;
+using Be.Windows.Forms;
 
+namespace MapiInspector
+{
     /// <summary>
     /// MAPIControl class used for display
     /// </summary>

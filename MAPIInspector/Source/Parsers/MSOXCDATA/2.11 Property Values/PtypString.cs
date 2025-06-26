@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.11.1 Property Data Types
     /// Variable size; a string of Unicode characters in UTF-16LE format encoding with terminating null character (0x0000).

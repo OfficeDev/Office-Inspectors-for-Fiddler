@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using System.IO;
+﻿using BlockParser;
+using System.IO;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.7 PropertyProblem Structure
     /// </summary>

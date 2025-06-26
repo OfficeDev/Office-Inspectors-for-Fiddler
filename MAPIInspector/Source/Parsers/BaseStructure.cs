@@ -1,14 +1,14 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using MapiInspector;
-    using System;
-    using System.IO;
-    using System.Reflection;
-    using System.Runtime.InteropServices;
-    using System.Text;
-    using System.Windows.Forms;
+﻿using BlockParser;
+using MapiInspector;
+using System;
+using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Windows.Forms;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// String encoding enum
     /// </summary>

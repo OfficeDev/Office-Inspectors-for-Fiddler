@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using System.Collections.Generic;
+﻿using BlockParser;
+using System.Collections.Generic;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the RopFastTransferSourceCopyMessages ROP Request Buffer.
     ///  2.2.3.1.1.3.1 RopFastTransferSourceCopyMessages ROP Request Buffer

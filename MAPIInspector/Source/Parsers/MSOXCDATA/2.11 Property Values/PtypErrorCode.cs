@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.11.1 Property Data Types
     /// 4 bytes; a 32-bit integer encoding error information as specified in section 2.4.1.

@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.11.1 Property Data Types
     /// Variable size; a string of multibyte characters in externally specified encoding with terminating null character (single 0 byte).

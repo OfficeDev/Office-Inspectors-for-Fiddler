@@ -1,9 +1,9 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
-    using System.Collections.Generic;
-    using System.Text;
+﻿using BlockParser;
+using System.Collections.Generic;
+using System.Text;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// 2.2.1.1 RopOpenFolder ROP
     /// 2.2.1.1.2 RopOpenFolder ROP Response Buffer

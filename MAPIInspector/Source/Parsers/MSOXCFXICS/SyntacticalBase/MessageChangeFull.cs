@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using BlockParser;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// The messageChangeFull element contains the complete content of a new or changed message: the message properties, the recipients,and the attachments.
     /// </summary>

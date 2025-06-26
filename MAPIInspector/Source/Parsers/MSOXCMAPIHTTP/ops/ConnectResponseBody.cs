@@ -1,9 +1,9 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// A class indicates the Connect request type response body.
     ///  2.2.4 Request Types for Mailbox Server Endpoint
