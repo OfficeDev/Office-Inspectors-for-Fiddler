@@ -1,32 +1,33 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  2.2.1.10 RopGetPerUserLongTermIds
     ///  A class indicates the RopGetPerUserLongTermIds ROP Response Buffer.
     /// </summary>
-    public class RopGetPerUserLongTermIdsResponse : BaseStructure
+    public class RopGetPerUserLongTermIdsResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures in the LongTermIds field.
         /// </summary>
-        public ushort? LongTermIdCount;
+        public BlockT<ushort> LongTermIdCount;
 
         /// <summary>
         /// An array of LongTermID structures that specifies which folders the user has per-user information about. 
@@ -36,24 +37,31 @@
         /// <summary>
         /// Parse the RopGetPerUserLongTermIdsResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopGetPerUserLongTermIdsResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                LongTermIdCount = ReadUshort();
-                LongTermIds = new LongTermID[(int)LongTermIdCount];
-                for (int i = 0; i < LongTermIdCount; i++)
+                LongTermIdCount = ParseT<ushort>();
+                var tmpLongTermIds = new List<LongTermID>();
+                for (int i = 0; i < LongTermIdCount.Data; i++)
                 {
-                    LongTermIds[i] = new LongTermID();
-                    LongTermIds[i].Parse(s);
+                    tmpLongTermIds.Add(Parse<LongTermID>());
                 }
+                LongTermIds = tmpLongTermIds.ToArray();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopGetPerUserLongTermIdsResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(LongTermIdCount, "LongTermIdCount");
+            AddLabeledChildren(LongTermIds, "LongTermIds");
         }
     }
 }

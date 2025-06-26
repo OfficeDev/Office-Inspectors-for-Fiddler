@@ -1,71 +1,76 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
+﻿using System.Collections.Generic;
+using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  2.2.1.6 RopGetOwningServers
     ///  A class indicates the RopGetOwningServers ROP Response Buffer.
     /// </summary>
-    public class RopGetOwningServersResponse : BaseStructure
+    public class RopGetOwningServersResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer that specifies the number of strings in the OwningServers field.
         /// </summary>
-        public ushort? OwningServersCount;
+        public BlockT<ushort> OwningServersCount;
 
         /// <summary>
         /// An unsigned integer that specifies the number of strings in the OwningServers field that refer to lowest-cost servers.
         /// </summary>
-        public ushort? CheapServersCount;
+        public BlockT<ushort> CheapServersCount;
 
         /// <summary>
         /// A list of null-terminated ASCII strings that specify which servers have replicas (1) of this folder.
         /// </summary>
-        public MAPIString[] OwningServers;
+        public BlockString[] OwningServers;
 
         /// <summary>
         /// Parse the RopGetOwningServersResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopGetOwningServersResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                OwningServersCount = ReadUshort();
-                CheapServersCount = ReadUshort();
+                OwningServersCount = ParseT<ushort>();
+                CheapServersCount = ParseT<ushort>();
 
-                List<MAPIString> tmpOwning = new List<MAPIString>();
-                for (int i = 0; i < OwningServersCount; i++)
+                var tmpOwning = new List<BlockString>();
+                for (int i = 0; i < OwningServersCount.Data; i++)
                 {
-                    MAPIString subOwing = new MAPIString(Encoding.ASCII);
-                    subOwing.Parse(s);
-                    tmpOwning.Add(subOwing);
+                    tmpOwning.Add(ParseStringA());
                 }
 
                 OwningServers = tmpOwning.ToArray();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopGetOwningServersResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(OwningServersCount, "OwningServersCount");
+            AddChildBlockT(CheapServersCount, "CheapServersCount");
+            AddLabeledChildren(OwningServers, "OwningServers");
         }
     }
 }

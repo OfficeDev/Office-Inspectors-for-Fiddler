@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System;
+﻿using System;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// The enum type for flags that provide details about the state of the mailbox.
     /// </summary>

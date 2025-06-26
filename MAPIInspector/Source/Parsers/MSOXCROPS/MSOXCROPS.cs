@@ -857,13 +857,13 @@
                                 ropsList.Add(ropLogonRequest);
 
                                 // update variables used for parsing RopLogon response
-                                if (logonFlagsInLogonRop.Count > 0 && logonFlagsInLogonRop.ContainsKey(ropLogonRequest.OutputHandleIndex))
+                                if (logonFlagsInLogonRop.Count > 0 && logonFlagsInLogonRop.ContainsKey(ropLogonRequest.OutputHandleIndex.Data))
                                 {
-                                    logonFlagsInLogonRop[ropLogonRequest.OutputHandleIndex] = ropLogonRequest.LogonFlags;
+                                    logonFlagsInLogonRop[ropLogonRequest.OutputHandleIndex.Data] = ropLogonRequest.LogonFlags.Data;
                                 }
                                 else
                                 {
-                                    logonFlagsInLogonRop.Add(ropLogonRequest.OutputHandleIndex, ropLogonRequest.LogonFlags);
+                                    logonFlagsInLogonRop.Add(ropLogonRequest.OutputHandleIndex.Data, ropLogonRequest.LogonFlags.Data);
                                 }
 
                                 if (logonFlagsInLogonRop.Count > 0)
@@ -898,13 +898,13 @@
                                         clientInfoMap.Remove(MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"]);
                                     }
 
-                                    if (logIdAndFlags.ContainsKey(ropLogonRequest.LogonId))
+                                    if (logIdAndFlags.ContainsKey(ropLogonRequest.LogonId.Data))
                                     {
-                                        logIdAndFlags.Remove(ropLogonRequest.LogonId);
+                                        logIdAndFlags.Remove(ropLogonRequest.LogonId.Data);
                                     }
                                 }
 
-                                logIdAndFlags.Add(ropLogonRequest.LogonId, ropLogonRequest.LogonFlags);
+                                logIdAndFlags.Add(ropLogonRequest.LogonId.Data, ropLogonRequest.LogonFlags.Data);
                                 clientInfoMap.Add(MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"], logIdAndFlags);
                                 processNameMap.Add(MapiInspector.MAPIParser.ParsingSession.LocalProcess, clientInfoMap);
                                 DecodingContext.LogonFlagMapLogId.Add(MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath, processNameMap);

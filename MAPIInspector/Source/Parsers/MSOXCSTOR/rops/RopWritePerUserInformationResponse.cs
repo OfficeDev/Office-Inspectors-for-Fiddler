@@ -1,39 +1,44 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  2.2.1.13 RopWritePerUserInformation
     ///  A class indicates the RopWritePerUserInformation ROP Response Buffer.
     /// </summary>
-    public class RopWritePerUserInformationResponse : BaseStructure
+    public class RopWritePerUserInformationResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// Parse the RopWritePerUserInformationResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopWritePerUserInformationResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
+        }
 
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+        protected override void ParseBlocks()
+        {
+            SetText("RopWritePerUserInformationResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
         }
     }
 }

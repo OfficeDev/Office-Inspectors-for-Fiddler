@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System;
+﻿using System;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     /// The enum type for flags that control the behavior of the RopLogon.
     /// </summary>

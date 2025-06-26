@@ -1,34 +1,32 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System;
-    using System.IO;
-    using System.Text;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  2.2.1.1 RopLogon
     ///  A class indicates the RopLogon ROP Response Buffer for private mailbox.
     /// </summary>
-    public class RopLogonResponse_PrivateMailboxes : BaseStructure
+    public class RopLogonResponse_PrivateMailboxes : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
         /// </summary>
-        public byte OutputHandleIndex;
+        public BlockT<byte> OutputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// A flags structure that contains flags that specify the type of RopLogon.
         /// </summary>
-        public LogonFlags? LogonFlags;
+        public BlockT<LogonFlags> LogonFlags;
 
         /// <summary>
         /// 13 64-bit identifiers that specify a set of special folders for a mailbox.
@@ -38,22 +36,22 @@
         /// <summary>
         /// A flags structure that contains flags that provide details about the state of the mailbox. 
         /// </summary>
-        public ResponseFlags? ResponseFlags;
+        public BlockT<ResponseFlags> ResponseFlags;
 
         /// <summary>
         /// A GUID that identifies the mailbox on which the RopLogon was performed.
         /// </summary>
-        public Guid? MailboxGuid;
+        public BlockGuid MailboxGuid;
 
         /// <summary>
         /// An identifier that specifies a replica ID for the RopLogon.
         /// </summary>
-        public ushort? ReplId;
+        public BlockT<ushort> ReplId;
 
         /// <summary>
         /// A GUID that specifies the replica GUID that is associated with the replica ID.
         /// </summary>
-        public Guid? ReplGuid;
+        public BlockGuid ReplGuid;
 
         /// <summary>
         /// A LogonTime structure that specifies the time at which the RopLogon occurred. 
@@ -63,61 +61,74 @@
         /// <summary>
         /// An unsigned integer that contains a numeric value that tracks the currency of the Gateway Address Routing Table (GWART).
         /// </summary>
-        public ulong? GwartTime;
+        public BlockT<ulong> GwartTime;
 
         /// <summary>
         /// A flags structure.
         /// </summary>
-        public uint? StoreState;
+        public BlockT<uint> StoreState;
 
         /// <summary>
         /// The below two fields is defined for RopLogon redirect response in section 2.2.3.1.4 in MS-OXCROPS.
         /// An unsigned integer that specifies the length of the ServerName field.
         /// </summary>
-        public byte? ServerNameSize;
+        public BlockT<byte> ServerNameSize;
 
         /// <summary>
         /// A null-terminated ASCII string that specifies a different server for the client to connect to.
         /// </summary>
-        public MAPIString ServerName;
+        public BlockString ServerName;
 
         /// <summary>
         /// Parse the RopLogonResponse_PrivateMailboxes structure.
         /// </summary>
-        /// <param name="s">A stream containing RopLogonResponse_PrivateMailboxes structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
-            RopId = (RopIdType)ReadByte();
-            OutputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            RopId = ParseT<RopIdType>();
+            OutputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                LogonFlags = (LogonFlags)ReadByte();
+                LogonFlags = ParseT<LogonFlags>();
                 FolderIds = new FolderID[13];
                 for (int i = 0; i < 13; i++)
                 {
-                    FolderIds[i] = new FolderID();
-                    FolderIds[i].Parse(s);
+                    FolderIds[i] = Parse<FolderID>();
                 }
 
-                ResponseFlags = (ResponseFlags)ReadByte();
-                MailboxGuid = ReadGuid();
-                ReplId = ReadUshort();
-                ReplGuid = ReadGuid();
-                LogonTime = new LogonTime();
-                LogonTime.Parse(s);
-                GwartTime = ReadUlong();
-                StoreState = ReadUint();
+                ResponseFlags = ParseT<ResponseFlags>();
+                MailboxGuid = Parse<BlockGuid>();
+                ReplId = ParseT<ushort>();
+                ReplGuid = Parse<BlockGuid>();
+                LogonTime = Parse<LogonTime>();
+                GwartTime = ParseT<ulong>();
+                StoreState = ParseT<uint>();
             }
-            else if ((AdditionalErrorCodes)ReturnValue == AdditionalErrorCodes.WrongServer)
+            else if ((AdditionalErrorCodes)ReturnValue.Data == AdditionalErrorCodes.WrongServer)
             {
-                LogonFlags = (LogonFlags)ReadByte();
-                ServerNameSize = ReadByte();
-                ServerName = new MAPIString(Encoding.ASCII);
-                ServerName.Parse(s);
+                LogonFlags = ParseT<LogonFlags>();
+                ServerNameSize = ParseT<byte>();
+                ServerName = ParseStringA();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopLogonResponse_PrivateMailboxes");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(LogonFlags, "LogonFlags");
+            AddLabeledChildren(FolderIds, "FolderIds"); // TODO Interpert which folder is which
+            AddChildBlockT(LogonFlags, "ResponseFlags");
+            this.AddChildGuid(MailboxGuid, "MailboxGuid");
+            AddChildBlockT(ReplId, "ReplId");
+            this.AddChildGuid(ReplGuid, "ReplGuid");
+            AddChild(LogonTime, LogonTime.Text);
+            AddChildBlockT(GwartTime, "GwartTime");
+            AddChildBlockT(StoreState, "StoreState");
+            AddChildBlockT(ServerNameSize, "ServerNameSize");
+            AddChildString(ServerName, "ServerName");
         }
     }
 }

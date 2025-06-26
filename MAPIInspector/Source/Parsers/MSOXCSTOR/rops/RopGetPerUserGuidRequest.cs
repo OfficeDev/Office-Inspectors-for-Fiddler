@@ -1,27 +1,27 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  2.2.1.11 RopGetPerUserGuid
     ///  A class indicates the RopGetPerUserGuid ROP Request Buffer.
     /// </summary>
-    public class RopGetPerUserGuidRequest : BaseStructure
+    public class RopGetPerUserGuidRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// A LongTermID structure that specifies the public folder. 
@@ -31,16 +31,21 @@
         /// <summary>
         /// Parse the RopGetPerUserGuidRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopGetPerUserGuidRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            LongTermId = Parse<LongTermID>();
+        }
 
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            InputHandleIndex = ReadByte();
-            LongTermId = new LongTermID();
-            LongTermId.Parse(s);
+        protected override void ParseBlocks()
+        {
+            SetText("RopGetPerUserGuidRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChild(LongTermId, "LongTermId");
         }
     }
 }

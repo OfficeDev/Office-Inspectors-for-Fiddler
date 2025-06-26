@@ -1,62 +1,71 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  A class indicates the RopLogon time.
     /// </summary>
-    public class LogonTime : BaseStructure
+    public class LogonTime : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the current second.
         /// </summary>
-        public byte Seconds;
+        public BlockT<byte> Seconds;
 
         /// <summary>
         /// An unsigned integer that specifies the current Minutes.
         /// </summary>
-        public byte Minutes;
+        public BlockT<byte> Minutes;
 
         /// <summary>
         /// An unsigned integer that specifies the current Hour.
         /// </summary>
-        public byte Hour;
+        public BlockT<byte> Hour;
 
         /// <summary>
         /// An enumeration that specifies the current day of the week.
         /// </summary>
-        public DayOfWeek DayOfWeek;
+        public BlockT<DayOfWeek> DayOfWeek;
 
         /// <summary>
         /// An unsigned integer that specifies the current day of the month.
         /// </summary>
-        public byte Day;
+        public BlockT<byte> Day;
 
         /// <summary>
         /// An unsigned integer that specifies the current month 
         /// </summary>
-        public Month Month;
+        public BlockT<Month> Month;
 
         /// <summary>
         /// An unsigned integer that specifies the current year.
         /// </summary>
-        public ushort Year;
+        public BlockT<ushort> Year;
 
         /// <summary>
         /// Parse the LogonTime structure.
         /// </summary>
-        /// <param name="s">A stream containing LogonTime structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            Seconds = ParseT<byte>();
+            Minutes = ParseT<byte>();
+            Hour = ParseT<byte>();
+            DayOfWeek = ParseT<DayOfWeek>();
+            Day = ParseT<byte>();
+            Month = ParseT<Month>();
+            Year = ParseT<ushort>();
+        }
 
-            Seconds = ReadByte();
-            Minutes = ReadByte();
-            Hour = ReadByte();
-            DayOfWeek = (DayOfWeek)ReadByte();
-            Day = ReadByte();
-            Month = (Month)ReadByte();
-            Year = ReadUshort();
+        protected override void ParseBlocks()
+        {
+            SetText($"LogonTime: {Year?.Data:D4}-{Month?.Data}-{Day?.Data:D2} {Hour?.Data:D2}:{Minutes?.Data:D2}:{Seconds?.Data:D2} ({DayOfWeek?.Data})");
+            AddChildBlockT(Seconds, "Seconds");
+            AddChildBlockT(Minutes, "Minutes");
+            AddChildBlockT(Hour, "Hour");
+            AddChildBlockT(DayOfWeek, "DayOfWeek");
+            AddChildBlockT(Day, "Day");
+            AddChildBlockT(Month, "Month");
+            AddChildBlockT(Year, "Year");
         }
     }
 }

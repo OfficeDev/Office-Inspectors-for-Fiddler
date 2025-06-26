@@ -1,45 +1,51 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  2.2.1.8 RopLongTermIdFromId
     ///  A class indicates the RopLongTermIdFromId ROP Request Buffer.
     /// </summary>
-    public class RopLongTermIdFromIdRequest : BaseStructure
+    public class RopLongTermIdFromIdRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the ID that the client requests to have associated with the created RopLogon.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An identifier that specifies the short-term ID to be converted to a long-term ID.
         /// </summary>
-        public byte[] ObjectId;
+        public BlockBytes ObjectId; // 8 bytes
 
         /// <summary>
         /// Parse the RopLongTermIdFromIdRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopLongTermIdFromIdRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            ObjectId = ParseBytes(8);
+        }
 
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            InputHandleIndex = ReadByte();
-            ObjectId = ReadBytes(8);
+        protected override void ParseBlocks()
+        {
+            SetText("RopLongTermIdFromIdRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChildBytes(ObjectId, "ObjectId");
         }
     }
 }

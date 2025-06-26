@@ -1,60 +1,68 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.IO;
+﻿using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  2.2.1.12 RopReadPerUserInformation
     ///  A class indicates the RopReadPerUserInformation ROP Response Buffer.
     /// </summary>
-    public class RopReadPerUserInformationResponse : BaseStructure
+    public class RopReadPerUserInformationResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// A Boolean that specifies whether this operation reached the end of the per-user information stream.
         /// </summary>
-        public bool? HasFinished;
+        public BlockT<bool> HasFinished;
 
         /// <summary>
         /// An unsigned integer that specifies the size of the Data field.
         /// </summary>
-        public ushort? DataSize;
+        public BlockT<ushort> DataSize;
 
         /// <summary>
         /// An array of bytes. This field contains the per-user data that is returned.
         /// </summary>
-        public byte?[] Data;
+        public BlockBytes Data;
 
         /// <summary>
         /// Parse the RopReadPerUserInformationResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopReadPerUserInformationResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                HasFinished = ReadBoolean();
-                DataSize = ReadUshort();
-                Data = ConvertArray(ReadBytes((int)DataSize));
+                HasFinished = ParseAs<byte, bool>();
+                DataSize = ParseT<ushort>();
+                Data = ParseBytes(DataSize.Data);
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopReadPerUserInformationResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(HasFinished, "HasFinished");
+            AddChildBlockT(DataSize, "DataSize");
+            AddChildBytes(Data, "Data");
         }
     }
 }

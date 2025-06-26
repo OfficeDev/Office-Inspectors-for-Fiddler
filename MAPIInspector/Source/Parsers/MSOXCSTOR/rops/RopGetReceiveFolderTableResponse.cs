@@ -1,33 +1,33 @@
-﻿namespace MAPIInspector.Parsers
-{
-    using System.Collections.Generic;
-    using System.IO;
+﻿using System.Collections.Generic;
+using BlockParser;
 
+namespace MAPIInspector.Parsers
+{
     /// <summary>
     ///  2.2.1.4 RopGetReceiveFolderTable
     ///  A class indicates the RopGetReceiveFolderTable ROP Response Buffer.
     /// </summary>
-    public class RopGetReceiveFolderTableResponse : BaseStructure
+    public class RopGetReceiveFolderTableResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer that specifies the number of row structures contained in the Rows field.
         /// </summary>
-        public uint? RowCount;
+        public BlockT<uint> RowCount;
 
         /// <summary>
         /// An array of row structures. This field contains the rows of the Receive folder table. Each row is returned in either a StandardPropertyRow or a FlaggedPropertyRow structure.
@@ -37,35 +37,42 @@
         /// <summary>
         /// Parse the RopGetReceiveFolderTableResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopGetReceiveFolderTableResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            List<PropertyRow> tmpRows = new List<PropertyRow>();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
+            if (ReturnValue.Data == ErrorCodes.Success)
             {
-                RowCount = ReadUint();
-
-                for (int i = 0; i < RowCount; i++)
+                // PidTagMessageClass is defined as PtypString8 due to Open Specification said all characters in this property MUST be from the ASCII characters 0x20 through 0x7F. 
+                var properties_GetReceiveFolderTable = new PropertyTag[3]
                 {
-                    // PidTagMessageClass is defined as PtypString8 due to Open Specification said all characters in this property MUST be from the ASCII characters 0x20 through 0x7F. 
-                    PropertyTag[] properties_GetReceiveFolderTable = new PropertyTag[3]
-                    {
                       new PropertyTag(PropertyDataType.PtypInteger64, PidTagPropertyEnum.PidTagFolderId),
                       new PropertyTag(PropertyDataType.PtypString8, PidTagPropertyEnum.PidTagMessageClass),
                       new PropertyTag(PropertyDataType.PtypTime, PidTagPropertyEnum.PidTagLastModificationTime)
-                    };
-                    PropertyRow proRow = new PropertyRow(properties_GetReceiveFolderTable);
-                    proRow.Parse(s);
+                };
+
+                RowCount = ParseT<uint>();
+                var tmpRows = new List<PropertyRow>();
+                for (int i = 0; i < RowCount.Data; i++)
+                {
+                    var proRow = new PropertyRow(properties_GetReceiveFolderTable);
+                    proRow.Parse(parser);
                     tmpRows.Add(proRow);
                 }
 
                 Rows = tmpRows.ToArray();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopGetReceiveFolderTableResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChild(RowCount, "RowCount");
+            AddLabeledChildren(Rows, "Rows");
         }
     }
 }
