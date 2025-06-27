@@ -68,11 +68,11 @@ namespace MAPIInspector.Parsers
                     Block rowPropValue = null;
                     tempPropTag.PropertyType.Data = BaseStructure.ConvertToPropType((ushort)tempPropTag.PropertyType.Data);
 
-                    if (Flag.Data == 0x00)
+                    if (Flag == 0x00)
                     {
-                        if (tempPropTag.PropertyType.Data != PropertyDataType.PtypUnspecified)
+                        if (tempPropTag.PropertyType != PropertyDataType.PtypUnspecified)
                         {
-                            var propValue = new PropertyValue(tempPropTag.PropertyType.Data);
+                            var propValue = new PropertyValue(tempPropTag.PropertyType);
                             propValue.Parse(parser);
                             propValue.AddHeader($"PropertyTag: {tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}");
                             rowPropValue = propValue;
@@ -85,11 +85,11 @@ namespace MAPIInspector.Parsers
                             rowPropValue = typePropValue;
                         }
                     }
-                    else if (Flag.Data == 0x01)
+                    else if (Flag == 0x01)
                     {
-                        if (tempPropTag.PropertyType.Data != PropertyDataType.PtypUnspecified)
+                        if (tempPropTag.PropertyType != PropertyDataType.PtypUnspecified)
                         {
-                            var flagPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType.Data);
+                            var flagPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType);
                             flagPropValue.Parse(parser);
                             flagPropValue.AddHeader($"PropertyTag: {tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}");
                             rowPropValue = flagPropValue;

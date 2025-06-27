@@ -47,7 +47,7 @@ namespace MAPIInspector.Parsers
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 LogonId = ParseT<byte>();
                 CompletedTaskCount = ParseT<uint>();
@@ -60,7 +60,7 @@ namespace MAPIInspector.Parsers
             SetText("RopProgressResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue.Data != 0) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(CompletedTaskCount, "CompletedTaskCount");
             AddChildBlockT(TotalTaskCount, "TotalTaskCount");

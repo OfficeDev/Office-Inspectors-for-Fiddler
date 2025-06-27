@@ -42,12 +42,12 @@ namespace MAPIInspector.Parsers
             {
                 case CountWideEnum.twoBytes:
                     _count = ParseT<ushort>();
-                    Count = (_count as BlockT<ushort>).Data;
+                    Count = (_count as BlockT<ushort>);
                     break;
                 default:
                 case CountWideEnum.fourBytes:
                     _count = ParseT<uint>();
-                    Count = (_count as BlockT<uint>).Data;
+                    Count = (_count as BlockT<uint>);
                     break;
             }
             Value = ParseBytes((int)Count);

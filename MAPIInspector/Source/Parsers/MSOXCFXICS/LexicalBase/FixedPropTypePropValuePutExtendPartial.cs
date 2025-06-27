@@ -18,8 +18,8 @@ namespace MAPIInspector.Parsers
 
             if (parser.Empty)
             {
-                MapiInspector.MAPIParser.PartialPutExtendType = PropType.Data;
-                MapiInspector.MAPIParser.PartialPutExtendId = PropInfo.PropID.Data;
+                MapiInspector.MAPIParser.PartialPutExtendType = PropType;
+                MapiInspector.MAPIParser.PartialPutExtendId = PropInfo.PropID;
                 MapiInspector.MAPIParser.PartialPutExtendServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
                 MapiInspector.MAPIParser.PartialPutExtendProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
                 MapiInspector.MAPIParser.PartialPutExtendClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
@@ -43,14 +43,14 @@ namespace MAPIInspector.Parsers
                 PropertyDataType typeValue = PropertyDataType.PtypUnspecified;
                 if (PropType != null)
                 {
-                    typeValue = PropType.Data;
+                    typeValue = PropType;
                 }
                 else if (ptype != null)
                 {
-                    typeValue = ptype.Data;
+                    typeValue = ptype;
                 }
 
-                PidTagPropertyEnum identifyValue = PropInfo != null ? PropInfo.PropID.Data : pid.Data;
+                PidTagPropertyEnum identifyValue = PropInfo != null ? PropInfo.PropID : pid;
 
                 FixedValue = FixedPropTypePropValue.ParseFixedProp(parser, typeValue, identifyValue);
             }

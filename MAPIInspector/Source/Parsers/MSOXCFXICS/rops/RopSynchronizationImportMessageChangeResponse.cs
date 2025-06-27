@@ -37,7 +37,7 @@ namespace MAPIInspector.Parsers
             OutputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 MessageId = Parse<MessageID>();
             }
@@ -48,7 +48,7 @@ namespace MAPIInspector.Parsers
             SetText("RopSynchronizationImportMessageChangeResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
-            AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             AddChild(MessageId, "MessageId");
         }
     }

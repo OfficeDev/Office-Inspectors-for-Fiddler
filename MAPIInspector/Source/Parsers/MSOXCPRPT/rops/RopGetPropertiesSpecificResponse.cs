@@ -37,16 +37,16 @@ namespace MAPIInspector.Parsers
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 PropertyTag[] propTags = new PropertyTag[0];
                 if (!MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
                 {
-                    propTags = DecodingContext.GetPropertiesSpec_propertyTags[MapiInspector.MAPIParser.ParsingSession.id][InputHandleIndex.Data].Dequeue();
+                    propTags = DecodingContext.GetPropertiesSpec_propertyTags[MapiInspector.MAPIParser.ParsingSession.id][InputHandleIndex].Dequeue();
                 }
                 else
                 {
-                    propTags = DecodingContext.GetPropertiesSpec_propertyTags[int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"])][InputHandleIndex.Data].Dequeue();
+                    propTags = DecodingContext.GetPropertiesSpec_propertyTags[int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"])][InputHandleIndex].Dequeue();
                 }
                 RowData = new PropertyRow(propTags);
                 RowData.Parse(parser);
@@ -58,7 +58,7 @@ namespace MAPIInspector.Parsers
             SetText("RopGetPropertiesSpecificResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue.Data != 0) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             AddChild(RowData, "RowData");
         }
     }

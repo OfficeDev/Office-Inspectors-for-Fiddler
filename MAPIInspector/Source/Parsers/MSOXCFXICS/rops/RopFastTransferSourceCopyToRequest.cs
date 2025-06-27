@@ -68,7 +68,7 @@ namespace MAPIInspector.Parsers
             SendOptions = ParseT<SendOptions>();
             PropertyTagCount = ParseT<ushort>();
             var interTag = new List<PropertyTag>();
-            for (int i = 0; i < PropertyTagCount.Data; i++)
+            for (int i = 0; i < PropertyTagCount; i++)
             {
                 interTag.Add(Parse<PropertyTag>());
             }

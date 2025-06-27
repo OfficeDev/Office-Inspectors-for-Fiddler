@@ -42,11 +42,11 @@ namespace MAPIInspector.Parsers
             RopId = ParseT<RopIdType>();
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 LongTermIdCount = ParseT<ushort>();
                 var tmpLongTermIds = new List<LongTermID>();
-                for (int i = 0; i < LongTermIdCount.Data; i++)
+                for (int i = 0; i < LongTermIdCount; i++)
                 {
                     tmpLongTermIds.Add(Parse<LongTermID>());
                 }

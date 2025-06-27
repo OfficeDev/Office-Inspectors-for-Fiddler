@@ -43,12 +43,12 @@ namespace MAPIInspector.Parsers
             OutputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 AttachmentIdCount = ParseT<ushort>();
                 var attachmentIdArrays = new List<BlockT<int>>();
 
-                for (int i = 0; i < AttachmentIdCount.Data; i++)
+                for (int i = 0; i < AttachmentIdCount; i++)
                 {
                     attachmentIdArrays.Add(ParseT<int>());
                 }

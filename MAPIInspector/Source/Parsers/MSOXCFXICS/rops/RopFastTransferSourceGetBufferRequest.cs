@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
             LogonId = ParseT<byte>();
             InputHandleIndex = ParseT<byte>();
             BufferSize = ParseT<ushort>();
-            if (BufferSize.Data == 0xBABE)
+            if (BufferSize == 0xBABE)
             {
                 MaximumBufferSize = ParseT<ushort>();
             }

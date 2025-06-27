@@ -27,14 +27,14 @@ namespace MAPIInspector.Parsers
             PropType = ParseT<PropertyDataType>();
             PropID = ParseT<PidTagPropertyEnum>();
 
-            if (PropID.Data != PidTagPropertyEnum.MetaTagNewFXFolder &&
-                PropID.Data != PidTagPropertyEnum.MetaTagDnPrefix)
+            if (PropID != PidTagPropertyEnum.MetaTagNewFXFolder &&
+                PropID != PidTagPropertyEnum.MetaTagDnPrefix)
             {
                 PropValue = ParseT<int>();
             }
             else
             {
-                if (PropID.Data != PidTagPropertyEnum.MetaTagNewFXFolder)
+                if (PropID != PidTagPropertyEnum.MetaTagNewFXFolder)
                 {
                     PropValue = Parse<FolderReplicaInfo>();
                 }

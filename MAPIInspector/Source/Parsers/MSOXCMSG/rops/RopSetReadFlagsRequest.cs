@@ -57,7 +57,7 @@ namespace MAPIInspector.Parsers
             MessageIdCount = ParseT<ushort>();
             var messageIDs = new List<MessageID>();
 
-            for (int i = 0; i < MessageIdCount.Data; i++)
+            for (int i = 0; i < MessageIdCount; i++)
             {
                 messageIDs.Add(Parse<MessageID>());
             }

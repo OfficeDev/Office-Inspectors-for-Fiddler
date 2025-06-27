@@ -50,14 +50,14 @@ namespace MAPIInspector.Parsers
             ReadFlags = ParseT<ReadFlags>();
             if(!MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
             {
-                if (((byte)DecodingContext.SessionLogonFlagMapLogId[MapiInspector.MAPIParser.ParsingSession.id][LogonId.Data] & (byte)LogonFlags.Private) != (byte)LogonFlags.Private)
+                if (((byte)DecodingContext.SessionLogonFlagMapLogId[MapiInspector.MAPIParser.ParsingSession.id][LogonId] & (byte)LogonFlags.Private) != (byte)LogonFlags.Private)
                 {
                     ClientData = ParseBytes(24);
                 }
             }
             else
             {
-                if (((byte)DecodingContext.SessionLogonFlagMapLogId[int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"])][LogonId.Data] & (byte)LogonFlags.Private) != (byte)LogonFlags.Private)
+                if (((byte)DecodingContext.SessionLogonFlagMapLogId[int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"])][LogonId] & (byte)LogonFlags.Private) != (byte)LogonFlags.Private)
                 {
                     ClientData = ParseBytes(24);
                 }

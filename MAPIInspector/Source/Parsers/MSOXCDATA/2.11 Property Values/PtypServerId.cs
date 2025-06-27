@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             Count = ParseT<ushort>();
-            ServerId = Parse<PtypServerIdStruct>(Count.Data);
+            ServerId = Parse<PtypServerIdStruct>(Count);
         }
 
         protected override void ParseBlocks()

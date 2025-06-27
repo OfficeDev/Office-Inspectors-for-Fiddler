@@ -47,13 +47,13 @@ namespace MAPIInspector.Parsers
             RopId = ParseT<RopIdType>();
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 OwningServersCount = ParseT<ushort>();
                 CheapServersCount = ParseT<ushort>();
 
                 var tmpOwning = new List<BlockString>();
-                for (int i = 0; i < OwningServersCount.Data; i++)
+                for (int i = 0; i < OwningServersCount; i++)
                 {
                     tmpOwning.Add(ParseStringA());
                 }

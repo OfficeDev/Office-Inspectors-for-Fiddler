@@ -33,7 +33,7 @@ namespace MAPIInspector.Parsers
 
             if (parser.Empty)
             {
-                MapiInspector.MAPIParser.PartialPutType = PropType.Data;
+                MapiInspector.MAPIParser.PartialPutType = PropType;
                 MapiInspector.MAPIParser.PartialPutServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
                 MapiInspector.MAPIParser.PartialPutProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
                 MapiInspector.MAPIParser.PartialPutClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
@@ -50,9 +50,9 @@ namespace MAPIInspector.Parsers
                         plength = MapiInspector.MAPIParser.PartialPutRemainSize;
 
                         if (plength % 2 != 0 &&
-                            (ptype.Data == PropertyDataType.PtypString ||
-                            ptype.Data == (PropertyDataType)CodePageType.PtypCodePageUnicode ||
-                            ptype.Data == (PropertyDataType)CodePageType.PtypCodePageUnicode52))
+                            (ptype == PropertyDataType.PtypString ||
+                            ptype == (PropertyDataType)CodePageType.PtypCodePageUnicode ||
+                            ptype == (PropertyDataType)CodePageType.PtypCodePageUnicode52))
                         {
                             splitpreviousOne = true;
                         }
@@ -79,15 +79,15 @@ namespace MAPIInspector.Parsers
                     Length = ParseT<int>();
                 }
 
-                int blockLength = Length != null ? Length.Data : plength;
+                int blockLength = Length != null ? Length : plength;
                 PropertyDataType typeValue = PropertyDataType.PtypUnspecified;
                 if (PropType != null)
                 {
-                    typeValue = PropType.Data;
+                    typeValue = PropType;
                 }
                 else if (ptype != null)
                 {
-                    typeValue = ptype.Data;
+                    typeValue = ptype;
                 }
 
                 if (parser.RemainingBytes < blockLength)
@@ -149,7 +149,7 @@ namespace MAPIInspector.Parsers
                             if (Length != null)
                             {
                                 Length = ParseT<int>();
-                                blockLength = Length.Data;
+                                blockLength = Length;
                             }
 
                             if (parser.RemainingBytes < blockLength)

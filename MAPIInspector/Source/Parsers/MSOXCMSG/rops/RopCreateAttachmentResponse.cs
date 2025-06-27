@@ -37,7 +37,7 @@ namespace MAPIInspector.Parsers
             OutputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 AttachmentID = ParseT<uint>();
             }

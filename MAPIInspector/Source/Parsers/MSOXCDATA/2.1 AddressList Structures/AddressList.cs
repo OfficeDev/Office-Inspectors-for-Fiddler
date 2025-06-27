@@ -25,7 +25,7 @@ namespace MAPIInspector.Parsers
         {
             AddressCount = ParseT<uint>();
             var tempArray = new List<AddressEntry>();
-            for (int i = 0; i < AddressCount.Data; i++)
+            for (int i = 0; i < AddressCount; i++)
             {
                 tempArray.Add(Parse<AddressEntry>());
             }

@@ -63,10 +63,10 @@ namespace MAPIInspector.Parsers
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 RestrictionDataSize = ParseT<ushort>();
-                if (RestrictionDataSize.Data > 0)
+                if (RestrictionDataSize > 0)
                 {
                     RestrictionData = new RestrictionType();
                     RestrictionData.Parse(parser);
@@ -75,7 +75,7 @@ namespace MAPIInspector.Parsers
                 LogonId = ParseT<byte>();
                 FolderIdCount = ParseT<ushort>();
                 var tempFolderIDs = new List<FolderID>();
-                for (int i = 0; i < FolderIdCount.Data; i++)
+                for (int i = 0; i < FolderIdCount; i++)
                 {
                     tempFolderIDs.Add(Parse<FolderID>());
                 }
@@ -90,7 +90,7 @@ namespace MAPIInspector.Parsers
             SetText("RopGetSearchCriteriaResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(RestrictionDataSize, "RestrictionDataSize");
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(FolderIdCount, "FolderIdCount");

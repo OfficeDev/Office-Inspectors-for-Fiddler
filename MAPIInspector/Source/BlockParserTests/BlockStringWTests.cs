@@ -15,7 +15,7 @@ namespace BlockParserTests
             var bytes = Encoding.Unicode.GetBytes(str + "\0\0");
             var parser = new BinaryParser(bytes);
             var block = Block.ParseStringW(parser);
-            Assert.AreEqual("test", block.Data);
+            Assert.AreEqual("test", block);
             Assert.AreEqual(4, block.Length);
         }
 
@@ -26,7 +26,7 @@ namespace BlockParserTests
             var bytes = Encoding.Unicode.GetBytes(str + "\0");
             var parser = new BinaryParser(bytes);
             var block = Block.ParseStringW(parser, 5);
-            Assert.AreEqual("abcde", block.Data);
+            Assert.AreEqual("abcde", block);
             Assert.AreEqual(5, block.Length);
         }
 
@@ -36,7 +36,7 @@ namespace BlockParserTests
             var rawData = new byte[] { 0x00, 0x00, 0x12, 0x34 };
             var parser = new BinaryParser(rawData);
             var block = Block.ParseStringW(parser);
-            Assert.AreEqual("", block.Data);
+            Assert.AreEqual("", block);
             Assert.AreEqual(0, block.Length); // Excluding null terminator
             Assert.AreEqual(2, block.Size); // Including null terminator
             Assert.IsTrue(block.Empty);
@@ -51,7 +51,7 @@ namespace BlockParserTests
             var rawData = new byte[] { 0x66, 0x00, 0x6F, 0x00, 0x6F, 0x00 };
             var parser = new BinaryParser(rawData);
             var block = Block.ParseStringW(parser);
-            Assert.AreEqual("foo", block.Data);
+            Assert.AreEqual("foo", block);
             Assert.AreEqual(3, block.Length); // Excluding null terminator
             Assert.AreEqual(6, block.Size); // No null terminator
             Assert.IsFalse(block.Empty);
@@ -66,7 +66,7 @@ namespace BlockParserTests
             var rawData = new byte[] { 0x66, 0x00, 0x6F, 0x00, 0x6F, 0x00, 0x00, 0x00, 0xAA, 0xBB }; // "foo" + null terminator + extra
             var parser = new BinaryParser(rawData);
             var block = Block.ParseStringW(parser);
-            Assert.AreEqual("foo", block.Data);
+            Assert.AreEqual("foo", block);
             Assert.AreEqual(3, block.Length); // Excluding null terminator
             Assert.AreEqual(8, block.Size); // Including null terminator
             Assert.IsFalse(block.Empty);
@@ -81,7 +81,7 @@ namespace BlockParserTests
             var rawData = new byte[] { 0x66, 0x00, 0x6F, 0x00, 0x6F, 0x00, 0x00, 0x00, 0xAA, 0xBB }; // "foo" + null terminator + extra
             var parser = new BinaryParser(rawData);
             var block = Block.ParseStringW(parser, 3);
-            Assert.AreEqual("foo", block.Data);
+            Assert.AreEqual("foo", block);
             Assert.AreEqual(3, block.Length); // Excluding null terminator
             Assert.IsFalse(block.Empty);
             Assert.AreEqual(6, parser.Offset);

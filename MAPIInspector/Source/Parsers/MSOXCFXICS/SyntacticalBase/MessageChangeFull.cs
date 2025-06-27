@@ -46,12 +46,12 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             StartMarker = ParseT<Markers>();
-            if (StartMarker.Data == Markers.IncrSyncChg)
+            if (StartMarker == Markers.IncrSyncChg)
             {
                 MessageChangeHeader = Parse<PropList>();
 
                 SecondMarker = ParseT<Markers>();
-                if (SecondMarker.Data == Markers.IncrSyncMessage)
+                if (SecondMarker == Markers.IncrSyncMessage)
                 {
                     PropList = Parse<PropList>();
                     MessageChildren = Parse<MessageChildren>();

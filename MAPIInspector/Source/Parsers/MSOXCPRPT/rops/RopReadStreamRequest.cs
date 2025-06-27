@@ -43,7 +43,7 @@ namespace MAPIInspector.Parsers
             InputHandleIndex = ParseT<byte>();
             ByteCount = ParseT<ushort>();
 
-            if (ByteCount.Data == 0xBABE)
+            if (ByteCount == 0xBABE)
             {
                 MaximumByteCount = ParseT<uint>();
             }

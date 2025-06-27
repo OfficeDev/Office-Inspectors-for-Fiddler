@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
             OutputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 ReplGuid = Parse<BlockGuid>();
                 GlobalCount = ParseBytes(6);
@@ -54,7 +54,7 @@ namespace MAPIInspector.Parsers
             SetText("RopGetLocalReplicaIdsResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
-            AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             this.AddChildGuid(ReplGuid, "ReplGuid");
             AddChild(GlobalCount, "GlobalCount");
         }

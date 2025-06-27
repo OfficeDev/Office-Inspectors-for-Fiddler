@@ -35,12 +35,12 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             StartMarker = ParseT<Markers>();
-            if (StartMarker.Data == Markers.StartEmbed)
+            if (StartMarker == Markers.StartEmbed)
             {
                 MessageContent = Parse<MessageContent>();
 
                 EndMarker = ParseT<Markers>();
-                if (EndMarker.Data != Markers.EndEmbed)
+                if (EndMarker != Markers.EndEmbed)
                 {
                     Parsed = false;
                 }

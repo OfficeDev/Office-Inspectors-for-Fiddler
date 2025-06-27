@@ -68,7 +68,7 @@ namespace MAPIInspector.Parsers
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 TransferStatus = ParseT<TransferStatus>();
                 InProgressCount = ParseT<ushort>();
@@ -76,8 +76,8 @@ namespace MAPIInspector.Parsers
                 Reserved = ParseT<byte>();
                 TransferBufferSize = ParseT<ushort>();
 
-                parser.PushCap(TransferBufferSize.Data);
-                if (TransferStatus.Data == Parsers.TransferStatus.Partial)
+                parser.PushCap(TransferBufferSize);
+                if (TransferStatus == Parsers.TransferStatus.Partial)
                 {
                     var transferBufferList = new List<TransferGetBufferElement>();
 
@@ -117,7 +117,7 @@ namespace MAPIInspector.Parsers
             SetText("RopFastTransferSourceGetBufferResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(TransferStatus, "TransferStatus");
             AddChildBlockT(InProgressCount, "InProgressCount");
             AddChildBlockT(TotalStepCount, "TotalStepCount");

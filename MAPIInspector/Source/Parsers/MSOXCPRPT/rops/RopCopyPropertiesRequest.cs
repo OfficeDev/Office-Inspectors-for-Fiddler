@@ -63,7 +63,7 @@ namespace MAPIInspector.Parsers
             PropertyTagCount = ParseT<ushort>();
             var tmpPropertyTags = new List<PropertyTag>();
 
-            for (int i = 0; i < PropertyTagCount.Data; i++)
+            for (int i = 0; i < PropertyTagCount; i++)
             {
                 tmpPropertyTags.Add(Parse<PropertyTag>());
             }

@@ -64,7 +64,7 @@ namespace MAPIInspector.Parsers
                 HasValue = ParseAs<byte, bool>();
             }
 
-            if (HasValue == null || HasValue.Data)
+            if (HasValue == null || HasValue)
             {
                 _PropertyValue = PropertyValue.ReadPropertyValue(propertyDataType, parser, countWide);
             }
@@ -72,7 +72,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            if (HasValue != null && HasValue.Data)
+            if (HasValue != null && HasValue)
             {
                 AddChildBlockT(HasValue, "HasValue");
                 if (_PropertyValue != null)

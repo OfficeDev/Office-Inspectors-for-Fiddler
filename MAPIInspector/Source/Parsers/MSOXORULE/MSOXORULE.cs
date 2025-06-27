@@ -210,9 +210,9 @@ namespace MAPIInspector.Parsers
         {
             Byte0 = ParseT<byte>();
             int index = 0;
-            X = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 7), Byte0.Size, Byte0.Offset);
+            X = CreateBlock(BaseStructure.GetBits(Byte0, index, 7), Byte0.Size, Byte0.Offset);
             index = index + 7;
-            R = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+            R = CreateBlock(BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
         }
 
         protected override void ParseBlocks()
@@ -514,12 +514,12 @@ namespace MAPIInspector.Parsers
             {
                 case CountWideEnum.twoBytes:
                     _noOfActions = ParseT<ushort>();
-                    NoOfActions = (_noOfActions as BlockT<ushort>).Data;
+                    NoOfActions = (_noOfActions as BlockT<ushort>);
                     break;
                 default:
                 case CountWideEnum.fourBytes:
                     _noOfActions = ParseT<uint>();
-                    NoOfActions = (_noOfActions as BlockT<uint>).Data;
+                    NoOfActions = (_noOfActions as BlockT<uint>);
                     break;
             }
             var tempActionBlocks = new List<ActionBlock>();
@@ -595,12 +595,12 @@ namespace MAPIInspector.Parsers
             {
                 case CountWideEnum.twoBytes:
                     _actionLength = ParseT<ushort>();
-                    ActionLength = (_actionLength as BlockT<ushort>).Data;
+                    ActionLength = (_actionLength as BlockT<ushort>);
                     break;
                 default:
                 case CountWideEnum.fourBytes:
                     _actionLength = ParseT<uint>();
-                    ActionLength = (_actionLength as BlockT<uint>).Data;
+                    ActionLength = (_actionLength as BlockT<uint>);
                     break;
             }
 
@@ -639,42 +639,42 @@ namespace MAPIInspector.Parsers
             ActionFlags = ParseT<uint>();
             if (ActionLength > 9)
             {
-                if ((ActionType.OP_MOVE == _actionType.Data || ActionType.OP_COPY == _actionType.Data) && countWide.Equals(CountWideEnum.twoBytes))
+                if ((ActionType.OP_MOVE == _actionType || ActionType.OP_COPY == _actionType) && countWide.Equals(CountWideEnum.twoBytes))
                 {
                     ActionData = new OP_MOVE_and_OP_COPY_ActionData_forStandard();
                     ActionData.Parse(parser);
                 }
-                else if ((ActionType.OP_MOVE == _actionType.Data || ActionType.OP_COPY == _actionType.Data) && countWide.Equals(CountWideEnum.fourBytes))
+                else if ((ActionType.OP_MOVE == _actionType || ActionType.OP_COPY == _actionType) && countWide.Equals(CountWideEnum.fourBytes))
                 {
                     ActionData = new OP_MOVE_and_OP_COPY_ActionData_forExtended();
                     ActionData.Parse(parser);
                 }
-                else if ((ActionType.OP_REPLY == _actionType.Data || ActionType.OP_OOF_REPLY == _actionType.Data) && countWide.Equals(CountWideEnum.twoBytes))
+                else if ((ActionType.OP_REPLY == _actionType || ActionType.OP_OOF_REPLY == _actionType) && countWide.Equals(CountWideEnum.twoBytes))
                 {
                     ActionData = new OP_REPLY_and_OP_OOF_REPLY_ActionData_forStandard();
                     ActionData.Parse(parser);
                 }
-                else if ((ActionType.OP_REPLY == _actionType.Data || ActionType.OP_OOF_REPLY == _actionType.Data) && countWide.Equals(CountWideEnum.fourBytes))
+                else if ((ActionType.OP_REPLY == _actionType || ActionType.OP_OOF_REPLY == _actionType) && countWide.Equals(CountWideEnum.fourBytes))
                 {
                     ActionData = new OP_REPLY_and_OP_OOF_REPLY_ActionData_forExtended();
                     ActionData.Parse(parser);
                 }
-                else if (ActionType.OP_FORWARD == _actionType.Data || ActionType.OP_DELEGATE == _actionType.Data)
+                else if (ActionType.OP_FORWARD == _actionType || ActionType.OP_DELEGATE == _actionType)
                 {
                     ActionData = new OP_FORWARD_and_OP_DELEGATE_ActionData();
                     ActionData.Parse(parser);
                 }
-                else if (ActionType.OP_BOUNCE == _actionType.Data)
+                else if (ActionType.OP_BOUNCE == _actionType)
                 {
                     ActionData = new OP_BOUNCE_ActionData();
                     ActionData.Parse(parser);
                 }
-                else if (ActionType.OP_TAG == _actionType.Data)
+                else if (ActionType.OP_TAG == _actionType)
                 {
                     ActionData = new TaggedPropertyValue(CountWideEnum.twoBytes);
                     ActionData.Parse(parser);
                 }
-                else if (ActionType.OP_DEFER_ACTION == _actionType.Data)
+                else if (ActionType.OP_DEFER_ACTION == _actionType)
                 {
                     ActionData = new OP_DEFER_ACTION((int)ActionLength);
                     ActionData.Parse(parser);
@@ -741,15 +741,15 @@ namespace MAPIInspector.Parsers
         {
             Byte0 = ParseT<byte>();
             int index = 0;
-            Reservedbits0 = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 4), Byte0.Size, Byte0.Offset);
+            Reservedbits0 = CreateBlock(BaseStructure.GetBits(Byte0, index, 4), Byte0.Size, Byte0.Offset);
             index += 4;
-            TM = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+            TM = CreateBlock(BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
-            AT = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+            AT = CreateBlock(BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
-            NC = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+            NC = CreateBlock(BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
-            PR = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+            PR = CreateBlock(BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
 
             Reservedbits1 = ParseBytes(3);
         }
@@ -800,11 +800,11 @@ namespace MAPIInspector.Parsers
         {
             Byte0 = ParseT<byte>();
             int index = 0;
-            Reservedbits0 = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 6), Byte0.Size, Byte0.Offset);
+            Reservedbits0 = CreateBlock(BaseStructure.GetBits(Byte0, index, 6), Byte0.Size, Byte0.Offset);
             index += 6;
-            ST = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+            ST = CreateBlock(BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
-            NS = CreateBlock(BaseStructure.GetBits(Byte0.Data, index, 1), Byte0.Size, Byte0.Offset);
+            NS = CreateBlock(BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
             Reservedbits1 = ParseBytes(3);
         }
 
@@ -884,17 +884,17 @@ namespace MAPIInspector.Parsers
             // 2.2.5.1.2.1 OP_MOVE and OP_COPY ActionData Structure
             // No matter the value of FolderInThisStore, the server tends to set StoreEIDSize to 0x0001.
             // So instead of parsing it, we'll just read StoreEIDSize bytes.
-            StoreEID = ParseBytes(StoreEIDSize.Data);
+            StoreEID = ParseBytes(StoreEIDSize);
 
             FolderEIDSize = ParseT<ushort>();
-            if (FolderInThisStore.Data)
+            if (FolderInThisStore)
             {
                 FolderEID = new ServerEid();
                 FolderEID.Parse(parser);
             }
             else
             {
-                FolderEID = ParseBytes(FolderEIDSize.Data);
+                FolderEID = ParseBytes(FolderEIDSize);
             }
         }
 
@@ -939,7 +939,7 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             StoreEIDSize = ParseAs<byte, uint>();
-            StoreEID = ParseBytes((int)StoreEIDSize.Data);
+            StoreEID = ParseBytes(StoreEIDSize);
             FolderEIDSize = ParseAs<byte, uint>();
             FolderEID = Parse<FolderEntryID>();
         }
@@ -1096,7 +1096,7 @@ namespace MAPIInspector.Parsers
         {
             RecipientCount = ParseT<ushort>();
             var recipientBlocks = new List<RecipientBlockData>();
-            for (int i = 0; i < RecipientCount.Data; i++)
+            for (int i = 0; i < RecipientCount; i++)
             {
                 var recipientBlock = new RecipientBlockData();
                 recipientBlock.Parse(parser);
@@ -1141,7 +1141,7 @@ namespace MAPIInspector.Parsers
             Reserved = ParseT<byte>();
             NoOfProperties = ParseT<ushort>();
             var propertyValues = new List<TaggedPropertyValue>();
-            for (int i = 0; i < NoOfProperties.Data; i++)
+            for (int i = 0; i < NoOfProperties; i++)
             {
                 TaggedPropertyValue propertyValue = new TaggedPropertyValue();
                 propertyValue.Parse(parser);

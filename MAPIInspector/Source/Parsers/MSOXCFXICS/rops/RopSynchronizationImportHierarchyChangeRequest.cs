@@ -55,7 +55,7 @@ namespace MAPIInspector.Parsers
             HierarchyValueCount = ParseT<ushort>();
 
             var interHierarchyValues = new List<TaggedPropertyValue>();
-            for (int i = 0; i < HierarchyValueCount.Data; i++)
+            for (int i = 0; i < HierarchyValueCount; i++)
             {
                 var val = new TaggedPropertyValue();
                 val.Parse(parser);
@@ -66,7 +66,7 @@ namespace MAPIInspector.Parsers
             PropertyValueCount = ParseT<ushort>();
 
             var interValue = new List<TaggedPropertyValue>();
-            for (int i = 0; i < PropertyValueCount.Data; i++)
+            for (int i = 0; i < PropertyValueCount; i++)
             {
                 var val = new TaggedPropertyValue();
                 val.Parse(parser);

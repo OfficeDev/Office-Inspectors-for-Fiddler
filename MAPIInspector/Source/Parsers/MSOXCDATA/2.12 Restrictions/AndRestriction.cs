@@ -48,12 +48,12 @@ namespace MAPIInspector.Parsers
             {
                 case CountWideEnum.twoBytes:
                     _restrictCount = ParseT<ushort>();
-                    RestrictCount = (_restrictCount as BlockT<ushort>).Data;
+                    RestrictCount = (_restrictCount as BlockT<ushort>);
                     break;
                 default:
                 case CountWideEnum.fourBytes:
                     _restrictCount = ParseT<uint>();
-                    RestrictCount = (_restrictCount as BlockT<uint>).Data;
+                    RestrictCount = (_restrictCount as BlockT<uint>);
                     break;
             }
 

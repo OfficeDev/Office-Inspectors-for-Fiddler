@@ -73,7 +73,7 @@ namespace MAPIInspector.Parsers
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 HasNamedProperties = ParseAs<byte, bool>();
                 SubjectPrefix = Parse<TypedString>();
@@ -82,7 +82,7 @@ namespace MAPIInspector.Parsers
                 ColumnCount = ParseT<ushort>();
                 var propertyTags = new List<PropertyTag>();
 
-                for (int i = 0; i < ColumnCount.Data; i++)
+                for (int i = 0; i < ColumnCount; i++)
                 {
                     propertyTags.Add(Parse<PropertyTag>());
                 }
@@ -91,7 +91,7 @@ namespace MAPIInspector.Parsers
                 RowCount = ParseT<byte>();
                 var openRecipientRows = new List<OpenRecipientRow>();
 
-                for (int i = 0; i < RowCount.Data; i++)
+                for (int i = 0; i < RowCount; i++)
                 {
                     OpenRecipientRow openRecipientRow = new OpenRecipientRow(RecipientColumns);
                     openRecipientRow.Parse(parser);

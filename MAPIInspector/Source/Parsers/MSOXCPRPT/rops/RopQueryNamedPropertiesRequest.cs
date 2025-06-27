@@ -50,7 +50,7 @@ namespace MAPIInspector.Parsers
             QueryFlags = ParseT<byte>();
             HasGuid = ParseT<byte>();
 
-            if (HasGuid.Data != 0)
+            if (HasGuid != 0)
             {
                 PropertyGuid = Parse<BlockGuid>();
             }

@@ -70,7 +70,7 @@ namespace MAPIInspector.Parsers
             ExcludedTagCount = ParseT<ushort>();
             var tmpExcludedTags = new List<PropertyTag>();
 
-            for (int i = 0; i < ExcludedTagCount.Data; i++)
+            for (int i = 0; i < ExcludedTagCount; i++)
             {
                 tmpExcludedTags.Add(Parse<PropertyTag>());
             }

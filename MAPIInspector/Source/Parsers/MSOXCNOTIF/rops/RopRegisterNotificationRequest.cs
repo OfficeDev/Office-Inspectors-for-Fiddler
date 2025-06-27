@@ -64,14 +64,14 @@ namespace MAPIInspector.Parsers
             OutputHandleIndex = ParseT<byte>();
             NotificationTypes = ParseT<NotificationTypesEnum>();
 
-            if (NotificationTypes.Data == NotificationTypesEnum.Extended)
+            if (NotificationTypes == NotificationTypesEnum.Extended)
             {
                 Reserved = ParseT<byte>();
             }
 
             WantWholeStore = ParseAs<byte, bool>();
 
-            if (!WantWholeStore.Data)
+            if (!WantWholeStore)
             {
                 FolderId = Parse<FolderID>();
                 MessageId = Parse<MessageID>();

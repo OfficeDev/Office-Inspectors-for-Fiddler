@@ -58,8 +58,8 @@ namespace BlockParserTests
             var block = new TestBlock();
             block.Parse(parser, true);
 
-            Assert.AreEqual(0x12345678, block.f1.Data);
-            Assert.AreEqual(unchecked((short)0xABCD), block.f2.Data); // Use 'unchecked' to allow the constant to be treated as a short
+            Assert.AreEqual(0x12345678, block.f1);
+            Assert.AreEqual(unchecked((short)0xABCD), block.f2); // Use 'unchecked' to allow the constant to be treated as a short
             Assert.AreEqual("TestBlock", block.Text);
             Assert.AreEqual(3, block.Children.Count);
             Assert.AreEqual("f1 = 0x12345678", block.Children[0].Text);
@@ -87,8 +87,8 @@ namespace BlockParserTests
             var block = new TestBlock2();
             block.Parse(parser, true);
 
-            Assert.AreEqual(0x08675309, block.f1.Data);
-            Assert.AreEqual(unchecked((short)0x2468), block.f2.Data); // Use 'unchecked' to allow the constant to be treated as a short
+            Assert.AreEqual(0x08675309, block.f1);
+            Assert.AreEqual(unchecked((short)0x2468), block.f2); // Use 'unchecked' to allow the constant to be treated as a short
             Assert.AreEqual("TestBlock2", block.Text);
             Assert.AreEqual(4, block.Children.Count);
             Assert.AreEqual("f1 = 0x08675309", block.Children[0].Text);
@@ -123,8 +123,8 @@ namespace BlockParserTests
             var block = new TestBlock2();
             block.Parse(parser, true);
 
-            Assert.AreEqual(0x08675309, block.f1.Data);
-            Assert.AreEqual(0, block.f2.Data);
+            Assert.AreEqual(0x08675309, block.f1);
+            Assert.AreEqual(0, block.f2);
             Assert.AreEqual("TestBlock2", block.Text);
             Assert.AreEqual(3, block.Children.Count);
             Assert.AreEqual("f1 = 0x08675309", block.Children[0].Text);
@@ -197,8 +197,8 @@ namespace BlockParserTests
             var block = new TestEnumBlock();
             block.Parse(parser, true);
 
-            Assert.AreEqual(TestEnum.Value1, block.f1.Data);
-            Assert.AreEqual(TestEnumNoType.Value1, block.f2.Data);
+            Assert.AreEqual(TestEnum.Value1, block.f1);
+            Assert.AreEqual(TestEnumNoType.Value1, block.f2);
             Assert.AreEqual("TestBlock", block.Text);
             Assert.AreEqual("TestBlock\r\n" +
                 "\tf1:Value1\r\n" +

@@ -66,7 +66,7 @@ namespace MAPIInspector.Parsers
             WantRecursive = ParseAs<byte, bool>();
             UseUnicode = ParseAs<byte, bool>();
             FolderId = Parse<FolderID>();
-            NewFolderName = UseUnicode.Data ? ParseStringW() : ParseStringA();
+            NewFolderName = UseUnicode ? ParseStringW() : ParseStringA();
         }
 
         protected override void ParseBlocks()

@@ -36,7 +36,7 @@ namespace MAPIInspector.Parsers
             RopId = ParseT<RopIdType>();
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 RowCount = ParseT<uint>();
             }
@@ -47,7 +47,7 @@ namespace MAPIInspector.Parsers
             SetText("RopGetContentsTableResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(RowCount, "RowCount");
         }
     }

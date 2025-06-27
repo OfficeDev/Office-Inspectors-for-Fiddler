@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
             RopId = ParseT<RopIdType>();
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 // PidTagMessageClass is defined as PtypString8 due to Open Specification said all characters in this property MUST be from the ASCII characters 0x20 through 0x7F. 
                 var properties_GetReceiveFolderTable = new PropertyTag[3]
@@ -54,7 +54,7 @@ namespace MAPIInspector.Parsers
 
                 RowCount = ParseT<uint>();
                 var tmpRows = new List<PropertyRow>();
-                for (int i = 0; i < RowCount.Data; i++)
+                for (int i = 0; i < RowCount; i++)
                 {
                     var proRow = new PropertyRow(properties_GetReceiveFolderTable);
                     proRow.Parse(parser);

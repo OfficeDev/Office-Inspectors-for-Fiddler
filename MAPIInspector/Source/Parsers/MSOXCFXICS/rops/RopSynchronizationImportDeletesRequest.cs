@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
             PropertyValueCount = ParseT<ushort>();
             var interValue = new List<TaggedPropertyValue>();
 
-            for (int i = 0; i < PropertyValueCount.Data; i++)
+            for (int i = 0; i < PropertyValueCount; i++)
             {
                 var value = new TaggedPropertyValue();
                 value.Parse(parser);

@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
         {
             PropertyType = ParseT<PropertyDataType>();
             PropertyId = ParseT<ushort>();
-            if (PropertyId.Data >= 0x8000)
+            if (PropertyId >= 0x8000)
             {
                 GroupPropertyName = Parse<GroupPropertyName>();
             }
@@ -41,7 +41,7 @@ namespace MAPIInspector.Parsers
             SetText("PropertyTagWithGroupPropertyName");
             AddChildBlockT(PropertyType, "PropertyType");
             AddChildBlockT(PropertyId, "PropertyId");
-            if (PropertyId.Data >= 0x8000)
+            if (PropertyId >= 0x8000)
             {
                 AddChild(GroupPropertyName);
             }

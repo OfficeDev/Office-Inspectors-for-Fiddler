@@ -37,7 +37,7 @@ namespace MAPIInspector.Parsers
             Count = ParseT<uint>();
 
             var tempvalue = new List<PtypTime>();
-            for (int i = 0; i < Count.Data; i++)
+            for (int i = 0; i < Count; i++)
             {
                 tempvalue.Add(Parse<PtypTime>());
             }

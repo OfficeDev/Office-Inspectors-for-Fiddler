@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
             ModifyCount = ParseT<ushort>();
             var listPermissionData = new List<PermissionData>();
 
-            for (int i = 0; i < ModifyCount.Data; i++)
+            for (int i = 0; i < ModifyCount; i++)
             {
                 listPermissionData.Add(Parse<PermissionData>());
             }

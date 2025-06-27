@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
             LongTermIdRangeCount = ParseT<uint>();
 
             var interRangs = new List<LongTermIdRange>();
-            for (int i = 0; i < LongTermIdRangeCount.Data; i++)
+            for (int i = 0; i < LongTermIdRangeCount; i++)
             {
                 interRangs.Add(Parse<LongTermIdRange>());
             }

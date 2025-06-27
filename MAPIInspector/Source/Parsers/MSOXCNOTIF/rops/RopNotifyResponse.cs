@@ -36,7 +36,7 @@ namespace MAPIInspector.Parsers
             RopId = ParseT<RopIdType>();
             NotificationHandle = ParseT<uint>();
             LogonId = ParseT<byte>();
-            NotificationData = new NotificationData(NotificationHandle.Data);
+            NotificationData = new NotificationData(NotificationHandle);
             NotificationData.Parse(parser);
         }
 

@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             PropertyType = ParseT<PropertyDataType>();
-            _PropertyValue = PropertyValue.ReadPropertyValue(PropertyType.Data, parser, countWide);
+            _PropertyValue = PropertyValue.ReadPropertyValue(PropertyType, parser, countWide);
         }
 
         protected override void ParseBlocks()

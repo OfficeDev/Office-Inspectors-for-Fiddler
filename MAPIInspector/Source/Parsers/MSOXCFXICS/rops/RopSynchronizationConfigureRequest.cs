@@ -82,9 +82,9 @@ namespace MAPIInspector.Parsers
             SendOptions = ParseT<SendOptions>();
             SynchronizationFlags = ParseT<SynchronizationFlags>();
             RestrictionDataSize = ParseT<ushort>();
-            if (RestrictionDataSize.Data > 0)
+            if (RestrictionDataSize > 0)
             {
-                parser.PushCap(RestrictionDataSize.Data);
+                parser.PushCap(RestrictionDataSize);
                 RestrictionData = new RestrictionType();
                 RestrictionData.Parse(parser);
                 parser.PopCap();
@@ -94,7 +94,7 @@ namespace MAPIInspector.Parsers
             PropertyTagCount = ParseT<ushort>();
 
             var interTag = new List<PropertyTag>();
-            for (int i = 0; i < PropertyTagCount.Data; i++)
+            for (int i = 0; i < PropertyTagCount; i++)
             {
                 interTag.Add(Parse<PropertyTag>());
             }

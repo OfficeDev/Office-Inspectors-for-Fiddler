@@ -18,16 +18,16 @@ namespace BlockParserTests
         {
             var block = new BlockT<int>();
             block.Data = 42;
-            Assert.AreEqual(42, block.Data);
+            Assert.AreEqual(42, block);
             block.Data = 99;
-            Assert.AreEqual(99, block.Data);
+            Assert.AreEqual(99, block);
         }
 
         [TestMethod]
         public void BlockT_Create_SetsProperties()
         {
             var block = Block.CreateBlock(7, 4, 10);
-            Assert.AreEqual(7, block.Data);
+            Assert.AreEqual(7, block);
             Assert.AreEqual(4, block.Size);
             Assert.AreEqual(10, block.Offset);
         }
@@ -39,7 +39,7 @@ namespace BlockParserTests
             var bytes = BitConverter.GetBytes(0x12345678);
             var parser = new BinaryParser(bytes);
             var block = Block.ParseT<int>(parser);
-            Assert.AreEqual(0x12345678, block.Data);
+            Assert.AreEqual(0x12345678, block);
         }
 
         // TODO: Implement this test with a more realistic scenario when we need it
@@ -61,7 +61,7 @@ namespace BlockParserTests
         //    }
         //    var parser = new BinaryParser(bytes);
         //    var block = ParseT<long>.Parse<TestStruct>r);
-        //    Assert.AreEqual(Convert.ToInt64(testStruct.A), block.Data);
+        //    Assert.AreEqual(Convert.ToInt64(testStruct.A), block);
         //}
 
         [TestMethod]
@@ -82,7 +82,7 @@ namespace BlockParserTests
             }
             var parser = new BinaryParser(bytes);
             var block = Block.ParseT<TestStruct>(parser);
-            Assert.AreEqual(testStruct, block.Data);
+            Assert.AreEqual(testStruct, block);
         }
     }
 }

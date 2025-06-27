@@ -42,10 +42,10 @@ namespace MAPIInspector.Parsers
             OutputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 HasMessageId = ParseAs<byte, bool>();
-                if (HasMessageId.Data)
+                if (HasMessageId)
                 {
                     MessageId = Parse<MessageID>();
                 }

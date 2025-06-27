@@ -24,16 +24,16 @@ namespace MAPIInspector.Parsers
         {
             var tmp = TestParse<PropertyDataType>(parser);
             if (tmp == null || !tmp.Parsed) return false;
-            return LexicalTypeHelper.IsMVType(tmp.Data) && !IsMetaTagIdsetGiven(parser);
+            return LexicalTypeHelper.IsMVType(tmp) && !IsMetaTagIdsetGiven(parser);
         }
 
         protected override void Parse()
         {
             base.Parse();
             Length = ParseT<int>();
-            long blocksLength = Length.Data;
+            long blocksLength = Length;
 
-            ValueArray = ParseArray(parser, PropType.Data, blocksLength);
+            ValueArray = ParseArray(parser, PropType, blocksLength);
         }
 
         public static Block[] ParseArray(BinaryParser parser, PropertyDataType dataType, long dataLength)

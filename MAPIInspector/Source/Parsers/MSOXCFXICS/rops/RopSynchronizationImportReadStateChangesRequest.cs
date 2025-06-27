@@ -45,7 +45,7 @@ namespace MAPIInspector.Parsers
             MessageReadStatesSize = ParseT<ushort>();
 
             var interValue = new List<MessageReadState>();
-            parser.PushCap(MessageReadStatesSize.Data);
+            parser.PushCap(MessageReadStatesSize);
             while (!parser.Empty)
             {
                 interValue.Add(Parse<MessageReadState>());

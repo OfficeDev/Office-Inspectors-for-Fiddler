@@ -55,7 +55,7 @@ namespace MAPIInspector.Parsers
             ColumnCount = ParseT<ushort>();
             var propertyTags = new List<PropertyTag>();
 
-            for (int i = 0; i < ColumnCount.Data; i++)
+            for (int i = 0; i < ColumnCount; i++)
             {
                 propertyTags.Add(Parse<PropertyTag>());
             }
@@ -64,7 +64,7 @@ namespace MAPIInspector.Parsers
             RowCount = ParseT<ushort>();
             var modifyRecipientRows = new List<ModifyRecipientRow>();
 
-            for (int i = 0; i < RowCount.Data; i++)
+            for (int i = 0; i < RowCount; i++)
             {
                 ModifyRecipientRow modifyRecipientRow = new ModifyRecipientRow(RecipientColumns);
                 modifyRecipientRow.Parse(parser);

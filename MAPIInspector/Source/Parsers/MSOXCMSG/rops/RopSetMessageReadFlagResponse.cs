@@ -47,11 +47,11 @@ namespace MAPIInspector.Parsers
             ResponseHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 ReadStatusChanged = ParseAs<byte, bool>();
 
-                if (ReadStatusChanged.Data)
+                if (ReadStatusChanged)
                 {
                     LogonId = ParseT<byte>();
                     ClientData = ParseBytes(24);

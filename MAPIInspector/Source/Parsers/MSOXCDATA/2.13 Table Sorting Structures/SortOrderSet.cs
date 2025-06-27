@@ -38,7 +38,7 @@ namespace MAPIInspector.Parsers
             CategorizedCount = ParseT<ushort>();
             ExpandedCount = ParseT<ushort>();
             var tempSortOrders = new List<SortOrder>();
-            for (int i = 0; i < SortOrderCount.Data; i++)
+            for (int i = 0; i < SortOrderCount; i++)
             {
                 tempSortOrders.Add(Parse<SortOrder>());
             }

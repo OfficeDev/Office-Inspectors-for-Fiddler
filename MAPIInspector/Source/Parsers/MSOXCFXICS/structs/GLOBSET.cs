@@ -28,9 +28,9 @@ namespace MAPIInspector.Parsers
             var tmp = TestParse<byte>();
 
             var commands = new List<Command>();
-            while (tmp.Parsed && tmp.Data != 0x00)
+            while (tmp.Parsed && tmp != 0x00)
             {
-                switch (tmp.Data)
+                switch (tmp)
                 {
                     case 0x01:
                     case 0x02:
@@ -40,10 +40,10 @@ namespace MAPIInspector.Parsers
                     case 0x06:
                         var pushCommand = Parse<PushCommand>();
                         commands.Add(pushCommand);
-                        if ((commonStackLength + pushCommand.Command.Data) < 6)
+                        if ((commonStackLength + pushCommand.Command) < 6)
                         {
-                            commonStackCollection.Add(pushCommand.Command.Data);
-                            commonStackLength += pushCommand.Command.Data;
+                            commonStackCollection.Add(pushCommand.Command);
+                            commonStackLength += pushCommand.Command;
                         }
 
                         break;

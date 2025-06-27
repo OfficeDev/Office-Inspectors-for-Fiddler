@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
             DataSize = ParseT<ushort>();
-            Data = ParseBytes(DataSize.Data);
+            Data = ParseBytes(DataSize);
         }
 
         protected override void ParseBlocks()
@@ -50,7 +50,7 @@ namespace MAPIInspector.Parsers
             SetText("RopReadStreamResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue.Data != 0) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(DataSize, "DataSize");
             AddChildBytes(Data, "Data");
         }

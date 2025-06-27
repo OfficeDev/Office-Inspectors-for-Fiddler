@@ -60,7 +60,7 @@ namespace MAPIInspector.Parsers
             OpenFlags = ParseT<OpenFlags>();
             StoreState = ParseT<uint>();
             EssdnSize = ParseT<ushort>();
-            if (EssdnSize.Data > 0)
+            if (EssdnSize > 0)
             {
                 Essdn = ParseStringA();
             }

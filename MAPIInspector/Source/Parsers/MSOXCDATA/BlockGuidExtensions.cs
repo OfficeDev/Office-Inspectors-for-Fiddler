@@ -7,7 +7,7 @@ namespace MAPIInspector.Parsers
         public static void AddChildGuid(this Block parent, BlockGuid child, string label)
         {
             if (child == null || !child.Parsed) return;
-            parent.AddChild(child, $"{label}:{Guids.ToString(child.value.Data)}");
+            parent.AddChild(child, $"{label}:{Guids.ToString(child.value)}");
         }
     }
 }

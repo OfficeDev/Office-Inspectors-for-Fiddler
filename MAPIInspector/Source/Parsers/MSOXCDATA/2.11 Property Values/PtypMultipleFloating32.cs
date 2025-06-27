@@ -37,7 +37,7 @@ namespace MAPIInspector.Parsers
             Count = ParseT<uint>();
 
             var tempvalue = new List<PtypFloating32>();
-            for (int i = 0; i < Count.Data; i++)
+            for (int i = 0; i < Count; i++)
             {
                 tempvalue.Add(Parse<PtypFloating32>());
             }

@@ -26,7 +26,7 @@ namespace MAPIInspector.Parsers
         {
             PropertyTagCount = ParseT<uint>();
             var tags = new List<PropertyTagWithGroupPropertyName>();
-            for (int i = 0; i < PropertyTagCount.Data; i++)
+            for (int i = 0; i < PropertyTagCount; i++)
             {
                 tags.Add(Parse<PropertyTagWithGroupPropertyName>());
             }

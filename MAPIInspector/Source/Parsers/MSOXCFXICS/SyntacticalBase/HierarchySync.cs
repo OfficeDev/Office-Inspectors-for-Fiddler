@@ -47,7 +47,7 @@ namespace MAPIInspector.Parsers
             State = Parse<State>();
 
             EndMarker = ParseT<Markers>();
-            if (EndMarker.Data == Markers.IncrSyncEnd)
+            if (EndMarker == Markers.IncrSyncEnd)
             {
                 Parsed = false;
             }

@@ -36,8 +36,8 @@ namespace MAPIInspector.Parsers
             if (!prefix.Parsed || warning.Parsed) return false;
 
             return !parser.Empty
-                && (prefix.Data == MetaProperties.MetaTagDnPrefix
-                || warning.Data == MetaProperties.MetaTagEcWarning
+                && (prefix == MetaProperties.MetaTagDnPrefix
+                || warning == MetaProperties.MetaTagEcWarning
                 || Message.Verify(parser));
         }
 

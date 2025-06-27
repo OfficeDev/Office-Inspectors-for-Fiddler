@@ -41,7 +41,7 @@ namespace MAPIInspector.Parsers
             var id = ParseT<PidTagPropertyEnum>(parser);
             parser.Offset = offset;
             if (!type.Parsed || !id.Parsed) return false;
-            return type.Data == PropertyDataType.PtypInteger32 && id.Data == PidTagPropertyEnum.MetaTagIdsetGiven;
+            return type == PropertyDataType.PtypInteger32 && id == PidTagPropertyEnum.MetaTagIdsetGiven;
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace MAPIInspector.Parsers
                 (FixedPropTypePropValue.Verify(parser) ||
                 VarPropTypePropValue.Verify(parser) ||
                 MvPropTypePropValue.Verify(parser)) &&
-                !MarkersHelper.IsMarker(tag.Data) &&
+                !MarkersHelper.IsMarker(tag) &&
                 !MarkersHelper.IsMetaTag((MetaProperties)tag.Data);
         }
 
@@ -100,7 +100,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("PropValue");
-            AddChildBlockT(PropType, "PropType"); // Consider: ({(ushort)PropType.Data:X4})
+            AddChildBlockT(PropType, "PropType"); // Consider: ({(ushort)PropType:X4})
             AddChild(PropInfo);
         }
     }

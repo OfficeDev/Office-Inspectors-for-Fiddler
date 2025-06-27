@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
             Count = ParseT<uint>();
 
             List<PtypBinary> tempvalue = new List<PtypBinary>();
-            for (int i = 0; i < Count.Data; i++)
+            for (int i = 0; i < Count; i++)
             {
                 var binary = new PtypBinary(countWide);
                 binary.Parse(parser);

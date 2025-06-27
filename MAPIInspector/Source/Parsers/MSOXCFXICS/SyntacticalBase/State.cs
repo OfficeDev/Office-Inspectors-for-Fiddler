@@ -25,12 +25,12 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             StartMarker = ParseT<Markers>();
-            if (StartMarker.Data == Markers.IncrSyncStateBegin)
+            if (StartMarker == Markers.IncrSyncStateBegin)
             {
                 PropList = Parse<PropList>();
 
                 EndMarker = ParseT<Markers>();
-                if (EndMarker.Data != Markers.IncrSyncStateEnd)
+                if (EndMarker != Markers.IncrSyncStateEnd)
                 {
                     Parsed = false;
                 }

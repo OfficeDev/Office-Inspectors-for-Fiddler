@@ -57,5 +57,10 @@ namespace BlockParser
                 handle.Free();
             }
         }
+
+        public static implicit operator T(BlockT<T> block)
+        {
+            return block != null ? block.Data : default;
+        }
     }
 }

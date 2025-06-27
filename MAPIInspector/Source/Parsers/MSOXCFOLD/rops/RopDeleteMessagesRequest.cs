@@ -56,7 +56,7 @@ namespace MAPIInspector.Parsers
             NotifyNonRead = ParseAs<byte, bool>();
             MessageIdCount = ParseT<ushort>();
             var tempMessageIDs = new List<MessageID>();
-            for (int i = 0; i < MessageIdCount.Data; i++)
+            for (int i = 0; i < MessageIdCount; i++)
             {
                 tempMessageIDs.Add(Parse<MessageID>());
             }

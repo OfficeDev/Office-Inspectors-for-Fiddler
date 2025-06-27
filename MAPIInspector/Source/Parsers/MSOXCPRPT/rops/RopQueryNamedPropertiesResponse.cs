@@ -48,19 +48,19 @@ namespace MAPIInspector.Parsers
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 IdCount = ParseT<ushort>();
                 var tmpPropertyIds = new List<BlockT<ushort>>();
                 var tmpPropertyNames = new List<PropertyName>();
 
-                for (int i = 0; i < IdCount.Data; i++)
+                for (int i = 0; i < IdCount; i++)
                 {
                     tmpPropertyIds.Add(ParseT<ushort>());
                 }
                 PropertyIds = tmpPropertyIds.ToArray();
 
-                for (int i = 0; i < IdCount.Data; i++)
+                for (int i = 0; i < IdCount; i++)
                 {
                     tmpPropertyNames.Add(Parse<PropertyName>());
                 }
@@ -73,7 +73,7 @@ namespace MAPIInspector.Parsers
             SetText("RopQueryNamedPropertiesResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue.Data != 0) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(IdCount, "IdCount");
             AddLabeledChildren(PropertyIds, "PropertyIds");
             AddLabeledChildren(PropertyNames, "PropertyNames");

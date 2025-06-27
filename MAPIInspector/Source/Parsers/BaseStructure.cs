@@ -1,6 +1,7 @@
 ﻿using BlockParser;
 using MapiInspector;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -137,6 +138,7 @@ namespace MAPIInspector.Parsers
         }
 
         static System.Drawing.Font DebugFont = new System.Drawing.Font("Arial", 8, System.Drawing.FontStyle.Bold);
+        const bool DebugNodes = false;
 
         /// <summary>
         /// Recursively adds a BlockParser.Block and its children to a TreeNode structure.
@@ -182,14 +184,16 @@ namespace MAPIInspector.Parsers
             {
                 backColor = System.Drawing.Color.SkyBlue;
             }
-
-            var debugNode = new TreeNode($"Block: {typeName} at {blockOffset} with size {block.Size} bytes")
+            if (DebugNodes)
             {
-                BackColor = backColor,
-                NodeFont = DebugFont,
-                Tag = "ignore"
-            };
-            node.Nodes.Add(debugNode);
+                var debugNode = new TreeNode($"Block: {typeName} at {blockOffset} with size {block.Size} bytes")
+                {
+                    BackColor = backColor,
+                    NodeFont = DebugFont,
+                    Tag = "ignore"
+                };
+                node.Nodes.Add(debugNode);
+            }
 
             foreach (var child in block.Children)
             {

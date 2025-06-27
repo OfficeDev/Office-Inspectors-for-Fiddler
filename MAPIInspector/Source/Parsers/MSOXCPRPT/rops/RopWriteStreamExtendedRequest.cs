@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
             LogonId = ParseT<byte>();
             InputHandleIndex = ParseT<byte>();
             DataSize = ParseT<ushort>();
-            Data = ParseBytes(DataSize.Data);
+            Data = ParseBytes(DataSize);
         }
 
         protected override void ParseBlocks()

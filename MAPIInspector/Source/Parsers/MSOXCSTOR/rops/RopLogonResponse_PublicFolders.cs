@@ -67,7 +67,7 @@ namespace MAPIInspector.Parsers
             RopId = ParseT<RopIdType>();
             OutputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 LogonFlags = ParseT<LogonFlags>();
                 FolderIds = new FolderID[13];

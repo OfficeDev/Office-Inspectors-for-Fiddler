@@ -38,7 +38,7 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             Ours = ParseT<byte>();
-            if (Ours.Data == 0x01)
+            if (Ours == 0x01)
             {
                 FolderID = Parse<FolderID>();
                 MessageID = Parse<MessageID>();
@@ -53,16 +53,10 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             AddChildBlockT(Ours, "Ours");
-            if (Ours.Data == 0x01)
-            {
-                AddLabeledChild(FolderID, "FolderID");
-                AddLabeledChild(MessageID, "MessageID");
-                AddChildBlockT(Instance, "Instance");
-            }
-            else
-            {
-                AddLabeledChild(ClientData, "ClientData");
-            }
+            AddLabeledChild(FolderID, "FolderID");
+            AddLabeledChild(MessageID, "MessageID");
+            AddChildBlockT(Instance, "Instance");
+            AddLabeledChild(ClientData, "ClientData");
         }
     }
 }

@@ -38,7 +38,7 @@ namespace MAPIInspector.Parsers
             Reserved = ParseT<uint>();
             GroupCount = ParseT<uint>();
             var tmpGrp = new List<PropertyGroup>();
-            for (int i = 0; i < GroupCount.Data; i++)
+            for (int i = 0; i < GroupCount; i++)
             {
                 tmpGrp.Add(Parse<PropertyGroup>());
             }

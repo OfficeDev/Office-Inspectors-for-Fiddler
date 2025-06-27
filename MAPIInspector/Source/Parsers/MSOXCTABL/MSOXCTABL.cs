@@ -178,7 +178,7 @@ namespace MAPIInspector.Parsers
             PropertyTagCount = ParseT<ushort>();
 
             List<PropertyTag> tempPropertyTags = new List<PropertyTag>();
-            for (int i = 0; i < this.PropertyTagCount.Data; i++)
+            for (int i = 0; i < this.PropertyTagCount; i++)
             {
                 PropertyTag tempPropertyTag = new PropertyTag();
                 tempPropertyTag.Parse(parser);
@@ -192,7 +192,7 @@ namespace MAPIInspector.Parsers
         {
             SetText("RopSetColumnsRequest");
             AddChildBlockT(RopId, "RopId");
-            if (LogonId != null) AddChild(LogonId, $"LogonId:0x{LogonId.Data:X2}");
+            AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(SetColumnsFlags, "SetColumnsFlags");
             AddChildBlockT(PropertyTagCount, "PropertyTagCount");
@@ -231,7 +231,7 @@ namespace MAPIInspector.Parsers
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == (uint)ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 TableStatus = ParseT<TableStatus>();
             }
@@ -310,7 +310,7 @@ namespace MAPIInspector.Parsers
             CategoryCount = ParseT<ushort>();
             ExpandedCount = ParseT<ushort>();
             var tempSortOrders = new List<SortOrder>();
-            for (int i = 0; i < SortOrderCount.Data; i++)
+            for (int i = 0; i < SortOrderCount; i++)
             {
                 tempSortOrders.Add(Parse<SortOrder>());
             }
@@ -534,7 +534,7 @@ namespace MAPIInspector.Parsers
         {
             SetText("RopQueryRowsRequest");
             AddChildBlockT(RopId, "RopId");
-            if (LogonId != null) AddChild(LogonId, $"LogonId:0x{LogonId.Data:X2}");
+            AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(QueryRowsFlags, "QueryRowsFlags");
             AddChildBlockT(ForwardRead, "ForwardRead");
@@ -925,7 +925,7 @@ namespace MAPIInspector.Parsers
         {
             SetText("RopSeekRowRequest");
             AddChildBlockT(RopId, "RopId");
-            if (LogonId != null) AddChild(LogonId, $"LogonId:0x{LogonId.Data:X2}");
+            AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(Origin, "Origin");
             AddChildBlockT(RowCount, "RowCount");
@@ -971,7 +971,7 @@ namespace MAPIInspector.Parsers
             RopId = ParseT<RopIdType>();
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
-            if (ReturnValue.Data == (uint)ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 HasSoughtLess = ParseAs<byte, bool>();
                 RowsSought = ParseT<int>();

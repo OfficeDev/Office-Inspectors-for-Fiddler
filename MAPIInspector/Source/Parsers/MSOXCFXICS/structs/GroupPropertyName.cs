@@ -41,11 +41,11 @@ namespace MAPIInspector.Parsers
             Guid = Parse<BlockGuid>();
             Kind = ParseT<uint>();
 
-            if (Kind.Data == 0x00000000)
+            if (Kind == 0x00000000)
             {
                 Lid = ParseT<uint>();
             }
-            else if (Kind.Data == 0x00000001)
+            else if (Kind == 0x00000001)
             {
                 NameSize = ParseT<uint>();
                 Name = new PtypString((int)NameSize.Data);

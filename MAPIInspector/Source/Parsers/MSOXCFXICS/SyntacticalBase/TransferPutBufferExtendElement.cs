@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
                 MapiInspector.MAPIParser.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
             {
                 var tmpMarker = TestParse<Markers>();
-                if (MarkersHelper.IsMarker(tmpMarker.Data))
+                if (MarkersHelper.IsMarker(tmpMarker))
                 {
                     Marker = ParseT<Markers>();
                 }
@@ -66,7 +66,7 @@ namespace MAPIInspector.Parsers
             else
             {
                 var tmpMarker = TestParse<Markers>();
-                if (MarkersHelper.IsMarker(tmpMarker.Data))
+                if (MarkersHelper.IsMarker(tmpMarker))
                 {
                     Marker = ParseT<Markers>();
                 }
@@ -80,18 +80,18 @@ namespace MAPIInspector.Parsers
                     PropValue propValue = Parse<PropValue>();
                     parser.Offset = offset;
 
-                    if (LexicalTypeHelper.IsFixedType(propValue.PropType.Data) &&
+                    if (LexicalTypeHelper.IsFixedType(propValue.PropType) &&
                         !PropValue.IsMetaTagIdsetGiven(parser))
                     {
                         PropValue = Parse<FixedPropTypePropValuePutExtendPartial>();
                     }
-                    else if (LexicalTypeHelper.IsVarType(propValue.PropType.Data) ||
+                    else if (LexicalTypeHelper.IsVarType(propValue.PropType) ||
                         PropValue.IsMetaTagIdsetGiven(parser) ||
-                        LexicalTypeHelper.IsCodePageType(propValue.PropType.Data))
+                        LexicalTypeHelper.IsCodePageType(propValue.PropType))
                     {
                         PropValue = Parse<VarPropTypePropValuePutExtendPartial>();
                     }
-                    else if (LexicalTypeHelper.IsMVType(propValue.PropType.Data) &&
+                    else if (LexicalTypeHelper.IsMVType(propValue.PropType) &&
                         !PropValue.IsMetaTagIdsetGiven(parser))
                     {
                         PropValue = Parse<MvPropTypePropValuePutExtendPartial>();

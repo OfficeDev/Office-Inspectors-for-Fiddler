@@ -25,7 +25,7 @@ namespace MAPIInspector.Parsers
 
             if (parser.Empty)
             {
-                MapiInspector.MAPIParser.PartialPutType = PropType.Data;
+                MapiInspector.MAPIParser.PartialPutType = PropType;
                 MapiInspector.MAPIParser.PartialPutServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
                 MapiInspector.MAPIParser.PartialPutProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
                 MapiInspector.MAPIParser.PartialPutClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
@@ -63,18 +63,18 @@ namespace MAPIInspector.Parsers
                     Length = ParseT<int>();
                 }
 
-                int blocksLength = Length != null ? Length.Data : Plength;
+                int blocksLength = Length != null ? Length : Plength;
                 PropertyDataType typeValue = PropertyDataType.PtypUnspecified;
                 if (PropType != null)
                 {
-                    typeValue = PropType.Data;
+                    typeValue = PropType;
                 }
                 else if (ptype != null)
                 {
-                    typeValue = ptype.Data;
+                    typeValue = ptype;
                 }
 
-                ValueArray = MvPropTypePropValue.ParseArray(parser, PropType.Data, blocksLength);
+                ValueArray = MvPropTypePropValue.ParseArray(parser, PropType, blocksLength);
             }
         }
 

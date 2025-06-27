@@ -49,11 +49,11 @@ namespace MAPIInspector.Parsers
             {
                 case CountWideEnum.twoBytes:
                     _count = ParseT<ushort>();
-                    Count = (_count as BlockT<ushort>).Data;
+                    Count = (_count as BlockT<ushort>);
                     break;
                 case CountWideEnum.fourBytes:
                     _count = ParseT<int>();
-                    Count = (_count as BlockT<int>).Data;
+                    Count = (_count as BlockT<int>);
                     break;
                 default:
                     break;

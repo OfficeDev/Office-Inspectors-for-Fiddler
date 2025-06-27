@@ -68,7 +68,7 @@ namespace MAPIInspector.Parsers
             SetText("RopFastTransferDestinationPutBufferExtendedResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(TransferStatus, "TransferStatus");
             AddChildBlockT(InProgressCount, "InProgressCount");
             AddChildBlockT(TotalStepCount, "TotalStepCount");

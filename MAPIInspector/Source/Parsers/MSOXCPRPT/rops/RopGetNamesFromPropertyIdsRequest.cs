@@ -46,7 +46,7 @@ namespace MAPIInspector.Parsers
             PropertyIdCount = ParseT<ushort>();
             var tmpPropertyIds = new List<BlockT<ushort>>();
 
-            for (int i = 0; i < PropertyIdCount.Data; i++)
+            for (int i = 0; i < PropertyIdCount; i++)
             {
                 tmpPropertyIds.Add(ParseT<ushort>());
             }

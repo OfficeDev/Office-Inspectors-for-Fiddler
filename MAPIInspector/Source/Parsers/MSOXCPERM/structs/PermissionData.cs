@@ -34,7 +34,7 @@ namespace MAPIInspector.Parsers
             PropertyValueCount = ParseT<ushort>();
             var listPropertyValues = new List<TaggedPropertyValue>();
 
-            for (int i = 0; i < PropertyValueCount.Data; i++)
+            for (int i = 0; i < PropertyValueCount; i++)
             {
                 TaggedPropertyValue tempPropertyValue = new TaggedPropertyValue();
                 tempPropertyValue.Parse(parser);

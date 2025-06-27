@@ -59,7 +59,7 @@ namespace MAPIInspector.Parsers
             }
 
             Marker = ParseT<Markers>();
-            if (Marker.Data == Markers.IncrSyncChgPartial)
+            if (Marker == Markers.IncrSyncChgPartial)
             {
                 MessageChangeHeader = Parse<PropList>();
 

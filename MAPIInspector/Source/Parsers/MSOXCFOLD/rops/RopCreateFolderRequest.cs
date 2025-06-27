@@ -71,7 +71,7 @@ namespace MAPIInspector.Parsers
             UseUnicodeStrings = ParseAs<byte, bool>();
             OpenExisting = ParseAs<byte, bool>();
             Reserved = ParseT<byte>();
-            if (UseUnicodeStrings.Data)
+            if (UseUnicodeStrings)
             {
                 DisplayName = ParseStringW();
                 Comment = ParseStringW();

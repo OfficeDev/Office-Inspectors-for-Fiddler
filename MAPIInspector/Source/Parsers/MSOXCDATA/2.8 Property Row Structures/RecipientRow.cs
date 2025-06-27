@@ -104,34 +104,34 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             RecipientFlags = Parse<RecipientFlags>();
-            if (RecipientFlags.Type.Data == AddressTypeEnum.X500DN)
+            if (RecipientFlags.Type == AddressTypeEnum.X500DN)
             {
                 AddressPrefixUsed = ParseT<byte>();
                 DisplayType = ParseT<DisplayType>();
                 X500DN = ParseStringA();
             }
-            else if (RecipientFlags.Type.Data == AddressTypeEnum.PersonalDistributionList1 || RecipientFlags.Type.Data == AddressTypeEnum.PersonalDistributionList2)
+            else if (RecipientFlags.Type == AddressTypeEnum.PersonalDistributionList1 || RecipientFlags.Type == AddressTypeEnum.PersonalDistributionList2)
             {
                 EntryIdSize = ParseT<ushort>();
                 EntryID = Parse<AddressBookEntryID>();
                 SearchKeySize = ParseT<ushort>();
-                SearchKey = ParseBytes(SearchKeySize.Data);
+                SearchKey = ParseBytes(SearchKeySize);
             }
-            else if (RecipientFlags.Type.Data == AddressTypeEnum.NoType && RecipientFlags.O.Data)
+            else if (RecipientFlags.Type == AddressTypeEnum.NoType && RecipientFlags.O)
             {
                 AddressType = ParseStringA();
             }
 
-            if (RecipientFlags.E.Data) EmailAddress = RecipientFlags.U.Data ? ParseStringW() : ParseStringA();
-            if (RecipientFlags.D.Data) DisplayName = RecipientFlags.U.Data ? ParseStringW() : ParseStringA();
-            if (RecipientFlags.I.Data) SimpleDisplayName = RecipientFlags.U.Data ? ParseStringW() : ParseStringA();
-            if (RecipientFlags.T.Data) TransmittableDisplayName = RecipientFlags.U.Data ? ParseStringW() : ParseStringA();
+            if (RecipientFlags.E) EmailAddress = RecipientFlags.U ? ParseStringW() : ParseStringA();
+            if (RecipientFlags.D) DisplayName = RecipientFlags.U ? ParseStringW() : ParseStringA();
+            if (RecipientFlags.I) SimpleDisplayName = RecipientFlags.U ? ParseStringW() : ParseStringA();
+            if (RecipientFlags.T) TransmittableDisplayName = RecipientFlags.U ? ParseStringW() : ParseStringA();
 
             RecipientColumnCount = ParseT<ushort>();
             var propTagsActually = new List<PropertyTag>();
-            if (propTags.Length >= RecipientColumnCount.Data)
+            if (propTags.Length >= RecipientColumnCount)
             {
-                for (int i = 0; i < RecipientColumnCount.Data; i++)
+                for (int i = 0; i < RecipientColumnCount; i++)
                 {
                     propTagsActually.Add(propTags[i]);
                 }

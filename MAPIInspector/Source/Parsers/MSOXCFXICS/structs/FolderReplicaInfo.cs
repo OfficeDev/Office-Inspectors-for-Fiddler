@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
             CheapServerDNCount = ParseT<uint>();
 
             var tmpDNArray = new List<PtypString8>();
-            for (int i = 0; i < ServerDNCount.Data; i++)
+            for (int i = 0; i < ServerDNCount; i++)
             {
 
                 tmpDNArray.Add(Parse<PtypString8>());

@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
             Flags = ParseT<byte>();
             PropertyNameCount = ParseT<ushort>();
             var tmpPropertyNames = new List<PropertyName>();
-            for (int i = 0; i < PropertyNameCount.Data; i++)
+            for (int i = 0; i < PropertyNameCount; i++)
             {
                 tmpPropertyNames.Add(Parse<PropertyName>());
             }

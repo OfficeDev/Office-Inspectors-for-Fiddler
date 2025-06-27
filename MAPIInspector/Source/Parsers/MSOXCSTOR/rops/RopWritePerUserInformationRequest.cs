@@ -65,19 +65,19 @@ namespace MAPIInspector.Parsers
             HasFinished = ParseAs<byte, bool>();
             DataOffset = ParseT<uint>();
             DataSize = ParseT<ushort>();
-            Data = ParseBytes(DataSize.Data);
+            Data = ParseBytes(DataSize);
             if (!MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
             {
-                if (DataOffset.Data == 0 &&
-                    (((byte)DecodingContext.SessionLogonFlagMapLogId[MapiInspector.MAPIParser.ParsingSession.id][LogonId.Data] & (byte)LogonFlags.Private) == (byte)LogonFlags.Private))
+                if (DataOffset == 0 &&
+                    (((byte)DecodingContext.SessionLogonFlagMapLogId[MapiInspector.MAPIParser.ParsingSession.id][LogonId] & (byte)LogonFlags.Private) == (byte)LogonFlags.Private))
                 {
                     ReplGuid = Parse<BlockGuid>();
                 }
             }
             else
             {
-                if (DataOffset.Data == 0 &&
-                    (((byte)DecodingContext.SessionLogonFlagMapLogId[int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"])][LogonId.Data] & (byte)LogonFlags.Private) == (byte)LogonFlags.Private))
+                if (DataOffset == 0 &&
+                    (((byte)DecodingContext.SessionLogonFlagMapLogId[int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"])][LogonId] & (byte)LogonFlags.Private) == (byte)LogonFlags.Private))
                 {
                     ReplGuid = Parse<BlockGuid>();
                 }

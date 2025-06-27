@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
             RecipientType = Parse<RecipientType>();
             RecipientRowSize = ParseT<ushort>();
 
-            if (RecipientRowSize.Data > 0)
+            if (RecipientRowSize > 0)
             {
                 RecipientRow = new RecipientRow(propTags);
                 RecipientRow.Parse(parser);

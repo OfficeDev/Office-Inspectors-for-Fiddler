@@ -60,7 +60,7 @@ namespace MAPIInspector.Parsers
             WantAsynchronous = ParseAs<byte, bool>();
             UseUnicode = ParseAs<byte, bool>();
             FolderId = Parse<FolderID>();
-            if (UseUnicode.Data)
+            if (UseUnicode)
             {
                 NewFolderName = ParseStringW();
             }

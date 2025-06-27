@@ -44,7 +44,7 @@ namespace MAPIInspector.Parsers
             InputHandleIndex = ParseT<byte>();
             TransferDataSize = ParseT<ushort>();
 
-            parser.PushCap(TransferDataSize.Data);
+            parser.PushCap(TransferDataSize);
             var transferBufferList = new List<TransferPutBufferExtendElement>();
             while (!parser.Empty)
             {

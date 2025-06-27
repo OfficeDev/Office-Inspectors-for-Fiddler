@@ -55,7 +55,7 @@ namespace MAPIInspector.Parsers
             RestrictType = ParseT<RestrictTypeEnum>();
             TaggedValuesCount = ParseT<byte>();
             var tempTaggedValue = new List<TaggedPropertyValue>();
-            for (int i = 0; i < TaggedValuesCount.Data; i++)
+            for (int i = 0; i < TaggedValuesCount; i++)
             {
                 var tempproperty = new TaggedPropertyValue(countWide);
                 tempproperty.Parse(parser);
@@ -64,7 +64,7 @@ namespace MAPIInspector.Parsers
 
             TaggedValues = tempTaggedValue.ToArray();
             RestrictionPresent = ParseAs<byte, bool>();
-            if (RestrictionPresent.Data == true)
+            if (RestrictionPresent == true)
             {
                 Restriction = new RestrictionType(countWide);
                 Restriction.Parse(parser);

@@ -48,7 +48,7 @@ namespace MAPIInspector.Parsers
             CodePageId = ParseT<ushort>();
             Reserved = ParseT<ushort>();
             RecipientRowSize = ParseT<ushort>();
-            RecipientRow = ParseBytes(RecipientRowSize.Data);
+            RecipientRow = ParseBytes(RecipientRowSize);
         }
 
         protected override void ParseBlocks()

@@ -1722,7 +1722,8 @@ namespace MAPIInspector.Parsers
         MetaTagFXDelProp = 0x4016,
 
         /// <summary>
-        /// The MetaTagIdsetGiven property contains a serialization of REPLGUID-based IDSET structures, as specified in section 2.2.2.4.2.
+        /// The IDSETs contain Folder ID structures ([MS-OXCDATA] section 2.2.1.1) for hierarchy synchronization operations, or
+        /// Message ID structures for content synchronization operations, that exist in the local replica of the client.
         /// 2.2.1.1.1 MetaTagIdsetGiven ICS State Property
         /// </summary>
         MetaTagIdsetGiven = 0x4017,
@@ -1731,6 +1732,12 @@ namespace MAPIInspector.Parsers
         /// The PidTagSentRepresentingFlags flag
         /// </summary>
         PidTagSentRepresentingFlags = 0x401A,
+
+        /// <summary>
+        /// The IDSETs contain the IDs of messages that got out of the synchronization scope since the last synchronization identified by the initial ICS state.
+        /// 2.2.1.3.2 MetaTagIdsetNoLongerInScope Meta-Property
+        /// </summary>
+        MetaTagIdsetNoLongerInScope = 0x4021,
 
         /// <summary>
         /// Contains the address type of the end user to whom a read receipt is directed.
@@ -1748,6 +1755,20 @@ namespace MAPIInspector.Parsers
         PidTagReadReceiptName = 0x402B,
 
         /// <summary>
+        ///  The IDSETs contain IDs of messages that were marked as read (as specified by the PidTagMessageFlags property
+        ///  in [MS-OXCMSG] section 2.2.1.6) since the last synchronization, as identified by the initial ICS state.
+        /// 2.2.1.3.4 MetaTagIdsetRead Meta-Property
+        /// </summary>
+        MetaTagIdsetRead = 0x402D,
+
+        /// <summary>
+        /// The IDSETs contain IDs of messages that were marked as unread (as specified by the PidTagMessageFlags property
+        /// in [MS-OXCMSG] section 2.2.1.6) since the last synchronization, as identified by the initial ICS state.
+        /// 2.2.1.3.5 MetaTagIdsetUnread Meta-Property
+        /// </summary>
+        MetaTagIdsetUnread = 0x402E,
+
+        /// <summary>
         /// Indicates a confidence level that the message is spam.
         /// </summary>
         PidTagContentFilterSpamConfidenceLevel = 0x4076,
@@ -1758,7 +1779,8 @@ namespace MAPIInspector.Parsers
         PidTagSenderIdStatus = 0x4079,
 
         /// <summary>
-        /// The MetaTagIncrementalSyncMessagePartial meta-property specifies an index of a property group within a property group mapping currently in context
+        /// The MetaTagIncrementalSyncMessagePartial meta-property specifies an index of a property group within a property 
+        /// group mapping currently in context
         /// </summary>
         MetaTagIncrementalSyncMessagePartial = 0x407a,
 
@@ -2208,7 +2230,15 @@ namespace MAPIInspector.Parsers
         PidTagAddressBookMessageId = 0x674F,
 
         /// <summary>
-        /// The MetaTagCnsetSeen property contains a serialization of REPLGUID-based CNSET structures, as specified in section 2.2.2.4.
+        /// The IDSETs contain IDs of expired Message objects in a public folder that expired since the last synchronization identified by the initial ICS state.
+        /// 2.2.1.3.3 MetaTagIdsetExpired Meta-Property
+        /// </summary>
+        MetaTagIdsetExpired = 0x6793,
+
+        /// <summary>
+        /// The CN structures, as specified in section 2.2.2.1, in the CNSET track changes to folders (for hierarchy synchronization
+        /// operations) or normal messages (for content synchronization operations) in the current synchronization scope that have
+        /// been previously communicated to a client, and are reflected in its local replica.
         /// 2.2.1.1.2 MetaTagCnsetSeen ICS State Property
         /// </summary>
         MetaTagCnsetSeen = 0x6796,
@@ -2224,16 +2254,28 @@ namespace MAPIInspector.Parsers
         PidTagAssociated = 0x67AA,
 
         /// <summary>
-        /// The MetaTagCnsetRead property contains a serialization of REPLGUID-based CNSET structures, as specified in section 2.2.2.4.
+        /// The CN structures, as specified in section 2.2.2.1, in the CNSET track changes to the read state for messages in
+        /// the current synchronization scope that have been previously communicated to the client and are reflected in its
+        /// local replica.
         /// 2.2.1.1.4 MetaTagCnsetRead ICS State Property
         /// </summary>
         MetaTagCnsetRead = 0x67D2,
 
         /// <summary>
-        /// The MetaTagCnsetSeenFAI property contains a serialization of REPLGUID-based IDSET structures, as specified in section 2.2.2.4.
+        /// The semantics of this property are identical to the MetaTagCnsetSeen property (section 2.2.1.1.2), except that this
+        /// property contains IDs for folder associated information (FAI) messages and is therefore only used in content
+        /// synchronization operations.
         /// 2.2.1.1.3 MetaTagCnsetSeenFAI ICS State Property
         /// </summary>
         MetaTagCnsetSeenFAI = 0x67DA,
+
+        /// <summary>
+        /// The IDSETs contain the IDs of folders (for hierarchy synchronization operations) or messages (for content
+        /// synchronization operations) that were hard deleted or soft deleted since the last synchronization identified
+        /// by the initial ICS state.
+        /// 2.2.1.3.1 MetaTagIdsetDeleted Meta-Property
+        /// </summary>
+        MetaTagIdsetDeleted = 0x67E5,
 
         /// <summary>
         /// Contains the display name of the address list.

@@ -73,7 +73,7 @@ namespace MAPIInspector.Parsers
         private static bool Verify(BinaryParser parser, uint val)
         {
             var bufferVal = Block.TestParse<uint>(parser);
-            return bufferVal.Parsed && bufferVal.Data == val;
+            return bufferVal.Parsed && bufferVal == val;
         }
     }
 }

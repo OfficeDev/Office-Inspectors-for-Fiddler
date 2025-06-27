@@ -49,7 +49,7 @@ namespace MAPIInspector.Parsers
                     break;
                 case KindEnum.Name:
                     NameSize = ParseT<byte>();
-                    Name = ParseStringW(NameSize.Data);
+                    Name = ParseStringW(NameSize);
                     break;
                 case KindEnum.NoPropertyName:
                 default:
@@ -67,15 +67,15 @@ namespace MAPIInspector.Parsers
             NamedProperty namedProp = null;
             if (GUID != null && LID != null)
             {
-                namedProp = NamedProperty.Lookup(GUID.value.Data, LID.Data);
+                namedProp = NamedProperty.Lookup(GUID.value, LID);
             }
 
             if (LID != null)
             {
                 if (namedProp != null)
-                    AddChild(LID, $"Dispid: {namedProp.Name} = 0x{LID.Data:X4}");
+                    AddChild(LID, $"Dispid: {namedProp.Name} = 0x{LID:X4}");
                 else
-                    AddChild(LID, $"Dispid: 0x{LID.Data:X4}");
+                    AddChild(LID, $"Dispid: 0x{LID:X4}");
             }
 
             AddChildString(Name, "Name");

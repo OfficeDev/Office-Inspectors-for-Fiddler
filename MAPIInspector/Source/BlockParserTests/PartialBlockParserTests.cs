@@ -30,7 +30,7 @@ namespace BlockParserTests
                 int i = 0;
                 foreach (var b in f1)
                 {
-                    AddChild(b, $"f1{i} = 0x{b.Data:X2}");
+                    AddChild(b, $"f1{i} = 0x{b:X2}");
                     i++;
                 }
             }
@@ -45,7 +45,7 @@ namespace BlockParserTests
             protected override void Parse()
             {
                 size = ParseT<int>();
-                parser.PushCap(size.Data);
+                parser.PushCap(size);
                 expandingBlock = Parse<ExpandingBlock>();
                 parser.PopCap();
                 footer = ParseT<int>();
@@ -54,9 +54,9 @@ namespace BlockParserTests
             protected override void ParseBlocks()
             {
                 SetText("ParentBlock");
-                AddChild(size, $"size = 0x{size.Data:X8}");
+                AddChild(size, $"size = 0x{size:X8}");
                 AddChild(expandingBlock, "ExpandingBlock");
-                AddChild(footer, $"footer = 0x{footer.Data:X8}");
+                AddChild(footer, $"footer = 0x{footer:X8}");
             }
         }
 
@@ -70,12 +70,12 @@ namespace BlockParserTests
             var block = new ParentBlock();
             block.Parse(parser, true);
 
-            Assert.AreEqual(3, block.size.Data, "Array length read");
+            Assert.AreEqual(3, block.size, "Array length read");
             Assert.AreEqual(3, block.expandingBlock.f1.Length, "ExpandingBlock's f1 length");
-            Assert.AreEqual(0x0A, block.expandingBlock.f1[0].Data, "First byte in f1 should be 0x0A");
-            Assert.AreEqual(0x0B, block.expandingBlock.f1[1].Data, "Second byte in f1 should be 0x0B");
-            Assert.AreEqual(0x0C, block.expandingBlock.f1[2].Data, "Third byte in f1 should be 0x0C");
-            Assert.AreEqual(0x07060504, block.footer.Data, "Footer should be 0x07060504");
+            Assert.AreEqual(0x0A, block.expandingBlock.f1[0], "First byte in f1 should be 0x0A");
+            Assert.AreEqual(0x0B, block.expandingBlock.f1[1], "Second byte in f1 should be 0x0B");
+            Assert.AreEqual(0x0C, block.expandingBlock.f1[2], "Third byte in f1 should be 0x0C");
+            Assert.AreEqual(0x07060504, block.footer, "Footer should be 0x07060504");
         }
 
         internal class GrandParentBlock : Block
@@ -88,7 +88,7 @@ namespace BlockParserTests
             protected override void Parse()
             {
                 size = ParseT<byte>();
-                parser.PushCap(size.Data);
+                parser.PushCap(size);
                 var _parents = new List<ParentBlock>();
                 while (!parser.Empty)
                 {
@@ -105,13 +105,13 @@ namespace BlockParserTests
             protected override void ParseBlocks()
             {
                 SetText("GrandParentBlock");
-                AddChild(size, $"size = 0x{size.Data:X8}");
+                AddChild(size, $"size = 0x{size:X8}");
                 foreach (var parent in parents)
                 {
                     AddChild(parent, "ParentBlock");
                 }
-                AddChild(footer, $"footer = 0x{footer.Data:X8}");
-                AddChild(footer2, $"footer2 = 0x{footer2.Data:X8}");
+                AddChild(footer, $"footer = 0x{footer:X8}");
+                AddChild(footer2, $"footer2 = 0x{footer2:X8}");
             }
         }
 
@@ -126,19 +126,19 @@ namespace BlockParserTests
             var parser = new BinaryParser(data);
             var block = new GrandParentBlock();
             block.Parse(parser, true);
-            Assert.AreEqual(21, block.size.Data, "Array size read");
+            Assert.AreEqual(21, block.size, "Array size read");
             Assert.AreEqual(2, block.parents.Length, "GrandParentBlock's parents length");
-            Assert.AreEqual(3, block.parents[0].size.Data, "First ParentBlock's size should be 3");
-            Assert.AreEqual(0x0A, block.parents[0].expandingBlock.f1[0].Data, "First byte in first ParentBlock's f1 should be 0x0A");
-            Assert.AreEqual(0x0B, block.parents[0].expandingBlock.f1[1].Data, "Second byte in first ParentBlock's f1 should be 0x0B");
-            Assert.AreEqual(0x0C, block.parents[0].expandingBlock.f1[2].Data, "Third byte in first ParentBlock's f1 should be 0x0C");
-            Assert.AreEqual(0x07060504, block.parents[0].footer.Data, "First ParentBlock's footer should be 0x07060504");
-            Assert.AreEqual(2, block.parents[1].size.Data, "Second ParentBlock's size should be 2");
-            Assert.AreEqual(0x0D, block.parents[1].expandingBlock.f1[0].Data, "First byte in second ParentBlock's f1 should be 0x0D");
-            Assert.AreEqual(0x0E, block.parents[1].expandingBlock.f1[1].Data, "Second byte in second ParentBlock's f1 should be 0x0E");
-            Assert.AreEqual(0x0D0C0B0A, block.parents[1].footer.Data, "Second ParentBlock's footer should be 0x0D0C0B0A");
-            Assert.AreEqual(0x0EFF0601, block.footer.Data, "GrandParentBlock's footer should be 0x0EFF0601");
-            Assert.AreEqual(0x0DCCBBAA, block.footer2.Data, "GrandParentBlock's footer2 should be 0xDDCCBBAA");
+            Assert.AreEqual(3, block.parents[0].size, "First ParentBlock's size should be 3");
+            Assert.AreEqual(0x0A, block.parents[0].expandingBlock.f1[0], "First byte in first ParentBlock's f1 should be 0x0A");
+            Assert.AreEqual(0x0B, block.parents[0].expandingBlock.f1[1], "Second byte in first ParentBlock's f1 should be 0x0B");
+            Assert.AreEqual(0x0C, block.parents[0].expandingBlock.f1[2], "Third byte in first ParentBlock's f1 should be 0x0C");
+            Assert.AreEqual(0x07060504, block.parents[0].footer, "First ParentBlock's footer should be 0x07060504");
+            Assert.AreEqual(2, block.parents[1].size, "Second ParentBlock's size should be 2");
+            Assert.AreEqual(0x0D, block.parents[1].expandingBlock.f1[0], "First byte in second ParentBlock's f1 should be 0x0D");
+            Assert.AreEqual(0x0E, block.parents[1].expandingBlock.f1[1], "Second byte in second ParentBlock's f1 should be 0x0E");
+            Assert.AreEqual(0x0D0C0B0A, block.parents[1].footer, "Second ParentBlock's footer should be 0x0D0C0B0A");
+            Assert.AreEqual(0x0EFF0601, block.footer, "GrandParentBlock's footer should be 0x0EFF0601");
+            Assert.AreEqual(0x0DCCBBAA, block.footer2, "GrandParentBlock's footer2 should be 0xDDCCBBAA");
         }
     }
 }

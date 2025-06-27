@@ -58,7 +58,7 @@ namespace MAPIInspector.Parsers
             LogonId = ParseT<byte>();
             InputHandleIndex = ParseT<byte>();
             RestrictionDataSize = ParseT<ushort>();
-            if (RestrictionDataSize.Data > 0)
+            if (RestrictionDataSize > 0)
             {
                 RestrictionData = new RestrictionType();
                 RestrictionData.Parse(parser);
@@ -66,7 +66,7 @@ namespace MAPIInspector.Parsers
 
             FolderIdCount = ParseT<ushort>();
             var tempFolderIDs = new List<FolderID>();
-            for (int i = 0; i < FolderIdCount.Data; i++)
+            for (int i = 0; i < FolderIdCount; i++)
             {
                 tempFolderIDs.Add(Parse<FolderID>());
             }

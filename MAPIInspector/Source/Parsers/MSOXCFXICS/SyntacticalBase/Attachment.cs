@@ -40,13 +40,13 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             StartMarker = ParseT<Markers>();
-            if (StartMarker.Data == Markers.NewAttach)
+            if (StartMarker == Markers.NewAttach)
             {
                 PidTagAttachNumber = Parse<FixedPropTypePropValue>();
                 AttachmentContent = Parse<AttachmentContent>();
 
                 EndMarker = ParseT<Markers>();
-                if (EndMarker.Data == Markers.EndAttach)
+                if (EndMarker == Markers.EndAttach)
                 {
                     Parsed = false;
                 }

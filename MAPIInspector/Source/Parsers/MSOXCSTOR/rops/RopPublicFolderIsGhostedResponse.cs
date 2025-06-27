@@ -52,15 +52,15 @@ namespace MAPIInspector.Parsers
             RopId = ParseT<RopIdType>();
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 IsGhosted = ParseAs<byte, bool>();
-                if (IsGhosted.Data == true)
+                if (IsGhosted == true)
                 {
                     ServersCount = ParseT<ushort>();
                     CheapServersCount = ParseT<ushort>();
                     var tmpServers = new List<BlockString>();
-                    for (int i = 0; i < ServersCount.Data; i++)
+                    for (int i = 0; i < ServersCount; i++)
                     {
                         tmpServers.Add(ParseStringA());
                     }

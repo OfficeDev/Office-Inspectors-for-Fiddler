@@ -43,11 +43,11 @@ namespace MAPIInspector.Parsers
         {
             PropertyType = ParseT<PropertyDataType>();
             Flag = ParseT<byte>();
-            if (Flag.Data == 0x00)
+            if (Flag == 0x00)
             {
-                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyType.Data, parser, countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyType, parser, countWide);
             }
-            else if (Flag.Data == 0x0A)
+            else if (Flag == 0x0A)
             {
                 _PropertyValue = PropertyValue.ReadPropertyValue(PropertyDataType.PtypErrorCode, parser, countWide);
             }

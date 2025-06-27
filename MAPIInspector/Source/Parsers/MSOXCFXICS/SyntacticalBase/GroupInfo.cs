@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             StartMarker = ParseT<Markers>();
-            if (StartMarker.Data == Markers.IncrSyncGroupInfo)
+            if (StartMarker == Markers.IncrSyncGroupInfo)
             {
                 PropertiesTag = ParseT<uint>();
                 PropertiesLength = ParseT<uint>();

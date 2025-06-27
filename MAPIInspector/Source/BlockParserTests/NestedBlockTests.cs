@@ -17,7 +17,7 @@ namespace BlockParserTests
             {
                 KidCount = ParseT<int>();
                 List<ChildBlock> tempKids = new List<ChildBlock>();
-                for (int i = 0; i < KidCount.Data; i++)
+                for (int i = 0; i < KidCount; i++)
                 {
                     var kid = new ChildBlock();
                     kid.Parse(parser);
@@ -67,11 +67,11 @@ namespace BlockParserTests
             var block = new ParentBlock();
             block.Parse(parser, true);
 
-            Assert.AreEqual(3, block.KidCount.Data);
+            Assert.AreEqual(3, block.KidCount);
             Assert.AreEqual(3, block.Kids.Length);
-            Assert.AreEqual(1, block.Kids[0].f2.Data);
-            Assert.AreEqual(3, block.Kids[1].f2.Data);
-            Assert.AreEqual(5, block.Kids[2].f2.Data);
+            Assert.AreEqual(1, block.Kids[0].f2);
+            Assert.AreEqual(3, block.Kids[1].f2);
+            Assert.AreEqual(5, block.Kids[2].f2);
             // Check for junk node
             Assert.IsTrue(block.Children.Count > 1);
             var junkNode = block.Children[block.Children.Count - 1];

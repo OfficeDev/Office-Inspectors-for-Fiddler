@@ -35,12 +35,12 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             StartMarker = ParseT<Markers>();
-            if (StartMarker.Data == Markers.StartSubFld)
+            if (StartMarker == Markers.StartSubFld)
             {
                 FolderContentNoDelProps = Parse<FolderContentNoDelProps>();
 
                 EndMarker = ParseT<Markers>();
-                if (EndMarker.Data != Markers.EndFolder)
+                if (EndMarker != Markers.EndFolder)
                 {
                     Parsed = false;
                 }

@@ -60,9 +60,9 @@ namespace MAPIInspector.Parsers
 
                     if (Flags == 0x00)
                     {
-                        if (propTag.PropertyType.Data != PropertyDataType.PtypUnspecified)
+                        if (propTag.PropertyType != PropertyDataType.PtypUnspecified)
                         {
-                            AddressBookPropertyValue propValue = new AddressBookPropertyValue(propTag.PropertyType.Data, ptypMultiCountSize);
+                            AddressBookPropertyValue propValue = new AddressBookPropertyValue(propTag.PropertyType, ptypMultiCountSize);
                             propValue.Parse(s);
                             propValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId.Data)}";
                             addrRowValue = propValue;
@@ -77,9 +77,9 @@ namespace MAPIInspector.Parsers
                     }
                     else if (Flags == 0x01)
                     {
-                        if (propTag.PropertyType.Data != PropertyDataType.PtypUnspecified)
+                        if (propTag.PropertyType != PropertyDataType.PtypUnspecified)
                         {
-                            AddressBookFlaggedPropertyValue flagPropValue = new AddressBookFlaggedPropertyValue(propTag.PropertyType.Data);
+                            AddressBookFlaggedPropertyValue flagPropValue = new AddressBookFlaggedPropertyValue(propTag.PropertyType);
                             flagPropValue.Parse(s);
                             flagPropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId.Data)}";
                             addrRowValue = flagPropValue;

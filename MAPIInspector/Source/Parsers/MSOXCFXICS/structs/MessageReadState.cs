@@ -29,7 +29,7 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             MessageIdSize = ParseT<ushort>();
-            MessageId = ParseBytes(MessageIdSize.Data);
+            MessageId = ParseBytes(MessageIdSize);
             MarkAsRead = ParseAs<byte, bool>();
         }
 

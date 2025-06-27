@@ -23,7 +23,7 @@ namespace MAPIInspector.Parsers
             Value = ParseT<ulong>();
             try
             {
-                dateTime = new DateTime(1601, 1, 1).AddMilliseconds(Value.Data / 10000).ToLocalTime();
+                dateTime = new DateTime(1601, 1, 1).AddMilliseconds(Value / 10000).ToLocalTime();
             }
             catch
             {

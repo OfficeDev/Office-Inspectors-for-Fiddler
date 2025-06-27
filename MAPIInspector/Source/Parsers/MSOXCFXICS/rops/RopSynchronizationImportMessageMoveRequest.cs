@@ -82,15 +82,15 @@ namespace MAPIInspector.Parsers
             LogonId = ParseT<byte>();
             InputHandleIndex = ParseT<byte>();
             SourceFolderIdSize = ParseT<uint>();
-            SourceFolderId = ParseBytes((int)SourceFolderIdSize.Data);
+            SourceFolderId = ParseBytes(SourceFolderIdSize);
             SourceMessageIdSize = ParseT<uint>();
-            SourceMessageId = ParseBytes((int)SourceMessageIdSize.Data);
+            SourceMessageId = ParseBytes(SourceMessageIdSize);
             PredecessorChangeListSize = ParseT<uint>();
-            PredecessorChangeList = ParseBytes((int)PredecessorChangeListSize.Data);
+            PredecessorChangeList = ParseBytes(PredecessorChangeListSize);
             DestinationMessageIdSize = ParseT<uint>();
-            DestinationMessageId = ParseBytes((int)DestinationMessageIdSize.Data);
+            DestinationMessageId = ParseBytes(DestinationMessageIdSize);
             ChangeNumberSize = ParseT<uint>();
-            ChangeNumber = ParseBytes((int)ChangeNumberSize.Data);
+            ChangeNumber = ParseBytes(ChangeNumberSize);
         }
 
         protected override void ParseBlocks()

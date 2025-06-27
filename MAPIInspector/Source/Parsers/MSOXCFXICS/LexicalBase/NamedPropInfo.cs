@@ -34,11 +34,11 @@ namespace MAPIInspector.Parsers
             PropertySet = Parse<BlockGuid>();
             Flag = ParseT<KindEnum>();
 
-            if (Flag.Data == KindEnum.LID)
+            if (Flag == KindEnum.LID)
             {
                 Dispid = ParseT<uint>();
             }
-            else if (Flag.Data == KindEnum.Name)
+            else if (Flag == KindEnum.Name)
             {
                 Name = ParseStringW();
             }
@@ -54,7 +54,7 @@ namespace MAPIInspector.Parsers
             NamedProperty namedProp = null;
             if (PropertySet != null && Dispid != null)
             {
-                namedProp = NamedProperty.Lookup(PropertySet.value.Data, Dispid.Data);
+                namedProp = NamedProperty.Lookup(PropertySet.value, Dispid);
             }
 
             if (Dispid != null)

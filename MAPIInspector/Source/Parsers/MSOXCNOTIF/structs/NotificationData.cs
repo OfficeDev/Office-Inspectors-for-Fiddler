@@ -186,12 +186,12 @@ namespace MAPIInspector.Parsers
             if (TableEventType != null)
             {
                 // TableEventType field is available and is 0x0003, 0x0004, or 0x0005
-                var isADM = TableEventType.Data == TableEventTypeEnum.TableRowAdded ||
-                    TableEventType.Data == TableEventTypeEnum.TableRowDeleted ||
-                    TableEventType.Data == TableEventTypeEnum.TableRowModified;
+                var isADM = TableEventType == TableEventTypeEnum.TableRowAdded ||
+                    TableEventType == TableEventTypeEnum.TableRowDeleted ||
+                    TableEventType == TableEventTypeEnum.TableRowModified;
                 // TableEventType field is available and is 0x0003 or 0x0005
-                var isAM = TableEventType.Data == TableEventTypeEnum.TableRowAdded ||
-                    TableEventType.Data == TableEventTypeEnum.TableRowModified;
+                var isAM = TableEventType == TableEventTypeEnum.TableRowAdded ||
+                    TableEventType == TableEventTypeEnum.TableRowModified;
 
                 if (isADM) TableRowFolderID = Parse<FolderID>();
                 if (isMessage && isADM) TableRowMessageID = Parse<MessageID>();
@@ -218,7 +218,7 @@ namespace MAPIInspector.Parsers
                         propertiesBySetColum = DecodingContext.Notify_handlePropertyTags[notificationHandle][parsingSessionID].Item4;
                     }
 
-                    TableRowData = new PropertyRow(TableRowDataSize.Data, propertiesBySetColum);
+                    TableRowData = new PropertyRow(TableRowDataSize, propertiesBySetColum);
                     TableRowData.Parse(parser);
                 }
             }
@@ -234,11 +234,11 @@ namespace MAPIInspector.Parsers
             {
                 TagCount = ParseT<ushort>();
 
-                if (TagCount.Data != 0x0000 && TagCount.Data != 0xFFFF)
+                if (TagCount != 0x0000 && TagCount != 0xFFFF)
                 {
                     var listTags = new List<PropertyTag>();
 
-                    for (int i = 0; i < TagCount.Data; i++)
+                    for (int i = 0; i < TagCount; i++)
                     {
                         listTags.Add(Parse<PropertyTag>());
                     }
@@ -254,11 +254,11 @@ namespace MAPIInspector.Parsers
             {
                 MessageFlags = ParseT<uint>();
                 UnicodeFlag = ParseT<byte>();
-                if (UnicodeFlag.Data == 0x00)
+                if (UnicodeFlag == 0x00)
                 {
                     MessageClass = ParseStringA();
                 }
-                else if (UnicodeFlag.Data == 0x01)
+                else if (UnicodeFlag == 0x01)
                 {
                     MessageClass = ParseStringW();
                 }

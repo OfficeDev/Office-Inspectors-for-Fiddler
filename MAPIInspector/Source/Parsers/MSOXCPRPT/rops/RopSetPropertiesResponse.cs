@@ -44,12 +44,12 @@ namespace MAPIInspector.Parsers
             List<PropertyRow> tmpRows = new List<PropertyRow>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 PropertyProblemCount = ParseT<ushort>();
                 var interPropertyProblem = new List<PropertyProblem>();
 
-                for (int i = 0; i < PropertyProblemCount.Data; i++)
+                for (int i = 0; i < PropertyProblemCount; i++)
                 {
                     interPropertyProblem.Add(Parse<PropertyProblem>());
                 }
@@ -63,7 +63,7 @@ namespace MAPIInspector.Parsers
             SetText("RopSetPropertiesResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue.Data != 0) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(PropertyProblemCount, "PropertyProblemCount");
             AddLabeledChildren(PropertyProblems, "PropertyProblems");
         }

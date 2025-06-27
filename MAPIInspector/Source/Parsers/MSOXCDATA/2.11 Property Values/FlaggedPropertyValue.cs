@@ -44,11 +44,11 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             Flag = ParseT<byte>();
-            if (Flag.Data == 0x00)
+            if (Flag == 0x00)
             {
                 _PropertyValue = PropertyValue.ReadPropertyValue(propertyType, parser, countWide);
             }
-            else if (Flag.Data == 0x0A)
+            else if (Flag == 0x0A)
             {
                 _PropertyValue = PropertyValue.ReadPropertyValue(PropertyDataType.PtypErrorCode, parser, countWide);
             }

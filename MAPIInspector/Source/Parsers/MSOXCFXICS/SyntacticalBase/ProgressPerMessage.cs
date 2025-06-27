@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             StartMarker = ParseT<Markers>();
-            if (StartMarker.Data == Markers.IncrSyncProgressPerMsg)
+            if (StartMarker == Markers.IncrSyncProgressPerMsg)
             {
                 PropList = Parse<PropList>();
             }

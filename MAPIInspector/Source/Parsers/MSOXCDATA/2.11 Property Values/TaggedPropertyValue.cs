@@ -51,11 +51,11 @@ namespace MAPIInspector.Parsers
                     tagInRestriction.PropertyType.Data = (PropertyDataType)((ushort)tagInRestriction.PropertyType.Data & 0xfff);
                 }
 
-                _PropertyValue = PropertyValue.ReadPropertyValue(tagInRestriction.PropertyType.Data, parser, countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(tagInRestriction.PropertyType, parser, countWide);
             }
             else
             {
-                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyTag.PropertyType.Data, parser, countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyTag.PropertyType, parser, countWide);
             }
         }
 

@@ -68,20 +68,20 @@ namespace MAPIInspector.Parsers
             OutputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 FolderId = Parse<FolderID>();
                 IsExistingFolder = ParseAs<byte, bool>();
-                if (IsExistingFolder.Data)
+                if (IsExistingFolder)
                 {
                     HasRules = ParseAs<byte, bool>();
                     IsGhosted = ParseAs<byte, bool>();
-                    if (IsGhosted.Data)
+                    if (IsGhosted)
                     {
                         ServerCount = ParseT<ushort>();
                         CheapServerCount = ParseT<ushort>();
                         var tempServers = new List<BlockString>();
-                        for (int i = 0; i < ServerCount.Data; i++)
+                        for (int i = 0; i < ServerCount; i++)
                         {
                             tempServers.Add(ParseStringA());
                         }
@@ -97,7 +97,7 @@ namespace MAPIInspector.Parsers
             SetText("RopCreateFolderResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
-            AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
             AddChild(FolderId, "FolderId");
             AddChildBlockT(IsExistingFolder, "IsExistingFolder");
             AddChildBlockT(HasRules, "HasRules");

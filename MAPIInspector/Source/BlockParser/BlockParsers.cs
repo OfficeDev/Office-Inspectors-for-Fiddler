@@ -112,6 +112,7 @@ namespace BlockParser
             return ret;
         }
 
+        public BlockBytes ParseBytes(uint cbBytes, int cbMaxBytes = -1) => ParseBytes(parser, (int)cbBytes, cbMaxBytes);
         public BlockBytes ParseBytes(int cbBytes, int cbMaxBytes = -1) => ParseBytes(parser, cbBytes, cbMaxBytes);
         /// <summary>
         /// Parses a specified number of bytes from the binary parser and returns a <see cref="BlockBytes"/> instance.

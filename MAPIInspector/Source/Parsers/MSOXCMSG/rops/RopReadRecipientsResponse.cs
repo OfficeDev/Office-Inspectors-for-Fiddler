@@ -43,12 +43,12 @@ namespace MAPIInspector.Parsers
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
 
-            if (ReturnValue.Data == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
                 RowCount = ParseT<byte>();
                 var readRecipientRows = new List<ReadRecipientRow>();
 
-                for (int i = 0; i < RowCount.Data; i++)
+                for (int i = 0; i < RowCount; i++)
                 {
                     readRecipientRows.Add(Parse<ReadRecipientRow>());
                 }

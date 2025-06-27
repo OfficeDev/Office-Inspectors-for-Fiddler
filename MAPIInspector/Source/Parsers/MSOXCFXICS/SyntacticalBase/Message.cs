@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
             Content = Parse<MessageContent>();
 
             EndMarker = ParseT<Markers>();
-            if (EndMarker.Data != Markers.EndMessage)
+            if (EndMarker != Markers.EndMessage)
             {
                 Parsed = false;
             }

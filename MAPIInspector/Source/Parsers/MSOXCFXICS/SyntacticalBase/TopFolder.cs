@@ -35,12 +35,12 @@ namespace MAPIInspector.Parsers
             }
 
             StartMarker = ParseT<Markers>();
-            if (StartMarker.Data == Markers.StartTopFld)
+            if (StartMarker == Markers.StartTopFld)
             {
                 FolderContentNoDelProps = Parse<FolderContentNoDelProps>();
 
                 EndMarker = ParseT<Markers>();
-                if (EndMarker.Data != Markers.EndFolder)
+                if (EndMarker != Markers.EndFolder)
                 {
                     Parsed = false;
                 }

@@ -21,14 +21,14 @@ namespace MAPIInspector.Parsers
         {
             var tmp = TestParse<PropertyDataType>(parser);
             if (tmp == null || !tmp.Parsed) return false;
-            return LexicalTypeHelper.IsFixedType(tmp.Data) && !IsMetaTagIdsetGiven(parser);
+            return LexicalTypeHelper.IsFixedType(tmp) && !IsMetaTagIdsetGiven(parser);
         }
 
         protected override void Parse()
         {
             base.Parse();
 
-            FixedValue = ParseFixedProp(parser, PropType.Data, PropInfo.PropID.Data);
+            FixedValue = ParseFixedProp(parser, PropType, PropInfo.PropID);
         }
 
         protected override void ParseBlocks()

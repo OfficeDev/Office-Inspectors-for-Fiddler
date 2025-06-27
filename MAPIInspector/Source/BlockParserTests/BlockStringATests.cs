@@ -15,7 +15,7 @@ namespace BlockParserTests
             var bytes = Encoding.ASCII.GetBytes(str + "\0");
             var parser = new BinaryParser(bytes);
             var block = Block.ParseStringA(parser);
-            Assert.AreEqual("test", block.Data);
+            Assert.AreEqual("test", block);
             Assert.AreEqual(4, block.Length);
         }
 
@@ -26,7 +26,7 @@ namespace BlockParserTests
             var bytes = Encoding.ASCII.GetBytes(str + "\0");
             var parser = new BinaryParser(bytes);
             var block = Block.ParseStringA(parser, 5);
-            Assert.AreEqual("abcde", block.Data);
+            Assert.AreEqual("abcde", block);
             Assert.AreEqual(5, block.Length);
         }
 
@@ -34,7 +34,7 @@ namespace BlockParserTests
         public void ImplicitOperatorString_ReturnsData()
         {
             var block = Block.ParseStringA(new BinaryParser(Encoding.ASCII.GetBytes("foo\0")), 3);
-            string s = block.Data;
+            string s = block;
             Assert.AreEqual("foo", s);
         }
 
@@ -44,7 +44,7 @@ namespace BlockParserTests
             var rawData = new byte[] { 0x00, 0x00, 0x12, 0x34 };
             var parser = new BinaryParser(rawData);
             var block = Block.ParseStringA(parser);
-            Assert.AreEqual("", block.Data);
+            Assert.AreEqual("", block);
             Assert.AreEqual(0, block.Length); // Excluding null terminator
             Assert.AreEqual(1, block.Size); // Including null terminator
             Assert.IsTrue(block.Empty);
@@ -59,7 +59,7 @@ namespace BlockParserTests
             var rawData = new byte[] { 0x66, 0x6F, 0x6F };
             var parser = new BinaryParser(rawData);
             var block = Block.ParseStringA(parser);
-            Assert.AreEqual("foo", block.Data);
+            Assert.AreEqual("foo", block);
             Assert.AreEqual(3, block.Length); // Excluding null terminator
             Assert.AreEqual(3, block.Size); // No null terminator
             Assert.IsFalse(block.Empty);
@@ -74,7 +74,7 @@ namespace BlockParserTests
             var rawData = new byte[] { 0x66, 0x6F, 0x6F, 0x00, 0xAA, 0xBB }; // "foo" + null terminator
             var parser = new BinaryParser(rawData);
             var block = Block.ParseStringA(parser);
-            Assert.AreEqual("foo", block.Data);
+            Assert.AreEqual("foo", block);
             Assert.AreEqual(3, block.Length); // Excluding null terminator
             Assert.IsFalse(block.Empty);
             Assert.AreEqual(4, parser.Offset);
@@ -87,7 +87,7 @@ namespace BlockParserTests
             var rawData = new byte[] { 0x66, 0x6F, 0x6F, 0x00, 0xAA, 0xBB }; // "foo" + null terminator
             var parser = new BinaryParser(rawData);
             var block = Block.ParseStringA(parser, 3);
-            Assert.AreEqual("foo", block.Data);
+            Assert.AreEqual("foo", block);
             Assert.AreEqual(3, block.Length); // Excluding null terminator
             Assert.IsFalse(block.Empty);
             Assert.AreEqual(3, parser.Offset);

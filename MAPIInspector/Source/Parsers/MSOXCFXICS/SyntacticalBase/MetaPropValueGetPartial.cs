@@ -51,8 +51,8 @@ namespace MAPIInspector.Parsers
 
             if (parser.Empty)
             {
-                MapiInspector.MAPIParser.PartialGetType = PropType.Data;
-                MapiInspector.MAPIParser.PartialGetId = PropID.Data;
+                MapiInspector.MAPIParser.PartialGetType = PropType;
+                MapiInspector.MAPIParser.PartialGetId = PropID;
                 MapiInspector.MAPIParser.PartialGetServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
                 MapiInspector.MAPIParser.PartialGetProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
                 MapiInspector.MAPIParser.PartialGetClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
@@ -79,8 +79,8 @@ namespace MAPIInspector.Parsers
                     }
                 }
 
-                PropertyDataType typeValue = PropType != null ? PropType.Data : propertyType;
-                PidTagPropertyEnum identifyValue = PropID != null ? PropID.Data : propertyID;
+                PropertyDataType typeValue = PropType != null ? PropType : propertyType;
+                PidTagPropertyEnum identifyValue = PropID != null ? PropID : propertyID;
                 if (identifyValue != PidTagPropertyEnum.MetaTagNewFXFolder && identifyValue != PidTagPropertyEnum.MetaTagDnPrefix)
                 {
                     PropValue = Parse<PtypInteger32>();
@@ -107,11 +107,11 @@ namespace MAPIInspector.Parsers
                             length = ParseT<int>();
                         }
 
-                        if (parser.RemainingBytes < length.Data)
+                        if (parser.RemainingBytes < length)
                         {
                             MapiInspector.MAPIParser.PartialGetType = typeValue;
                             MapiInspector.MAPIParser.PartialGetId = identifyValue;
-                            MapiInspector.MAPIParser.PartialGetRemainSize = length.Data - parser.RemainingBytes;
+                            MapiInspector.MAPIParser.PartialGetRemainSize = length - parser.RemainingBytes;
                             MapiInspector.MAPIParser.PartialGetServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
                             MapiInspector.MAPIParser.PartialGetProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
                             MapiInspector.MAPIParser.PartialGetClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
@@ -120,7 +120,7 @@ namespace MAPIInspector.Parsers
                         }
                         else
                         {
-                            PropValue = ParseBytes(length.Data);
+                            PropValue = ParseBytes(length);
                         }
                     }
                 }
