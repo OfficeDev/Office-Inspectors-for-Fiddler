@@ -31,7 +31,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("PropInfo");
-            AddChildBlockT(PropID, "PropID");
+            if (PropID != null) AddChild(PropID, $"PropID:{MapiInspector.Utilities.EnumToString(PropID.Data)}");
             AddChild(NamedPropInfo);
         }
     }

@@ -8,15 +8,15 @@ namespace MAPIInspector.Parsers
         public static object FormatErrorCode(this ErrorCodes errorCodeUint)
         {
             object errorCode = null;
-            if (Enum.IsDefined(typeof(ErrorCodes), errorCodeUint))
+            if (Enum.IsDefined(typeof(ErrorCodes), (uint)errorCodeUint))
             {
                 errorCode = errorCodeUint;
             }
-            else if (Enum.IsDefined(typeof(AdditionalErrorCodes), errorCodeUint))
+            else if (Enum.IsDefined(typeof(AdditionalErrorCodes), (uint)errorCodeUint))
             {
                 errorCode = (AdditionalErrorCodes)errorCodeUint;
             }
-            else if (Enum.IsDefined(typeof(WarningCodes), errorCodeUint))
+            else if (Enum.IsDefined(typeof(WarningCodes), (uint)errorCodeUint))
             {
                 errorCode = (WarningCodes)errorCodeUint;
             }
