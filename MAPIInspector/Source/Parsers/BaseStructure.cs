@@ -137,8 +137,7 @@ namespace MAPIInspector.Parsers
             DateTime
         }
 
-        static System.Drawing.Font DebugFont = new System.Drawing.Font("Arial", 8, System.Drawing.FontStyle.Bold);
-        const bool DebugNodes = false;
+        const bool DebugNodes = true;
 
         /// <summary>
         /// Recursively adds a BlockParser.Block and its children to a TreeNode structure.
@@ -189,7 +188,6 @@ namespace MAPIInspector.Parsers
                 var debugNode = new TreeNode($"Block: {typeName} at {blockOffset} with size {block.Size} bytes")
                 {
                     BackColor = backColor,
-                    NodeFont = DebugFont,
                     Tag = "ignore"
                 };
                 node.Nodes.Add(debugNode);
