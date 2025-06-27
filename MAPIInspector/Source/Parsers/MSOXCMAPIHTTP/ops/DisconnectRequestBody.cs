@@ -3,9 +3,9 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the Disconnect request type.
-    ///  2.2.4 Request Types for Mailbox Server Endpoint
-    ///  2.2.4.3 Disconnect
+    /// A class indicates the Disconnect request type.
+    /// 2.2.4 Request Types for Mailbox Server Endpoint
+    /// 2.2.4.3 Disconnect
     /// </summary>
     public class DisconnectRequestBody : BaseStructure
     {

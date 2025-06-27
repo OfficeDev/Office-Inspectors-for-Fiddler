@@ -3,9 +3,9 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the AddressBookPropertyValue structure.
-    ///  2.2.1 Common Data Types
-    ///  2.2.1.1 AddressBookPropertyValue Structure
+    /// A class indicates the AddressBookPropertyValue structure.
+    /// 2.2.1 Common Data Types
+    /// 2.2.1.1 AddressBookPropertyValue Structure
     /// </summary>
     public class AddressBookPropertyValue : Block
     {

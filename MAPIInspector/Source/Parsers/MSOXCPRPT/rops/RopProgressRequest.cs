@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.2.23 RopProgress
-    ///  A class indicates the RopProgress ROP Request Buffer.
+    /// 2.2.2.23 RopProgress
+    /// A class indicates the RopProgress ROP Request Buffer.
     /// </summary>
     public class RopProgressRequest : Block
     {

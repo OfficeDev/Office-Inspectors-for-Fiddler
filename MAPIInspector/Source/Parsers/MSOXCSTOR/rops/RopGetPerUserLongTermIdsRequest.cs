@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.1.10 RopGetPerUserLongTermIds
-    ///  A class indicates the RopGetPerUserLongTermIds ROP Request Buffer.
+    /// 2.2.1.10 RopGetPerUserLongTermIds
+    /// A class indicates the RopGetPerUserLongTermIds ROP Request Buffer.
     /// </summary>
     public class RopGetPerUserLongTermIdsRequest : Block
     {

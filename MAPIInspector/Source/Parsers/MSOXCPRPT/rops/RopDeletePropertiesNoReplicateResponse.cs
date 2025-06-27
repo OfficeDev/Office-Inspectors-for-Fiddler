@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.2.8 RopDeletePropertiesNoReplicate
-    ///  A class indicates the RopDeletePropertiesNoReplicate ROP Response Buffer.
+    /// 2.2.2.8 RopDeletePropertiesNoReplicate
+    /// A class indicates the RopDeletePropertiesNoReplicate ROP Response Buffer.
     /// </summary>
     public class RopDeletePropertiesNoReplicateResponse : Block
     {

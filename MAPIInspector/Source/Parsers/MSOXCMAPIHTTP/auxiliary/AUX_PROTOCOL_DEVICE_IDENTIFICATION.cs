@@ -4,7 +4,7 @@ using System.Text;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the AUX_PROTOCOL_DEVICE_IDENTIFICATION Auxiliary Block Structure
+    /// A class indicates the AUX_PROTOCOL_DEVICE_IDENTIFICATION Auxiliary Block Structure
     ///  Section 2.2.2.2 AUX_HEADER Structure
     ///  Section 2.2.2.2.22   AUX_PROTOCOL_DEVICE_IDENTIFICATION Auxiliary Block Structure
     /// </summary>

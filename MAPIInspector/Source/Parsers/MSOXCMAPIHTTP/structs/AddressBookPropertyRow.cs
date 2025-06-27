@@ -5,9 +5,9 @@ using System.IO;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the AddressBookPropertyRow structure.
-    ///  2.2.1 Common Data Types
-    ///  2.2.1.7 AddressBookPropertyRow Structure
+    /// A class indicates the AddressBookPropertyRow structure.
+    /// 2.2.1 Common Data Types
+    /// 2.2.1.7 AddressBookPropertyRow Structure
     /// </summary>
     public class AddressBookPropertyRow : BaseStructure
     {

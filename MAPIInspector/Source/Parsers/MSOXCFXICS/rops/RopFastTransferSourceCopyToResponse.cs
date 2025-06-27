@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the RopFastTransferSourceCopyTo ROP Response Buffer.
-    ///  2.2.3.1.1.1.2 RopFastTransferSourceCopyTo ROP Response Buffer
+    /// A class indicates the RopFastTransferSourceCopyTo ROP Response Buffer.
+    /// 2.2.3.1.1.1.2 RopFastTransferSourceCopyTo ROP Response Buffer
     /// </summary>
     public class RopFastTransferSourceCopyToResponse : Block
     {

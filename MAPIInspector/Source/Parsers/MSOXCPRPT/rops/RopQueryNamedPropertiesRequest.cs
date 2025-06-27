@@ -4,8 +4,8 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.2.9 RopQueryNamedProperties
-    ///  A class indicates the RopQueryNamedProperties ROP Request Buffer.
+    /// 2.2.2.9 RopQueryNamedProperties
+    /// A class indicates the RopQueryNamedProperties ROP Request Buffer.
     /// </summary>
     public class RopQueryNamedPropertiesRequest : Block
     {

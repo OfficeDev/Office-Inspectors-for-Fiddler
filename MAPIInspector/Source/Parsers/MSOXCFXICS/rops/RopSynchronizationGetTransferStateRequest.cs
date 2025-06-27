@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the RopSynchronizationGetTransferState ROP Request Buffer.
-    ///  2.2.3.2.3.1.1 RopSynchronizationGetTransferState ROP Request Buffer
+    /// A class indicates the RopSynchronizationGetTransferState ROP Request Buffer.
+    /// 2.2.3.2.3.1.1 RopSynchronizationGetTransferState ROP Request Buffer
     /// </summary>
     public class RopSynchronizationGetTransferStateRequest : Block
     {

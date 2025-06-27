@@ -4,8 +4,8 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.1.5 RopGetStoreState
-    ///  A class indicates the RopGetStoreState ROP Response Buffer.
+    /// 2.2.1.5 RopGetStoreState
+    /// A class indicates the RopGetStoreState ROP Response Buffer.
     /// </summary>
     public class RopGetStoreStateResponse : Block
     {

@@ -4,8 +4,8 @@ using System.IO;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the GetPropListResponse structure.
-    ///  2.2.5.6 GetPropList
+    /// A class indicates the GetPropListResponse structure.
+    /// 2.2.5.6 GetPropList
     /// </summary>
     public class GetPropListResponse : BaseStructure
     {

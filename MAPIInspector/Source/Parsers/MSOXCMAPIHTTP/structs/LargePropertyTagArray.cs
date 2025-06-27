@@ -5,9 +5,9 @@ using System.IO;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the LargePropertyTagArray structure.
-    ///  2.2.1 Common Data Types
-    ///  2.2.1.8 LargePropertyTagArray Structure
+    /// A class indicates the LargePropertyTagArray structure.
+    /// 2.2.1 Common Data Types
+    /// 2.2.1.8 LargePropertyTagArray Structure
     /// </summary>
     public class LargePropertyTagArray : BaseStructure
     {

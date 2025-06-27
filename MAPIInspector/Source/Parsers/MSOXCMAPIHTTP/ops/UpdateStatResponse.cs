@@ -4,8 +4,8 @@ using System.IO;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the UpdateStatResponse structure.
-    ///  2.2.5.17 UpdateStat
+    /// A class indicates the UpdateStatResponse structure.
+    /// 2.2.5.17 UpdateStat
     /// </summary>
     public class UpdateStatResponse : BaseStructure
     {
@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
         public bool HasState;
 
         /// <summary>
-        ///  A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container. 
+        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container. 
         /// </summary>
         public STAT State;
 

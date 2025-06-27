@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the LongTermIdRange structure.
-    ///  2.2.13.12.1.1 LongTermIdRange Structure
+    /// A class indicates the LongTermIdRange structure.
+    /// 2.2.13.12.1.1 LongTermIdRange Structure
     /// </summary>
     public class LongTermIdRange : Block
     {

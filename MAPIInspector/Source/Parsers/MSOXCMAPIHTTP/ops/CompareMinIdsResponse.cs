@@ -4,9 +4,9 @@ using System.IO;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the CompareMinIdsResponse structure.
-    ///  2.2.5 Request Types for Address Book Server Endpoint 
-    ///  2.2.5.3 CompareMinIds
+    /// A class indicates the CompareMinIdsResponse structure.
+    /// 2.2.5 Request Types for Address Book Server Endpoint 
+    /// 2.2.5.3 CompareMinIds
     /// </summary>
     public class CompareMinIdsResponse : BaseStructure
     {

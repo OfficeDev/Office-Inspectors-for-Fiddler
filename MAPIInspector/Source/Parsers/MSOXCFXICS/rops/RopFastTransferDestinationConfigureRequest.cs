@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the RopFastTransferDestinationConfigure ROP Request Buffer.
-    ///  2.2.3.1.2.1.1 RopFastTransferDestinationConfigure ROP Request Buffer
+    /// A class indicates the RopFastTransferDestinationConfigure ROP Request Buffer.
+    /// 2.2.3.1.2.1.1 RopFastTransferDestinationConfigure ROP Request Buffer
     /// </summary>
     public class RopFastTransferDestinationConfigureRequest : Block
     {

@@ -4,8 +4,8 @@ using System.IO;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the ResortRestrictionRequest structure.
-    ///  2.2.5.15 ResortRestriction
+    /// A class indicates the ResortRestrictionRequest structure.
+    /// 2.2.5.15 ResortRestriction
     /// </summary>
     public class ResortRestrictionRequest : BaseStructure
     {

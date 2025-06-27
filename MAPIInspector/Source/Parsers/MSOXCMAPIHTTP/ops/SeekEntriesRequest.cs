@@ -4,8 +4,8 @@ using System.IO;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the SeekEntriesRequest structure.
-    ///  2.2.5.16 SeekEntries
+    /// A class indicates the SeekEntriesRequest structure.
+    /// 2.2.5.16 SeekEntries
     /// </summary>
     public class SeekEntriesRequest : BaseStructure
     {

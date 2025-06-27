@@ -6,8 +6,8 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the Connect request type response body.
-    ///  2.2.4 Request Types for Mailbox Server Endpoint
-    ///  2.2.4.1 Connect
+    /// 2.2.4 Request Types for Mailbox Server Endpoint
+    /// 2.2.4.1 Connect
     /// </summary>
     public class ConnectResponseBody : BaseStructure
     {

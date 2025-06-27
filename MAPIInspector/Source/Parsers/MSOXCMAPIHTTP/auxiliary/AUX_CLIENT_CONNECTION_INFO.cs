@@ -5,7 +5,7 @@ using System.Text;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the AUX_CLIENT_CONNECTION_INFO Auxiliary Block Structure
+    /// A class indicates the AUX_CLIENT_CONNECTION_INFO Auxiliary Block Structure
     ///  Section 2.2.2.2 AUX_HEADER Structure
     ///  Section 2.2.2.2.20   AUX_CLIENT_CONNECTION_INFO Auxiliary Block Structure
     /// </summary>

@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.1.1 RopLogon
-    ///  A class indicates the RopLogon ROP Response Buffer for public folders.
+    /// 2.2.1.1 RopLogon
+    /// A class indicates the RopLogon ROP Response Buffer for public folders.
     /// </summary>
     public class RopLogonResponse_PublicFolders : Block
     {

@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the ModPropsRequest structure.
-    ///  2.2.5.11 ModProps
+    /// A class indicates the ModPropsRequest structure.
+    /// 2.2.5.11 ModProps
     /// </summary>
     public class ModPropsRequest : BaseStructure
     {

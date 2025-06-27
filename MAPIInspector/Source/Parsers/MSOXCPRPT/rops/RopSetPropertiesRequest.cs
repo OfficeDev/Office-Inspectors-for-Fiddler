@@ -5,8 +5,8 @@ using System.Windows.Forms.Design;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.2.5 RopSetProperties
-    ///  A class indicates the RopSetProperties  ROP Request Buffer.
+    /// 2.2.2.5 RopSetProperties
+    /// A class indicates the RopSetProperties  ROP Request Buffer.
     /// </summary>
     public class RopSetPropertiesRequest : Block
     {

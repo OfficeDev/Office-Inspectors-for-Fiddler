@@ -4,8 +4,8 @@ using System.IO;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the GetMatchesResponse structure.
-    ///  2.2.5.5 GetMatches
+    /// A class indicates the GetMatchesResponse structure.
+    /// 2.2.5.5 GetMatches
     /// </summary>
     public class GetMatchesResponse : BaseStructure
     {

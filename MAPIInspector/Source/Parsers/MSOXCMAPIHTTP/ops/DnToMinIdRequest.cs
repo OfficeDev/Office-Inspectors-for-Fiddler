@@ -5,9 +5,9 @@ using System.Text;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the DnToMinIdRequest structure.
-    ///  2.2.5 Request Types for Address Book Server Endpoint
-    ///  2.2.5.4 DnToMinId
+    /// A class indicates the DnToMinIdRequest structure.
+    /// 2.2.5 Request Types for Address Book Server Endpoint
+    /// 2.2.5.4 DnToMinId
     /// </summary>
     public class DnToMinIdRequest : BaseStructure
     {

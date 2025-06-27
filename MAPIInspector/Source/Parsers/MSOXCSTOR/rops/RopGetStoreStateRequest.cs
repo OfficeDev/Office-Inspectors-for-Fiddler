@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.1.5 RopGetStoreState
-    ///  A class indicates the RopGetStoreState  ROP Request Buffer.
+    /// 2.2.1.5 RopGetStoreState
+    /// A class indicates the RopGetStoreState  ROP Request Buffer.
     /// </summary>
     public class RopGetStoreStateRequest : Block
     {

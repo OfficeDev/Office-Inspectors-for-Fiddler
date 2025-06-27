@@ -768,7 +768,7 @@ namespace MAPIInspector.Parsers
 
     #region ROP Input Buffer
     /// <summary>
-    ///  A class indicates the ROP input buffer, which is sent by the client, includes an array of ROP request buffers to be processed by the server.
+    /// A class indicates the ROP input buffer, which is sent by the client, includes an array of ROP request buffers to be processed by the server.
     /// </summary>
     public class ROPInputBuffer : BaseStructure
     {
@@ -2058,7 +2058,7 @@ namespace MAPIInspector.Parsers
 
     #region ROP Input Buffer
     /// <summary>
-    ///  A class indicates the ROP output buffer, which is sent by the server, includes an array of ROP response buffers. 
+    /// A class indicates the ROP output buffer, which is sent by the server, includes an array of ROP response buffers. 
     /// </summary>
     public class ROPInputBuffer_WithoutCROPS : BaseStructure
     {
@@ -2103,7 +2103,7 @@ namespace MAPIInspector.Parsers
 
     #region ROP Output Buffer
     /// <summary>
-    ///  A class indicates the ROP output buffer, which is sent by the server, includes an array of ROP response buffers. 
+    /// A class indicates the ROP output buffer, which is sent by the server, includes an array of ROP response buffers. 
     /// </summary>
     public class ROPOutputBuffer_WithoutCROPS : BaseStructure
     {
@@ -2148,7 +2148,7 @@ namespace MAPIInspector.Parsers
 
     #region ROP Output Buffer
     /// <summary>
-    ///  A class indicates the ROP output buffer, which is sent by the server, includes an array of ROP response buffers. 
+    /// A class indicates the ROP output buffer, which is sent by the server, includes an array of ROP response buffers. 
     /// </summary>
     public class ROPOutputBuffer : BaseStructure
     {
@@ -3162,7 +3162,7 @@ namespace MAPIInspector.Parsers
 
     #region 2.2.7.1 RopSubmitMessage
     /// <summary>
-    ///  A class indicates the RopSubmitMessage ROP Request Buffer.
+    /// A class indicates the RopSubmitMessage ROP Request Buffer.
     /// </summary>
     public class RopSubmitMessageRequest : BaseStructure
     {
@@ -3201,7 +3201,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    ///  A class indicates the RopSubmitMessage ROP Response Buffer.
+    /// A class indicates the RopSubmitMessage ROP Response Buffer.
     /// </summary>
     public class RopSubmitMessageResponse : BaseStructure
     {
@@ -3237,7 +3237,7 @@ namespace MAPIInspector.Parsers
 
     #region 2.2.7.2 RopAbortSubmit
     /// <summary>
-    ///  A class indicates the RopAbortSubmit ROP Request Buffer.
+    /// A class indicates the RopAbortSubmit ROP Request Buffer.
     /// </summary>
     public class RopAbortSubmitRequest : BaseStructure
     {
@@ -3284,7 +3284,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    ///  A class indicates the RopSubmitMessage ROP Response Buffer.
+    /// A class indicates the RopSubmitMessage ROP Response Buffer.
     /// </summary>
     public class RopAbortSubmitResponse : BaseStructure
     {
@@ -3320,7 +3320,7 @@ namespace MAPIInspector.Parsers
 
     #region 2.2.7.3 RopGetAddressTypes
     /// <summary>
-    ///  A class indicates the RopGetAddressTypes ROP Request Buffer.
+    /// A class indicates the RopGetAddressTypes ROP Request Buffer.
     /// </summary>
     public class RopGetAddressTypesRequest : BaseStructure
     {
@@ -3353,7 +3353,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    ///  A class indicates the RopGetAddressTypes ROP Response Buffer.
+    /// A class indicates the RopGetAddressTypes ROP Response Buffer.
     /// </summary>
     public class RopGetAddressTypesResponse : BaseStructure
     {
@@ -3420,7 +3420,7 @@ namespace MAPIInspector.Parsers
 
     #region 2.2.7.4 RopSetSpooler
     /// <summary>
-    ///  A class indicates the RopSetSpooler ROP Request Buffer.
+    /// A class indicates the RopSetSpooler ROP Request Buffer.
     /// </summary>
     public class RopSetSpoolerRequest : BaseStructure
     {
@@ -3453,7 +3453,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    ///  A class indicates the RopSetSpooler ROP Response Buffer.
+    /// A class indicates the RopSetSpooler ROP Response Buffer.
     /// </summary>
     public class RopSetSpoolerResponse : BaseStructure
     {
@@ -3489,7 +3489,7 @@ namespace MAPIInspector.Parsers
 
     #region 2.2.7.5 RopSpoolerLockMessage
     /// <summary>
-    ///  A class indicates the RopSpoolerLockMessage ROP Request Buffer.
+    /// A class indicates the RopSpoolerLockMessage ROP Request Buffer.
     /// </summary>
     public class RopSpoolerLockMessageRequest : BaseStructure
     {
@@ -3535,7 +3535,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    ///  A class indicates the RopSpoolerLockMessage ROP Response Buffer.
+    /// A class indicates the RopSpoolerLockMessage ROP Response Buffer.
     /// </summary>
     public class RopSpoolerLockMessageResponse : BaseStructure
     {
@@ -3571,7 +3571,7 @@ namespace MAPIInspector.Parsers
 
     #region 2.2.7.6 RopTransportSend
     /// <summary>
-    ///  A class indicates the RopTransportSend ROP Request Buffer.
+    /// A class indicates the RopTransportSend ROP Request Buffer.
     /// </summary>
     public class RopTransportSendRequest : BaseStructure
     {
@@ -3604,7 +3604,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    ///  A class indicates the RopTransportSend ROP Response Buffer.
+    /// A class indicates the RopTransportSend ROP Response Buffer.
     /// </summary>
     public class RopTransportSendResponse : BaseStructure
     {
@@ -3671,7 +3671,7 @@ namespace MAPIInspector.Parsers
 
     #region 2.2.7.7 RopTransportNewMail
     /// <summary>
-    ///  A class indicates the RopTransportNewMail ROP Request Buffer.
+    /// A class indicates the RopTransportNewMail ROP Request Buffer.
     /// </summary>
     public class RopTransportNewMailRequest : BaseStructure
     {
@@ -3731,7 +3731,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    ///  A class indicates the RopTransportNewMail ROP Response Buffer.
+    /// A class indicates the RopTransportNewMail ROP Response Buffer.
     /// </summary>
     public class RopTransportNewMailResponse : BaseStructure
     {
@@ -3767,7 +3767,7 @@ namespace MAPIInspector.Parsers
 
     #region 2.2.7.8 RopGetTransportFolder
     /// <summary>
-    ///  A class indicates the RopGetTransportFolder ROP Request Buffer.
+    /// A class indicates the RopGetTransportFolder ROP Request Buffer.
     /// </summary>
     public class RopGetTransportFolderRequest : BaseStructure
     {
@@ -3800,7 +3800,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    ///  A class indicates the RopGetTransportFolder ROP Response Buffer.
+    /// A class indicates the RopGetTransportFolder ROP Response Buffer.
     /// </summary>
     public class RopGetTransportFolderResponse : BaseStructure
     {
@@ -3847,7 +3847,7 @@ namespace MAPIInspector.Parsers
 
     #region 2.2.7.9 RopOptionsData
     /// <summary>
-    ///  A class indicates the RopOptionsData ROP Request Buffer.
+    /// A class indicates the RopOptionsData ROP Request Buffer.
     /// </summary>
     public class RopOptionsDataRequest : BaseStructure
     {
@@ -3893,7 +3893,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    ///  A class indicates the RopOptionsData ROP Response Buffer.
+    /// A class indicates the RopOptionsData ROP Response Buffer.
     /// </summary>
     public class RopOptionsDataResponse : BaseStructure
     {
@@ -3975,7 +3975,7 @@ namespace MAPIInspector.Parsers
     #region 2.2.15.1 RopBufferTooSmall
 
     /// <summary>
-    ///  A class indicates the RopBufferTooSmall ROP Response Buffer.
+    /// A class indicates the RopBufferTooSmall ROP Response Buffer.
     /// </summary>
     public class RopBufferTooSmallResponse : BaseStructure
     {
@@ -4092,7 +4092,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    ///  A class indicates the BackoffRop structure which is defined in section 2.2.15.2.1.1.
+    /// A class indicates the BackoffRop structure which is defined in section 2.2.15.2.1.1.
     /// </summary>
     public class BackoffRop : BaseStructure
     {
@@ -4122,7 +4122,7 @@ namespace MAPIInspector.Parsers
     #region 2.2.15.3 RopRelease
 
     /// <summary>
-    ///  A class indicates the RopRelease ROP Request Buffer.
+    /// A class indicates the RopRelease ROP Request Buffer.
     /// </summary>
     public class RopReleaseRequest : Block
     {

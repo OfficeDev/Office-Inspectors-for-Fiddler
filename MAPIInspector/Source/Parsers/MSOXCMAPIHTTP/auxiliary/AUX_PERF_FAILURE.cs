@@ -3,7 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the AUX_PERF_FAILURE Auxiliary Block Structure
+    /// A class indicates the AUX_PERF_FAILURE Auxiliary Block Structure
     ///  Section 2.2.2.2 AUX_HEADER Structure
     ///  Section 2.2.2.2.13   AUX_PERF_FAILURE Auxiliary Block Structure
     /// </summary>

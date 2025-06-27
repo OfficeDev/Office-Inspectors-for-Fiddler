@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.2 RopModifyPermissions ROP
-    ///  A class indicates the RopModifyPermissions ROP Response Buffer.
+    /// 2.2.2 RopModifyPermissions ROP
+    /// A class indicates the RopModifyPermissions ROP Response Buffer.
     /// </summary>
     public class RopModifyPermissionsResponse : Block
     {

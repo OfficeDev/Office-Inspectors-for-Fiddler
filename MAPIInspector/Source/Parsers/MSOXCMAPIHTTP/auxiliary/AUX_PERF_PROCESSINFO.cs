@@ -5,7 +5,7 @@ using System.Text;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the AUX_PERF_PROCESSINFO Auxiliary Block Structure
+    /// A class indicates the AUX_PERF_PROCESSINFO Auxiliary Block Structure
     ///  Section 2.2.2.2 AUX_HEADER Structure
     ///  Section 2.2.2.2.6   AUX_PERF_PROCESSINFO Auxiliary Block Structure
     /// </summary>

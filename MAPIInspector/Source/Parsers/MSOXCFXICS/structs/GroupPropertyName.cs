@@ -19,7 +19,7 @@ namespace MAPIInspector.Parsers
         public BlockT<uint> Kind;
 
         /// <summary>
-        ///  A value that identifies the named property within its property set. 
+        /// A value that identifies the named property within its property set. 
         /// </summary>
         public BlockT<uint> Lid;
 

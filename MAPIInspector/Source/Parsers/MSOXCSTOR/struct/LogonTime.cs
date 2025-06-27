@@ -3,7 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the RopLogon time.
+    /// A class indicates the RopLogon time.
     /// </summary>
     public class LogonTime : Block
     {

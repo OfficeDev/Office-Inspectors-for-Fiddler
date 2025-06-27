@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.1.7 RopPublicFolderIsGhosted
-    ///  A class indicates the RopPublicFolderIsGhosted ROP Request Buffer.
+    /// 2.2.1.7 RopPublicFolderIsGhosted
+    /// A class indicates the RopPublicFolderIsGhosted ROP Request Buffer.
     /// </summary>
     public class RopPublicFolderIsGhostedRequest : Block
     {

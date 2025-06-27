@@ -5,8 +5,8 @@ using System.Windows.Forms.Design;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.2.13 RopGetNamesFromPropertyIds
-    ///  A class indicates the RopGetNamesFromPropertyIds ROP Request Buffer.
+    /// 2.2.2.13 RopGetNamesFromPropertyIds
+    /// A class indicates the RopGetNamesFromPropertyIds ROP Request Buffer.
     /// </summary>
     public class RopGetNamesFromPropertyIdsRequest : Block
     {

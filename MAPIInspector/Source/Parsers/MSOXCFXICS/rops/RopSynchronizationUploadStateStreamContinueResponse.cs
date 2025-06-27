@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the RopSynchronizationUploadStateStreamContinue ROP Response Buffer.
-    ///  2.2.3.2.2.2.2 RopSynchronizationUploadStateStreamContinue ROP Response Buffer
+    /// A class indicates the RopSynchronizationUploadStateStreamContinue ROP Response Buffer.
+    /// 2.2.3.2.2.2.2 RopSynchronizationUploadStateStreamContinue ROP Response Buffer
     /// </summary>
     public class RopSynchronizationUploadStateStreamContinueResponse : Block
     {

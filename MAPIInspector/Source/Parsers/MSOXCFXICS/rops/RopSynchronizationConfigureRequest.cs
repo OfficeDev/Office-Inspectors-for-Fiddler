@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the RopSynchronizationConfigure ROP Request Buffer.
-    ///  2.2.3.2.1.1.1 RopSynchronizationConfigure ROP Request Buffer
+    /// A class indicates the RopSynchronizationConfigure ROP Request Buffer.
+    /// 2.2.3.2.1.1.1 RopSynchronizationConfigure ROP Request Buffer
     /// </summary>
     public class RopSynchronizationConfigureRequest : Block
     {

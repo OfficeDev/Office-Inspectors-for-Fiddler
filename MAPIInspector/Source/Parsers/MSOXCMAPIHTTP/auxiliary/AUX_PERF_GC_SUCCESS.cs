@@ -3,7 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the AUX_PERF_GC_SUCCESS Auxiliary Block Structure
+    /// A class indicates the AUX_PERF_GC_SUCCESS Auxiliary Block Structure
     ///  Section 2.2.2.2 AUX_HEADER Structure
     ///  Section 2.2.2.2.11   AUX_PERF_GC_SUCCESS Auxiliary Block Structure
     /// </summary>

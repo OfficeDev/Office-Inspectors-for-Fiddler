@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.18 RopCollapseRow ROP
-    ///  A class indicates the RopCollapseRow ROP Response Buffer.
+    /// A class indicates the RopCollapseRow ROP Response Buffer.
     /// </summary>
     public class RopCollapseRowResponse : BaseStructure
     {

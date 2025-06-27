@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the UpdateStatRequest structure.
-    ///  2.2.5.17 UpdateStat
+    /// A class indicates the UpdateStatRequest structure.
+    /// 2.2.5.17 UpdateStat
     /// </summary>
     public class UpdateStatRequest : BaseStructure
     {

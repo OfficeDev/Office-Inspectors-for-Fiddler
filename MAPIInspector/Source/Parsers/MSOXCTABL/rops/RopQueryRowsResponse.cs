@@ -5,7 +5,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.5 RopQueryRows ROP
-    ///  A class indicates the RopQueryRows ROP Response Buffer.
+    /// A class indicates the RopQueryRows ROP Response Buffer.
     /// </summary>
     public class RopQueryRowsResponse : BaseStructure
     {

@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.1.1 RopLogon
-    ///  A class indicates the RopLogon ROP Response Buffer for private mailbox.
+    /// 2.2.1.1 RopLogon
+    /// A class indicates the RopLogon ROP Response Buffer for private mailbox.
     /// </summary>
     public class RopLogonResponse_PrivateMailboxes : Block
     {

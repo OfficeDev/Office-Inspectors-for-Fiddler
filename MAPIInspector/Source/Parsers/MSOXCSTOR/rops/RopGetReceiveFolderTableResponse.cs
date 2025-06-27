@@ -4,8 +4,8 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.1.4 RopGetReceiveFolderTable
-    ///  A class indicates the RopGetReceiveFolderTable ROP Response Buffer.
+    /// 2.2.1.4 RopGetReceiveFolderTable
+    /// A class indicates the RopGetReceiveFolderTable ROP Response Buffer.
     /// </summary>
     public class RopGetReceiveFolderTableResponse : Block
     {

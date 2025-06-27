@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.1.8 RopLongTermIdFromId
-    ///  A class indicates the RopLongTermIdFromId ROP Response Buffer.
+    /// 2.2.1.8 RopLongTermIdFromId
+    /// A class indicates the RopLongTermIdFromId ROP Response Buffer.
     /// </summary>
     public class RopLongTermIdFromIdResponse : Block
     {

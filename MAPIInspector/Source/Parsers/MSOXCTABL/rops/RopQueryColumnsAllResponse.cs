@@ -6,7 +6,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.13 RopQueryColumnsAll ROP
-    ///  A class indicates the RopQueryColumnsAll ROP Response Buffer.
+    /// A class indicates the RopQueryColumnsAll ROP Response Buffer.
     /// </summary>
     public class RopQueryColumnsAllResponse : BaseStructure
     {

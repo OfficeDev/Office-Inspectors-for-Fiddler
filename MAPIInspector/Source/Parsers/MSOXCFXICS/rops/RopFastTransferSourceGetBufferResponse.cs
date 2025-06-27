@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the RopFastTransferSourceGetBuffer ROP Response Buffer.
-    ///  2.2.3.1.1.5.2 RopFastTransferSourceGetBuffer ROP Response Buffer
+    /// A class indicates the RopFastTransferSourceGetBuffer ROP Response Buffer.
+    /// 2.2.3.1.1.5.2 RopFastTransferSourceGetBuffer ROP Response Buffer
     /// </summary>
     public class RopFastTransferSourceGetBufferResponse : Block
     {

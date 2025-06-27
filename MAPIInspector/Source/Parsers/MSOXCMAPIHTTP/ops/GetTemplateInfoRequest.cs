@@ -4,8 +4,8 @@ using System.Text;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the GetTemplateInfoRequest structure.
-    ///  2.2.5.9 GetTemplateInfo
+    /// A class indicates the GetTemplateInfoRequest structure.
+    /// 2.2.5.9 GetTemplateInfo
     /// </summary>
     public class GetTemplateInfoRequest : BaseStructure
     {

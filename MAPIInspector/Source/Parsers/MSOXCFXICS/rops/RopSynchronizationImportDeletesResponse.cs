@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the RopSynchronizationImportDeletes ROP Response Buffer.
-    ///  2.2.3.2.4.5.2 RopSynchronizationImportDeletes ROP Response Buffer
+    /// A class indicates the RopSynchronizationImportDeletes ROP Response Buffer.
+    /// 2.2.3.2.4.5.2 RopSynchronizationImportDeletes ROP Response Buffer
     /// </summary>
     public class RopSynchronizationImportDeletesResponse : Block
     {

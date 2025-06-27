@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.19 RopGetCollapseState ROP
-    ///  A class indicates the RopGetCollapseState ROP Response Buffer.
+    /// A class indicates the RopGetCollapseState ROP Response Buffer.
     /// </summary>
     public class RopGetCollapseStateResponse : BaseStructure
     {

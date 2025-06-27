@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the RopSynchronizationImportHierarchyChange ROP Request Buffer.
-    ///  2.2.3.2.4.3.1 RopSynchronizationImportHierarchyChange ROP Request Buffer
+    /// A class indicates the RopSynchronizationImportHierarchyChange ROP Request Buffer.
+    /// 2.2.3.2.4.3.1 RopSynchronizationImportHierarchyChange ROP Request Buffer
     /// </summary>
     public class RopSynchronizationImportHierarchyChangeRequest : Block
     {

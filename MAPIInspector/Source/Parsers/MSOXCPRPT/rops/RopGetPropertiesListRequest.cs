@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.2.4 RopGetPropertiesList
-    ///  A class indicates the RopGetPropertiesList ROP Request Buffer.
+    /// 2.2.2.4 RopGetPropertiesList
+    /// A class indicates the RopGetPropertiesList ROP Request Buffer.
     /// </summary>
     public class RopGetPropertiesListRequest : Block
     {

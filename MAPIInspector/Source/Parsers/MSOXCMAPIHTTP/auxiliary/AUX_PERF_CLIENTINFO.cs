@@ -4,7 +4,7 @@ using System.Text;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the AUX_PERF_CLIENTINFO Auxiliary Block Structure
+    /// A class indicates the AUX_PERF_CLIENTINFO Auxiliary Block Structure
     ///  Section 2.2.2.2 AUX_HEADER Structure
     ///  Section 2.2.2.2.4   AUX_PERF_CLIENTINFO Auxiliary Block Structure
     /// </summary>

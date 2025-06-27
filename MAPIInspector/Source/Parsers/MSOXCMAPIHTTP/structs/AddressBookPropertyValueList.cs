@@ -4,9 +4,9 @@ using System.IO;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the AddressBookPropertyValueList structure.
-    ///  2.2.1 Common Data Types
-    ///  2.2.1.3 AddressBookPropertyValueList Structure
+    /// A class indicates the AddressBookPropertyValueList structure.
+    /// 2.2.1 Common Data Types
+    /// 2.2.1.3 AddressBookPropertyValueList Structure
     /// </summary>
     public class AddressBookPropertyValueList : BaseStructure
     {

@@ -4,9 +4,9 @@ using System.Text;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the Connect request type.
-    ///  2.2.4 Request Types for Mailbox Server Endpoint
-    ///  2.2.4.1 Connect
+    /// A class indicates the Connect request type.
+    /// 2.2.4 Request Types for Mailbox Server Endpoint
+    /// 2.2.4.1 Connect
     /// </summary>
     public class ConnectRequestBody : BaseStructure
     {

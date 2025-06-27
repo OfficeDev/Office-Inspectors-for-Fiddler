@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.12 RopCreateBookmark ROP
-    ///  A class indicates the RopCreateBookmark ROP Response Buffer.
+    /// A class indicates the RopCreateBookmark ROP Response Buffer.
     /// </summary>
     public class RopCreateBookmarkResponse : BaseStructure
     {

@@ -5,8 +5,8 @@ using System.IO;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the GetMatchesRequest structure.
-    ///  2.2.5.5 GetMatches
+    /// A class indicates the GetMatchesRequest structure.
+    /// 2.2.5.5 GetMatches
     /// </summary>
     public class GetMatchesRequest : BaseStructure
     {

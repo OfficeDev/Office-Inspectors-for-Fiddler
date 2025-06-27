@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.2.21 RopSeekStream
-    ///  A class indicates the RopSeekStream ROP Request Buffer.
+    /// 2.2.2.21 RopSeekStream
+    /// A class indicates the RopSeekStream ROP Request Buffer.
     /// </summary>
     public class RopSeekStreamRequest : Block
     {

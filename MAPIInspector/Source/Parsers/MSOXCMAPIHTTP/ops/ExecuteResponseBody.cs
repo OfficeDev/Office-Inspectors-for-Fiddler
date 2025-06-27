@@ -5,8 +5,8 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the Execute request type response body.
-    ///  2.2.4 Request Types for Mailbox Server Endpoint
-    ///  2.2.4.2 Execute
+    /// 2.2.4 Request Types for Mailbox Server Endpoint
+    /// 2.2.4.2 Execute
     /// </summary>
     public class ExecuteResponseBody : BaseStructure
     {

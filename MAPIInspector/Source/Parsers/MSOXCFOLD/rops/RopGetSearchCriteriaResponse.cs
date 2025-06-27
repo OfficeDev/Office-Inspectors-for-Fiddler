@@ -50,7 +50,7 @@ namespace MAPIInspector.Parsers
         public FolderID[] FolderIds;
 
         /// <summary>
-        ///  A flags structure that contains flags that control the search for a search folder. 
+        /// A flags structure that contains flags that control the search for a search folder. 
         /// </summary>
         public BlockT<SearchResponseFlags> SearchFlags;
 

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the RopFastTransferSourceCopyTo ROP Request Buffer.
-    ///  2.2.3.1.1.1.1 RopFastTransferSourceCopyTo ROP Request Buffer
+    /// A class indicates the RopFastTransferSourceCopyTo ROP Request Buffer.
+    /// 2.2.3.1.1.1.1 RopFastTransferSourceCopyTo ROP Request Buffer
     /// </summary>
     public class RopFastTransferSourceCopyToRequest : Block
     {
@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
         public BlockT<CopyFlags_CopyTo> CopyFlags;
 
         /// <summary>
-        ///  A flags structure that contains flags that control the behavior of the operation. 
+        /// A flags structure that contains flags that control the behavior of the operation. 
         /// </summary>
         public BlockT<SendOptions> SendOptions;
 

@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the RopTellVersion ROP Request Buffer.
-    ///  2.2.3.1.1.6.1 RopTellVersion ROP Request Buffer
+    /// A class indicates the RopTellVersion ROP Request Buffer.
+    /// 2.2.3.1.1.6.1 RopTellVersion ROP Request Buffer
     /// </summary>
     public class RopTellVersionRequest : Block
     {

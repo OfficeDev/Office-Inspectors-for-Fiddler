@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the MessageReadState structure.
-    ///  2.2.13.3.1.1 MessageReadState Structure
+    /// A class indicates the MessageReadState structure.
+    /// 2.2.13.3.1.1 MessageReadState Structure
     /// </summary>
     public class MessageReadState : Block
     {

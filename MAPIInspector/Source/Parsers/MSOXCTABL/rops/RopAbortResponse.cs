@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.6 RopAbort ROP
-    ///  A class indicates the RopAbort ROP Response Buffer.
+    /// A class indicates the RopAbort ROP Response Buffer.
     /// </summary>
     public class RopAbortResponse : BaseStructure
     {

@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.1.11 RopGetPerUserGuid
-    ///  A class indicates the RopGetPerUserGuid ROP Request Buffer.
+    /// 2.2.1.11 RopGetPerUserGuid
+    /// A class indicates the RopGetPerUserGuid ROP Request Buffer.
     /// </summary>
     public class RopGetPerUserGuidRequest : Block
     {

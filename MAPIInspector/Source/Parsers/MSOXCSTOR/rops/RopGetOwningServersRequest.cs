@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.1.6 RopGetOwningServers
-    ///  A class indicates the RopGetOwningServers ROP Request Buffer.
+    /// 2.2.1.6 RopGetOwningServers
+    /// A class indicates the RopGetOwningServers ROP Request Buffer.
     /// </summary>
     public class RopGetOwningServersRequest : Block
     {

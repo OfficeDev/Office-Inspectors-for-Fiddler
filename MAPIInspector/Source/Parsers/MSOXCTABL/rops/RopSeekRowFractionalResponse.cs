@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.11 RopSeekRowFractional ROP
-    ///  A class indicates the RopSeekRowFractional ROP Response Buffer.
+    /// A class indicates the RopSeekRowFractional ROP Response Buffer.
     /// </summary>
     public class RopSeekRowFractionalResponse : BaseStructure
     {

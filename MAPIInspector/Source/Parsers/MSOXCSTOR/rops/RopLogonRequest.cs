@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.1.1 RopLogon
-    ///  A class indicates the RopLogon ROP Request Buffer.
+    /// 2.2.1.1 RopLogon
+    /// A class indicates the RopLogon ROP Request Buffer.
     /// </summary>
     public class RopLogonRequest : Block
     {

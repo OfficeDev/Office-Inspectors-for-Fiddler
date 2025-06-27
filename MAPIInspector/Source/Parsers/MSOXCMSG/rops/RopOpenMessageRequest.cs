@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.3.1 RopOpenMessage
-    ///  A class indicates the RopOpenMessage ROP Request Buffer.
+    /// A class indicates the RopOpenMessage ROP Request Buffer.
     /// </summary>
     public class RopOpenMessageRequest : Block
     {

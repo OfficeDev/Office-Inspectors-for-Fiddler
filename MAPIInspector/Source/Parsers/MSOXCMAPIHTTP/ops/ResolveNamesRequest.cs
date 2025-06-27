@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the ResolveNamesRequest structure.
-    ///  2.2.5.14 ResolveNames
+    /// A class indicates the ResolveNamesRequest structure.
+    /// 2.2.5.14 ResolveNames
     /// </summary>
     public class ResolveNamesRequest : BaseStructure
     {

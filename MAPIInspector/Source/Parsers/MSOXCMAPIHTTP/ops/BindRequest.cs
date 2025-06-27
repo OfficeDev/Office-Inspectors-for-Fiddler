@@ -3,9 +3,9 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the Bind request type request body.
-    ///  2.2.5 Request Types for Address Book Server Endpoint
-    ///  2.2.5.1 Bind
+    /// A class indicates the Bind request type request body.
+    /// 2.2.5 Request Types for Address Book Server Endpoint
+    /// 2.2.5.1 Bind
     /// </summary>
     public class BindRequest : BaseStructure
     {
@@ -15,7 +15,7 @@ namespace MAPIInspector.Parsers
         public uint Flags;
 
         /// <summary>
-        ///  A Boolean value that specifies whether the State field is present.
+        /// A Boolean value that specifies whether the State field is present.
         /// </summary>
         public byte HasState;
 

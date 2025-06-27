@@ -3,7 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A flags structure that contains flags that control options for moving or copying properties.
+    /// A flags structure that contains flags that control options for moving or copying properties.
     /// </summary>
     [Flags]
     public enum CopyFlags : byte

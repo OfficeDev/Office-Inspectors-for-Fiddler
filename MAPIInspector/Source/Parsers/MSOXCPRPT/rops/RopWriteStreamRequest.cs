@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.2.16 RopWriteStream
-    ///  A class indicates the RopWriteStream ROP Request Buffer.
+    /// 2.2.2.16 RopWriteStream
+    /// A class indicates the RopWriteStream ROP Request Buffer.
     /// </summary>
     public class RopWriteStreamRequest : Block
     {

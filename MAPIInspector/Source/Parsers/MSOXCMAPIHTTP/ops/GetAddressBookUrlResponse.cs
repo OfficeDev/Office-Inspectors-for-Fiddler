@@ -5,8 +5,8 @@ using System.Text;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the GetAddressBookUrlResponse structure.
-    ///  2.2.5.19 GetAddressBookUrl
+    /// A class indicates the GetAddressBookUrlResponse structure.
+    /// 2.2.5.19 GetAddressBookUrl
     /// </summary>
     public class GetAddressBookUrlResponse : BaseStructure
     {

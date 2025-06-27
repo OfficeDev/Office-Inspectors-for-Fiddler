@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.1.10 RopGetPerUserLongTermIds
-    ///  A class indicates the RopGetPerUserLongTermIds ROP Response Buffer.
+    /// 2.2.1.10 RopGetPerUserLongTermIds
+    /// A class indicates the RopGetPerUserLongTermIds ROP Response Buffer.
     /// </summary>
     public class RopGetPerUserLongTermIdsResponse : Block
     {

@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.2.20 RopSetStreamSize
-    ///  A class indicates the RopSetStreamSize ROP Response Buffer.
+    /// 2.2.2.20 RopSetStreamSize
+    /// A class indicates the RopSetStreamSize ROP Response Buffer.
     /// </summary>
     public class RopSetStreamSizeResponse : Block
     {

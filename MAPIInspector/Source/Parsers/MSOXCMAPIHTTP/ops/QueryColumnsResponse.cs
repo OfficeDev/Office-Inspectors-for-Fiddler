@@ -4,8 +4,8 @@ using System.IO;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the QueryColumnsResponse structure.
-    ///  2.2.5.13 QueryColumns
+    /// A class indicates the QueryColumnsResponse structure.
+    /// 2.2.5.13 QueryColumns
     /// </summary>
     public class QueryColumnsResponse : BaseStructure
     {

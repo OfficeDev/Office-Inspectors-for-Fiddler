@@ -3,7 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.12   Restrictions
+    /// 2.12   Restrictions
     /// </summary>
     public class RestrictionType : Block
     {

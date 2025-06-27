@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.1.2 AddressList Structure
+    /// 2.1.2 AddressList Structure
     /// </summary>
     public class AddressList : Block
     {

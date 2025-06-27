@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.2.25 RopUnlockRegionStream
-    ///  A class indicates the RopUnlockRegionStream ROP Request Buffer.
+    /// 2.2.2.25 RopUnlockRegionStream
+    /// A class indicates the RopUnlockRegionStream ROP Request Buffer.
     /// </summary>
     public class RopUnlockRegionStreamRequest : Block
     {

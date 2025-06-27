@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.9 RopSeekRow ROP
-    ///  A class indicates the RopSeekRow ROP Response Buffer.
+    /// A class indicates the RopSeekRow ROP Response Buffer.
     /// </summary>
     public class RopSeekRowResponse : Block
     {

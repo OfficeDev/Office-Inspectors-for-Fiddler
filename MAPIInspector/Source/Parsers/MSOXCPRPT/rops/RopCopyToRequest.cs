@@ -5,8 +5,8 @@ using System.Windows.Forms.Design;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.2.11 RopCopyTo
-    ///  A class indicates the RopCopyTo ROP Request Buffer.
+    /// 2.2.2.11 RopCopyTo
+    /// A class indicates the RopCopyTo ROP Request Buffer.
     /// </summary>
     public class RopCopyToRequest : Block
     {

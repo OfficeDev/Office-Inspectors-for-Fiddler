@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.7 RopGetStatus ROP
-    ///  A class indicates the RopGetStatus ROP Response Buffer.
+    /// A class indicates the RopGetStatus ROP Response Buffer.
     /// </summary>
     public class RopGetStatusResponse : BaseStructure
     {

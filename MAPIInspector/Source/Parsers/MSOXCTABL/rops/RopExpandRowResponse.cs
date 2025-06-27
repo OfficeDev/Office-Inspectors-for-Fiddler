@@ -5,7 +5,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.17 RopExpandRow ROP
-    ///  A class indicates the RopExpandRow ROP Response Buffer.
+    /// A class indicates the RopExpandRow ROP Response Buffer.
     /// </summary>
     public class RopExpandRowResponse : BaseStructure
     {

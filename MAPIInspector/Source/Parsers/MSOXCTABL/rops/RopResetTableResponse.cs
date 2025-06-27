@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.16 RopResetTable ROP
-    ///  A class indicates the RopResetTable ROP Response Buffer.
+    /// A class indicates the RopResetTable ROP Response Buffer.
     /// </summary>
     public class RopResetTableResponse : BaseStructure
     {

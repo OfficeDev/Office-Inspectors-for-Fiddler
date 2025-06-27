@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the GetSpecialTableRequest structure.
-    ///  2.2.5.8 GetSpecialTable
+    /// A class indicates the GetSpecialTableRequest structure.
+    /// 2.2.5.8 GetSpecialTable
     /// </summary>
     public class GetSpecialTableRequest : BaseStructure
     {

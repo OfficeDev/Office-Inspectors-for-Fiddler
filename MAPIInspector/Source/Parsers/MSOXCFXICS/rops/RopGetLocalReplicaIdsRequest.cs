@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  A class indicates the RopGetLocalReplicaIds ROP Request Buffer.
-    ///  2.2.13.13.1 RopGetLocalReplicaIds ROP Request Buffer
+    /// A class indicates the RopGetLocalReplicaIds ROP Request Buffer.
+    /// 2.2.13.13.1 RopGetLocalReplicaIds ROP Request Buffer
     /// </summary>
     public class RopGetLocalReplicaIdsRequest : Block
     {

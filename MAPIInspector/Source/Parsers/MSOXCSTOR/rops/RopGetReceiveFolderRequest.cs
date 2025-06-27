@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.1.2 RopGetReceiveFolder
-    ///  A class indicates the RopGetReceiveFolder ROP Request Buffer.
+    /// 2.2.1.2 RopGetReceiveFolder
+    /// A class indicates the RopGetReceiveFolder ROP Request Buffer.
     /// </summary>
     public class RopGetReceiveFolderRequest : Block
     {

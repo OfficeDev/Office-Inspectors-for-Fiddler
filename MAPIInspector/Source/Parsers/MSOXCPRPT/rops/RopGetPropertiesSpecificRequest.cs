@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  2.2.2.2 RopGetPropertiesSpecific
-    ///  A class indicates the RopGetPropertiesSpecific ROP Request Buffer.
+    /// 2.2.2.2 RopGetPropertiesSpecific
+    /// A class indicates the RopGetPropertiesSpecific ROP Request Buffer.
     /// </summary>
     public class RopGetPropertiesSpecificRequest : Block
     {

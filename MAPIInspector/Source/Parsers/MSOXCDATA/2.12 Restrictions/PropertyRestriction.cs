@@ -23,7 +23,7 @@ namespace MAPIInspector.Parsers
         public PropertyTag PropTag;
 
         /// <summary>
-        ///  A TaggedValue structure, as specified in section 2.11.4.
+        /// A TaggedValue structure, as specified in section 2.11.4.
         /// </summary>
         public TaggedPropertyValue TaggedValue;
 
