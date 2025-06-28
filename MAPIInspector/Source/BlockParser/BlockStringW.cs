@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace BlockParser
 {
@@ -15,13 +16,14 @@ namespace BlockParser
             var oldOffset = parser.Offset;
             var bytes = parser.ReadBytes(size);
             parser.Offset = oldOffset;
-            int length = cchChar * 2;
+            // After calculating length, ensure it is even (since Unicode chars are 2 bytes)
+            int length = Math.Min(size, cchChar * 2) & ~1;
 
             if (cchChar == -1)
             {
                 length = 0;
                 while (length + 1 < size && !(bytes[length] == 0 && bytes[length + 1] == 0))
-                    length+=2;
+                    length += 2;
             }
 
             if (length >= 0)

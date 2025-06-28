@@ -87,5 +87,61 @@ namespace BlockParserTests
             Assert.AreEqual(6, parser.Offset);
             Assert.AreEqual(4, parser.RemainingBytes);
         }
+
+        [TestMethod]
+        public void TruncatedString_ParsesCorrectly()
+        {
+            var rawData = new byte[] { 0x66, 0x00, 0x6F, 0x00, 0x6F }; // "fo" + naked 0x6F
+            var parser = new BinaryParser(rawData);
+            var block = Block.ParseStringW(parser); // Make it guess
+            Assert.AreEqual("fo", block);
+            Assert.AreEqual(2, block.Length); // Excluding null terminator
+            Assert.IsFalse(block.Empty);
+            Assert.IsTrue(block.Parsed);
+            Assert.AreEqual(4, parser.Offset);
+            Assert.AreEqual(1, parser.RemainingBytes);
+        }
+
+        [TestMethod]
+        public void TruncatedStringWithCount_ParsesCorrectly()
+        {
+            var rawData = new byte[] { 0x66, 0x00, 0x6F, 0x00, 0x6F}; // "fo" + naked 0x6F
+            var parser = new BinaryParser(rawData);
+            var block = Block.ParseStringW(parser, 2); // Truncate to "fo"
+            Assert.AreEqual("fo", block);
+            Assert.AreEqual(2, block.Length); // Excluding null terminator
+            Assert.IsFalse(block.Empty);
+            Assert.IsTrue(block.Parsed);
+            Assert.AreEqual(4, parser.Offset);
+            Assert.AreEqual(1, parser.RemainingBytes);
+        }
+
+        [TestMethod]
+        public void TruncatedStringWithBadCount_ParsesCorrectly()
+        {
+            var rawData = new byte[] { 0x66, 0x00, 0x6F, 0x00, 0x6F }; // "fo" + naked 0x6F
+            var parser = new BinaryParser(rawData);
+            var block = Block.ParseStringW(parser, 4); // Suppose we got our length wrong
+            Assert.AreEqual("fo", block);
+            Assert.AreEqual(2, block.Length); // Excluding null terminator
+            Assert.IsFalse(block.Empty);
+            Assert.IsTrue(block.Parsed);
+            Assert.AreEqual(4, parser.Offset);
+            Assert.AreEqual(1, parser.RemainingBytes);
+        }
+
+        [TestMethod]
+        public void VeryTruncatedStringWithBadCount_ParsesCorrectly()
+        {
+            var rawData = new byte[] { 0x66 }; // naked 0x6g
+            var parser = new BinaryParser(rawData);
+            var block = Block.ParseStringW(parser, 4); // Suppose we got our length wrong
+            Assert.AreEqual("", block);
+            Assert.AreEqual(0, block.Length); // Excluding null terminator
+            Assert.IsTrue(block.Empty);
+            Assert.IsTrue(block.Parsed);
+            Assert.AreEqual(0, parser.Offset);
+            Assert.AreEqual(1, parser.RemainingBytes);
+        }
     }
 }

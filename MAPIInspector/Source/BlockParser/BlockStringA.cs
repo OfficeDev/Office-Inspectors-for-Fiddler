@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace BlockParser
 {
@@ -15,7 +16,7 @@ namespace BlockParser
             var oldOffset = parser.Offset;
             var bytes = parser.ReadBytes(size);
             parser.Offset = oldOffset;
-            int length = cchChar;
+            int length = Math.Min(size, cchChar);
 
             if (cchChar == -1)
             {
