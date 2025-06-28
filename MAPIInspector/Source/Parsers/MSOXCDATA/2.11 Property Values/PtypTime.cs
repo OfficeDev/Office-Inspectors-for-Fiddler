@@ -13,7 +13,6 @@ namespace MAPIInspector.Parsers
         /// 64-bit integer representing the number of 100-nanosecond intervals since January 1, 1601.[MS-DTYP]: FILETIME.
         /// </summary>
         private BlockT<ulong> Value;
-        private DateTime dateTime;
 
         /// <summary>
         /// Parse the PtypTime structure.
@@ -21,19 +20,18 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             Value = ParseT<ulong>();
-            try
-            {
-                dateTime = new DateTime(1601, 1, 1).AddMilliseconds(Value / 10000).ToLocalTime();
-            }
-            catch
-            {
-                dateTime = new DateTime();
-            }
         }
 
         protected override void ParseBlocks()
         {
-            Text = dateTime.ToString();
+            try
+            {
+                Text = new DateTime(1601, 1, 1).AddMilliseconds(Value / 10000).ToLocalTime().ToString();
+            }
+            catch
+            {
+                Text = $"{Value.Data:X}";
+            }
         }
     }
 }
