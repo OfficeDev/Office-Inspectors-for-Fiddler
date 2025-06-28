@@ -77,32 +77,25 @@ namespace MAPIInspector.Parsers
                 TransferBufferSize = ParseT<ushort>();
 
                 parser.PushCap(TransferBufferSize);
-                if (TransferStatus == Parsers.TransferStatus.Partial)
+
+                var transferBufferList = new List<Block>();
+
+                while (!parser.Empty)
                 {
-                    var transferBufferList = new List<TransferGetBufferElement>();
-
-                    while (!parser.Empty)
-                    {
-                        var element = Parse<TransferGetBufferElement>();
-                        if (!element.Parsed || element.Size == 0) break;
-                        transferBufferList.Add(element);
-                    }
-
-                    TransferBuffer = transferBufferList.ToArray();
+                    var element = Parse<TransferGetBufferElement>();
+                    if (!element.Parsed || element.Size == 0) break;
+                    transferBufferList.Add(element);
                 }
-                else
+
+                if (!parser.Empty && parser.RemainingBytes > 0)
                 {
-                    var transferBufferList = new List<TransferGetBufferElement>();
-
-                    while (!parser.Empty)
-                    {
-                        var element = Parse<TransferGetBufferElement>();
-                        if (!element.Parsed || element.Size == 0) break;
-                        transferBufferList.Add(element);
-                    }
-
-                    TransferBuffer = transferBufferList.ToArray();
+                    // If there is still data left, grab it as a BlockBytes block
+                    // TODO: Label this as "RemainingData" or similar
+                    var remainingData = ParseBytes(parser.RemainingBytes);
+                    transferBufferList.Add(remainingData);
                 }
+
+                TransferBuffer = transferBufferList.ToArray();
 
                 parser.PopCap();
             }

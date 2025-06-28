@@ -3,7 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// Contains a folderContent.
+    /// 2.2.4 FastTransfer Stream
     /// </summary>
     public class TransferGetBufferElement : Block
     {
@@ -22,6 +22,8 @@ namespace MAPIInspector.Parsers
         /// </summary>
         public BlockT<Markers> Marker;
 
+        private Block Comment;
+
         protected override void Parse()
         {
             if (MapiInspector.MAPIParser.PartialGetType != 0 &&
@@ -29,6 +31,11 @@ namespace MAPIInspector.Parsers
                 MapiInspector.MAPIParser.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
                 MapiInspector.MAPIParser.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
             {
+                Comment = Create("Partial Details");
+                Comment.AddHeader($"PartialGetType:{MapiInspector.MAPIParser.PartialGetType:X}");
+                Comment.AddHeader($"PartialGetId:{MapiInspector.MAPIParser.PartialGetId}");
+                Comment.AddHeader($"PartialGetRemainSize:{MapiInspector.MAPIParser.PartialGetRemainSize}");
+
                 var tmpMarker = TestParse<Markers>();
                 if (MarkersHelper.IsMarker(tmpMarker))
                 {
@@ -105,6 +112,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("TransferGetBufferElement");
+            AddChild(Comment);
             AddChild(MetaValue, "MetaValue");
             AddChild(PropValue, "PropValue");
             AddChildBlockT(Marker, "Marker");

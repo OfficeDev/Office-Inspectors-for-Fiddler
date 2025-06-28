@@ -13,28 +13,26 @@
         /// </summary>
         /// <param name="size">Size of the block</param>
         /// <param name="offset">Offset of the block</param>
-        /// <param name="format">Format string for the block text</param>
-        /// <param name="args">Arguments to format the block text</param>
+        /// <param name="text">The label text for the new node.</param>
         /// <returns>Newly created block with specified parameters</returns>
-        public static Block Create(long size, long offset, string format, params object[] args)
+        public static Block Create(long size, long offset, string text)
         {
             var ret = Create();
             ret.Size = size;
             ret.Offset = offset;
-            ret.SetText(format, args);
+            ret.SetText(text);
             return ret;
         }
 
         /// <summary>
         /// CreateBlock a block with formatted text, such as a header or label
         /// </summary>
-        /// <param name="format">Format string for the block text</param>
-        /// <param name="args">Arguments to format the block text</param>
+        /// <param name="text">The label text for the new node.</param>
         /// <returns>Newly created block with formatted text</returns>
-        public static Block Create(string format, params object[] args)
+        public static Block Create(string text)
         {
             var ret = Create();
-            ret.SetText(format, args);
+            ret.SetText(text);
             return ret;
         }
 
