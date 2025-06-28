@@ -89,10 +89,8 @@ namespace MAPIInspector.Parsers
 
                 if (!parser.Empty && parser.RemainingBytes > 0)
                 {
-                    // If there is still data left, grab it as a BlockBytes block
-                    // TODO: Label this as "RemainingData" or similar
-                    var remainingData = ParseBytes(parser.RemainingBytes);
-                    transferBufferList.Add(remainingData);
+                    // If there is still data left, grab it as a block
+                    transferBufferList.Add(ParseJunk("Remaining Data"));
                 }
 
                 TransferBuffer = transferBufferList.ToArray();

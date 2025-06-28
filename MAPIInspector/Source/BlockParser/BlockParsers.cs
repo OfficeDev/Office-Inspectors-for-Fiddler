@@ -170,5 +170,16 @@ namespace BlockParser
             ret.EnsureParsed();
             return ret;
         }
+
+        public Block ParseJunk(string label)
+        {
+            var junkData = ParseBytes(parser.RemainingBytes);
+            var node = Create();
+            node.SetText(label);
+            node.Offset = junkData.Offset;
+            node.Size = junkData.Size;
+            node.AddChild(junkData);
+            return node;
+        }
     }
 }

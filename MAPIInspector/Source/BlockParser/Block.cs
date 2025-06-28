@@ -117,8 +117,7 @@ namespace BlockParser
 
                 if (HasData && EnableJunk && parser.RemainingBytes > 0)
                 {
-                    var junkData = ParseBytes(parser.RemainingBytes);
-                    AddLabeledChild(junkData, string.Format("Unparsed data"));
+                    AddChild(ParseJunk("Unparsed data"));
                 }
 
                 Size = parser.Offset - Offset;

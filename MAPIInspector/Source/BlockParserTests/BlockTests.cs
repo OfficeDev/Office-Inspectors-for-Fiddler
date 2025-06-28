@@ -161,7 +161,7 @@ namespace BlockParserTests
         [TestMethod]
         public void Create_WithSizeOffsetText()
         {
-            var b = Block.Create(10, 20, "t{1}");
+            var b = Block.Create(10, 20, $"t{1}");
             Assert.AreEqual(10, b.Size);
             Assert.AreEqual(20, b.Offset);
             Assert.AreEqual("t1", b.Text);
@@ -170,7 +170,7 @@ namespace BlockParserTests
         [TestMethod]
         public void Create_WithText()
         {
-            var b = Block.Create("abc{2}");
+            var b = Block.Create($"abc{2}");
             Assert.AreEqual("abc2", b.Text);
         }
 
