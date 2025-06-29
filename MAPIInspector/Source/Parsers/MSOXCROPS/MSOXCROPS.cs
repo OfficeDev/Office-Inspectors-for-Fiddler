@@ -1429,23 +1429,23 @@ namespace MAPIInspector.Parsers
                                 }
                                 else
                                 {
-                                    MapiInspector.MAPIParser.PartialPutType = 0;
-                                    MapiInspector.MAPIParser.PartialPutRemainSize = -1;
-                                    MapiInspector.MAPIParser.PartialPutSubRemainSize = -1;
+                                    Partial.PartialPutType = 0;
+                                    Partial.PartialPutRemainSize = -1;
+                                    Partial.PartialPutSubRemainSize = -1;
                                 }
 
                                 RopFastTransferDestinationPutBufferRequest ropFastTransferDestinationPutBufferRequest = new RopFastTransferDestinationPutBufferRequest();
-                                MapiInspector.MAPIParser.IsPut = true;
+                                Partial.IsPut = true;
                                 ropFastTransferDestinationPutBufferRequest.Parse(s);
                                 ropsList.Add(ropFastTransferDestinationPutBufferRequest);
 
-                                PartialContextInformation putBufferPartialInformaiton = new PartialContextInformation(MapiInspector.MAPIParser.PartialPutType, MapiInspector.MAPIParser.PartialPutId, MapiInspector.MAPIParser.PartialPutRemainSize, MapiInspector.MAPIParser.PartialPutSubRemainSize, false, destinationParsingSession, MapiInspector.MAPIParser.InputPayLoadCompressedXOR);
+                                PartialContextInformation putBufferPartialInformaiton = new PartialContextInformation(Partial.PartialPutType, Partial.PartialPutId, Partial.PartialPutRemainSize, Partial.PartialPutSubRemainSize, false, destinationParsingSession, MapiInspector.MAPIParser.InputPayLoadCompressedXOR);
                                 SortedDictionary<int, PartialContextInformation> sessionputContextInfor = new SortedDictionary<int, PartialContextInformation>();
 
-                                if (MapiInspector.MAPIParser.HandleWithSessionPutContextInformation.ContainsKey(ropPutbufferHandle))
+                                if (Partial.HandleWithSessionPutContextInformation.ContainsKey(ropPutbufferHandle))
                                 {
-                                    sessionputContextInfor = MapiInspector.MAPIParser.HandleWithSessionPutContextInformation[ropPutbufferHandle];
-                                    MapiInspector.MAPIParser.HandleWithSessionPutContextInformation.Remove(ropPutbufferHandle);
+                                    sessionputContextInfor = Partial.HandleWithSessionPutContextInformation[ropPutbufferHandle];
+                                    Partial.HandleWithSessionPutContextInformation.Remove(ropPutbufferHandle);
                                 }
 
                                 if (sessionputContextInfor.ContainsKey(destinationParsingSessionID))
@@ -1457,8 +1457,8 @@ namespace MAPIInspector.Parsers
                                     sessionputContextInfor.Add(destinationParsingSessionID, putBufferPartialInformaiton);
                                 }
 
-                                MapiInspector.MAPIParser.HandleWithSessionPutContextInformation.Add(ropPutbufferHandle, sessionputContextInfor);
-                                MapiInspector.MAPIParser.IsPut = false;
+                                Partial.HandleWithSessionPutContextInformation.Add(ropPutbufferHandle, sessionputContextInfor);
+                                Partial.IsPut = false;
                                 break;
 
                             case RopIdType.RopFastTransferDestinationPutBufferExtended:
@@ -1479,23 +1479,23 @@ namespace MAPIInspector.Parsers
                                 }
                                 else
                                 {
-                                    MapiInspector.MAPIParser.PartialPutExtendType = 0;
-                                    MapiInspector.MAPIParser.PartialPutExtendRemainSize = -1;
-                                    MapiInspector.MAPIParser.PartialPutExtendSubRemainSize = -1;
+                                    Partial.PartialPutExtendType = 0;
+                                    Partial.PartialPutExtendRemainSize = -1;
+                                    Partial.PartialPutExtendSubRemainSize = -1;
                                 }
 
                                 RopFastTransferDestinationPutBufferExtendedRequest ropFastTransferDestinationPutBufferExtendedRequest = new RopFastTransferDestinationPutBufferExtendedRequest();
-                                MapiInspector.MAPIParser.IsPutExtend = true;
+                                Partial.IsPutExtend = true;
                                 ropFastTransferDestinationPutBufferExtendedRequest.Parse(s);
                                 ropsList.Add(ropFastTransferDestinationPutBufferExtendedRequest);
 
-                                PartialContextInformation putExtendBufferPartialInformaiton = new PartialContextInformation(MapiInspector.MAPIParser.PartialPutType, MapiInspector.MAPIParser.PartialPutId, MapiInspector.MAPIParser.PartialPutRemainSize, MapiInspector.MAPIParser.PartialPutSubRemainSize, false, aimsParsingSession, MapiInspector.MAPIParser.InputPayLoadCompressedXOR);
+                                PartialContextInformation putExtendBufferPartialInformaiton = new PartialContextInformation(Partial.PartialPutType, Partial.PartialPutId, Partial.PartialPutRemainSize, Partial.PartialPutSubRemainSize, false, aimsParsingSession, MapiInspector.MAPIParser.InputPayLoadCompressedXOR);
                                 SortedDictionary<int, PartialContextInformation> sessionputExtendContextInfor = new SortedDictionary<int, PartialContextInformation>();
 
-                                if (MapiInspector.MAPIParser.HandleWithSessionPutExtendContextInformation.ContainsKey(ropPutExtendbufferHandle))
+                                if (Partial.HandleWithSessionPutExtendContextInformation.ContainsKey(ropPutExtendbufferHandle))
                                 {
-                                    sessionputExtendContextInfor = MapiInspector.MAPIParser.HandleWithSessionPutExtendContextInformation[ropPutExtendbufferHandle];
-                                    MapiInspector.MAPIParser.HandleWithSessionPutExtendContextInformation.Remove(ropPutExtendbufferHandle);
+                                    sessionputExtendContextInfor = Partial.HandleWithSessionPutExtendContextInformation[ropPutExtendbufferHandle];
+                                    Partial.HandleWithSessionPutExtendContextInformation.Remove(ropPutExtendbufferHandle);
                                 }
 
                                 if (sessionputExtendContextInfor.ContainsKey(aimsParsingSessionID))
@@ -1507,8 +1507,8 @@ namespace MAPIInspector.Parsers
                                     sessionputExtendContextInfor.Add(aimsParsingSessionID, putExtendBufferPartialInformaiton);
                                 }
 
-                                MapiInspector.MAPIParser.HandleWithSessionPutExtendContextInformation.Add(ropPutExtendbufferHandle, sessionputExtendContextInfor);
-                                MapiInspector.MAPIParser.IsPutExtend = false;
+                                Partial.HandleWithSessionPutExtendContextInformation.Add(ropPutExtendbufferHandle, sessionputExtendContextInfor);
+                                Partial.IsPutExtend = false;
                                 break;
 
                             case RopIdType.RopSynchronizationConfigure:
@@ -2639,16 +2639,16 @@ namespace MAPIInspector.Parsers
                                 }
 
                                 RopFastTransferSourceGetBufferResponse ropFastTransferSourceGetBufferResponse = new RopFastTransferSourceGetBufferResponse();
-                                MapiInspector.MAPIParser.IsGet = true;
+                                Partial.IsGet = true;
                                 ropFastTransferSourceGetBufferResponse.Parse(s);
                                 ropsList.Add(ropFastTransferSourceGetBufferResponse);
-                                PartialContextInformation getBufferPartialInformaiton = new PartialContextInformation(MapiInspector.MAPIParser.PartialGetType, MapiInspector.MAPIParser.PartialGetId, MapiInspector.MAPIParser.PartialGetRemainSize, MapiInspector.MAPIParser.PartialGetSubRemainSize, true, getParsingSession, MapiInspector.MAPIParser.OutputPayLoadCompressedXOR);
+                                PartialContextInformation getBufferPartialInformaiton = new PartialContextInformation(Partial.PartialGetType, Partial.PartialGetId, Partial.PartialGetRemainSize, Partial.PartialGetSubRemainSize, true, getParsingSession, MapiInspector.MAPIParser.OutputPayLoadCompressedXOR);
                                 SortedDictionary<int, PartialContextInformation> sessionGetContextInfor = new SortedDictionary<int, PartialContextInformation>();
 
-                                if (MapiInspector.MAPIParser.HandleWithSessionGetContextInformation.ContainsKey(ropGetbufferHandle))
+                                if (Partial.HandleWithSessionGetContextInformation.ContainsKey(ropGetbufferHandle))
                                 {
-                                    sessionGetContextInfor = MapiInspector.MAPIParser.HandleWithSessionGetContextInformation[ropGetbufferHandle];
-                                    MapiInspector.MAPIParser.HandleWithSessionGetContextInformation.Remove(ropGetbufferHandle);
+                                    sessionGetContextInfor = Partial.HandleWithSessionGetContextInformation[ropGetbufferHandle];
+                                    Partial.HandleWithSessionGetContextInformation.Remove(ropGetbufferHandle);
                                 }
 
                                 if (sessionGetContextInfor.ContainsKey(getParsingSessionID))
@@ -2660,8 +2660,8 @@ namespace MAPIInspector.Parsers
                                     sessionGetContextInfor.Add(getParsingSessionID, getBufferPartialInformaiton);
                                 }
 
-                                MapiInspector.MAPIParser.HandleWithSessionGetContextInformation.Add(ropGetbufferHandle, sessionGetContextInfor);
-                                MapiInspector.MAPIParser.IsGet = false;
+                                Partial.HandleWithSessionGetContextInformation.Add(ropGetbufferHandle, sessionGetContextInfor);
+                                Partial.IsGet = false;
                                 break;
 
                             case RopIdType.RopTellVersion:
@@ -4471,123 +4471,6 @@ namespace MAPIInspector.Parsers
         /// Gets or sets result searched for the target context information
         /// </summary>
         public object RelatedInformation { get; set; }
-    }
-
-    /// <summary>
-    /// The MissingPartialInformationException is used to define the exception, which are caused by missing context information for partial.
-    /// </summary>
-    public class MissingPartialInformationException : Exception
-    {
-        /// <summary>
-        /// The ROP ID needs context information
-        /// </summary>
-        public RopIdType RopID;
-
-        /// <summary>
-        /// The source ROP parameters to pass
-        /// </summary>
-        public uint Parameter;
-
-        /// <summary>
-        /// Initializes a new instance of the MissingPartialInformationException class
-        /// </summary>
-        /// <param name="ropID">ROP id</param>
-        /// <param name="parameter">parameters for this missing partial information exception</param>
-        public MissingPartialInformationException(RopIdType ropID, uint parameter)
-        {
-            this.RopID = ropID;
-            this.Parameter = parameter;
-        }
-    }
-
-    /// <summary>
-    /// Information for FastertransferStream Partial
-    /// </summary>
-    public class PartialContextInformation
-    {
-        /// <summary>
-        /// Initializes a new instance of the PartialContextInformation class
-        /// </summary>
-        /// <param name="type">The property type</param>
-        /// <param name="id">The property id</param>
-        /// <param name="remainSize">The property value remain size</param>
-        /// <param name="subRemainSize">The property value sub remain size for multiple type data</param>
-        /// <param name="isGet">Boolean value indicates if this is about RopGetBuffer ROP</param>
-        /// <param name="session">The session that contains this</param>
-        /// <param name="payLoadCompresssedXOR">The payload value about this</param>
-        public PartialContextInformation(PropertyDataType type = 0, PidTagPropertyEnum id = 0, int remainSize = -1, int subRemainSize = -1, bool isGet = true, Session session = null, List<byte[]> payLoadCompresssedXOR = null)
-        {
-            this.Type = type;
-            this.ID = id;
-            this.RemainSize = remainSize;
-            this.SubRemainSize = subRemainSize;
-            this.IsGet = isGet;
-            this.PayLoadCompresssedXOR = payLoadCompresssedXOR;
-            this.Session = session;
-        }
-
-        /// <summary>
-        /// Gets or sets the property type
-        /// </summary>
-        public PropertyDataType Type
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the property ID
-        /// </summary>
-        public PidTagPropertyEnum ID
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the property value remain size
-        /// </summary>
-        public int RemainSize
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the property value sub remain size for multiple type data
-        /// </summary>
-        public int SubRemainSize
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this is about RopGetBuffer ROP
-        /// </summary>
-        public bool IsGet
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the payload value about this
-        /// </summary>
-        public List<byte[]> PayLoadCompresssedXOR
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Gets or sets the session that contains this
-        /// </summary>
-        public Session Session
-        {
-            get;
-            set;
-        }
     }
     #endregion
 }

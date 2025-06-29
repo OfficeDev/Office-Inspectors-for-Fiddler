@@ -33,21 +33,21 @@ namespace MAPIInspector.Parsers
 
             if (parser.Empty)
             {
-                MapiInspector.MAPIParser.PartialPutExtendType = PropType;
-                MapiInspector.MAPIParser.PartialPutExtendServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
-                MapiInspector.MAPIParser.PartialPutExtendProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
-                MapiInspector.MAPIParser.PartialPutExtendClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
+                Partial.PartialPutExtendType = PropType;
+                Partial.PartialPutExtendServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
+                Partial.PartialPutExtendProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
+                Partial.PartialPutExtendClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIParser.PartialPutExtendType != 0 && MapiInspector.MAPIParser.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIParser.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
-                    && MapiInspector.MAPIParser.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
+                if (Partial.PartialPutExtendType != 0 && Partial.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && Partial.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
+                    && Partial.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    ptype = CreateBlock(MapiInspector.MAPIParser.PartialPutExtendType, 0, 0);
+                    ptype = CreateBlock(Partial.PartialPutExtendType, 0, 0);
 
-                    if (MapiInspector.MAPIParser.PartialPutExtendRemainSize != -1)
+                    if (Partial.PartialPutExtendRemainSize != -1)
                     {
-                        plength = MapiInspector.MAPIParser.PartialPutExtendRemainSize;
+                        plength = Partial.PartialPutExtendRemainSize;
 
                         if (plength % 2 != 0 &&
                             (ptype == PropertyDataType.PtypString ||
@@ -57,7 +57,7 @@ namespace MAPIInspector.Parsers
                             splitpreviousOne = true;
                         }
 
-                        MapiInspector.MAPIParser.PartialPutExtendRemainSize = -1;
+                        Partial.PartialPutExtendRemainSize = -1;
                     }
                     else
                     {
@@ -65,13 +65,13 @@ namespace MAPIInspector.Parsers
                     }
 
                     // clear
-                    MapiInspector.MAPIParser.PartialPutExtendType = 0;
+                    Partial.PartialPutExtendType = 0;
 
-                    if (MapiInspector.MAPIParser.PartialPutExtendRemainSize == -1)
+                    if (Partial.PartialPutExtendRemainSize == -1)
                     {
-                        MapiInspector.MAPIParser.PartialPutExtendServerUrl = string.Empty;
-                        MapiInspector.MAPIParser.PartialPutExtendProcessName = string.Empty;
-                        MapiInspector.MAPIParser.PartialPutExtendClientInfo = string.Empty;
+                        Partial.PartialPutExtendServerUrl = string.Empty;
+                        Partial.PartialPutExtendProcessName = string.Empty;
+                        Partial.PartialPutExtendClientInfo = string.Empty;
                     }
                 }
                 else
@@ -92,10 +92,10 @@ namespace MAPIInspector.Parsers
 
                 if (parser.RemainingBytes < blockLength)
                 {
-                    MapiInspector.MAPIParser.PartialPutExtendType = typeValue;
-                    MapiInspector.MAPIParser.PartialPutExtendServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
-                    MapiInspector.MAPIParser.PartialPutExtendProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
-                    MapiInspector.MAPIParser.PartialPutExtendClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
+                    Partial.PartialPutExtendType = typeValue;
+                    Partial.PartialPutExtendServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
+                    Partial.PartialPutExtendProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
+                    Partial.PartialPutExtendClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
                 }
 
                 if (LexicalTypeHelper.IsCodePageType(typeValue))
@@ -105,7 +105,7 @@ namespace MAPIInspector.Parsers
                         case CodePageType.PtypCodePageUnicode:
                             if (parser.RemainingBytes < blockLength)
                             {
-                                MapiInspector.MAPIParser.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
+                                Partial.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
                                 plength = parser.RemainingBytes;
                                 blockLength = plength;
 
@@ -154,7 +154,7 @@ namespace MAPIInspector.Parsers
 
                             if (parser.RemainingBytes < blockLength)
                             {
-                                MapiInspector.MAPIParser.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
+                                Partial.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
                                 plength = parser.RemainingBytes;
                                 blockLength = plength;
 
@@ -198,7 +198,7 @@ namespace MAPIInspector.Parsers
                         case CodePageType.PtypCodePageWesternEuropean:
                             if (parser.RemainingBytes < blockLength)
                             {
-                                MapiInspector.MAPIParser.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
+                                Partial.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
                                 plength = parser.RemainingBytes;
                                 blockLength = plength;
                             }
@@ -209,7 +209,7 @@ namespace MAPIInspector.Parsers
                         default:
                             if (parser.RemainingBytes < blockLength)
                             {
-                                MapiInspector.MAPIParser.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
+                                Partial.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
                                 plength = parser.RemainingBytes;
                                 blockLength = plength;
                             }
@@ -226,7 +226,7 @@ namespace MAPIInspector.Parsers
                         case PropertyDataType.PtypString:
                             if (parser.RemainingBytes < blockLength)
                             {
-                                MapiInspector.MAPIParser.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
+                                Partial.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
                                 plength = parser.RemainingBytes;
                                 blockLength = plength;
 
@@ -269,7 +269,7 @@ namespace MAPIInspector.Parsers
                         case PropertyDataType.PtypString8:
                             if (parser.RemainingBytes < blockLength)
                             {
-                                MapiInspector.MAPIParser.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
+                                Partial.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
                                 plength = parser.RemainingBytes;
                                 blockLength = plength;
                             }
@@ -282,7 +282,7 @@ namespace MAPIInspector.Parsers
                         case PropertyDataType.PtypObject_Or_PtypEmbeddedTable:
                             if (parser.RemainingBytes < blockLength)
                             {
-                                MapiInspector.MAPIParser.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
+                                Partial.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
                                 plength = parser.RemainingBytes;
                                 blockLength = plength;
                             }
@@ -292,7 +292,7 @@ namespace MAPIInspector.Parsers
                         default:
                             if (parser.RemainingBytes < blockLength)
                             {
-                                MapiInspector.MAPIParser.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
+                                Partial.PartialPutExtendRemainSize = blockLength - parser.RemainingBytes;
                                 plength = parser.RemainingBytes;
                                 blockLength = plength;
                             }

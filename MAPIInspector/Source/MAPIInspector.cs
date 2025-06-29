@@ -59,11 +59,11 @@ namespace MapiInspector
             {
                 if (this is IRequestInspector2)
                 {
-                    return MAPIParser.TrafficDirection.In;
+                    return TrafficDirection.In;
                 }
                 else
                 {
-                    return MAPIParser.TrafficDirection.Out;
+                    return TrafficDirection.Out;
                 }
             }
         }
@@ -166,17 +166,17 @@ namespace MapiInspector
                     {
                         if (pos.IsAuxiliayPayload)
                         {
-                            this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(MAPIParser.AuxPayLoadCompressedXOR);
+                            this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(AuxPayLoadCompressedXOR);
                         }
                         else
                         {
                             if (request > response)
                             {
-                                this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(MAPIParser.InputPayLoadCompressedXOR[pos.BufferIndex]);
+                                this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(InputPayLoadCompressedXOR[pos.BufferIndex]);
                             }
                             else
                             {
-                                this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(MAPIParser.OutputPayLoadCompressedXOR[pos.BufferIndex]);
+                                this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(OutputPayLoadCompressedXOR[pos.BufferIndex]);
                             }
                         }
 
@@ -237,15 +237,15 @@ namespace MapiInspector
                 this.session = oS;
             }
 
-            if (null == MAPIParser.BaseHeaders)
+            if (null == BaseHeaders)
             {
                 if (this is IRequestInspector2)
                 {
-                    MAPIParser.BaseHeaders = this.session.oRequest.headers;
+                    BaseHeaders = this.session.oRequest.headers;
                 }
                 else
                 {
-                    MAPIParser.BaseHeaders = this.session.oResponse.headers;
+                    BaseHeaders = this.session.oResponse.headers;
                 }
             }
 
@@ -330,9 +330,9 @@ namespace MapiInspector
         /// <param name="e">A EventArgs that contains the event data.</param>
         public void AfterCallDoImport(object sender, EventArgs e)
         {
-            MAPIParser.ResetHandleInformation();
-            MAPIParser.ResetPartialContextInformation();
-            MAPIParser.ResetPartialParameters();
+            ResetHandleInformation();
+            Partial.ResetPartialContextInformation();
+            Partial.ResetPartialParameters();
         }
 
         /// <summary>
@@ -343,10 +343,10 @@ namespace MapiInspector
             this.Clear();
             byte[] bytesForHexView;
             object parserResult;
-            MAPIParser.IsLooperCall = false;
-            MAPIParser.TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
-            MAPIParser.ContextInformationCollection = new List<ContextInformation>();
-            MAPIParser.ResetPartialParameters();
+            IsLooperCall = false;
+            TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
+            ContextInformationCollection = new List<ContextInformation>();
+            Partial.ResetPartialParameters();
 
             if (this.IsMapihttp)
             {
@@ -360,29 +360,29 @@ namespace MapiInspector
                     return p1.id.CompareTo(p2.id);
                 });
                 allSessionsList.Insert(0, session0);
-                MAPIParser.AllSessions = allSessionsList.ToArray();
-                int allSessionLength = MAPIParser.AllSessions.Length;
+                AllSessions = allSessionsList.ToArray();
+                int allSessionLength = AllSessions.Length;
 
-                if (allSessionLength > 0 && MAPIParser.AllSessions[allSessionLength - 1]["Number"] == null)
+                if (allSessionLength > 0 && AllSessions[allSessionLength - 1]["Number"] == null)
                 {
-                    MAPIParser.SetIndexForContextRelatedMethods();
+                    SetIndexForContextRelatedMethods();
                 }
 
                 try
                 {
-                    if (this.Direction == MAPIParser.TrafficDirection.In)
+                    if (this.Direction == TrafficDirection.In)
                     {
-                        parserResult = MAPIParser.ParseHTTPPayload(MAPIParser.BaseHeaders, this.session, this.session.requestBodyBytes, MAPIParser.TrafficDirection.In, out bytesForHexView);
+                        parserResult = ParseHTTPPayload(BaseHeaders, this.session, this.session.requestBodyBytes, TrafficDirection.In, out bytesForHexView);
                     }
                     else
                     {
                         // An X-ResponseCode of 0 (zero) means success from the perspective of the protocol transport, and the client SHOULD parse the response body based on the request that was issued.
-                        if (MAPIParser.BaseHeaders["X-ResponseCode"] != "0")
+                        if (BaseHeaders["X-ResponseCode"] != "0")
                         {
                             return;
                         }
 
-                        parserResult = MAPIParser.ParseHTTPPayload(MAPIParser.BaseHeaders, this.session, this.session.responseBodyBytes, MAPIParser.TrafficDirection.Out, out bytesForHexView);
+                        parserResult = ParseHTTPPayload(BaseHeaders, this.session, this.session.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
                     }
 
                     this.DisplayObject(parserResult, bytesForHexView);
@@ -395,9 +395,9 @@ namespace MapiInspector
                 {
                     DecodingContext.Notify_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[], string>>>();
                     DecodingContext.RowRops_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[]>>>();
-                    MAPIParser.TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
-                    MAPIParser.ContextInformationCollection = new List<ContextInformation>();
-                    MAPIParser.IsLooperCall = true;
+                    TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
+                    ContextInformationCollection = new List<ContextInformation>();
+                    IsLooperCall = true;
                 }
             }
             else
@@ -421,8 +421,8 @@ namespace MapiInspector
             StringBuilder stringBuilder = new StringBuilder();
             AllSessions = sessionsFromCore;
             DecodingContext decodingContext = new DecodingContext();
-            ResetPartialParameters();
-            ResetPartialContextInformation();
+            Partial.ResetPartialParameters();
+            Partial.ResetPartialContextInformation();
             ResetHandleInformation();
             for (int i = 0; i < AllSessions.Length; i++)
             {
@@ -430,7 +430,7 @@ namespace MapiInspector
                 Session val = AllSessions[i];
                 if (AllSessions[i]["VirtualID"] != null)
                 {
-                    MAPIParser.ParsingSession = val;
+                    ParsingSession = val;
                 }
                 if (AllSessions.Length > 0 && AllSessions[AllSessions.Length - 1]["Number"] == null)
                 {
@@ -440,8 +440,8 @@ namespace MapiInspector
                 {
                     try
                     {
-                        MAPIParser.IsLooperCall = false;
-                        ResetPartialParameters();
+                        IsLooperCall = false;
+                        Partial.ResetPartialParameters();
                         BaseHeaders = val.RequestHeaders;
                         byte[] bytes;
                         object obj = ParseHTTPPayload(BaseHeaders, val, val.requestBodyBytes, TrafficDirection.In, out bytes);
@@ -462,7 +462,7 @@ namespace MapiInspector
                         DecodingContext.RowRops_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[]>>>();
                         TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
                         ContextInformationCollection = new List<ContextInformation>();
-                        MAPIParser.IsLooperCall = true;
+                        IsLooperCall = true;
                     }
                 }
                 if (i % 10 == 0 && JsonResult.Length != 0)

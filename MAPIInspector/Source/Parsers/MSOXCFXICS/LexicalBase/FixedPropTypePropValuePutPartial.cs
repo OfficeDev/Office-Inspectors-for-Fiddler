@@ -18,26 +18,26 @@ namespace MAPIInspector.Parsers
 
             if (parser.Empty)
             {
-                MapiInspector.MAPIParser.PartialPutType = PropType;
-                MapiInspector.MAPIParser.PartialPutId = PropInfo.PropID;
-                MapiInspector.MAPIParser.PartialPutServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
-                MapiInspector.MAPIParser.PartialPutProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
-                MapiInspector.MAPIParser.PartialPutClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
+                Partial.PartialPutType = PropType;
+                Partial.PartialPutId = PropInfo.PropID;
+                Partial.PartialPutServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
+                Partial.PartialPutProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
+                Partial.PartialPutClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIParser.PartialPutType != 0 && MapiInspector.MAPIParser.PartialPutServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIParser.PartialPutProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
-                    && MapiInspector.MAPIParser.PartialPutClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
+                if (Partial.PartialPutType != 0 && Partial.PartialPutServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && Partial.PartialPutProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
+                    && Partial.PartialPutClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    ptype = CreateBlock(MapiInspector.MAPIParser.PartialPutType, 0, 0);
-                    pid = CreateBlock(MapiInspector.MAPIParser.PartialPutId, 0, 0);
+                    ptype = CreateBlock(Partial.PartialPutType, 0, 0);
+                    pid = CreateBlock(Partial.PartialPutId, 0, 0);
 
                     // clear
-                    MapiInspector.MAPIParser.PartialPutType = 0;
-                    MapiInspector.MAPIParser.PartialPutId = 0;
-                    MapiInspector.MAPIParser.PartialPutServerUrl = string.Empty;
-                    MapiInspector.MAPIParser.PartialPutProcessName = string.Empty;
-                    MapiInspector.MAPIParser.PartialPutClientInfo = string.Empty;
+                    Partial.PartialPutType = 0;
+                    Partial.PartialPutId = 0;
+                    Partial.PartialPutServerUrl = string.Empty;
+                    Partial.PartialPutProcessName = string.Empty;
+                    Partial.PartialPutClientInfo = string.Empty;
                 }
 
                 PropertyDataType typeValue = PropertyDataType.PtypUnspecified;

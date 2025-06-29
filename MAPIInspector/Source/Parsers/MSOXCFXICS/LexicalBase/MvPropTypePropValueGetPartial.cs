@@ -27,24 +27,24 @@ namespace MAPIInspector.Parsers
 
             if (parser.Empty)
             {
-                MapiInspector.MAPIParser.PartialGetType = PropType;
-                MapiInspector.MAPIParser.PartialGetServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
-                MapiInspector.MAPIParser.PartialGetProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
-                MapiInspector.MAPIParser.PartialGetClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
+                Partial.PartialGetType = PropType;
+                Partial.PartialGetServerUrl = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
+                Partial.PartialGetProcessName = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
+                Partial.PartialGetClientInfo = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
             }
             else
             {
-                if (MapiInspector.MAPIParser.PartialGetType != 0 && MapiInspector.MAPIParser.PartialGetServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIParser.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
-                    && MapiInspector.MAPIParser.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
+                if (Partial.PartialGetType != 0 && Partial.PartialGetServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && Partial.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
+                    && Partial.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
-                    Comment = MapiInspector.MAPIParser.CreatePartialComment();
+                    Comment = Partial.CreatePartialComment();
 
-                    ptype = CreateBlock(MapiInspector.MAPIParser.PartialGetType, 0, 0);
+                    ptype = CreateBlock(Partial.PartialGetType, 0, 0);
 
-                    if (MapiInspector.MAPIParser.PartialGetRemainSize != -1)
+                    if (Partial.PartialGetRemainSize != -1)
                     {
-                        Plength = MapiInspector.MAPIParser.PartialGetRemainSize;
-                        MapiInspector.MAPIParser.PartialGetRemainSize = -1;
+                        Plength = Partial.PartialGetRemainSize;
+                        Partial.PartialGetRemainSize = -1;
                     }
                     else
                     {
@@ -52,12 +52,12 @@ namespace MAPIInspector.Parsers
                     }
 
                     // clear
-                    MapiInspector.MAPIParser.PartialGetType = 0;
-                    if (MapiInspector.MAPIParser.PartialGetRemainSize == -1 && MapiInspector.MAPIParser.PartialGetSubRemainSize == -1)
+                    Partial.PartialGetType = 0;
+                    if (Partial.PartialGetRemainSize == -1 && Partial.PartialGetSubRemainSize == -1)
                     {
-                        MapiInspector.MAPIParser.PartialGetServerUrl = string.Empty;
-                        MapiInspector.MAPIParser.PartialGetProcessName = string.Empty;
-                        MapiInspector.MAPIParser.PartialGetClientInfo = string.Empty;
+                        Partial.PartialGetServerUrl = string.Empty;
+                        Partial.PartialGetProcessName = string.Empty;
+                        Partial.PartialGetClientInfo = string.Empty;
                     }
                 }
                 else

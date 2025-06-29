@@ -96,6 +96,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ByteArrayConverter.cs" />
+    <Compile Include="Parsers\MSOXCROPS\Partial\MissingPartialInformationException.cs" />
+    <Compile Include="Parsers\MSOXCROPS\Partial\PartialContextInformation.cs" />
+    <Compile Include="Parsers\MSOXCROPS\Partial\Partial.cs" />
     <Compile Include="MAPIControl.cs">
       <SubType>UserControl</SubType>
     </Compile>

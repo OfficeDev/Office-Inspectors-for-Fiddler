@@ -26,29 +26,29 @@ namespace MAPIInspector.Parsers
 
         protected override void Parse()
         {
-            if (MapiInspector.MAPIParser.PartialGetType != 0 &&
-                MapiInspector.MAPIParser.PartialGetServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
-                MapiInspector.MAPIParser.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
-                MapiInspector.MAPIParser.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
+            if (Partial.PartialGetType != 0 &&
+                Partial.PartialGetServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
+                Partial.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
+                Partial.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
             {
-                Comment = MapiInspector.MAPIParser.CreatePartialComment();
+                Comment = Partial.CreatePartialComment();
 
                 var tmpMarker = TestParse<Markers>();
                 if (MarkersHelper.IsMarker(tmpMarker))
                 {
                     Marker = ParseT<Markers>();
                 }
-                else if (LexicalTypeHelper.IsMetaPropertyID(MapiInspector.MAPIParser.PartialGetId))
+                else if (LexicalTypeHelper.IsMetaPropertyID(Partial.PartialGetId))
                 {
                     MetaValue = Parse<MetaPropValueGetPartial>();
                 }
                 else
                 {
-                    if (LexicalTypeHelper.IsFixedType(MapiInspector.MAPIParser.PartialGetType) &&
-                        MapiInspector.MAPIParser.PartialGetRemainSize == -1)
+                    if (LexicalTypeHelper.IsFixedType(Partial.PartialGetType) &&
+                        Partial.PartialGetRemainSize == -1)
                     {
-                        if (MapiInspector.MAPIParser.PartialGetType == PropertyDataType.PtypInteger32 &&
-                            MapiInspector.MAPIParser.PartialGetId == PidTagPropertyEnum.MetaTagIdsetGiven)
+                        if (Partial.PartialGetType == PropertyDataType.PtypInteger32 &&
+                            Partial.PartialGetId == PidTagPropertyEnum.MetaTagIdsetGiven)
                         {
                             PropValue = Parse<VarPropTypePropValueGetPartial>();
                         }
@@ -57,14 +57,14 @@ namespace MAPIInspector.Parsers
                             PropValue = Parse<FixedPropTypePropValueGetPartial>();
                         }
                     }
-                    else if (LexicalTypeHelper.IsVarType(MapiInspector.MAPIParser.PartialGetType) ||
-                    LexicalTypeHelper.IsCodePageType(MapiInspector.MAPIParser.PartialGetType) ||
-                    (LexicalTypeHelper.IsFixedType(MapiInspector.MAPIParser.PartialGetType) &&
-                    MapiInspector.MAPIParser.PartialGetRemainSize != -1))
+                    else if (LexicalTypeHelper.IsVarType(Partial.PartialGetType) ||
+                    LexicalTypeHelper.IsCodePageType(Partial.PartialGetType) ||
+                    (LexicalTypeHelper.IsFixedType(Partial.PartialGetType) &&
+                    Partial.PartialGetRemainSize != -1))
                     {
                         PropValue = Parse<VarPropTypePropValueGetPartial>();
                     }
-                    else if (LexicalTypeHelper.IsMVType(MapiInspector.MAPIParser.PartialGetType))
+                    else if (LexicalTypeHelper.IsMVType(Partial.PartialGetType))
                     {
                         PropValue = Parse<MvPropTypePropValueGetPartial>();
                     }
