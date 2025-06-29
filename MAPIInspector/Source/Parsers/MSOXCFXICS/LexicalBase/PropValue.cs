@@ -88,9 +88,24 @@ namespace MAPIInspector.Parsers
 
         protected override void Parse()
         {
-            if ((Partial.IsPut == true && (Partial.PartialPutType == 0 || (Partial.PartialPutType != 0 && !(Partial.PartialPutServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && Partial.PartialPutProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess && Partial.PartialPutClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])))) ||
-                (Partial.IsGet == true && (Partial.PartialGetType == 0 || (Partial.PartialGetType != 0 && !(Partial.PartialGetServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && Partial.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess && Partial.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])))) ||
-                (Partial.IsPutExtend == true && (Partial.PartialPutExtendType == 0 || (Partial.PartialPutType != 0 && !(Partial.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && Partial.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess && Partial.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])))))
+            if ((Partial.IsPut == true &&
+                (Partial.PartialPutType == 0 ||
+                (Partial.PartialPutType != 0 &&
+                !(Partial.PartialPutServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
+                Partial.PartialPutProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
+                Partial.PartialPutClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])))) ||
+                (Partial.IsGet == true &&
+                (Partial.PartialGetType == 0 ||
+                (Partial.PartialGetType != 0 &&
+                !(Partial.PartialGetServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
+                Partial.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
+                Partial.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])))) ||
+                (Partial.IsPutExtend == true &&
+                (Partial.PartialPutExtendType == 0 ||
+                (Partial.PartialPutType != 0 &&
+                !(Partial.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
+                Partial.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
+                Partial.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])))))
             {
                 PropType = ParseT<PropertyDataType>();
                 PropInfo = Parse<PropInfo>();
