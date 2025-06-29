@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Xml;
 
 namespace MAPIInspector.Parsers
 {
@@ -1439,7 +1438,14 @@ namespace MAPIInspector.Parsers
                                 ropFastTransferDestinationPutBufferRequest.Parse(s);
                                 ropsList.Add(ropFastTransferDestinationPutBufferRequest);
 
-                                PartialContextInformation putBufferPartialInformaiton = new PartialContextInformation(Partial.PartialPutType, Partial.PartialPutId, Partial.PartialPutRemainSize, Partial.PartialPutSubRemainSize, false, destinationParsingSession, MapiInspector.MAPIParser.InputPayLoadCompressedXOR);
+                                var putBufferPartialInformaiton = new PartialContextInformation(
+                                    Partial.PartialPutType,
+                                    Partial.PartialPutId,
+                                    Partial.PartialPutRemainSize,
+                                    Partial.PartialPutSubRemainSize,
+                                    false,
+                                    destinationParsingSession,
+                                    MapiInspector.MAPIParser.InputPayLoadCompressedXOR);
                                 SortedDictionary<int, PartialContextInformation> sessionputContextInfor = new SortedDictionary<int, PartialContextInformation>();
 
                                 if (Partial.HandleWithSessionPutContextInformation.ContainsKey(ropPutbufferHandle))
@@ -1489,7 +1495,13 @@ namespace MAPIInspector.Parsers
                                 ropFastTransferDestinationPutBufferExtendedRequest.Parse(s);
                                 ropsList.Add(ropFastTransferDestinationPutBufferExtendedRequest);
 
-                                PartialContextInformation putExtendBufferPartialInformaiton = new PartialContextInformation(Partial.PartialPutType, Partial.PartialPutId, Partial.PartialPutRemainSize, Partial.PartialPutSubRemainSize, false, aimsParsingSession, MapiInspector.MAPIParser.InputPayLoadCompressedXOR);
+                                var putExtendBufferPartialInformaiton = new PartialContextInformation(
+                                    Partial.PartialPutType,
+                                    Partial.PartialPutId,
+                                    Partial.PartialPutRemainSize,
+                                    Partial.PartialPutSubRemainSize,
+                                    false, aimsParsingSession,
+                                    MapiInspector.MAPIParser.InputPayLoadCompressedXOR);
                                 SortedDictionary<int, PartialContextInformation> sessionputExtendContextInfor = new SortedDictionary<int, PartialContextInformation>();
 
                                 if (Partial.HandleWithSessionPutExtendContextInformation.ContainsKey(ropPutExtendbufferHandle))
@@ -2629,7 +2641,7 @@ namespace MAPIInspector.Parsers
                                 int getParsingSessionID = parsingSessionID;
                                 Session getParsingSession = MapiInspector.MAPIParser.ParsingSession;
                                 uint ropGetbufferHandle = tempServerObjectHandleTable[tempInputHandleIndex_getBuffer];
-                                PartialContextInformation[] partialBeforeAndAfterInformation = new PartialContextInformation[2];
+                                var partialBeforeAndAfterInformation = new PartialContextInformation[2];
                                 if (returnValue == 0)
                                 {
                                     if (!DecodingContext.PartialInformationReady.ContainsKey((int)getParsingSessionID))
@@ -2642,7 +2654,14 @@ namespace MAPIInspector.Parsers
                                 Partial.IsGet = true;
                                 ropFastTransferSourceGetBufferResponse.Parse(s);
                                 ropsList.Add(ropFastTransferSourceGetBufferResponse);
-                                PartialContextInformation getBufferPartialInformaiton = new PartialContextInformation(Partial.PartialGetType, Partial.PartialGetId, Partial.PartialGetRemainSize, Partial.PartialGetSubRemainSize, true, getParsingSession, MapiInspector.MAPIParser.OutputPayLoadCompressedXOR);
+                                var getBufferPartialInformaiton = new PartialContextInformation(
+                                    Partial.PartialGetType,
+                                    Partial.PartialGetId,
+                                    Partial.PartialGetRemainSize,
+                                    Partial.PartialGetSubRemainSize,
+                                    true,
+                                    getParsingSession,
+                                    MapiInspector.MAPIParser.OutputPayLoadCompressedXOR);
                                 SortedDictionary<int, PartialContextInformation> sessionGetContextInfor = new SortedDictionary<int, PartialContextInformation>();
 
                                 if (Partial.HandleWithSessionGetContextInformation.ContainsKey(ropGetbufferHandle))
