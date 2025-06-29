@@ -50,7 +50,21 @@
         {
             if (child != null && child.Parsed)
             {
-                child.SetText($"{label}:{child.Data}");
+                string valueStr;
+                var type = typeof(T);
+                if (type == typeof(byte) || type == typeof(sbyte) ||
+                    type == typeof(short) || type == typeof(ushort) ||
+                    type == typeof(int) || type == typeof(uint) ||
+                    type == typeof(long) || type == typeof(ulong))
+                {
+                    valueStr = $"{child.Data} = 0x{child.Data:X}";
+                }
+                else
+                {
+                    valueStr = child.Data.ToString();
+                }
+
+                child.SetText($"{label}:{valueStr}");
                 children.Add(child);
             }
         }
