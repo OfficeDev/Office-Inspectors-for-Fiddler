@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// 2.2.4.3.20 propList Element
     /// Contains a list of propValues.
     /// </summary>
     public class PropList : Block

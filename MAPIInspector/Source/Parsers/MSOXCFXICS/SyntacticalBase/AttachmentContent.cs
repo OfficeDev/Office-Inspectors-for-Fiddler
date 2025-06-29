@@ -3,6 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// 2.2.4.3.1 attachmentContent Element
     /// The attachmentContent element contains the properties and the embedded message of an Attachment object. If present,
     /// </summary>
 

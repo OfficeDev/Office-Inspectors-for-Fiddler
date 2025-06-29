@@ -3,6 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// 2.2.4.3.8 groupInfo Element
     /// The GroupInfo element provides a definition for the property group mapping.
     /// </summary>
     public class GroupInfo : Block

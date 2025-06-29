@@ -3,6 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// 2.2.4.3.23 recipient Element
     /// The Recipient element represents a Recipient object, which is a subobject of the Message object.
     /// </summary>
     public class Recipient : Block

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// 2.2.4.3.7 folderMessages Element
     /// The folderMessages element contains the messages contained in a folder.
     /// </summary>
     public class FolderMessages : Block

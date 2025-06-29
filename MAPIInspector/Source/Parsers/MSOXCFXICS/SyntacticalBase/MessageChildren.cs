@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// 2.2.4.3.12 messageChildren Element
     /// The MessageChildren element represents children of the Message objects: Recipient and Attachment objects.
     /// </summary>
     public class MessageChildren : Block

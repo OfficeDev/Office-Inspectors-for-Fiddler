@@ -3,6 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// 2.2.4.3.18 progressPerMessage Element
     /// The ProgressPerMessage element contains data that describes the approximate size of message change data that follows.
     /// </summary>
     public class ProgressPerMessage : Block

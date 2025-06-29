@@ -3,6 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// 2.2.4.3.6 folderContent Element
     /// Contains a folderContent.
     /// </summary>
     public class SubFolder : Block

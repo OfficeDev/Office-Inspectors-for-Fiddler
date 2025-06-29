@@ -3,6 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// 2.2.4.3.25 state Element
     /// The state element contains the final ICS state of the synchronization download operation. 
     /// </summary>
     public class State : Block

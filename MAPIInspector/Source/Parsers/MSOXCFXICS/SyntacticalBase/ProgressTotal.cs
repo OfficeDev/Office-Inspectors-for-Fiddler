@@ -3,6 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// 2.2.4.3.19 progressTotal Element
     /// The progressTotal element contains data that describes the approximate size of all the messageChange elements.
     /// </summary>
     public class ProgressTotal : Block

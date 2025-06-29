@@ -274,8 +274,8 @@
     <Compile Include="Parsers\MSOXCFXICS\structs\GroupPropertyName.cs" />
     <Compile Include="Parsers\MSOXCFXICS\structs\IDSET_REPLGUID.cs" />
     <Compile Include="Parsers\MSOXCFXICS\structs\IDSET_REPLID.cs" />
-    <Compile Include="Parsers\MSOXCFXICS\LexicalTypeHelper.cs" />
-    <Compile Include="Parsers\MSOXCFXICS\SyntacticalBase\LongTermId.cs" />
+    <Compile Include="Parsers\MSOXCFXICS\LexicalBase\LexicalTypeHelper.cs" />
+    <Compile Include="Parsers\MSOXCFXICS\structs\LongTermId.cs" />
     <Compile Include="Parsers\MSOXCFXICS\enums\Markers.cs" />
     <Compile Include="Parsers\MSOXCFXICS\structs\LongTermIdRange.cs" />
     <Compile Include="Parsers\MSOXCFXICS\MarkersHelper.cs" />
@@ -380,9 +380,9 @@
     <Compile Include="Parsers\MSOXCFXICS\SyntacticalBase\SubFolder.cs" />
     <Compile Include="Parsers\MSOXCFXICS\SyntacticalBase\SubFolderNoDelProps.cs" />
     <Compile Include="Parsers\MSOXCFXICS\SyntacticalBase\TopFolder.cs" />
-    <Compile Include="Parsers\MSOXCFXICS\SyntacticalBase\TransferGetBufferElement.cs" />
-    <Compile Include="Parsers\MSOXCFXICS\SyntacticalBase\TransferPutBufferElement.cs" />
-    <Compile Include="Parsers\MSOXCFXICS\SyntacticalBase\TransferPutBufferExtendElement.cs" />
+    <Compile Include="Parsers\MSOXCFXICS\LexicalBase\TransferGetBufferElement.cs" />
+    <Compile Include="Parsers\MSOXCFXICS\LexicalBase\TransferPutBufferElement.cs" />
+    <Compile Include="Parsers\MSOXCFXICS\LexicalBase\TransferPutBufferExtendElement.cs" />
     <Compile Include="Parsers\MSOXCMAPIHTTP\auxiliary\AuxiliaryBufferPayload.cs" />
     <Compile Include="Parsers\MSOXCMAPIHTTP\auxiliary\AUX_CLIENT_CONNECTION_INFO.cs" />
     <Compile Include="Parsers\MSOXCMAPIHTTP\auxiliary\AUX_CLIENT_CONTROL.cs" />

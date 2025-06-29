@@ -3,6 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// 2.2.4.3.13 messageChangeFull Element
     /// The messageChangeFull element contains the complete content of a new or changed message: the message properties, the recipients,and the attachments.
     /// </summary>
     public class MessageChangeFull : Block
