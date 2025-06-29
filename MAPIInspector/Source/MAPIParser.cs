@@ -2428,6 +2428,7 @@ namespace MapiInspector
             if (PartialPutRemainSize != -1) comment.AddHeader($"PartialPutRemainSize:{PartialPutRemainSize}");
             if (PartialPutSubRemainSize != -1) comment.AddHeader($"PartialPutSubRemainSize:{PartialPutSubRemainSize:X}");
 
+            comment.AddHeader($"IsOneMoreByteToRead:{IsOneMoreByteToRead}");
             return comment;
         }
     }
