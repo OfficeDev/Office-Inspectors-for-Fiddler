@@ -1132,8 +1132,8 @@ namespace MapiInspector
 
                     if (HandleWithSessionGetContextInformation.ContainsKey(parameters) && HandleWithSessionGetContextInformation[parameters].ContainsKey(thisSessionID))
                     {
-                        PartialGetId = (PidTagPropertyEnum)HandleWithSessionGetContextInformation[parameters][thisSessionID].ID;
-                        PartialGetType = (PropertyDataType)HandleWithSessionGetContextInformation[parameters][thisSessionID].Type;
+                        PartialGetId = HandleWithSessionGetContextInformation[parameters][thisSessionID].ID;
+                        PartialGetType = HandleWithSessionGetContextInformation[parameters][thisSessionID].Type;
                         PartialGetRemainSize = HandleWithSessionGetContextInformation[parameters][thisSessionID].RemainSize;
                         PartialGetSubRemainSize = HandleWithSessionGetContextInformation[parameters][thisSessionID].SubRemainSize;
                         IsGet = HandleWithSessionGetContextInformation[parameters][thisSessionID].IsGet;
@@ -1173,8 +1173,8 @@ namespace MapiInspector
 
                         if (lastSavedSessionID != 1)
                         {
-                            PartialGetId = (PidTagPropertyEnum)HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].ID;
-                            PartialGetType = (PropertyDataType)HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].Type;
+                            PartialGetId = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].ID;
+                            PartialGetType = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].Type;
                             PartialGetRemainSize = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].RemainSize;
                             PartialGetSubRemainSize = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].SubRemainSize;
                             IsGet = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].IsGet;
