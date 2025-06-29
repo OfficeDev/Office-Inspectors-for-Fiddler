@@ -3149,7 +3149,7 @@ namespace MAPIInspector.Parsers
                 }
             }
 
-            while (s.Position >= s.Length + sizeof(uint))
+            while (s.Position + sizeof(uint) <= s.Length)
             {
                 uint serverObjectHandle = this.ReadUint();
                 serverObjectHandleTable.Add(serverObjectHandle);
