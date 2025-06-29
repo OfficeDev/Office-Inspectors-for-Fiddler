@@ -11,157 +11,157 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Used to record fasterTransfer stream property type in RopGetBuffer partial
         /// </summary>
-        public static PropertyDataType PartialGetType;
+        public static PropertyDataType PartialGetType { get; set; }
 
         /// <summary>
         /// Used to record fasterTransfer stream property Id in RopGetBuffer partial
         /// </summary>
-        public static PidTagPropertyEnum PartialGetId;
+        public static PidTagPropertyEnum PartialGetId { get; set; }
 
         /// <summary>
         /// Used to record fasterTransfer stream property remain size in RopGetBuffer partial
         /// </summary>
-        public static int PartialGetRemainSize = -1;
+        public static int PartialGetRemainSize { get; set; } = -1;
 
         /// <summary>
         /// Used to record fasterTransfer stream property sub remain size in RopGetBuffer partial
         /// </summary>
-        public static int PartialGetSubRemainSize = -1;
+        public static int PartialGetSubRemainSize { get; set; } = -1;
 
         /// <summary>
         /// Used to indicates if this ROP is about fasterTransfer stream RopGetBuffer partial
         /// </summary>
-        public static bool IsGet;
+        public static bool IsGet { get; set; }
 
         /// <summary>
         /// Used to record serverUrl of the session which contains a RopGetBuffer partial fasterTransfer stream
         /// </summary>
-        public static string PartialGetServerUrl;
+        public static string PartialGetServerUrl { get; set; }
 
         /// <summary>
         /// Used to record processName of the session which contains a RopGetBuffer partial fasterTransfer stream
         /// </summary>
-        public static string PartialGetProcessName;
+        public static string PartialGetProcessName { get; set; }
 
         /// <summary>
         /// Used to record clientInfo of the session which contains a RopGetBuffer partial fasterTransfer stream
         /// </summary>
-        public static string PartialGetClientInfo;
+        public static string PartialGetClientInfo { get; set; }
 
         /// <summary>
         /// Used to record session for RopGetBuffer partial
         /// </summary>
-        public static Session PartialGetSession;
+        public static Session PartialGetSession { get; set; }
 
         /// <summary>
         /// Used to record fasterTransfer stream property type in RopPutBuffer partial
         /// </summary>
-        public static PropertyDataType PartialPutType;
+        public static PropertyDataType PartialPutType { get; set; }
 
         /// <summary>
         /// Used to record fasterTransfer stream property Id in RopPutBuffer partial
         /// </summary>
-        public static PidTagPropertyEnum PartialPutId;
+        public static PidTagPropertyEnum PartialPutId { get; set; }
 
         /// <summary>
         /// Used to record fasterTransfer stream property remain size in RopPutBuffer partial
         /// </summary>
-        public static int PartialPutRemainSize = -1;
+        public static int PartialPutRemainSize { get; set; } = -1;
 
         /// <summary>
         /// Used to record fasterTransfer stream property sub remain size in RopPutBuffer partial
         /// </summary>
-        public static int PartialPutSubRemainSize = -1;
+        public static int PartialPutSubRemainSize { get; set; } = -1;
 
         /// <summary>
         /// Used to indicates if this ROP is about fasterTransfer stream RopPutBuffer partial
         /// </summary>
-        public static bool IsPut;
+        public static bool IsPut { get; set; }
 
         /// <summary>
         /// Used to record serverUrl of the session which contains a RopPutBuffer partial fasterTransfer stream
         /// </summary>
-        public static string PartialPutServerUrl;
+        public static string PartialPutServerUrl { get; set; }
 
         /// <summary>
         /// Used to record processName of the session which contains a RopPutBuffer partial fasterTransfer stream
         /// </summary>
-        public static string PartialPutProcessName;
+        public static string PartialPutProcessName { get; set; }
 
         /// <summary>
         /// Used to record clientInfo of the session which contains a RopPutBuffer partial fasterTransfer stream
         /// </summary>
-        public static string PartialPutClientInfo;
+        public static string PartialPutClientInfo { get; set; }
 
         /// <summary>
         /// Used to record session for RopPutBuffer partial
         /// </summary>
-        public static Session PartialPutSession;
+        public static Session PartialPutSession { get; set; }
 
         /// <summary>
         /// Used to record fasterTransfer stream property type in putExtendBuffer partial
         /// </summary>
-        public static PropertyDataType PartialPutExtendType;
+        public static PropertyDataType PartialPutExtendType { get; set; }
 
         /// <summary>
         /// Used to record fasterTransfer stream property Id in putExtendBuffer partial
         /// </summary>
-        public static PidTagPropertyEnum PartialPutExtendId;
+        public static PidTagPropertyEnum PartialPutExtendId { get; set; }
 
         /// <summary>
         /// Used to record fasterTransfer stream property remain size in putExtendBuffer partial
         /// </summary>
-        public static int PartialPutExtendRemainSize = -1;
+        public static int PartialPutExtendRemainSize { get; set; } = -1;
 
         /// <summary>
         /// Used to record fasterTransfer stream property sub remain size in putExtendBuffer partial
         /// </summary>
-        public static int PartialPutExtendSubRemainSize = -1;
+        public static int PartialPutExtendSubRemainSize { get; set; } = -1;
 
         /// <summary>
         /// Used to indicates if this ROP is about fasterTransfer stream putExtendBuffer partial
         /// </summary>
-        public static bool IsPutExtend;
+        public static bool IsPutExtend { get; set; }
 
         /// <summary>
         /// Used to record serverUrl of the session which contains a RopPutExtendBuffer partial fasterTransfer stream
         /// </summary>
-        public static string PartialPutExtendServerUrl;
+        public static string PartialPutExtendServerUrl { get; set; }
 
         /// <summary>
         /// Used to record processName of the session which contains a RopPutExtendBuffer partial fasterTransfer stream
         /// </summary>
-        public static string PartialPutExtendProcessName;
+        public static string PartialPutExtendProcessName { get; set; }
 
         /// <summary>
         /// Used to record clientInfo of the session which contains a RopPutExtendBuffer partial fasterTransfer stream
         /// </summary>
-        public static string PartialPutExtendClientInfo;
+        public static string PartialPutExtendClientInfo { get; set; }
 
         /// <summary>
         /// Used to record session for putExtendbuffer partial
         /// </summary>
-        public static Session PartialPutExtendSession;
+        public static Session PartialPutExtendSession { get; set; }
 
         /// <summary>
         /// Used to indicates if there is one byte need to be read before parsing fasterTransfer element
         /// </summary>
-        public static bool IsOneMoreByteToRead = false;
+        public static bool IsOneMoreByteToRead { get; set; } = false;
 
         /// <summary>
         /// Record the map in handle, sessionId and PartialContextInformation for RopGetBuffer
         /// </summary>
-        public static Dictionary<uint, SortedDictionary<int, PartialContextInformation>> HandleWithSessionGetContextInformation = new Dictionary<uint, SortedDictionary<int, PartialContextInformation>>();
+        public static Dictionary<uint, SortedDictionary<int, PartialContextInformation>> HandleWithSessionGetContextInformation { get; set; } = new Dictionary<uint, SortedDictionary<int, PartialContextInformation>>();
 
         /// <summary>
         /// Record the map in handle, sessionId and PartialContextInformation for RopPutBuffer
         /// </summary>
-        public static Dictionary<uint, SortedDictionary<int, PartialContextInformation>> HandleWithSessionPutContextInformation = new Dictionary<uint, SortedDictionary<int, PartialContextInformation>>();
+        public static Dictionary<uint, SortedDictionary<int, PartialContextInformation>> HandleWithSessionPutContextInformation { get; set; } = new Dictionary<uint, SortedDictionary<int, PartialContextInformation>>();
 
         /// <summary>
         /// Record the map in handle, sessionId and PartialContextInformation for RopPutExtendedBuffer
         /// </summary>
-        public static Dictionary<uint, SortedDictionary<int, PartialContextInformation>> HandleWithSessionPutExtendContextInformation = new Dictionary<uint, SortedDictionary<int, PartialContextInformation>>();
+        public static Dictionary<uint, SortedDictionary<int, PartialContextInformation>> HandleWithSessionPutExtendContextInformation { get; set; } = new Dictionary<uint, SortedDictionary<int, PartialContextInformation>>();
 
         /// <summary>
         /// Parse sessions from start to this session to find informations for RopGetBuffer partial status
