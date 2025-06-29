@@ -63,7 +63,7 @@ namespace MAPIInspector.Parsers
                     Length = ParseT<int>();
                 }
 
-                int blocksLength = Length != null ? Length : Plength;
+                int blocksCount = Length != null ? Length : Plength;
                 PropertyDataType typeValue = PropertyDataType.PtypUnspecified;
                 if (PropType != null)
                 {
@@ -74,7 +74,7 @@ namespace MAPIInspector.Parsers
                     typeValue = ptype;
                 }
                 
-                ValueArray = MvPropTypePropValue.ParseArray(parser, PropType, blocksLength);
+                ValueArray = MvPropTypePropValue.ParseArray(parser, PropType, blocksCount);
             }
         }
 

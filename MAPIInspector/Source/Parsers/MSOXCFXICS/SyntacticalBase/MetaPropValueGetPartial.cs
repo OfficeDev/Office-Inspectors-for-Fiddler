@@ -37,6 +37,8 @@ namespace MAPIInspector.Parsers
         /// </summary>
         public BlockT<int> length;
 
+        private Block Comment;
+
         protected override void Parse()
         {
             if (MapiInspector.MAPIParser.PartialGetType == 0 ||
@@ -64,6 +66,8 @@ namespace MAPIInspector.Parsers
                     MapiInspector.MAPIParser.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
                     MapiInspector.MAPIParser.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
+                    Comment = MapiInspector.MAPIParser.CreatePartialComment();
+
                     propertyType = MapiInspector.MAPIParser.PartialGetType;
                     propertyID = MapiInspector.MAPIParser.PartialGetId;
 
@@ -134,6 +138,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("MetaPropValueGetPartial");
+            AddChild(Comment);
             AddChildBlockT(PropType, "PropType");
             if (PropID != null) AddChild(PropID, $"PropID:{MapiInspector.Utilities.EnumToString(PropID.Data)}");
             if (PropValue != null)

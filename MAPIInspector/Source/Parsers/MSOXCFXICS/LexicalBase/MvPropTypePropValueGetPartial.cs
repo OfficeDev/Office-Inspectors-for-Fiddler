@@ -19,6 +19,8 @@ namespace MAPIInspector.Parsers
         /// </summary>
         private int Plength;
 
+        private Block Comment;
+
         protected override void Parse()
         {
             base.Parse();
@@ -35,6 +37,8 @@ namespace MAPIInspector.Parsers
                 if (MapiInspector.MAPIParser.PartialGetType != 0 && MapiInspector.MAPIParser.PartialGetServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIParser.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
                     && MapiInspector.MAPIParser.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
+                    Comment = MapiInspector.MAPIParser.CreatePartialComment();
+
                     ptype = CreateBlock(MapiInspector.MAPIParser.PartialGetType, 0, 0);
 
                     if (MapiInspector.MAPIParser.PartialGetRemainSize != -1)
@@ -62,15 +66,16 @@ namespace MAPIInspector.Parsers
                 }
 
                 PropertyDataType typeValue = PropType.Parsed ? PropType : ptype;
-                int lengthValue = Length.Parsed ? Length : Plength;
+                int countValue = Length.Parsed ? Length : Plength;
 
-                ValueArray = MvPropTypePropValue.ParseArray(parser, typeValue, lengthValue);
+                ValueArray = MvPropTypePropValue.ParseArray(parser, typeValue, countValue);
             }
         }
 
         protected override void ParseBlocks()
         {
             base.ParseBlocks();
+            AddChild(Comment);
             AddChildBlockT(Length, "Length");
             AddLabeledChildren(ValueArray, "ValueArray");
         }

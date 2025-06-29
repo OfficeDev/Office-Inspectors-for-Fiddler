@@ -112,8 +112,16 @@ namespace BlockParser
                 Parsed = true; // parse can unset this if needed
                 Offset = parser.Offset;
 
-                Parse();
-                ParseBlocks();
+                try
+                {
+                    Parse();
+                    ParseBlocks();
+                }
+                catch (System.Exception e)
+                {
+                    AddHeader($"Exception: {e.Message} at offset {Offset}");
+                    AddHeader($"Stack Trace: {e.StackTrace}");
+                }
 
                 if (HasData && EnableJunk && parser.RemainingBytes > 0)
                 {
@@ -153,8 +161,5 @@ namespace BlockParser
 
             return strings;
         }
-
-        // Only used for debugging purposes, returns the entire binary stream as a byte array
-        public byte[] PeekBytes => parser.PeekBytes;
     }
 }

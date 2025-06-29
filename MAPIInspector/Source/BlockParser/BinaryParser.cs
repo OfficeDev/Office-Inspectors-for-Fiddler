@@ -166,16 +166,11 @@ namespace BlockParser
         }
 
         // Only used for debugging purposes, returns the entire binary stream as a byte array
-        public byte[] PeekBytes
+        public string PeekBytes()
         {
-            get
-            {
-                var offset = Offset; // Save current offset
-                Rewind(); // Rewind to the start
-                var bytes = ReadBytes((int)bin.Length); // Read the bytes
-                Offset = offset; // Restore offset
-                return bytes;
-            }
+            var bytes = new byte[bin.Length];
+            int read = bin.Read(bytes, 0, (int)bin.Length);
+            return Strings.BinToHexString(new List<byte>(bytes), false, bytes.Length);
         }
     }
 }

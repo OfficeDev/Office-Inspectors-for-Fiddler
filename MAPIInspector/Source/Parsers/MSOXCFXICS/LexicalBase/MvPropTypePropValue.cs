@@ -9,7 +9,7 @@ namespace MAPIInspector.Parsers
     public class MvPropTypePropValue : PropValue
     {
         /// <summary>
-        /// This represent the length variable.
+        /// This represent the length variable, the count of the number of elements.
         /// </summary>
         public BlockT<int> Length;
 
@@ -31,15 +31,15 @@ namespace MAPIInspector.Parsers
         {
             base.Parse();
             Length = ParseT<int>();
-            long blocksLength = Length;
+            long dataCount = Length;
 
-            ValueArray = ParseArray(parser, PropType, blocksLength);
+            ValueArray = ParseArray(parser, PropType, dataCount);
         }
 
-        public static Block[] ParseArray(BinaryParser parser, PropertyDataType dataType, long dataLength)
+        public static Block[] ParseArray(BinaryParser parser, PropertyDataType dataType, long dataCount)
         {
             var blocks = new List<Block>();
-            while (dataLength > 0)
+            for (int i = 0; i < dataCount; i++)
             {
                 Block tmpBlock = null;
                 switch (dataType)
@@ -88,7 +88,6 @@ namespace MAPIInspector.Parsers
                 if (tmpBlock != null)
                 {
                     blocks.Add(tmpBlock);
-                    dataLength -= tmpBlock.Size;
                 }
             }
 

@@ -12,6 +12,8 @@ namespace MAPIInspector.Parsers
         /// </summary>
         public Block FixedValue;
 
+        private Block Comment;
+
         protected override void Parse()
         {
             base.Parse();
@@ -28,6 +30,8 @@ namespace MAPIInspector.Parsers
                 if (MapiInspector.MAPIParser.PartialGetType != 0 && MapiInspector.MAPIParser.PartialGetServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && MapiInspector.MAPIParser.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
                     && MapiInspector.MAPIParser.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
+                    Comment = MapiInspector.MAPIParser.CreatePartialComment();
+
                     ptype = CreateBlock(MapiInspector.MAPIParser.PartialGetType, 0, 0);
                     pid = CreateBlock(MapiInspector.MAPIParser.PartialGetId, 0, 0);
 
@@ -58,6 +62,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             base.ParseBlocks();
+            AddChild(Comment);
             AddChild(FixedValue, $"FixedValue:{FixedValue}");
         }
     }

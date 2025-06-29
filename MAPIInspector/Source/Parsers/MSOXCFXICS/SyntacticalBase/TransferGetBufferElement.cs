@@ -31,10 +31,7 @@ namespace MAPIInspector.Parsers
                 MapiInspector.MAPIParser.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
                 MapiInspector.MAPIParser.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
             {
-                Comment = Create("Partial Details");
-                Comment.AddHeader($"PartialGetType:{MapiInspector.MAPIParser.PartialGetType:X}");
-                Comment.AddHeader($"PartialGetId:{MapiInspector.MAPIParser.PartialGetId}");
-                Comment.AddHeader($"PartialGetRemainSize:{MapiInspector.MAPIParser.PartialGetRemainSize}");
+                Comment = MapiInspector.MAPIParser.CreatePartialComment();
 
                 var tmpMarker = TestParse<Markers>();
                 if (MarkersHelper.IsMarker(tmpMarker))

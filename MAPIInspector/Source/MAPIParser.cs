@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using BlockParser;
 using Fiddler;
 using global::MAPIInspector;
 using global::MAPIInspector.Parsers;
@@ -2407,6 +2408,27 @@ namespace MapiInspector
             }
 
             return true;
+        }
+
+        public static Block CreatePartialComment()
+        {
+            var comment = Block.Create("Partial Details");
+            if (PartialGetType != PropertyDataType.PtypUnspecified) comment.AddHeader($"PartialGetType:{PartialGetType}");
+            if (PartialGetId != 0) comment.AddHeader($"PartialGetId:{PartialGetId}");
+            if (PartialGetRemainSize != -1) comment.AddHeader($"PartialGetRemainSize:{PartialGetRemainSize:X}");
+            if (PartialGetSubRemainSize != -1) comment.AddHeader($"PartialGetSubRemainSize:{PartialGetSubRemainSize:X}");
+
+            if (PartialPutExtendType != PropertyDataType.PtypUnspecified) comment.AddHeader($"PartialPutExtendType:{PartialPutExtendType}");
+            if (PartialGetId != 0) comment.AddHeader($"PartialPutExtendId:{PartialPutExtendId}");
+            if (PartialPutExtendRemainSize != -1) comment.AddHeader($"PartialPutExtendRemainSize:{PartialPutExtendRemainSize:X}");
+            if (PartialPutExtendRemainSize != -1) comment.AddHeader($"PartialPutExtendRemainSize:{PartialPutExtendSubRemainSize:X}");
+
+            if (PartialPutType != PropertyDataType.PtypUnspecified) comment.AddHeader($"PartialPutType:{PartialPutType}");
+            if (PartialPutId != 0) comment.AddHeader($"PartialPutId:{PartialPutId}");
+            if (PartialPutRemainSize != -1) comment.AddHeader($"PartialPutRemainSize:{PartialPutRemainSize}");
+            if (PartialPutSubRemainSize != -1) comment.AddHeader($"PartialPutSubRemainSize:{PartialPutSubRemainSize:X}");
+
+            return comment;
         }
     }
 }

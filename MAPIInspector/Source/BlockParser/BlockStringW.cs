@@ -17,7 +17,11 @@ namespace BlockParser
             var bytes = parser.ReadBytes(size);
             parser.Offset = oldOffset;
             // After calculating length, ensure it is even (since Unicode chars are 2 bytes)
-            int length = Math.Min(size, cchChar * 2) & ~1;
+            int length = Math.Min(size, cchChar * 2); // & ~1;
+            if ((length & 1) == 1)
+            {
+                length -= 1;
+            }
 
             if (cchChar == -1)
             {
