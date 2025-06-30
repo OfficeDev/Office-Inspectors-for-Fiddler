@@ -171,14 +171,14 @@ namespace BlockParser
         {
             var bytes = new byte[bin.Length];
             int read = bin.Read(bytes, 0, (int)bin.Length);
-            return Strings.BinToHexString(new List<byte>(bytes), false, bytes.Length);
+            return Strings.BinToHexString(bytes, false, bytes.Length);
         }
 
         public void SampleBytes(int cb = 20)
         {
             var offset = Offset;
             var length = Math.Min(cb, RemainingBytes);
-            var _data = new List<byte>(ReadBytes(length));
+            var _data = ReadBytes(length);
             var hex = Strings.BinToHexString(_data, true, 0);
             var text = Strings.BinToTextStringA(_data, true);
             Debug.WriteLine($"{hex}={text}");

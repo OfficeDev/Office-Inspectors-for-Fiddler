@@ -66,16 +66,13 @@ namespace BlockParser
         }
 
         // Converts binary data to a string, assuming source string was unicode
-        public static string BinToTextStringW(List<byte> bin, bool multiLine)
+        public static string BinToTextStringW(byte[] bin, bool multiLine)
         {
-            if (bin == null || bin.Count == 0 || bin.Count % sizeof(char) != 0)
+            if (bin == null || bin.Length == 0 || bin.Length % sizeof(char) != 0)
                 return string.Empty;
 
-            // Convert List<byte> to byte[]
-            byte[] byteArray = bin.ToArray();
-
             // Convert byte array to string (Unicode/UTF-16LE)
-            string text = System.Text.Encoding.Unicode.GetString(byteArray);
+            string text = System.Text.Encoding.Unicode.GetString(bin);
 
             // Remove invalid characters using the InvalidCharacter method
             var sb = new System.Text.StringBuilder(text.Length);
@@ -91,13 +88,10 @@ namespace BlockParser
         }
 
         // Converts binary data to a string, assuming each byte is a single character (ASCII/Latin1)
-        public static string BinToTextStringA(List<byte> bin, bool multiLine)
+        public static string BinToTextStringA(byte[] bin, bool multiLine)
         {
-            if (bin == null || bin.Count == 0)
+            if (bin == null || bin.Length == 0)
                 return string.Empty;
-
-            // Convert List<byte> to byte[]
-            byte[] byteArray = bin.ToArray();
 
             // Use ASCII encoding with custom encoder fallback to replace unknown chars with '.'
             var encoding = System.Text.Encoding.GetEncoding(
@@ -105,7 +99,7 @@ namespace BlockParser
                 new System.Text.EncoderReplacementFallback("."),
                 new System.Text.DecoderReplacementFallback("."));
 
-            string text = encoding.GetString(byteArray);
+            string text = encoding.GetString(bin);
 
             // Remove invalid characters using the InvalidCharacter method
             var sb = new System.Text.StringBuilder(text.Length);
@@ -119,23 +113,23 @@ namespace BlockParser
             return sb.ToString();
         }
 
-        public static string BinToHexString(List<byte> bin, bool prependCb = false, int limit = 128)
+        public static string BinToHexString(byte[] bin, bool prependCb = false, int limit = 128)
         {
             var sb = new System.Text.StringBuilder();
 
             if (prependCb)
             {
-                sb.AppendFormat("cb: {0} lpb: ", bin.Count);
+                sb.AppendFormat("cb: {0} lpb: ", bin.Length);
             }
 
-            if (bin == null || bin.Count == 0)
+            if (bin == null || bin.Length == 0)
             {
                 sb.Append("NULL");
             }
             else
             {
                 if (limit < 0) limit = 0;
-                int count = limit == 0 ? bin.Count : Math.Min(bin.Count, limit);
+                int count = limit == 0 ? bin.Length : Math.Min(bin.Length, limit);
                 for (int i = 0; i < count; i++)
                 {
                     byte b = bin[i];
@@ -145,7 +139,7 @@ namespace BlockParser
                     sb.Append(low);
                 }
 
-                if (limit != 0 && bin.Count > limit)
+                if (limit != 0 && bin.Length > limit)
                 {
                     sb.Append("...");
                 }

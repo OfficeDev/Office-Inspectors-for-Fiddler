@@ -1,5 +1,4 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
 
 namespace BlockParser.Tests
 {
@@ -56,23 +55,23 @@ namespace BlockParser.Tests
         [TestMethod]
         public void Test_BinToTextStringW()
         {
-            var bin = new List<byte>(System.Text.Encoding.Unicode.GetBytes("abc"));
+            var bin = System.Text.Encoding.Unicode.GetBytes("abc");
             Assert.AreEqual("abc", Strings.BinToTextStringW(bin, false));
 
-            var binWithInvalid = new List<byte>(System.Text.Encoding.Unicode.GetBytes("a\u0081c"));
+            var binWithInvalid = System.Text.Encoding.Unicode.GetBytes("a\u0081c");
             Assert.AreEqual("a.c", Strings.BinToTextStringW(binWithInvalid, false));
 
-            var binWithWhiteSpace = new List<byte>(System.Text.Encoding.Unicode.GetBytes("a\r\nb\rc\n\td"));
+            var binWithWhiteSpace = System.Text.Encoding.Unicode.GetBytes("a\r\nb\rc\n\td");
             Assert.AreEqual("a..b.c..d", Strings.BinToTextStringW(binWithWhiteSpace, false));
             Assert.AreEqual("a\r\nb\rc\n\td", Strings.BinToTextStringW(binWithWhiteSpace, true));
 
-            Assert.AreEqual("", Strings.BinToTextStringW(new List<byte>(), false));
+            Assert.AreEqual("", Strings.BinToTextStringW(new byte[] { }, false));
 
             var mystringW = "mystring";
-            var myStringWvector = new List<byte>(System.Text.Encoding.Unicode.GetBytes(mystringW));
-            var vector_abcdW = new List<byte> { 0x61, 0, 0x62, 0, 0x63, 0, 0x64, 0 };
-            var vector_abNULLdW = new List<byte> { 0x61, 0, 0x62, 0, 0x00, 0, 0x64, 0 };
-            var vector_tabcrlfW = new List<byte> { 0x9, 0, 0xa, 0, 0xd, 0 };
+            var myStringWvector = System.Text.Encoding.Unicode.GetBytes(mystringW);
+            var vector_abcdW = new byte[] { 0x61, 0, 0x62, 0, 0x63, 0, 0x64, 0 };
+            var vector_abNULLdW = new byte[] { 0x61, 0, 0x62, 0, 0x00, 0, 0x64, 0 };
+            var vector_tabcrlfW = new byte[] { 0x9, 0, 0xa, 0, 0xd, 0 };
 
             Assert.AreEqual("", Strings.BinToTextStringW(null, true));
             Assert.AreEqual("", Strings.BinToTextStringW(null, false));
@@ -86,19 +85,19 @@ namespace BlockParser.Tests
         [TestMethod]
         public void Test_BinToTextStringA()
         {
-            var bin = new List<byte>(System.Text.Encoding.ASCII.GetBytes("abc"));
+            var bin = System.Text.Encoding.ASCII.GetBytes("abc");
             Assert.AreEqual("abc", Strings.BinToTextStringA(bin, false));
 
-            var binWithInvalid = new List<byte> { 97, 0x81, 99 }; // a, invalid, c
+            var binWithInvalid = new byte[] { 97, 0x81, 99 }; // a, invalid, c
             Assert.AreEqual("a.c", Strings.BinToTextStringA(binWithInvalid, false));
 
-            Assert.AreEqual("", Strings.BinToTextStringA(new List<byte>(), false));
+            Assert.AreEqual("", Strings.BinToTextStringA(new byte[] { }, false));
 
             var mystringA = "mystring";
-            var myStringAvector = new List<byte>(System.Text.Encoding.ASCII.GetBytes(mystringA));
-            var vector_abcdA = new List<byte> { 0x61, 0x62, 0x63, 0x64 };
-            var vector_abNULLdA = new List<byte> { 0x61, 0x62, 0x00, 0x64 };
-            var vector_tabcrlfA = new List<byte> { 0x9, 0xa, 0xd };
+            var myStringAvector = System.Text.Encoding.ASCII.GetBytes(mystringA);
+            var vector_abcdA = new byte[] { 0x61, 0x62, 0x63, 0x64 };
+            var vector_abNULLdA = new byte[] { 0x61, 0x62, 0x00, 0x64 };
+            var vector_tabcrlfA = new byte[] { 0x9, 0xa, 0xd };
 
             Assert.AreEqual("", Strings.BinToTextStringA(null, true));
             Assert.AreEqual("", Strings.BinToTextStringA(null, false));
@@ -113,11 +112,11 @@ namespace BlockParser.Tests
         [TestMethod]
         public void Test_BinToHexString()
         {
-            var bin = new List<byte> { 0xAB, 0xCD, 0xEF };
+            var bin = new byte[] { 0xAB, 0xCD, 0xEF };
             Assert.AreEqual("ABCDEF", Strings.BinToHexString(bin));
             Assert.AreEqual("cb: 3 lpb: ABCDEF", Strings.BinToHexString(bin, true));
-            Assert.AreEqual("NULL", Strings.BinToHexString(new List<byte>()));
-            Assert.AreEqual("cb: 0 lpb: NULL", Strings.BinToHexString(new List<byte>(), true));
+            Assert.AreEqual("NULL", Strings.BinToHexString(new byte[] { }));
+            Assert.AreEqual("cb: 0 lpb: NULL", Strings.BinToHexString(new byte[] { }, true));
         }
 
         [TestMethod]

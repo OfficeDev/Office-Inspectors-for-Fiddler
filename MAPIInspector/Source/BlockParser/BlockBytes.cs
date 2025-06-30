@@ -5,15 +5,15 @@ namespace BlockParser
 {
     public class BlockBytes : Block
     {
-        private List<byte> _data = new List<byte>();
+        private byte[] _data = new byte[] { };
         internal int cbBytes;
         internal int cbMaxBytes;
 
         public BlockBytes() { }
 
         public IReadOnlyList<byte> Data => _data;
-        public int Count => _data.Count;
-        public bool Empty => _data.Count == 0;
+        public int Count => _data.Length;
+        public bool Empty => _data.Length == 0;
 
         public string ToTextStringA(bool multiLine = false) => Strings.StripCharacter(Strings.BinToTextStringA(_data, multiLine), '\0');
 
@@ -21,7 +21,7 @@ namespace BlockParser
 
         public bool Equal(int cb, byte[] bin)
         {
-            if (cb != _data.Count) return false;
+            if (cb != _data.Length) return false;
             return _data.SequenceEqual(bin);
         }
 
@@ -31,7 +31,7 @@ namespace BlockParser
             if (cbBytes > 0 && parser.CheckSize(cbBytes) &&
                 (cbMaxBytes == -1 || cbBytes <= cbMaxBytes))
             {
-                _data = new List<byte>(parser.ReadBytes(cbBytes));
+                _data = parser.ReadBytes(cbBytes);
                 Parsed = true;
             }
         }
@@ -39,7 +39,7 @@ namespace BlockParser
         protected override void ParseBlocks()
         {
             SetText(ToHexString(false));
-            AddHeader($"cb: {_data.Count}");
+            AddHeader($"cb: {_data.Length}");
         }
     }
 }
