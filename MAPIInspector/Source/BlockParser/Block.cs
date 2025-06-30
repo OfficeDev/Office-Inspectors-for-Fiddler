@@ -43,7 +43,6 @@ namespace BlockParser
         protected virtual bool UsePipes() => false;
 
         private List<Block> children { get; } = new List<Block>();
-        private string _stringBlock;
         private uint _source;
 
         // Overrides
@@ -100,7 +99,7 @@ namespace BlockParser
         {
             this.parser = parser;
             parser.PushCap(cbBin);
-            this.EnableJunk = enableJunk;
+            EnableJunk = enableJunk;
             EnsureParsed();
             parser.PopCap();
         }
@@ -130,19 +129,16 @@ namespace BlockParser
 
                 Size = parser.Offset - Offset;
             }
-
-            var stringArray = ToStringsInternal();
-            _stringBlock = Strings.TrimWhitespace(string.Join(string.Empty, stringArray));
-            _stringBlock = _stringBlock.Replace('\0', '.');
         }
 
-        public string FullString
+        // This is purely for testing now
+        public string FullString()
         {
-            get
-            {
-                EnsureParsed();
-                return _stringBlock;
-            }
+            EnsureParsed();
+            var stringArray = ToStringsInternal();
+            var _stringBlock = Strings.TrimWhitespace(string.Join(string.Empty, stringArray));
+            _stringBlock = _stringBlock.Replace('\0', '.');
+            return _stringBlock;
         }
 
         public override string ToString() => Text;

@@ -74,7 +74,7 @@ namespace BlockParserTests
                 "\tUnparsed data\r\n" +
                 "\t\t0000\r\n" +
                 "\t\t\tcb: 2",
-                block.FullString);
+                block.FullString());
         }
 
         [TestMethod]
@@ -98,7 +98,7 @@ namespace BlockParserTests
                 "TestBlock\r\n" +
                 "\tf1 = 0x12345678\r\n" +
                 "\tf2 = 0xABCD",
-                block.Children[2].FullString);
+                block.Children[2].FullString());
             Assert.AreEqual("Unparsed data", block.Children[3].Text);
             Assert.AreEqual("BEEF", block.Children[3].Children[0].Text);
             Assert.AreEqual("cb: 2", block.Children[3].Children[0].Children[0].Text);
@@ -112,7 +112,7 @@ namespace BlockParserTests
                 "\tUnparsed data\r\n" +
                 "\t\tBEEF\r\n" +
                 "\t\t\tcb: 2",
-                block.FullString);
+                block.FullString());
         }
 
         [TestMethod]
@@ -140,7 +140,7 @@ namespace BlockParserTests
                 "\tUnparsed data\r\n" +
                 "\t\t68\r\n" +
                 "\t\t\tcb: 1",
-                block.FullString);
+                block.FullString());
         }
 
         [TestMethod]
@@ -203,7 +203,7 @@ namespace BlockParserTests
             Assert.AreEqual("TestBlock\r\n" +
                 "\tf1:Value1\r\n" +
                 "\tf2:Value1",
-                block.FullString);
+                block.FullString());
         }
     }
 }

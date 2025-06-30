@@ -297,7 +297,7 @@ namespace BlockParserTests
             var c = Block.Create();
             c.SetText("child");
             b.AddChild(c);
-            Assert.IsTrue(b.FullString.Contains("child"));
+            Assert.IsTrue(b.FullString().Contains("child"));
         }
 
         [TestMethod]
