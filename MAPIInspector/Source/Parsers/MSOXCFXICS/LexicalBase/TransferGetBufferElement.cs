@@ -22,8 +22,6 @@ namespace MAPIInspector.Parsers
         /// </summary>
         public BlockT<Markers> Marker;
 
-        private Block Comment;
-
         protected override void Parse()
         {
             if (Partial.PartialGetType != 0 &&
@@ -31,8 +29,6 @@ namespace MAPIInspector.Parsers
                 Partial.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
                 Partial.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
             {
-                Comment = Partial.CreatePartialComment();
-
                 var tmpMarker = TestParse<Markers>();
                 if (MarkersHelper.IsMarker(tmpMarker))
                 {
@@ -109,7 +105,6 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("TransferGetBufferElement");
-            AddChild(Comment);
             AddChild(MetaValue, "MetaValue");
             AddChild(PropValue, "PropValue");
             AddChildBlockT(Marker, "Marker");

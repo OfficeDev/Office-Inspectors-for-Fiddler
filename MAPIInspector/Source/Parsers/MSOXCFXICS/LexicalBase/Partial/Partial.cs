@@ -614,22 +614,25 @@ namespace MAPIInspector.Parsers
         public static Block CreatePartialComment()
         {
             var comment = Block.Create("Partial Details");
+            if (IsGet) comment.AddHeader("IsGet");
             if (PartialGetType != PropertyDataType.PtypUnspecified) comment.AddHeader($"PartialGetType:{PartialGetType}");
             if (PartialGetId != 0) comment.AddHeader($"PartialGetId:{PartialGetId}");
             if (PartialGetRemainSize != -1) comment.AddHeader($"PartialGetRemainSize:{PartialGetRemainSize:X}");
             if (PartialGetSubRemainSize != -1) comment.AddHeader($"PartialGetSubRemainSize:{PartialGetSubRemainSize:X}");
 
+            if (IsPut) comment.AddHeader("IsPut");
             if (PartialPutExtendType != PropertyDataType.PtypUnspecified) comment.AddHeader($"PartialPutExtendType:{PartialPutExtendType}");
             if (PartialGetId != 0) comment.AddHeader($"PartialPutExtendId:{PartialPutExtendId}");
             if (PartialPutExtendRemainSize != -1) comment.AddHeader($"PartialPutExtendRemainSize:{PartialPutExtendRemainSize:X}");
             if (PartialPutExtendRemainSize != -1) comment.AddHeader($"PartialPutExtendRemainSize:{PartialPutExtendSubRemainSize:X}");
 
+            if (IsPutExtend) comment.AddHeader("IsPutExtend");
             if (PartialPutType != PropertyDataType.PtypUnspecified) comment.AddHeader($"PartialPutType:{PartialPutType}");
             if (PartialPutId != 0) comment.AddHeader($"PartialPutId:{PartialPutId}");
             if (PartialPutRemainSize != -1) comment.AddHeader($"PartialPutRemainSize:{PartialPutRemainSize}");
             if (PartialPutSubRemainSize != -1) comment.AddHeader($"PartialPutSubRemainSize:{PartialPutSubRemainSize:X}");
 
-            comment.AddHeader($"IsOneMoreByteToRead:{IsOneMoreByteToRead}");
+            if (IsGet) comment.AddHeader($"IsOneMoreByteToRead:{IsOneMoreByteToRead}");
             return comment;
         }
     }

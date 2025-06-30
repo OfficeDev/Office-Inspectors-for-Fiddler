@@ -113,6 +113,7 @@ namespace MAPIInspector.Parsers
 
                                 if (blockLength != 0)
                                 {
+                                    var wasOneMoreByteToRead = Partial.IsOneMoreByteToRead;
                                     if (Partial.IsOneMoreByteToRead)
                                     {
                                         parser.Advance(1);
@@ -125,9 +126,15 @@ namespace MAPIInspector.Parsers
                                         ValueArray.Parse(parser);
                                     }
 
-                                    if (blockLength % 2 != 0)
+                                    // If IsOneMoreByteToRead was true and we had an even number of bytes to read
+                                    // then we skipped the first byte and have an extra byte to skip
+                                    // If IsOneMoreByteToRead was false and we had an odd number of bytes to read
+                                    // then there is an extra byte to skip
+                                    if ((wasOneMoreByteToRead && blockLength % 2 == 0) ||
+                                        (!wasOneMoreByteToRead && blockLength % 2 != 0))
                                     {
                                         parser.Advance(1);
+                                        Partial.IsOneMoreByteToRead = true;
                                     }
                                 }
                             }
@@ -162,6 +169,7 @@ namespace MAPIInspector.Parsers
 
                                 if (blockLength != 0)
                                 {
+                                    var wasOneMoreByteToRead = Partial.IsOneMoreByteToRead;
                                     if (Partial.IsOneMoreByteToRead)
                                     {
                                         parser.Advance(1);
@@ -174,9 +182,15 @@ namespace MAPIInspector.Parsers
                                         ValueArray.Parse(parser);
                                     }
 
-                                    if (blockLength % 2 != 0)
+                                    // If IsOneMoreByteToRead was true and we had an even number of bytes to read
+                                    // then we skipped the first byte and have an extra byte to skip
+                                    // If IsOneMoreByteToRead was false and we had an odd number of bytes to read
+                                    // then there is an extra byte to skip
+                                    if ((wasOneMoreByteToRead && blockLength % 2 == 0) ||
+                                        (!wasOneMoreByteToRead && blockLength % 2 != 0))
                                     {
                                         parser.Advance(1);
+                                        Partial.IsOneMoreByteToRead = true;
                                     }
                                 }
                             }
@@ -234,8 +248,10 @@ namespace MAPIInspector.Parsers
 
                                 if (blockLength != 0)
                                 {
+                                    var wasOneMoreByteToRead = Partial.IsOneMoreByteToRead;
                                     if (Partial.IsOneMoreByteToRead)
                                     {
+                                        //TODO: Capture and reassemble these skipped bytes
                                         parser.Advance(1);
                                         Partial.IsOneMoreByteToRead = false;
                                     }
@@ -246,9 +262,15 @@ namespace MAPIInspector.Parsers
                                         ValueArray.Parse(parser);
                                     }
 
-                                    if (blockLength % 2 != 0)
+                                    // If IsOneMoreByteToRead was true and we had an even number of bytes to read
+                                    // then we skipped the first byte and have an extra byte to skip
+                                    // If IsOneMoreByteToRead was false and we had an odd number of bytes to read
+                                    // then there is an extra byte to skip
+                                    if ((wasOneMoreByteToRead && blockLength % 2 == 0) ||
+                                        (!wasOneMoreByteToRead && blockLength % 2 != 0))
                                     {
                                         parser.Advance(1);
+                                        Partial.IsOneMoreByteToRead = true;
                                     }
                                 }
                             }
