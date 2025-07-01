@@ -32,8 +32,10 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                if (Partial.PartialPutType != 0 && Partial.PartialPutServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && Partial.PartialPutProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
-                    && Partial.PartialPutClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
+                if (Partial.PartialPutType != 0 &&
+                    Partial.PartialPutServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
+                    Partial.PartialPutProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
+                    Partial.PartialPutClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
                     ptype = CreateBlock(Partial.PartialPutType, 0, 0);
 

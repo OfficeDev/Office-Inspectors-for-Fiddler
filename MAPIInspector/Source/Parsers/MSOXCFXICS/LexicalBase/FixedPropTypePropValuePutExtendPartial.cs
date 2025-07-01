@@ -26,8 +26,10 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                if (Partial.PartialPutExtendType != 0 && Partial.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && Partial.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
-                    && Partial.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
+                if (Partial.PartialPutExtendType != 0 &&
+                    Partial.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
+                    Partial.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
+                    Partial.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
                     ptype = CreateBlock(Partial.PartialPutExtendType, 0, 0);
                     pid = CreateBlock(Partial.PartialPutExtendId, 0, 0);

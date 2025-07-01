@@ -27,8 +27,10 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                if (Partial.PartialGetType != 0 && Partial.PartialGetServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && Partial.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
-                    && Partial.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
+                if (Partial.PartialGetType != 0 &&
+                    Partial.PartialGetServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
+                    Partial.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
+                    Partial.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
                     Comment = Partial.CreatePartialComment();
 
