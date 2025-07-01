@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
                 }
                 else
                 {
-                    if (LexicalTypeHelper.IsFixedType((PropertyDataType)Partial.PartialPutExtendType))
+                    if (LexicalTypeHelper.IsFixedType(Partial.PartialPutExtendType))
                     {
                         if (Partial.PartialPutExtendType == PropertyDataType.PtypInteger32 &&
                             Partial.PartialPutExtendId == PidTagPropertyEnum.MetaTagIdsetGiven)
@@ -52,12 +52,12 @@ namespace MAPIInspector.Parsers
                             PropValue = Parse<FixedPropTypePropValuePutExtendPartial>();
                         }
                     }
-                    else if (LexicalTypeHelper.IsVarType((PropertyDataType)Partial.PartialPutExtendType) ||
+                    else if (LexicalTypeHelper.IsVarType(Partial.PartialPutExtendType) ||
                     LexicalTypeHelper.IsCodePageType(Partial.PartialPutExtendType))
                     {
                         PropValue = Parse<VarPropTypePropValuePutExtendPartial>();
                     }
-                    else if (LexicalTypeHelper.IsMVType((PropertyDataType)Partial.PartialPutExtendType))
+                    else if (LexicalTypeHelper.IsMVType(Partial.PartialPutExtendType))
                     {
                         PropValue = Parse<MvPropTypePropValuePutExtendPartial>();
                     }

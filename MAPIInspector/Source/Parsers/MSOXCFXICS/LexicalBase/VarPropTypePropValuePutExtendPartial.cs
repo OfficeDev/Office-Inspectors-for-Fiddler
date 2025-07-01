@@ -3,7 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// The VarPropTypePropValue class.
+    /// The VarPropTypePropValuePutExtendPartial class.
     /// </summary>
     public class VarPropTypePropValuePutExtendPartial : PropValue
     {
@@ -11,6 +11,8 @@ namespace MAPIInspector.Parsers
         /// The length of a variate type value.
         /// </summary>
         public BlockT<int> Length;
+
+        public Block SkippedBytes;
 
         /// <summary>
         /// The valueArray.
@@ -22,10 +24,7 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected int plength;
 
-        /// <summary>
-        /// Boolean value used to record whether ptypString value is split to two bytes which parse in different buffer
-        /// </summary>
-        protected bool splitpreviousOne = false;
+        private Block Comment;
 
         protected override void Parse()
         {
@@ -40,9 +39,13 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                if (Partial.PartialPutExtendType != 0 && Partial.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath && Partial.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess
-                    && Partial.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
+                if (Partial.PartialPutExtendType != 0 &&
+                    Partial.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
+                    Partial.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
+                    Partial.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
+                    Comment = Partial.CreatePartialComment();
+
                     ptype = CreateBlock(Partial.PartialPutExtendType, 0, 0);
 
                     if (Partial.PartialPutExtendRemainSize != -1)
@@ -54,7 +57,7 @@ namespace MAPIInspector.Parsers
                             ptype == (PropertyDataType)CodePageType.PtypCodePageUnicode ||
                             ptype == (PropertyDataType)CodePageType.PtypCodePageUnicode52))
                         {
-                            splitpreviousOne = true;
+                            Partial.IsOneMorePutExtendByteToRead = true;
                         }
 
                         Partial.PartialPutExtendRemainSize = -1;
@@ -66,6 +69,7 @@ namespace MAPIInspector.Parsers
 
                     // clear
                     Partial.PartialPutExtendType = 0;
+                    Partial.PartialPutExtendId = 0;
 
                     if (Partial.PartialPutExtendRemainSize == -1)
                     {
@@ -111,10 +115,13 @@ namespace MAPIInspector.Parsers
 
                                 if (blockLength != 0)
                                 {
-                                    if (splitpreviousOne)
+                                    var wasOneMorePutExtendByteToRead = Partial.IsOneMorePutExtendByteToRead;
+                                    if (Partial.IsOneMorePutExtendByteToRead)
                                     {
-                                        parser.Advance(1);
-                                        splitpreviousOne = false;
+                                        var oneMorePutExtendByte = ParseT<byte>();
+                                        string skippedChar = System.Text.Encoding.Unicode.GetString(new byte[] { Partial.OneMorePutExtendByte, oneMorePutExtendByte });
+                                        SkippedBytes = Create(oneMorePutExtendByte.Size, oneMorePutExtendByte.Offset, $"SkippedBytes:{Partial.OneMorePutExtendByte:X2} {oneMorePutExtendByte.Data:X2} = \"{skippedChar}\"");
+                                        Partial.IsOneMorePutExtendByteToRead = false;
                                     }
 
                                     if ((blockLength / 2) != 0)
@@ -123,19 +130,29 @@ namespace MAPIInspector.Parsers
                                         ValueArray.Parse(parser);
                                     }
 
-                                    if (blockLength % 2 != 0)
+                                    // If IsOneMorePutExtendByteToRead was true and we had an even number of bytes to read
+                                    // then we skipped the first byte and have an extra byte to skip
+                                    // If IsOneMorePutExtendByteToRead was false and we had an odd number of bytes to read
+                                    // then there is an extra byte to skip
+                                    if ((wasOneMorePutExtendByteToRead && blockLength % 2 == 0) ||
+                                        (!wasOneMorePutExtendByteToRead && blockLength % 2 != 0))
                                     {
-                                        parser.Advance(1);
+                                        BlockT<byte> OneMorePutExtendByte = ParseT<byte>();
+                                        Partial.IsOneMorePutExtendByteToRead = true;
+                                        Partial.OneMorePutExtendByte = OneMorePutExtendByte;
                                     }
                                 }
                             }
                             else
                             {
-                                if (splitpreviousOne)
+                                if (Partial.IsOneMorePutExtendByteToRead)
                                 {
-                                    parser.Advance(1);
-                                    splitpreviousOne = false;
+                                    var oneMorePutExtendByte = ParseT<byte>();
+                                    string skippedChar = System.Text.Encoding.Unicode.GetString(new byte[] { Partial.OneMorePutExtendByte, oneMorePutExtendByte });
+                                    SkippedBytes = Create(oneMorePutExtendByte.Size, oneMorePutExtendByte.Offset, $"SkippedBytes:{Partial.OneMorePutExtendByte:X2} {oneMorePutExtendByte.Data:X2} = \"{skippedChar}\"");
+                                    Partial.IsOneMorePutExtendByteToRead = false;
                                 }
+
 
                                 if ((blockLength / 2) != 0)
                                 {
@@ -160,11 +177,15 @@ namespace MAPIInspector.Parsers
 
                                 if (blockLength != 0)
                                 {
-                                    if (splitpreviousOne)
+                                    var wasOneMorePutExtendByteToRead = Partial.IsOneMorePutExtendByteToRead;
+                                    if (Partial.IsOneMorePutExtendByteToRead)
                                     {
-                                        parser.Advance(1);
-                                        splitpreviousOne = false;
+                                        var oneMorePutExtendByte = ParseT<byte>();
+                                        string skippedChar = System.Text.Encoding.Unicode.GetString(new byte[] { Partial.OneMorePutExtendByte, oneMorePutExtendByte });
+                                        SkippedBytes = Create(oneMorePutExtendByte.Size, oneMorePutExtendByte.Offset, $"SkippedBytes:{Partial.OneMorePutExtendByte:X2} {oneMorePutExtendByte.Data:X2} = \"{skippedChar}\"");
+                                        Partial.IsOneMorePutExtendByteToRead = false;
                                     }
+
 
                                     if ((blockLength / 2) != 0)
                                     {
@@ -172,19 +193,29 @@ namespace MAPIInspector.Parsers
                                         ValueArray.Parse(parser);
                                     }
 
-                                    if (blockLength % 2 != 0)
+                                    // If IsOneMorePutExtendByteToRead was true and we had an even number of bytes to read
+                                    // then we skipped the first byte and have an extra byte to skip
+                                    // If IsOneMorePutExtendByteToRead was false and we had an odd number of bytes to read
+                                    // then there is an extra byte to skip
+                                    if ((wasOneMorePutExtendByteToRead && blockLength % 2 == 0) ||
+                                        (!wasOneMorePutExtendByteToRead && blockLength % 2 != 0))
                                     {
-                                        parser.Advance(1);
+                                        BlockT<byte> oneMorePutExtendByte = ParseT<byte>();
+                                        Partial.IsOneMorePutExtendByteToRead = true;
+                                        Partial.OneMorePutExtendByte = oneMorePutExtendByte;
                                     }
                                 }
                             }
                             else
                             {
-                                if (splitpreviousOne)
+                                if (Partial.IsOneMorePutExtendByteToRead)
                                 {
-                                    parser.Advance(1);
-                                    splitpreviousOne = false;
+                                    var oneMorePutExtendByte = ParseT<byte>();
+                                    string skippedChar = System.Text.Encoding.Unicode.GetString(new byte[] { Partial.OneMorePutExtendByte, oneMorePutExtendByte });
+                                    SkippedBytes = Create(oneMorePutExtendByte.Size, oneMorePutExtendByte.Offset, $"SkippedBytes:{Partial.OneMorePutExtendByte:X2} {oneMorePutExtendByte.Data:X2} = \"{skippedChar}\"");
+                                    Partial.IsOneMorePutExtendByteToRead = false;
                                 }
+
 
                                 if ((blockLength / 2) != 0)
                                 {
@@ -232,11 +263,15 @@ namespace MAPIInspector.Parsers
 
                                 if (blockLength != 0)
                                 {
-                                    if (splitpreviousOne)
+                                    var wasOneMorePutExtendByteToRead = Partial.IsOneMorePutExtendByteToRead;
+                                    if (Partial.IsOneMorePutExtendByteToRead)
                                     {
-                                        parser.Advance(1);
-                                        splitpreviousOne = false;
+                                        var oneMorePutExtendByte = ParseT<byte>();
+                                        string skippedChar = System.Text.Encoding.Unicode.GetString(new byte[] { Partial.OneMorePutExtendByte, oneMorePutExtendByte });
+                                        SkippedBytes = Create(oneMorePutExtendByte.Size, oneMorePutExtendByte.Offset, $"SkippedBytes:{Partial.OneMorePutExtendByte:X2} {oneMorePutExtendByte.Data:X2} = \"{skippedChar}\"");
+                                        Partial.IsOneMorePutExtendByteToRead = false;
                                     }
+
 
                                     if ((blockLength / 2) != 0)
                                     {
@@ -244,19 +279,29 @@ namespace MAPIInspector.Parsers
                                         ValueArray.Parse(parser);
                                     }
 
-                                    if (blockLength % 2 != 0)
+                                    // If IsOneMorePutExtendByteToRead was true and we had an even number of bytes to read
+                                    // then we skipped the first byte and have an extra byte to skip
+                                    // If IsOneMorePutExtendByteToRead was false and we had an odd number of bytes to read
+                                    // then there is an extra byte to skip
+                                    if ((wasOneMorePutExtendByteToRead && blockLength % 2 == 0) ||
+                                        (!wasOneMorePutExtendByteToRead && blockLength % 2 != 0))
                                     {
-                                        parser.Advance(1);
+                                        BlockT<byte> oneMorePutExtendByte = ParseT<byte>();
+                                        Partial.IsOneMorePutExtendByteToRead = true;
+                                        Partial.OneMorePutExtendByte = oneMorePutExtendByte;
                                     }
                                 }
                             }
                             else
                             {
-                                if (splitpreviousOne)
+                                if (Partial.IsOneMorePutExtendByteToRead)
                                 {
-                                    parser.Advance(1);
-                                    splitpreviousOne = false;
+                                    var oneMorePutExtendByte = ParseT<byte>();
+                                    string skippedChar = System.Text.Encoding.Unicode.GetString(new byte[] { Partial.OneMorePutExtendByte, oneMorePutExtendByte });
+                                    SkippedBytes = Create(oneMorePutExtendByte.Size, oneMorePutExtendByte.Offset, $"SkippedBytes:{Partial.OneMorePutExtendByte:X2} {oneMorePutExtendByte.Data:X2} = \"{skippedChar}\"");
+                                    Partial.IsOneMorePutExtendByteToRead = false;
                                 }
+
 
                                 if ((blockLength / 2) != 0)
                                 {
@@ -307,8 +352,10 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             base.ParseBlocks();
+            AddChild(Comment);
             SetText("VarPropTypePropValuePutExtendPartial");
             AddChildBlockT(Length, "Length");
+            AddChild(SkippedBytes);
             AddChild(ValueArray, $"ValueArray: {ValueArray}");
         }
     }

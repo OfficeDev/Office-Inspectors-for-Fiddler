@@ -144,9 +144,22 @@ namespace MAPIInspector.Parsers
         public static Session PartialPutExtendSession { get; set; }
 
         /// <summary>
-        /// Used to indicates if there is one byte need to be read before parsing fasterTransfer element
+        /// Used to indicates if there is one get byte need to be read before parsing fasterTransfer element
         /// </summary>
-        public static bool IsOneMoreByteToRead { get; set; } = false;
+        public static bool IsOneMoreGetByteToRead { get; set; } = false;
+        public static byte OneMoreGetByte { get; set; } = 0;
+
+        /// <summary>
+        /// Used to indicates if there is one put byte need to be read before parsing fasterTransfer element
+        /// </summary>
+        public static bool IsOneMorePutByteToRead { get; set; } = false;
+        public static byte OneMorePutByte { get; set; } = 0;
+
+        /// <summary>
+        /// Used to indicates if there is one put extend byte need to be read before parsing fasterTransfer element
+        /// </summary>
+        public static bool IsOneMorePutExtendByteToRead { get; set; } = false;
+        public static byte OneMorePutExtendByte { get; set; } = 0;
 
         /// <summary>
         /// Record the map in handle, sessionId and PartialContextInformation for RopGetBuffer
@@ -619,20 +632,25 @@ namespace MAPIInspector.Parsers
             if (PartialGetId != 0) comment.AddHeader($"PartialGetId:{PartialGetId}");
             if (PartialGetRemainSize != -1) comment.AddHeader($"PartialGetRemainSize:{PartialGetRemainSize:X}");
             if (PartialGetSubRemainSize != -1) comment.AddHeader($"PartialGetSubRemainSize:{PartialGetSubRemainSize:X}");
+            if (IsGet) comment.AddHeader($"IsOneMoreGetByteToRead:{IsOneMoreGetByteToRead}");
+            if (IsGet) comment.AddHeader($"OneMoreGetByte:{OneMoreGetByte}");
 
             if (IsPut) comment.AddHeader("IsPut");
-            if (PartialPutExtendType != PropertyDataType.PtypUnspecified) comment.AddHeader($"PartialPutExtendType:{PartialPutExtendType}");
-            if (PartialGetId != 0) comment.AddHeader($"PartialPutExtendId:{PartialPutExtendId}");
-            if (PartialPutExtendRemainSize != -1) comment.AddHeader($"PartialPutExtendRemainSize:{PartialPutExtendRemainSize:X}");
-            if (PartialPutExtendRemainSize != -1) comment.AddHeader($"PartialPutExtendRemainSize:{PartialPutExtendSubRemainSize:X}");
-
-            if (IsPutExtend) comment.AddHeader("IsPutExtend");
             if (PartialPutType != PropertyDataType.PtypUnspecified) comment.AddHeader($"PartialPutType:{PartialPutType}");
             if (PartialPutId != 0) comment.AddHeader($"PartialPutId:{PartialPutId}");
             if (PartialPutRemainSize != -1) comment.AddHeader($"PartialPutRemainSize:{PartialPutRemainSize}");
             if (PartialPutSubRemainSize != -1) comment.AddHeader($"PartialPutSubRemainSize:{PartialPutSubRemainSize:X}");
+            if (IsPut) comment.AddHeader($"IsOneMorePutByteToRead:{IsOneMorePutByteToRead}");
+            if (IsPut) comment.AddHeader($"OneMorePutByte:{OneMorePutByte}");
 
-            if (IsGet) comment.AddHeader($"IsOneMoreByteToRead:{IsOneMoreByteToRead}");
+            if (IsPutExtend) comment.AddHeader("IsPutExtend");
+            if (PartialPutExtendType != PropertyDataType.PtypUnspecified) comment.AddHeader($"PartialPutExtendType:{PartialPutExtendType}");
+            if (PartialPutExtendId != 0) comment.AddHeader($"PartialPutExtendId:{PartialPutExtendId}");
+            if (PartialPutExtendRemainSize != -1) comment.AddHeader($"PartialPutExtendRemainSize:{PartialPutExtendRemainSize:X}");
+            if (PartialPutExtendSubRemainSize != -1) comment.AddHeader($"PartialPutExtendSubRemainSize:{PartialPutExtendSubRemainSize:X}");
+            if (IsPutExtend) comment.AddHeader($"IsOneMorePutExtendByteToRead:{IsOneMorePutExtendByteToRead}");
+            if (IsPutExtend) comment.AddHeader($"OneMorePutExtendByte:{OneMorePutExtendByte}");
+
             return comment;
         }
     }
