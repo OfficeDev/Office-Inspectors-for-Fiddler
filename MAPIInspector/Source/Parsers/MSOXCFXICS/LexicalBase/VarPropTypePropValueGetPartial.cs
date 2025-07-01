@@ -69,7 +69,6 @@ namespace MAPIInspector.Parsers
 
                     // clear
                     Partial.PartialGetType = 0;
-                    Partial.PartialGetId = 0;
 
                     if (Partial.PartialGetRemainSize == -1)
                     {

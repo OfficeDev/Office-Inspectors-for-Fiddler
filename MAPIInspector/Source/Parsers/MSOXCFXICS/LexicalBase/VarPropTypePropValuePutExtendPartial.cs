@@ -69,7 +69,6 @@ namespace MAPIInspector.Parsers
 
                     // clear
                     Partial.PartialPutExtendType = 0;
-                    Partial.PartialPutExtendId = 0;
 
                     if (Partial.PartialPutExtendRemainSize == -1)
                     {

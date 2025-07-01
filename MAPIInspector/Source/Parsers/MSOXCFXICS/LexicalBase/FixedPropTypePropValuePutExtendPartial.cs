@@ -12,6 +12,8 @@ namespace MAPIInspector.Parsers
         /// </summary>
         public Block FixedValue;
 
+        private Block Comment;
+
         protected override void Parse()
         {
             base.Parse();
@@ -31,6 +33,8 @@ namespace MAPIInspector.Parsers
                     Partial.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
                     Partial.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
+                    Comment = Partial.CreatePartialComment();
+
                     ptype = CreateBlock(Partial.PartialPutExtendType, 0, 0);
                     pid = CreateBlock(Partial.PartialPutExtendId, 0, 0);
 
@@ -61,6 +65,8 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             base.ParseBlocks();
+            AddChild(Comment);
+            SetText("FixedPropTypePropValuePutExtendPartial");
             AddChild(FixedValue, $"FixedValue:{FixedValue}");
         }
     }

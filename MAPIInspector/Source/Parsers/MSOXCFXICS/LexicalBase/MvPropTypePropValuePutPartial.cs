@@ -19,6 +19,8 @@ namespace MAPIInspector.Parsers
         /// </summary>
         private int Plength;
 
+        private Block Comment;
+
         protected override void Parse()
         {
             base.Parse();
@@ -37,6 +39,8 @@ namespace MAPIInspector.Parsers
                     Partial.PartialPutProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
                     Partial.PartialPutClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
+                    Comment = Partial.CreatePartialComment();
+					
                     ptype = CreateBlock(Partial.PartialPutType, 0, 0);
 
                     if (Partial.PartialPutRemainSize != -1)
@@ -51,7 +55,6 @@ namespace MAPIInspector.Parsers
 
                     // clear
                     Partial.PartialPutType = 0;
-                    Partial.PartialPutId = 0;
 
                     if (Partial.PartialPutRemainSize == -1 && Partial.PartialPutSubRemainSize == -1)
                     {
@@ -83,6 +86,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             base.ParseBlocks();
+            AddChild(Comment);
             SetText("MvPropTypePropValuePutPartial");
             AddChildBlockT(Length, "Length");
             AddLabeledChildren(ValueArray, "ValueArray");

@@ -44,6 +44,7 @@ namespace MAPIInspector.Parsers
                     Partial.PartialPutClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
                 {
                     Comment = Partial.CreatePartialComment();
+
                     ptype = CreateBlock(Partial.PartialPutType, 0, 0);
 
                     if (Partial.PartialPutRemainSize != -1)
@@ -67,7 +68,6 @@ namespace MAPIInspector.Parsers
 
                     // clear
                     Partial.PartialPutType = 0;
-                    Partial.PartialPutId = 0;
 
                     if (Partial.PartialPutRemainSize == -1)
                     {
