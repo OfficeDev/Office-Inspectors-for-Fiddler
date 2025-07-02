@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
@@ -8,33 +8,38 @@ namespace MAPIInspector.Parsers
     /// 2.3.1.4 ShortArray_r
     /// A class indicates the ShortArray_r structure.
     /// </summary>
-    public class ShortArray_r : BaseStructure
+    public class ShortArray_r : Block
     {
         /// <summary>
         /// The number of 16-bit integer values represented in the ShortArray_r structure. value MUST NOT exceed 100,000.
         /// </summary>
-        public uint CValues;
+        public BlockT<uint> CValues;
 
         /// <summary>
         /// The 16-bit integer values.
         /// </summary>
-        public short[] Lpi;
+        public BlockT<short>[] Lpi;
 
         /// <summary>
         /// Parse the ShortArray_r payload of session.
         /// </summary>
-        /// <param name="s">The stream to parse</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            CValues = ReadUint();
-            List<short> tempList = new List<short>();
+            CValues = ParseT<uint>();
+            var tempList = new List<BlockT<short>>();
             for (ulong i = 0; i < CValues; i++)
             {
-                tempList.Add(ReadINT16());
+                tempList.Add(ParseT<short>());
             }
 
             Lpi = tempList.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ShortArray_r");
+            AddChildBlockT(CValues, "CValues");
+            AddLabeledChildren(Lpi, "Lpi");
         }
     }
 }

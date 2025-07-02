@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
@@ -8,17 +8,12 @@ namespace MAPIInspector.Parsers
     /// 2.3.1.7 BinaryArray_r
     /// A class indicates the BinaryArray_r structure.
     /// </summary>
-    public class BinaryArray_r : BaseStructure
+    public class BinaryArray_r : Block
     {
-        /// <summary>
-        /// A variable value
-        /// </summary>
-        public byte? HasValue;
-
         /// <summary>
         /// The number of Binary_r data structures represented in the BinaryArray_r structure. value MUST NOT exceed 100,000.
         /// </summary>
-        public uint CValues;
+        public BlockT<uint> CValues;
 
         /// <summary>
         /// The Binary_r data structures.
@@ -28,30 +23,23 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the BinaryArray_r payload of session.
         /// </summary>
-        /// <param name="s">The stream to parse</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            byte temp = ReadByte();
-            if (temp == 0xFF)
-            {
-                HasValue = temp;
-            }
-            else
-            {
-                s.Position -= 1;
-            }
-
-            CValues = ReadUint();
-            List<Binary_r> temBytes = new List<Binary_r>();
+            CValues = ParseT<uint>();
+            var tmpBin = new List<Binary_r>();
             for (ulong i = 0; i < CValues; i++)
             {
-                Binary_r br = new Binary_r();
-                br.Parse(s);
-                temBytes.Add(br);
+                tmpBin.Add(Parse<Binary_r>());
             }
 
-            Lpbin = temBytes.ToArray();
+            Lpbin = tmpBin.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("BinaryArray_r");
+            AddChildBlockT(CValues, "CValues");
+            AddLabeledChildren(Lpbin, "Lpbin");
         }
     }
 }

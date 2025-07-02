@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -8,42 +7,42 @@ namespace MAPIInspector.Parsers
     /// 2.2.9.2 EphemeralEntryID
     /// A class indicates the EphemeralEntryID structure.
     /// </summary>
-    public class EphemeralEntryID : BaseStructure
+    public class EphemeralEntryID : Block
     {
         /// <summary>
         /// The type of ID.
         /// </summary>
-        public byte Type;
+        public BlockT<byte> Type;
 
         /// <summary>
         /// Reserved, generally value is a constant 0x00.
         /// </summary>
-        public byte R1;
+        public BlockT<byte> R1;
 
         /// <summary>
         /// Reserved, generally value is a constant 0x00.
         /// </summary>
-        public byte R2;
+        public BlockT<byte> R2;
 
         /// <summary>
         /// Reserved, generally value is a constant 0x00.
         /// </summary>
-        public byte R3;
+        public BlockT<byte> R3;
 
         /// <summary>
         /// A FlatUID_r value contains the GUID of the server that issued Ephemeral Entry ID.
         /// </summary>
-        public Guid ProviderUID;
+        public BlockGuid ProviderUID;
 
         /// <summary>
         /// Reserved, generally value is a constant 0x00000001.
         /// </summary>
-        public uint R4;
+        public BlockT<uint> R4;
 
         /// <summary>
         /// The display type of the object specified by Ephemeral Entry ID.
         /// </summary>
-        public DisplayTypeValues DisplayType;
+        public BlockT<DisplayTypeValues> DisplayType;
 
         /// <summary>
         /// The Minimal Entry ID of object.
@@ -53,19 +52,29 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the EphemeralEntryID payload of session.
         /// </summary>
-        /// <param name="s">The stream to parse</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Type = ReadByte();
-            R1 = ReadByte();
-            R2 = ReadByte();
-            R3 = ReadByte();
-            ProviderUID = ReadGuid();
-            R4 = ReadUint();
-            DisplayType = (DisplayTypeValues)ReadUint();
-            Mid = new MinimalEntryID();
-            Mid.Parse(s);
+            Type = ParseT<byte>();
+            R1 = ParseT<byte>();
+            R2 = ParseT<byte>();
+            R3 = ParseT<byte>();
+            ProviderUID = Parse<BlockGuid>();
+            R4 = ParseT<uint>();
+            DisplayType = ParseT<DisplayTypeValues>();
+            Mid = Parse<MinimalEntryID>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("EphemeralEntryID");
+            AddChildBlockT(Type, "Type");
+            AddChildBlockT(R1, "R1");
+            AddChildBlockT(R2, "R2");
+            AddChildBlockT(R3, "R3");
+            this.AddChildGuid(ProviderUID, "ProviderUID");
+            AddChildBlockT(R4, "R4");
+            AddChildBlockT(DisplayType, "DisplayType");
+            AddChild(Mid, "Mid");
         }
     }
 }

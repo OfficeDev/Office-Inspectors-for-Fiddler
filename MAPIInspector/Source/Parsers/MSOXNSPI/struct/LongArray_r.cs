@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
@@ -8,33 +8,38 @@ namespace MAPIInspector.Parsers
     /// 2.3.1.5 LongArray_r
     /// A class indicates the LongArray_r structure.
     /// </summary>
-    public class LongArray_r : BaseStructure
+    public class LongArray_r : Block
     {
         /// <summary>
         /// The number of 32-bit integers represented in structure. value MUST NOT exceed 100,000.
         /// </summary>
-        public uint CValues;
+        public BlockT<uint> CValues;
 
         /// <summary>
         /// The 32-bit integer values.
         /// </summary>
-        public int[] Lpl;
+        public BlockT<int>[] Lpl;
 
         /// <summary>
         /// Parse the LongArray_r payload of session.
         /// </summary>
-        /// <param name="s">The stream to parse</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            CValues = ReadUint();
-            List<int> tempList = new List<int>();
+            CValues = ParseT<uint>();
+            var tempList = new List<BlockT<int>>();
             for (int i = 0; i < CValues; i++)
             {
-                tempList.Add(ReadINT32());
+                tempList.Add(ParseT<int>());
             }
 
             Lpl = tempList.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("LongArray_r");
+            AddChildBlockT(CValues, "CValues");
+            AddLabeledChildren(Lpl, "Lpl");
         }
     }
 }

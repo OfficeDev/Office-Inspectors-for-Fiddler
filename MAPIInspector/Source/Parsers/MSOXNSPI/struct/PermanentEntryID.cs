@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -9,64 +7,74 @@ namespace MAPIInspector.Parsers
     /// 2.2.9.3 PermanentEntryID
     /// A class indicates the PermanentEntryID structure.
     /// </summary>
-    public class PermanentEntryID : BaseStructure
+    public class PermanentEntryID : Block
     {
         /// <summary>
         /// The type of ID.
         /// </summary>
-        public byte IDType;
+        public BlockT<byte> IDType;
 
         /// <summary>
         /// Reserved. All clients and servers MUST set value to the constant 0x00.
         /// </summary>
-        public byte R1;
+        public BlockT<byte> R1;
 
         /// <summary>
         /// Reserved. All clients and servers MUST set value to the constant 0x00.
         /// </summary>
-        public byte R2;
+        public BlockT<byte> R2;
 
         /// <summary>
         /// Reserved. All clients and servers MUST set value to the constant 0x00.
         /// </summary>
-        public byte R3;
+        public BlockT<byte> R3;
 
         /// <summary>
         /// A FlatUID_r value that contains the constant GUID specified in Permanent Entry ID GUID,
         /// </summary>
-        public Guid ProviderUID;
+        public BlockGuid ProviderUID;
 
         /// <summary>
         /// Reserved. All clients and servers MUST set value to the constant 0x00000001.
         /// </summary>
-        public uint R4;
+        public BlockT<uint> R4;
 
         /// <summary>
         /// The display type of the object specified by Permanent Entry ID.
         /// </summary>
-        public DisplayTypeValues DisplayTypeString;
+        public BlockT<DisplayTypeValues> DisplayTypeString;
 
         /// <summary>
         /// The DN (1) of the object specified by Permanent Entry ID.
         /// </summary>
-        public MAPIString DistinguishedName;
+        public BlockString DistinguishedName; // Ascii
 
         /// <summary>
         /// Parse the PermanentEntryID payload of session.
         /// </summary>
-        /// <param name="s">The stream to parse</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            IDType = ReadByte();
-            R1 = ReadByte();
-            R2 = ReadByte();
-            R3 = ReadByte();
-            ProviderUID = ReadGuid();
-            R4 = ReadUint();
-            DisplayTypeString = (DisplayTypeValues)ReadUint();
-            DistinguishedName = new MAPIString(Encoding.ASCII);
-            DistinguishedName.Parse(s);
+            IDType = ParseT<byte>();
+            R1 = ParseT<byte>();
+            R2 = ParseT<byte>();
+            R3 = ParseT<byte>();
+            ProviderUID = Parse<BlockGuid>();
+            R4 = ParseT<uint>();
+            DisplayTypeString = ParseT<DisplayTypeValues>();
+            DistinguishedName = ParseStringA();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("PermanentEntryID");
+            AddChildBlockT(IDType, "IDType ");
+            AddChildBlockT(R1, "R1");
+            AddChildBlockT(R2, "R2");
+            AddChildBlockT(R3, "R3");
+            this.AddChildGuid(ProviderUID, "ProviderUID");
+            AddChildBlockT(R4, "R4");
+            AddChildBlockT(DisplayTypeString, "DisplayTypeString");
+            AddChildString(DistinguishedName, "DistinguishedName");
         }
     }
 }

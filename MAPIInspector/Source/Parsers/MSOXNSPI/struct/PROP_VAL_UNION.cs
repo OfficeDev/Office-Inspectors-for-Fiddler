@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,22 +7,22 @@ namespace MAPIInspector.Parsers
     /// 2.3.1.11 PROP_VAL_UNION
     /// A class indicates the PROP_VAL_UNION structure.
     /// </summary>
-    public class PROP_VAL_UNION : BaseStructure
+    public class PROP_VAL_UNION : Block
     {
         /// <summary>
         /// PROP_VAL_UNION contains an encoding of the value of a property that can contain a single 16-bit integer value.
         /// </summary>
-        public short? I;
+        public BlockT<short> I;
 
         /// <summary>
         /// PROP_VAL_UNION contains an encoding of the value of a property that can contain a single 32-bit integer value.
         /// </summary>
-        public int? L;
+        public BlockT<int> L;
 
         /// <summary>
         /// PROP_VAL_UNION contains an encoding of the value of a property that can contain a single Boolean value.
         /// </summary>
-        public ushort? B;
+        public BlockT<ushort> B;
 
         /// <summary>
         /// PROP_VAL_UNION contains an encoding of the value of a property that can contain a single 8-bit character string value.
@@ -52,7 +52,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// PROP_VAL_UNION contains an encoding of the value of a property that can contain a single PtypErrorCode value.
         /// </summary>
-        public int? Err;
+        public BlockT<int> Err;
 
         /// <summary>
         /// PROP_VAL_UNION contains an encoding of the values of a property that can contain multiple 16-bit integer values.
@@ -92,98 +92,106 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Reserved. All clients and servers MUST set value to the constant 0x00000000.
         /// </summary>
-        public int? LReserved;
+        public BlockT<int> LReserved;
 
         /// <summary>
         /// Int value to initialize PROP_VAL_UNION constructed function.
         /// </summary>
-        private int tag;
+        private PropertyDataType propType;
 
         /// <summary>
         /// Initializes a new instance of the PROP_VAL_UNION class.
         /// </summary>
-        /// <param name="tag">The int value to initialize the function.</param>
-        public PROP_VAL_UNION(int tag)
+        /// <param name="type">The PropertyDataType value to initialize the function.</param>
+        public PROP_VAL_UNION(PropertyDataType type)
         {
-            this.tag = tag;
+            propType = type;
         }
 
         /// <summary>
         /// Parse the PROP_VAL_UNION payload of session.
         /// </summary>
-        /// <param name="s">The stream to parse</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            switch (tag)
+            switch (propType)
             {
-                case 0x00000002:
-                    I = ReadINT16();
+                case PropertyDataType.PtypInteger16:
+                    I = ParseT<short>();
                     break;
-                case 0x00000003:
-                    L = ReadINT32();
+                case PropertyDataType.PtypInteger32:
+                    L = ParseT<int>();
                     break;
-                case 0x0000000B:
-                    B = ReadUshort();
+                case PropertyDataType.PtypBoolean:
+                    B = ParseT<ushort>();
                     break;
-                case 0x0000001E:
-                    LpszA = new String_r();
-                    LpszA.Parse(s);
+                case PropertyDataType.PtypString8:
+                    LpszA = Parse<String_r>();
                     break;
-                case 0x00000102:
-                    Bin = new Binary_r();
-                    Bin.Parse(s);
+                case PropertyDataType.PtypBinary:
+                    Bin = Parse<Binary_r>();
                     break;
-                case 0x0000001F:
-                    LpszW = new WString_r();
-                    LpszW.Parse(s);
+                case PropertyDataType.PtypString:
+                    LpszW = Parse<WString_r>();
                     break;
-                case 0x00000048:
-                    Lpguid = new FlatUID_r();
-                    Lpguid.Parse(s);
+                case PropertyDataType.PtypGuid:
+                    Lpguid = Parse<FlatUID_r>();
                     break;
-                case 0x00000040:
-                    Ft = new PtypTime();
-                    Ft.Parse(s);
+                case PropertyDataType.PtypTime:
+                    Ft = Parse<PtypTime>();
                     break;
-                case 0x0000000A:
-                    Err = ReadINT32();
+                case PropertyDataType.PtypErrorCode:
+                    Err = ParseT<int>();
                     break;
-                case 0x00001002:
-                    MVi = new ShortArray_r();
-                    MVi.Parse(s);
+                case PropertyDataType.PtypMultipleInteger16:
+                    MVi = Parse<ShortArray_r>();
                     break;
-                case 0x00001003:
-                    MVl = new LongArray_r();
-                    MVl.Parse(s);
+                case PropertyDataType.PtypMultipleInteger32:
+                    MVl = Parse<LongArray_r>();
                     break;
-                case 0x0000101E:
-                    MVszA = new StringArray_r();
-                    MVszA.Parse(s);
+                case PropertyDataType.PtypMultipleString8:
+                    MVszA = Parse<StringArray_r>();
                     break;
-                case 0x00001102:
-                    MVbin = new BinaryArray_r();
-                    MVbin.Parse(s);
+                case PropertyDataType.PtypMultipleBinary:
+                    MVbin = Parse<BinaryArray_r>();
                     break;
-                case 0x00001048:
-                    MVguid = new FlatUIDArray_r();
-                    MVguid.Parse(s);
+                case PropertyDataType.PtypMultipleGuid:
+                    MVguid = Parse<FlatUIDArray_r>();
                     break;
-                case 0x0000101F:
-                    MVszW = new WStringArray_r();
-                    MVszW.Parse(s);
+                case PropertyDataType.PtypMultipleString:
+                    MVszW = Parse<WStringArray_r>();
                     break;
-                case 0x00001040:
-                    MVft = new DateTimeArray_r();
-                    MVft.Parse(s);
+                case PropertyDataType.PtypMultipleTime:
+                    MVft = Parse<DateTimeArray_r>();
                     break;
-                case 0x00000001:
-                case 0x0000000D:
-                    LReserved = ReadINT32();
+                case PropertyDataType.PtypNull:
+                case PropertyDataType.PtypObject_Or_PtypEmbeddedTable:
+                    LReserved = ParseT<int>();
                     break;
                 default:
                     break;
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("PROP_VAL_UNION");
+            AddChildBlockT(I, "I");
+            AddChildBlockT(L, "L");
+            AddChildBlockT(B, "B");
+            AddChild(LpszA, "LpszA");
+            AddChild(Bin, "Bin");
+            AddChild(LpszW, "LpszW");
+            AddChild(Lpguid, "Lpguid");
+            AddChild(Ft, "Ft");
+            AddChildBlockT(Err, "Err");
+            AddChild(MVi, "MVi");
+            AddChild(MVl, "MVl");
+            AddChild(MVszA, "MVszA");
+            AddChild(MVbin, "MVbin");
+            AddChild(MVguid, "MVguid");
+            AddChild(MVszW, "MVszW");
+            AddChild(MVft, "MVft");
+            AddChildBlockT(LReserved, "LReserved");
         }
     }
 }

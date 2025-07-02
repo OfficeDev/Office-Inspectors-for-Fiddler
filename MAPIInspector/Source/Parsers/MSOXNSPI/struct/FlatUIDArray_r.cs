@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
@@ -8,12 +8,12 @@ namespace MAPIInspector.Parsers
     /// 2.3.1.8 FlatUIDArray_r
     /// A class indicates the FlatUIDArray_r structure.
     /// </summary>
-    public class FlatUIDArray_r : BaseStructure
+    public class FlatUIDArray_r : Block
     {
         /// <summary>
         /// The number of FlatUID_r structures represented in the FlatUIDArray_r structure. value MUST NOT exceed 100,000.
         /// </summary>
-        public uint CValues;
+        public BlockT<uint> CValues;
 
         /// <summary>
         /// The FlatUID_r data structures.
@@ -23,20 +23,23 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the FlatUIDArray_r payload of session.
         /// </summary>
-        /// <param name="s">The stream to parse</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            CValues = ReadUint();
-            List<FlatUID_r> temBytes = new List<FlatUID_r>();
+            CValues = ParseT<uint>();
+            var tmpFlat = new List<FlatUID_r>();
             for (ulong i = 0; i < CValues; i++)
             {
-                FlatUID_r br = new FlatUID_r();
-                br.Parse(s);
-                temBytes.Add(br);
+                tmpFlat.Add(Parse<FlatUID_r>());
             }
 
-            Lpguid = temBytes.ToArray();
+            Lpguid = tmpFlat.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("FlatUIDArray_r");
+            AddChildBlockT(CValues, "CValues");
+            AddLabeledChildren(Lpguid, "Lpguid");
         }
     }
 }

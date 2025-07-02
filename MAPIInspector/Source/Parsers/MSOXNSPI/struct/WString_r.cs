@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Text;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -8,37 +7,25 @@ namespace MAPIInspector.Parsers
     /// 2.3.1.11 PROP_VAL_UNION
     /// A class indicates the WString_r structure.
     /// </summary>
-    public class WString_r : BaseStructure
+    public class WString_r : Block
     {
-        /// <summary>
-        /// A variable value
-        /// </summary>
-        public byte? HasValue;
-
         /// <summary>
         /// A single Unicode string value. value is NULL-terminated.
         /// </summary>
-        public MAPIString Value;
+        public BlockString Value;
 
         /// <summary>
         /// Parse the WString_r payload of session.
         /// </summary>
-        /// <param name="s">The stream to parse</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            byte temp = ReadByte();
-            if (temp == 0xFF)
-            {
-                HasValue = temp;
-            }
-            else
-            {
-                s.Position -= 1;
-            }
+            Value = ParseStringW();
+        }
 
-            Value = new MAPIString(Encoding.Unicode);
-            Value.Parse(s);
+        protected override void ParseBlocks()
+        {
+            SetText("WString_r");
+            AddChildString(Value, "Value");
         }
     }
 }

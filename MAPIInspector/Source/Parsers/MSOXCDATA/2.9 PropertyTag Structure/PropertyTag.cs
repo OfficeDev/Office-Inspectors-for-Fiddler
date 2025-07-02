@@ -34,7 +34,6 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the PropertyTag structure.
         /// </summary>
-        /// <param name="s">A stream containing the PropertyTag structure</param>
         protected override void Parse()
         {
             PropertyType = ParseT<PropertyDataType>();
