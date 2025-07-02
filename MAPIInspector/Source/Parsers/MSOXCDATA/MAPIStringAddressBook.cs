@@ -15,8 +15,9 @@ namespace MAPIInspector.Parsers
 
         /// <summary>
         /// TDI#76879 tell us the real MapiHttp traffic will add the magic byte 'FF' for the string or binary based property value.
+        /// 2.2.1.1 AddressBookPropertyValue Structure
         /// </summary>
-        public BlockT<byte> HasValue;
+        public BlockT<bool> HasValue;
 
         /// <summary>
         /// The string Encoding : ASCII or Unicode
@@ -37,6 +38,7 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
+            HasValue = ParseAs<byte, bool>();
             if (Encode == Encoding.Unicode)
             {
                 Value = ParseStringW();

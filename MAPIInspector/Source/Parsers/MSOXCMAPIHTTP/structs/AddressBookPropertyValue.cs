@@ -66,7 +66,7 @@ namespace MAPIInspector.Parsers
 
             if (HasValue == null || HasValue)
             {
-                _PropertyValue = PropertyValue.ReadPropertyValue(propertyDataType, parser, countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(propertyDataType, parser, countWide, true);
             }
         }
 
