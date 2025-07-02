@@ -89,8 +89,8 @@ namespace BlockParser
             if (!parser.CheckSize(System.Runtime.InteropServices.Marshal.SizeOf(type)))
                 return new BlockT<T>();
 
-            U uData = BlockT<U>.ReadStruct<U>(parser);
             int offset = parser.Offset;
+            U uData = BlockT<U>.ReadStruct<U>(parser);
             return CreateBlock((T)Convert.ChangeType(uData, typeof(T)), System.Runtime.InteropServices.Marshal.SizeOf(type), offset);
         }
 

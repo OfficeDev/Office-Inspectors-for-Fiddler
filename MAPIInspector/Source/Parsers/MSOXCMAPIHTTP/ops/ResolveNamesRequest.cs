@@ -39,11 +39,6 @@ namespace MAPIInspector.Parsers
         public bool HasNames;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of null-terminated Unicode strings in the NameValues field. TODO:
-        /// </summary>
-        public uint NameCount;
-
-        /// <summary>
         /// An array of null-terminated Unicode strings. The number of strings is specified by the NameCount field. 
         /// </summary>
         public WStringArray_r Names;
