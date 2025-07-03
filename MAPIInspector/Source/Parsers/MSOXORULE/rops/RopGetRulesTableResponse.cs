@@ -1,36 +1,44 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2 RopGetRulesTable ROP
     /// A class indicates the RopGetRulesTable ROP Response Buffer.
     /// </summary>
-    public class RopGetRulesTableResponse : BaseStructure
+    public class RopGetRulesTableResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// Parse the RopGetRulesTableResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopGetRulesTableResponse structure.</param>
-        public override void Parse(System.IO.Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopGetRulesTableResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
         }
     }
 }

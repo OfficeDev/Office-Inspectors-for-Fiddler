@@ -1,36 +1,44 @@
-﻿namespace MAPIInspector.Parsers
+﻿using BlockParser;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.3 RopUpdateDeferredActionMessages ROP
     /// A class indicates the RopUpdateDeferredActionMessages ROP Response Buffer.
     /// </summary>
-    public class RopUpdateDeferredActionMessagesResponse : BaseStructure
+    public class RopUpdateDeferredActionMessagesResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// Parse the RopUpdateDeferredActionMessagesResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopUpdateDeferredActionMessagesResponse structure.</param>
-        public override void Parse(System.IO.Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopUpdateDeferredActionMessagesResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
         }
     }
 }
