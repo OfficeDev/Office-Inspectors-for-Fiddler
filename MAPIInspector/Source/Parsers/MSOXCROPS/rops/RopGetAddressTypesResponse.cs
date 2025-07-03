@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 using System.Text;
 
 namespace MAPIInspector.Parsers
@@ -8,64 +8,71 @@ namespace MAPIInspector.Parsers
     /// 2.2.7.3 RopGetAddressTypes
     /// A class indicates the RopGetAddressTypes ROP Response Buffer.
     /// </summary>
-    public class RopGetAddressTypesResponse : BaseStructure
+    public class RopGetAddressTypesResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer that specifies the number of strings in the AddressTypes field.
         /// </summary>
-        public ushort? AddressTypeCount;
+        public BlockT<ushort> AddressTypeCount;
 
         /// <summary>
         /// An unsigned integer that specifies the length of the AddressTypes field.
         /// </summary>
-        public ushort? AddressTypeSize;
+        public BlockT<ushort> AddressTypeSize;
 
         /// <summary>
         /// A list of null-terminated ASCII strings.
         /// </summary>
-        public MAPIString[] AddressTypes;
+        public BlockString[] AddressTypes;
 
         /// <summary>
         /// Parse the RopGetAddressTypesResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopGetAddressTypesResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
-                AddressTypeCount = ReadUshort();
-                AddressTypeSize = ReadUshort();
-                List<MAPIString> listAddressTypes = new List<MAPIString>();
+                AddressTypeCount = ParseT<ushort>();
+                AddressTypeSize = ParseT<ushort>();
+                var listAddressTypes = new List<BlockString>();
 
                 for (int i = 0; i < AddressTypeCount; i++)
                 {
-                    MAPIString tempAddressTypes = new MAPIString(Encoding.ASCII);
-                    tempAddressTypes.Parse(s);
-                    listAddressTypes.Add(tempAddressTypes);
+                    listAddressTypes.Add(ParseStringA());
                 }
 
                 AddressTypes = listAddressTypes.ToArray();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopGetAddressTypesResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(AddressTypeCount, "AddressTypeCount");
+            AddChildBlockT(AddressTypeSize, "AddressTypeSize");
+            AddLabeledChildren(AddressTypes, "AddressTypes");
         }
     }
 }

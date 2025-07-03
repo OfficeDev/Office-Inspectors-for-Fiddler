@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -6,22 +6,22 @@ namespace MAPIInspector.Parsers
     /// 2.2.15.1 RopBufferTooSmall
     /// A class indicates the RopBufferTooSmall ROP Response Buffer.
     /// </summary>
-    public class RopBufferTooSmallResponse : BaseStructure
+    public class RopBufferTooSmallResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the size required for the ROP output buffer.
         /// </summary>
-        public ushort SizeNeeded;
+        public BlockT<ushort> SizeNeeded;
 
         /// <summary>
         /// An array of bytes that contains the section of the ROP input buffer that was not executed because of the insufficient size of the ROP output buffer.
         /// </summary>
-        public byte[] RequestBuffers;
+        public BlockBytes RequestBuffers;
 
         /// <summary>
         /// An unsigned integer that specifies the size of RequestBuffers.
@@ -34,19 +34,25 @@ namespace MAPIInspector.Parsers
         /// <param name="requestBuffersSize"> The size of RequestBuffers.</param>
         public RopBufferTooSmallResponse(uint requestBuffersSize)
         {
-            requestBuffersSize = requestBuffersSize;
+            this.requestBuffersSize = requestBuffersSize;
         }
 
         /// <summary>
         /// Parse the RopBufferTooSmallResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopBufferTooSmallResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            SizeNeeded = ReadUshort();
-            RequestBuffers = ReadBytes((int)requestBuffersSize);
+            RopId = ParseT<RopIdType>();
+            SizeNeeded = ParseT<ushort>();
+            RequestBuffers = ParseBytes((int)requestBuffersSize);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopBufferTooSmallResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(SizeNeeded, "SizeNeeded");
+            AddChildBytes(RequestBuffers, "RequestBuffers");
         }
     }
 }

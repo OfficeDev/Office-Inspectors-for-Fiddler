@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,66 +7,74 @@ namespace MAPIInspector.Parsers
     /// 2.2.15.2 RopBackoff
     /// A class indicates the RopBackoff ROP Response Buffer.
     /// </summary>
-    public class RopBackoffResponse : BaseStructure
+    public class RopBackoffResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP. For this operation this field is set to 0x01.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the RopLogon associated with this operation.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
         /// An unsigned integer that specifies the number of milliseconds to apply a ROP BackOff.
         /// </summary>
-        public uint Duration;
+        public BlockT<uint> Duration;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures in the BackoffRopData field.
         /// </summary>
-        public byte BackoffRopCount;
+        public BlockT<byte> BackoffRopCount;
 
         /// <summary>
-        /// An array of BackoffRop structures. 
+        /// An array of BackoffRop structures.
         /// </summary>
         public BackoffRop[] BackoffRopData;
 
         /// <summary>
         /// An unsigned integer that specifies the size of the AdditionalData field.
         /// </summary>
-        public ushort AdditionalDataSize;
+        public BlockT<ushort> AdditionalDataSize;
 
         /// <summary>
-        /// An array of bytes that specifies additional information about the ROP BackOff response. 
+        /// An array of bytes that specifies additional information about the ROP BackOff response.
         /// </summary>
-        public byte[] AdditionalData;
+        public BlockBytes AdditionalData;
 
         /// <summary>
         /// Parse the RopBackoffResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopBackoffResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            Duration = ReadUint();
-            BackoffRopCount = ReadByte();
-            List<BackoffRop> backoffRopDataList = new List<BackoffRop>();
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            Duration = ParseT<uint>();
+            BackoffRopCount = ParseT<byte>();
+            var backoffRopDataList = new List<BackoffRop>();
 
             for (int i = 0; i < BackoffRopCount; i++)
             {
-                BackoffRop subBackoffRop = new BackoffRop();
-                subBackoffRop.Parse(s);
-                backoffRopDataList.Add(subBackoffRop);
+                backoffRopDataList.Add(Parse<BackoffRop>());
             }
 
             BackoffRopData = backoffRopDataList.ToArray();
-            AdditionalDataSize = ReadUshort();
-            AdditionalData = ReadBytes(AdditionalDataSize);
+            AdditionalDataSize = ParseT<ushort>();
+            AdditionalData = ParseBytes(AdditionalDataSize);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopBackoffResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(Duration, "Duration");
+            AddChildBlockT(BackoffRopCount, "BackoffRopCount");
+            AddLabeledChildren(BackoffRopData, "BackoffRopData");
+            AddChildBlockT(AdditionalDataSize, "AdditionalDataSize");
+            AddChildBytes(AdditionalData, "AdditionalData");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -6,22 +6,22 @@ namespace MAPIInspector.Parsers
     /// 2.2.7.8 RopGetTransportFolder
     /// A class indicates the RopGetTransportFolder ROP Response Buffer.
     /// </summary>
-    public class RopGetTransportFolderResponse : BaseStructure
+    public class RopGetTransportFolderResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An identifier that specifies the transport folder.
@@ -31,19 +31,25 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopGetTransportFolderResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopGetTransportFolderResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
-                FolderId = new FolderID();
-                FolderId.Parse(s);
+                FolderId = Parse<FolderID>();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopGetTransportFolderResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChild(FolderId, "FolderId");
         }
     }
 }

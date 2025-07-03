@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Text;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,78 +6,89 @@ namespace MAPIInspector.Parsers
     /// 2.2.7.9 RopOptionsData
     /// A class indicates the RopOptionsData ROP Response Buffer.
     /// </summary>
-    public class RopOptionsDataResponse : BaseStructure
+    public class RopOptionsDataResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// Reserved byte
         /// </summary>
-        public byte? Reserved;
+        public BlockT<byte> Reserved;
 
         /// <summary>
         /// An unsigned integer that specifies the size of the OptionsInfo field.
         /// </summary>
-        public ushort? OptionalInfoSize;
+        public BlockT<ushort> OptionalInfoSize;
 
         /// <summary>
         /// An array of bytes that contains opaque data from the server.
         /// </summary>
-        public byte?[] OptionalInfo;
+        public BlockBytes OptionalInfo;
 
         /// <summary>
         /// An unsigned integer that specifies the size of the HelpFile field.
         /// </summary>
-        public ushort? HelpFileSize;
+        public BlockT<ushort> HelpFileSize;
 
         /// <summary>
         /// An array of bytes that contains the help file associated with the specified address type.
         /// </summary>
-        public byte?[] HelpFile;
+        public BlockBytes HelpFile;
 
         /// <summary>
         /// A null-terminated multibyte string that specifies the name of the help file that is associated with the specified address type.
         /// </summary>
-        public MAPIString HelpFileName;
+        public BlockString HelpFileName;
 
         /// <summary>
         /// Parse the RopOptionsDataResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopOptionsDataResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
-                Reserved = ReadByte();
-                OptionalInfoSize = ReadUshort();
-                OptionalInfo = ConvertArray(ReadBytes((int)OptionalInfoSize));
-                HelpFileSize = ReadUshort();
+                Reserved = ParseT<byte>();
+                OptionalInfoSize = ParseT<ushort>();
+                OptionalInfo = ParseBytes((int)OptionalInfoSize);
+                HelpFileSize = ParseT<ushort>();
 
                 if (HelpFileSize != 0)
                 {
-                    HelpFile = ConvertArray(ReadBytes((int)HelpFileSize));
-                    HelpFileName = new MAPIString(Encoding.ASCII);
-                    HelpFileName.Parse(s);
+                    HelpFile = ParseBytes((int)HelpFileSize);
+                    HelpFileName = ParseStringA();
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopOptionsDataResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(Reserved, "Reserved");
+            AddChildBlockT(OptionalInfoSize, "OptionalInfoSize");
+            AddChildBytes(OptionalInfo, "OptionalInfo");
+            AddChildBlockT(HelpFileSize, "HelpFileSize");
+            AddChildBytes(HelpFile, "HelpFile");
+            AddChildString(HelpFileName, "HelpFileName");
         }
     }
 }

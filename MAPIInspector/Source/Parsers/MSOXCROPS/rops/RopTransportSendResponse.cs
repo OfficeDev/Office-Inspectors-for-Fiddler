@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,32 +7,32 @@ namespace MAPIInspector.Parsers
     /// 2.2.7.6 RopTransportSend
     /// A class indicates the RopTransportSend ROP Response Buffer.
     /// </summary>
-    public class RopTransportSendResponse : BaseStructure
+    public class RopTransportSendResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// A boolean that specifies whether property values are returned.
         /// </summary>
-        public byte? NoPropertiesReturned;
+        public BlockT<byte> NoPropertiesReturned;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures returned in the PropertyValues field.
         /// </summary>
-        public ushort? PropertyValueCount;
+        public BlockT<ushort> PropertyValueCount;
 
         /// <summary>
         /// An array of TaggedPropertyValue structures that specifies the properties to copy.
@@ -42,29 +42,38 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopTransportSendResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopTransportSendResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
 
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
-                NoPropertiesReturned = ReadByte();
-                PropertyValueCount = ReadUshort();
-                List<TaggedPropertyValue> tempPropertyValues = new List<TaggedPropertyValue>();
+                NoPropertiesReturned = ParseT<byte>();
+                PropertyValueCount = ParseT<ushort>();
+                var tempPropertyValues = new List<TaggedPropertyValue>();
 
                 for (int i = 0; i < PropertyValueCount; i++)
                 {
-                    TaggedPropertyValue temptaggedPropertyValue = new TaggedPropertyValue(CountWideEnum.twoBytes);
-                    temptaggedPropertyValue.Parse(s);
+                    var temptaggedPropertyValue = new TaggedPropertyValue(CountWideEnum.twoBytes);
+                    temptaggedPropertyValue.Parse(parser);
                     tempPropertyValues.Add(temptaggedPropertyValue);
                 }
 
                 PropertyValues = tempPropertyValues.ToArray();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopTransportSendResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(NoPropertiesReturned, "NoPropertiesReturned");
+            AddChildBlockT(PropertyValueCount, "PropertyValueCount");
+            AddLabeledChildren(PropertyValues, "PropertyValues");
         }
     }
 }

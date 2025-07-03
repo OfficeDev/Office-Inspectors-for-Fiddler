@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -6,22 +6,22 @@ namespace MAPIInspector.Parsers
     /// 2.2.7.5 RopSpoolerLockMessage
     /// A class indicates the RopSpoolerLockMessage ROP Request Buffer.
     /// </summary>
-    public class RopSpoolerLockMessageRequest : BaseStructure
+    public class RopSpoolerLockMessageRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the RopLogon associated with this operation.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An identifier that specifies the message for which the status will be changed.
@@ -31,21 +31,28 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An integer flag specifies a status to set on the message.
         /// </summary>
-        public LockState LockState;
+        public BlockT<LockState> LockState;
 
         /// <summary>
         /// Parse the RopSpoolerLockMessageRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSpoolerLockMessageRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            InputHandleIndex = ReadByte();
-            MessageId = new MessageID();
-            MessageId.Parse(s);
-            LockState = (LockState)ReadByte();
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            MessageId = Parse<MessageID>();
+            LockState = ParseT<LockState>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopSpoolerLockMessageRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            AddChild(MessageId, "MessageId");
+            AddChildBlockT(LockState, "LockState");
         }
     }
 }

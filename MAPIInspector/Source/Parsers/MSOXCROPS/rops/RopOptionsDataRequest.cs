@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Text;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,46 +6,52 @@ namespace MAPIInspector.Parsers
     /// 2.2.7.9 RopOptionsData
     /// A class indicates the RopOptionsData ROP Request Buffer.
     /// </summary>
-    public class RopOptionsDataRequest : BaseStructure
+    public class RopOptionsDataRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer that specifies the RopLogon associated with this operation.
         /// </summary>
-        public byte LogonId;
+        public BlockT<byte> LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// A null-terminated ASCII string that specifies the address type that options are to be returned for.
         /// </summary>
-        public MAPIString AddressType;
+        public BlockString AddressType;
 
         /// <summary>
         /// A boolean that specifies whether the help file data is to be returned in a format that is suited for 32-bit machines.
         /// </summary>
-        public byte WantWin32;
+        public BlockT<byte> WantWin32;
 
         /// <summary>
         /// Parse the RopOptionsDataRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopOptionsDataRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopId = (RopIdType)ReadByte();
-            LogonId = ReadByte();
-            InputHandleIndex = ReadByte();
-            AddressType = new MAPIString(Encoding.ASCII);
-            AddressType.Parse(s);
-            WantWin32 = ReadByte();
+            RopId = ParseT<RopIdType>();
+            LogonId = ParseT<byte>();
+            InputHandleIndex = ParseT<byte>();
+            AddressType = ParseStringA();
+            WantWin32 = ParseT<byte>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopOptionsDataRequest");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
+            AddChildString(AddressType, "AddressType");
+            AddChildBlockT(WantWin32, "WantWin32");
         }
     }
 }
