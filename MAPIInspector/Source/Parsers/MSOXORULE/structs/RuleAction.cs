@@ -11,8 +11,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Specifies the number of structures that are contained in the ActionBlocks field. For extended rules, the size of the NoOfActions field is 4 bytes instead of 2 bytes.
         /// </summary>
-        private Block _noOfActions;
-        public uint NoOfActions;
+        private BlockT<uint> NoOfActions;
 
         /// <summary>
         /// An array of ActionBlock structures, each of which specifies an action (2) of the rule (2), as specified in section 2.2.5.1.
@@ -41,13 +40,11 @@ namespace MAPIInspector.Parsers
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
-                    _noOfActions = ParseT<ushort>();
-                    NoOfActions = (_noOfActions as BlockT<ushort>);
+                    NoOfActions = ParseAs<ushort, uint>();
                     break;
                 default:
                 case CountWideEnum.fourBytes:
-                    _noOfActions = ParseT<uint>();
-                    NoOfActions = (_noOfActions as BlockT<uint>);
+                    NoOfActions = ParseT<uint>();
                     break;
             }
             var tempActionBlocks = new List<ActionBlock>();
@@ -64,7 +61,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("RuleAction");
-            AddChild(_noOfActions, $"NoOfActions:{NoOfActions}");
+            AddChildBlockT(NoOfActions, "NoOfActions");
             AddLabeledChildren(ActionBlocks, "ActionBlocks");
         }
     }

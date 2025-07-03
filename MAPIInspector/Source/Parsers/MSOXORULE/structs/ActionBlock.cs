@@ -10,8 +10,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An integer that specifies the cumulative length, in bytes, of the subsequent fields in this ActionBlock structure. For extended rules, the size of the ActionLength field is 4 bytes instead of 2 bytes.
         /// </summary>
-        private Block _actionLength;
-        public uint ActionLength;
+        private BlockT<uint> ActionLength;
 
         /// <summary>
         /// An integer that specifies the type of action (2). 
@@ -55,13 +54,11 @@ namespace MAPIInspector.Parsers
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
-                    _actionLength = ParseT<ushort>();
-                    ActionLength = (_actionLength as BlockT<ushort>);
+                    ActionLength = ParseAs<ushort, uint>();
                     break;
                 default:
                 case CountWideEnum.fourBytes:
-                    _actionLength = ParseT<uint>();
-                    ActionLength = (_actionLength as BlockT<uint>);
+                    ActionLength = ParseT<uint>();
                     break;
             }
 
@@ -137,7 +134,7 @@ namespace MAPIInspector.Parsers
                 }
                 else if (ActionType.OP_DEFER_ACTION == _actionType)
                 {
-                    ActionData = new OP_DEFER_ACTION((int)ActionLength);
+                    ActionData = new OP_DEFER_ACTION((int)ActionLength.Data);
                     ActionData.Parse(parser);
                 }
             }
@@ -146,7 +143,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("ActionBlock");
-            AddChild(_actionLength, $"ActionLength:{ActionLength}");
+            AddChildBlockT(ActionLength, "ActionLength");
             AddChildBlockT(_actionType, "ActionType");
             AddChild(ActionFlavor, "ActionFlavor");
             AddChildBlockT(ActionFlags, "ActionFlags");

@@ -721,8 +721,11 @@
     <Compile Include="Parsers\MSOXORULE\structs\ServerEid.cs" />
     <Compile Include="Parsers\MSOXORULE\structs\ModifyRulesFlags.cs" />
     <Compile Include="Parsers\MSOXORULE\rops\RopModifyRulesRequest.cs" />
-    <Compile Include="Parsers\MSOXPROPS\MSOXPROPS.cs" />
+    <Compile Include="Parsers\MSOXPROPS\Guids.cs" />
     <Compile Include="Parsers\MSOXORULE\structs\OP_DEFER_ACTION.cs" />
+    <Compile Include="Parsers\MSOXPROPS\NamedProperties.cs" />
+    <Compile Include="Parsers\MSOXPROPS\NamedProperty.cs" />
+    <Compile Include="Parsers\MSOXPROPS\PropertyNameMap.cs" />
     <Compile Include="Parsers\PidTagPropertyEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
