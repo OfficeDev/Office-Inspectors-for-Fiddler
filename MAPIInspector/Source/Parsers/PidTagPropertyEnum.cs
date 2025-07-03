@@ -891,7 +891,7 @@ namespace MAPIInspector.Parsers
         PidTagTargetEntryId = 0x3010,
 
         /// <summary>
-        /// Contains a computed value derived from other conversation-related properties. 
+        /// Contains a computed value derived from other conversation-related properties.
         /// </summary>
         PidTagConversationId = 0x3013,
 
@@ -1779,7 +1779,7 @@ namespace MAPIInspector.Parsers
         PidTagSenderIdStatus = 0x4079,
 
         /// <summary>
-        /// The MetaTagIncrementalSyncMessagePartial meta-property specifies an index of a property group within a property 
+        /// The MetaTagIncrementalSyncMessagePartial meta-property specifies an index of a property group within a property
         /// group mapping currently in context
         /// </summary>
         MetaTagIncrementalSyncMessagePartial = 0x407a,

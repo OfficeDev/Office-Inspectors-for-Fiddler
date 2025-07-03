@@ -7,7 +7,7 @@ using System.Linq;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// A class indicates the ROP output buffer, which is sent by the server, includes an array of ROP response buffers. 
+    /// A class indicates the ROP output buffer, which is sent by the server, includes an array of ROP response buffers.
     /// </summary>
     public class ROPOutputBuffer : BaseStructure
     {
@@ -73,7 +73,7 @@ namespace MAPIInspector.Parsers
 
             if (!MapiInspector.MAPIParser.IsLooperCall || parseToCROPSResponseLayer || MapiInspector.MAPIParser.NeedToParseCROPSLayer)
             {
-                // empty intermediate variables for ROPs need context information 
+                // empty intermediate variables for ROPs need context information
                 DecodingContext.SetColumn_InputHandles_InResponse = new List<uint>();
 
                 if (RopSize > 2)

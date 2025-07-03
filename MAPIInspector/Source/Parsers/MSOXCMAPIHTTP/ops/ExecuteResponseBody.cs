@@ -41,12 +41,12 @@ namespace MAPIInspector.Parsers
         public uint RopBufferSize;
 
         /// <summary>
-        /// A structure of bytes that constitute the ROP responses payload. 
+        /// A structure of bytes that constitute the ROP responses payload.
         /// </summary>
         public RgbOutputBufferPack RopBuffer;
 
         /// <summary>
-        /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
+        /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
         public uint AuxiliaryBufferSize;
 

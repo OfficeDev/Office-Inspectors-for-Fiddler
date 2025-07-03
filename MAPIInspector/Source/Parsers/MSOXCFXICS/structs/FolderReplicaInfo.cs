@@ -25,7 +25,7 @@ namespace MAPIInspector.Parsers
         public LongTermId FolderLongTermId;
 
         /// <summary>
-        /// An unsigned 32-bit integer value that determines how many elements exist in ServerDNArray. 
+        /// An unsigned 32-bit integer value that determines how many elements exist in ServerDNArray.
         /// </summary>
         public BlockT<uint> ServerDNCount;
 

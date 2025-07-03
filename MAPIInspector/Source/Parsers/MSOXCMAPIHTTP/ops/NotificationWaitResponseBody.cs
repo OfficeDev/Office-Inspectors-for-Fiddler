@@ -31,12 +31,12 @@ namespace MAPIInspector.Parsers
         public uint? ErrorCode;
 
         /// <summary>
-        /// An unsigned integer that indicates whether an event is pending on the Session Context. 
+        /// An unsigned integer that indicates whether an event is pending on the Session Context.
         /// </summary>
         public uint? EventPending;
 
         /// <summary>
-        /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
+        /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
         public uint? AuxiliaryBufferSize;
 

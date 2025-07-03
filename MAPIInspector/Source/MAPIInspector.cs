@@ -224,7 +224,7 @@ namespace MapiInspector
         /// <summary>
         /// Called by Fiddler to determine how confident this inspector is that it can
         /// decode the data.  This is only called when the user hits enter or double-
-        /// clicks a session.  
+        /// clicks a session.
         /// If we score the highest out of the other inspectors, Fiddler will open this
         /// inspector's tab and then call AssignSession.
         /// </summary>

@@ -5,7 +5,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.1.11 RopDeleteMessages ROP
-    /// The RopDeleteMessages ROP ([MS-OXCROPS] section 2.2.4.11) is used to soft delete one or more messages from a folder. 
+    /// The RopDeleteMessages ROP ([MS-OXCROPS] section 2.2.4.11) is used to soft delete one or more messages from a folder.
     /// </summary>
     public class RopDeleteMessagesRequest : Block
     {

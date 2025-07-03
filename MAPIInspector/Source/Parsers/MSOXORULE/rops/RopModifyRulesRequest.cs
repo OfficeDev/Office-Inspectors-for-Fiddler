@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
         public BlockT<byte> InputHandleIndex;
 
@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> RulesCount;
 
         /// <summary>
-        /// An array of RuleData structures, each of which specifies details about a standard rule. 
+        /// An array of RuleData structures, each of which specifies details about a standard rule.
         /// </summary>
         public RuleData[] RulesData;
 

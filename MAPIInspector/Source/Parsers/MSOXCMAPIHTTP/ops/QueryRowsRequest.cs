@@ -20,12 +20,12 @@ namespace MAPIInspector.Parsers
         public bool HasState;
 
         /// <summary>
-        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container. 
+        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
         /// </summary>
         public STAT State;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of structures present in the ExplicitTable field. 
+        /// An unsigned integer that specifies the number of structures present in the ExplicitTable field.
         /// </summary>
         public uint ExplicitTableCount;
 
@@ -45,7 +45,7 @@ namespace MAPIInspector.Parsers
         public bool HasColumns;
 
         /// <summary>
-        /// A LargePropertyTagArray structure that specifies the properties that the client requires for each row returned. 
+        /// A LargePropertyTagArray structure that specifies the properties that the client requires for each row returned.
         /// </summary>
         public LargePropertyTagArray Columns;
 
@@ -55,7 +55,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

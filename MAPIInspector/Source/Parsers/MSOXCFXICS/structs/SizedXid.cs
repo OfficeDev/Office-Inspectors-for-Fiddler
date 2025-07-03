@@ -14,7 +14,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> XidSize;
 
         /// <summary>
-        /// A structure of type XID that contains the value of the internal identifier of an object, or internal or external identifier of a change number. 
+        /// A structure of type XID that contains the value of the internal identifier of an object, or internal or external identifier of a change number.
         /// </summary>
         public XID Xid;
 

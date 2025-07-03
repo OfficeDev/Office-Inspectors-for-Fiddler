@@ -16,7 +16,7 @@ namespace MAPIInspector.Parsers
         public RopIdType RopId;
 
         /// <summary>
-        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
         public byte InputHandleIndex;
 
@@ -31,7 +31,7 @@ namespace MAPIInspector.Parsers
         public ushort? PropertyTagCount;
 
         /// <summary>
-        /// An array of PropertyTag structures that specifies the columns of the table. 
+        /// An array of PropertyTag structures that specifies the columns of the table.
         /// </summary>
         public PropertyTag[] PropertyTags;
 

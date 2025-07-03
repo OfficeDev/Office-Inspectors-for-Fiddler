@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         public bool HasState;
 
         /// <summary>
-        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container. 
+        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
         /// </summary>
         public STAT State;
 
@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
         public bool HasTarget;
 
         /// <summary>
-        /// An AddressBookTaggedPropertyValue structure that specifies the property value being sought. 
+        /// An AddressBookTaggedPropertyValue structure that specifies the property value being sought.
         /// </summary>
         public AddressBookTaggedPropertyValue Target;
 
@@ -40,12 +40,12 @@ namespace MAPIInspector.Parsers
         public bool HasExplicitTable;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of structures present in the ExplicitTable field. 
+        /// An unsigned integer that specifies the number of structures present in the ExplicitTable field.
         /// </summary>
         public uint ExplicitTableCount;
 
         /// <summary>
-        /// An array of MinimalEntryID structures that constitute an Explicit Table. 
+        /// An array of MinimalEntryID structures that constitute an Explicit Table.
         /// </summary>
         public MinimalEntryID[] ExplicitTable;
 
@@ -55,7 +55,7 @@ namespace MAPIInspector.Parsers
         public bool HasColumns;
 
         /// <summary>
-        /// A LargePropertyTagArray structure (section 2.2.1.8) that specifies the columns that the client is requesting. 
+        /// A LargePropertyTagArray structure (section 2.2.1.8) that specifies the columns that the client is requesting.
         /// </summary>
         public LargePropertyTagArray Columns;
 
@@ -65,7 +65,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

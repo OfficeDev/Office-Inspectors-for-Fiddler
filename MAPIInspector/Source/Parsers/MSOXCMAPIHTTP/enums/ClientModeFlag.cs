@@ -1,7 +1,7 @@
 ﻿namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// A flag that shows the mode in which the client is running. 
+    /// A flag that shows the mode in which the client is running.
     /// </summary>
     public enum ClientModeFlag : ushort
     {

@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         public bool HasState;
 
         /// <summary>
-        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container. 
+        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
         /// </summary>
         public STAT State;
 
@@ -30,12 +30,12 @@ namespace MAPIInspector.Parsers
         public bool HasMinimalIds;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of structures in the MinimalIds field. 
+        /// An unsigned integer that specifies the number of structures in the MinimalIds field.
         /// </summary>
         public uint MinimalIdCount;
 
         /// <summary>
-        /// An array of MinimalEntryID structures that compose a restricted address book container. 
+        /// An array of MinimalEntryID structures that compose a restricted address book container.
         /// </summary>
         public MinimalEntryID[] MinimalIds;
 
@@ -45,7 +45,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

@@ -19,12 +19,12 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the source Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the source Server object is stored.
         /// </summary>
         public BlockT<byte> SourceHandleIndex;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the destination Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the destination Server object is stored.
         /// </summary>
         public BlockT<byte> DestHandleIndex;
 
@@ -44,7 +44,7 @@ namespace MAPIInspector.Parsers
         public FolderID FolderId;
 
         /// <summary>
-        /// A null-terminated string that specifies the name for the new moved folder. 
+        /// A null-terminated string that specifies the name for the new moved folder.
         /// </summary>
         public BlockString NewFolderName;
 

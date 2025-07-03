@@ -19,7 +19,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
         public BlockT<byte> InputHandleIndex;
 
@@ -29,7 +29,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> ServerEntryIdSize;
 
         /// <summary>
-        /// An array of bytes that specifies the ID of the message on the server. 
+        /// An array of bytes that specifies the ID of the message on the server.
         /// </summary>
         public BlockBytes ServerEntryId;
 
@@ -39,7 +39,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> ClientEntryIdSize;
 
         /// <summary>
-        /// An array of bytes that specifies the ID of the downloaded message on the client. 
+        /// An array of bytes that specifies the ID of the downloaded message on the client.
         /// </summary>
         public BlockBytes ClientEntryId;
 

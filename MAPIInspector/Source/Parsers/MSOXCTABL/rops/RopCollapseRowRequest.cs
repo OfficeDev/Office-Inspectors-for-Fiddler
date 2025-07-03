@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.18 RopCollapseRow ROP
-    /// The RopCollapseRow ROP ([MS-OXCROPS] section 2.2.5.17) collapses an expanded category. 
+    /// The RopCollapseRow ROP ([MS-OXCROPS] section 2.2.5.17) collapses an expanded category.
     /// </summary>
     public class RopCollapseRowRequest : BaseStructure
     {
@@ -19,7 +19,7 @@ namespace MAPIInspector.Parsers
         public byte LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
         public byte InputHandleIndex;
 

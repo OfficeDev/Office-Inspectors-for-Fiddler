@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.15 RopFreeBookmark ROP
-    /// The RopFreeBookmark ROP ([MS-OXCROPS] section 2.2.5.14) frees the memory associated with a bookmark that was returned by a previous RopCreateBookmark ROP request ([MS-OXCROPS] section 2.2.5.11). 
+    /// The RopFreeBookmark ROP ([MS-OXCROPS] section 2.2.5.14) frees the memory associated with a bookmark that was returned by a previous RopCreateBookmark ROP request ([MS-OXCROPS] section 2.2.5.11).
     /// </summary>
     public class RopFreeBookmarkRequest : BaseStructure
     {
@@ -19,7 +19,7 @@ namespace MAPIInspector.Parsers
         public byte LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
         public byte InputHandleIndex;
 
@@ -29,7 +29,7 @@ namespace MAPIInspector.Parsers
         public ushort BookmarkSize;
 
         /// <summary>
-        /// An array of bytes that specifies the origin for the seek operation. 
+        /// An array of bytes that specifies the origin for the seek operation.
         /// </summary>
         public byte[] Bookmark;
 

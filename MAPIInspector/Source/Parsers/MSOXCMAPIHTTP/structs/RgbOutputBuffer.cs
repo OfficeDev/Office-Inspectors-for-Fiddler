@@ -16,7 +16,7 @@ namespace MAPIInspector.Parsers
         public RPC_HEADER_EXT RPCHEADEREXT;
 
         /// <summary>
-        /// A structure of bytes that constitute the ROP responses payload. 
+        /// A structure of bytes that constitute the ROP responses payload.
         /// </summary>
         public object Payload;
 
@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Parse the rgbOutputBuffer. 
+        /// Parse the rgbOutputBuffer.
         /// </summary>
         /// <param name="s">A stream containing the rgbOutputBuffer.</param>
         public override void Parse(Stream s)

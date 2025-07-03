@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         public MAPIString[] AdditionalHeaders;
 
         /// <summary>
-        /// An unsigned integer that specifies the status of the request. 
+        /// An unsigned integer that specifies the status of the request.
         /// </summary>
         public uint StatusCode;
 
@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
         public bool HasState;
 
         /// <summary>
-        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container. 
+        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
         /// </summary>
         public STAT State;
 
@@ -45,17 +45,17 @@ namespace MAPIInspector.Parsers
         public bool HasColsAndRows;
 
         /// <summary>
-        /// A LargePropertyTagArray structure that specifies the columns used for the rows returned. 
+        /// A LargePropertyTagArray structure that specifies the columns used for the rows returned.
         /// </summary>
         public LargePropertyTagArray Columns;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of structures contained in the RowData field. 
+        /// An unsigned integer that specifies the number of structures contained in the RowData field.
         /// </summary>
         public uint RowCount;
 
         /// <summary>
-        /// An array of AddressBookPropertyRow structures, each of which specifies the row data for the entries queried. 
+        /// An array of AddressBookPropertyRow structures, each of which specifies the row data for the entries queried.
         /// </summary>
         public AddressBookPropertyRow[] RowData;
 
@@ -65,7 +65,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

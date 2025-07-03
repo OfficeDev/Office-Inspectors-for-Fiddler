@@ -54,7 +54,7 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Override parse method. 
+        /// Override parse method.
         /// </summary>
         /// <param name="s">The stream to parse</param>
         public override void Parse(Stream s)

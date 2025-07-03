@@ -12,7 +12,7 @@
         RopRelease = 0x01,
 
         /// <summary>
-        /// RopOpenFolder ROP 
+        /// RopOpenFolder ROP
         /// </summary>
         RopOpenFolder = 0x02,
 
@@ -557,7 +557,7 @@
         RopSynchronizationUploadStateStreamBegin = 0x75,
 
         /// <summary>
-        /// RopSynchronizationUploadStateStreamContinue ROP 
+        /// RopSynchronizationUploadStateStreamContinue ROP
         /// </summary>
         RopSynchronizationUploadStateStreamContinue = 0x76,
 

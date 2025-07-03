@@ -19,7 +19,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> StoreEIDSize;
 
         /// <summary>
-        /// A Store Object EntryID structure, as specified in [MS-OXCDATA] section 2.2.4.3, that identifies the message store. 
+        /// A Store Object EntryID structure, as specified in [MS-OXCDATA] section 2.2.4.3, that identifies the message store.
         /// </summary>
         public BlockBytes StoreEID;
 

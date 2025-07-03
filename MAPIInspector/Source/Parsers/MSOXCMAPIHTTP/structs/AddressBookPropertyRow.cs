@@ -12,12 +12,12 @@ namespace MAPIInspector.Parsers
     public class AddressBookPropertyRow : BaseStructure
     {
         /// <summary>
-        /// An unsigned integer that indicates whether all property values are present and without error in the ValueArray field. 
+        /// An unsigned integer that indicates whether all property values are present and without error in the ValueArray field.
         /// </summary>
         public byte Flags;
 
         /// <summary>
-        /// An array of variable-sized structures.  
+        /// An array of variable-sized structures.
         /// </summary>
         public object[] ValueArray;
 

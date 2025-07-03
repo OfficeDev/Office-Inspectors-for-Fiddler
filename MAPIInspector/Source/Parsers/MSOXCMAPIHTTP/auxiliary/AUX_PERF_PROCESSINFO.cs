@@ -17,7 +17,7 @@ namespace MAPIInspector.Parsers
         public ushort ProcessID;
 
         /// <summary>
-        /// Padding to enforce alignment of the data on a 4-byte field. 
+        /// Padding to enforce alignment of the data on a 4-byte field.
         /// </summary>
         public ushort Reserved1;
 
@@ -27,17 +27,17 @@ namespace MAPIInspector.Parsers
         public Guid ProcessGuid;
 
         /// <summary>
-        /// The offset from the beginning of the AUX_HEADER structure to the ProcessName field. 
+        /// The offset from the beginning of the AUX_HEADER structure to the ProcessName field.
         /// </summary>
         public ushort ProcessNameOffset;
 
         /// <summary>
-        /// Padding to enforce alignment of the data on a 4-byte field. 
+        /// Padding to enforce alignment of the data on a 4-byte field.
         /// </summary>
         public ushort Reserved2;
 
         /// <summary>
-        /// A null-terminated Unicode string that contains the client process name. 
+        /// A null-terminated Unicode string that contains the client process name.
         /// </summary>
         public MAPIString ProcessName;
 

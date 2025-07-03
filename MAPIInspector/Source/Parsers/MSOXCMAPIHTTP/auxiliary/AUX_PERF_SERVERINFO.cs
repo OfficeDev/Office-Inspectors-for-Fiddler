@@ -16,27 +16,27 @@ namespace MAPIInspector.Parsers
         public ushort ServerID;
 
         /// <summary>
-        /// The server type assigned by client. 
+        /// The server type assigned by client.
         /// </summary>
         public ServerType ServerType;
 
         /// <summary>
-        /// The offset from the beginning of the AUX_HEADER structure to the ServerDN field. 
+        /// The offset from the beginning of the AUX_HEADER structure to the ServerDN field.
         /// </summary>
         public ushort ServerDNOffset;
 
         /// <summary>
-        /// The offset from the beginning of the AUX_HEADER structure to the ServerName field. 
+        /// The offset from the beginning of the AUX_HEADER structure to the ServerName field.
         /// </summary>
         public ushort ServerNameOffset;
 
         /// <summary>
-        /// A null-terminated Unicode string that contains the DN of the server. 
+        /// A null-terminated Unicode string that contains the DN of the server.
         /// </summary>
         public MAPIString ServerDN;
 
         /// <summary>
-        /// A null-terminated Unicode string that contains the server name. 
+        /// A null-terminated Unicode string that contains the server name.
         /// </summary>
         public MAPIString ServerName;
 

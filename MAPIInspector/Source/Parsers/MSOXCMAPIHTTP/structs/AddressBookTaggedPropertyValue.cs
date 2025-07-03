@@ -5,7 +5,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AddressBookTaggedPropertyValue structure.
-    /// 2.2.1 Common Data Types 
+    /// 2.2.1 Common Data Types
     /// 2.2.1.2 AddressBookTaggedPropertyValue Structure
     /// </summary>
     public class AddressBookTaggedPropertyValue : BaseStructure

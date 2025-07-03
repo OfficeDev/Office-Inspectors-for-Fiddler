@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         public MAPIString[] AdditionalHeaders;
 
         /// <summary>
-        /// An unsigned integer that specifies the status of the request. 
+        /// An unsigned integer that specifies the status of the request.
         /// </summary>
         public uint StatusCode;
 
@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
         public bool HasState;
 
         /// <summary>
-        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container. 
+        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
         /// </summary>
         public STAT State;
 
@@ -45,12 +45,12 @@ namespace MAPIInspector.Parsers
         public bool HasMinimalIds;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of structures present in the MinimalIds field. 
+        /// An unsigned integer that specifies the number of structures present in the MinimalIds field.
         /// </summary>
         public uint MinimalIdCount;
 
         /// <summary>
-        /// An array of MinimalEntryID structures 
+        /// An array of MinimalEntryID structures
         /// </summary>
         public MinimalEntryID[] MinimalIds;
 
@@ -60,17 +60,17 @@ namespace MAPIInspector.Parsers
         public bool HasColsAndRows;
 
         /// <summary>
-        /// A LargePropertyTagArray structure (section 2.2.1.8) that specifies the columns used for each row returned. 
+        /// A LargePropertyTagArray structure (section 2.2.1.8) that specifies the columns used for each row returned.
         /// </summary>
         public LargePropertyTagArray Columns;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of structures in the RowData field. 
+        /// An unsigned integer that specifies the number of structures in the RowData field.
         /// </summary>
         public uint RowCount;
 
         /// <summary>
-        /// An array of AddressBookPropertyRow structures (section 2.2.1.7), each of which specifies the row data for the entries requested. 
+        /// An array of AddressBookPropertyRow structures (section 2.2.1.7), each of which specifies the row data for the entries requested.
         /// </summary>
         public AddressBookPropertyRow[] RowData;
 

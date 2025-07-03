@@ -42,12 +42,12 @@ namespace MAPIInspector.Parsers
         public uint RetryCount;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of milliseconds for the client to wait before retrying a failed request type. 
+        /// An unsigned integer that specifies the number of milliseconds for the client to wait before retrying a failed request type.
         /// </summary>
         public uint RetryDelay;
 
         /// <summary>
-        /// A null-terminated ASCII string that specifies the DN prefix to be used for building message recipients. 
+        /// A null-terminated ASCII string that specifies the DN prefix to be used for building message recipients.
         /// </summary>
         public MAPIString DnPrefix;
 
@@ -57,7 +57,7 @@ namespace MAPIInspector.Parsers
         public MAPIString DisplayName;
 
         /// <summary>
-        /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
+        /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
         public uint AuxiliaryBufferSize;
 

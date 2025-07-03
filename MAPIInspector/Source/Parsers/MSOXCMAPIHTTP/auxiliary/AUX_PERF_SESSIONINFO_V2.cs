@@ -16,7 +16,7 @@ namespace MAPIInspector.Parsers
         public ushort SessionID;
 
         /// <summary>
-        /// Padding to enforce alignment of the data on a 4-byte field. 
+        /// Padding to enforce alignment of the data on a 4-byte field.
         /// </summary>
         public ushort Reserved;
 

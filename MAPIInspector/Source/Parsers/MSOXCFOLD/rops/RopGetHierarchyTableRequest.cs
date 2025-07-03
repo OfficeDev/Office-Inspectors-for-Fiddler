@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.1.13 RopGetHierarchyTable ROP
-    /// The RopGetHierarchyTable ROP ([MS-OXCROPS] section 2.2.4.13) is used to retrieve the hierarchy table for a folder. 
+    /// The RopGetHierarchyTable ROP ([MS-OXCROPS] section 2.2.4.13) is used to retrieve the hierarchy table for a folder.
     /// </summary>
     public class RopGetHierarchyTableRequest : Block
     {
@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> InputHandleIndex;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
         /// </summary>
         public BlockT<byte> OutputHandleIndex;
 

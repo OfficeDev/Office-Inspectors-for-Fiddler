@@ -9,7 +9,7 @@ namespace MAPIInspector.Parsers
     public class GetPropListRequest : BaseStructure
     {
         /// <summary>
-        /// A set of bit flags that specify options to the server. 
+        /// A set of bit flags that specify options to the server.
         /// </summary>
         public uint Flags;
 
@@ -19,7 +19,7 @@ namespace MAPIInspector.Parsers
         public MinimalEntryID MinimalId;
 
         /// <summary>
-        /// An unsigned integer that specifies the code page that the server is being requested to use for string values of properties. 
+        /// An unsigned integer that specifies the code page that the server is being requested to use for string values of properties.
         /// </summary>
         public uint CodePage;
 
@@ -29,7 +29,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

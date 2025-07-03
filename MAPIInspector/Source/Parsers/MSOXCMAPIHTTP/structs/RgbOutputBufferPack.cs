@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Parse the rgbOutputBufferPack. 
+        /// Parse the rgbOutputBufferPack.
         /// </summary>
         /// <param name="s">A stream containing the rgbOutputBufferPack.</param>
         public override void Parse(Stream s)

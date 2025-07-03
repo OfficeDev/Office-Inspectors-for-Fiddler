@@ -25,7 +25,7 @@ namespace MAPIInspector.Parsers
         public object ReturnValue;
 
         /// <summary>
-        /// An enumeration that specifies current location of the cursor. 
+        /// An enumeration that specifies current location of the cursor.
         /// </summary>
         public Bookmarks? Origin;
 
@@ -35,12 +35,12 @@ namespace MAPIInspector.Parsers
         public ushort? RowCount;
 
         /// <summary>
-        /// A list of PropertyRow structures. 
+        /// A list of PropertyRow structures.
         /// </summary>
         public PropertyRow[] RowData;
 
         /// <summary>
-        /// Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1). 
+        /// Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1).
         /// </summary>
         private PropertyTag[] propertiesBySetColum;
 

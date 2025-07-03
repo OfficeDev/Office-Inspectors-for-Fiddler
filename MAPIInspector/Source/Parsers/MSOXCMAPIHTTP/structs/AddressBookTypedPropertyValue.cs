@@ -10,7 +10,7 @@ namespace MAPIInspector.Parsers
     public class AddressBookTypedPropertyValue : BaseStructure
     {
         /// <summary>
-        /// An unsigned integer that identifies the data type of the property value 
+        /// An unsigned integer that identifies the data type of the property value
         /// </summary>
         public PropertyDataType PropertyType;
 

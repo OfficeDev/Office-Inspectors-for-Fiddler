@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
         public byte RequestOperation;
 
         /// <summary>
-        /// Padding to enforce alignment of the data on a 4-byte field. 
+        /// Padding to enforce alignment of the data on a 4-byte field.
         /// </summary>
         public byte[] Reserved;
 

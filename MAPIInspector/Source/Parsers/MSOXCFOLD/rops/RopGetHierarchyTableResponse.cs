@@ -14,7 +14,7 @@ namespace MAPIInspector.Parsers
         public BlockT<RopIdType> RopId;
 
         /// <summary>
-        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
         public BlockT<byte> InputHandleIndex;
 
@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
-        /// An unsigned integer that represents the number of rows in the hierarchy table. 
+        /// An unsigned integer that represents the number of rows in the hierarchy table.
         /// </summary>
         public BlockT<uint> RowCount;
 

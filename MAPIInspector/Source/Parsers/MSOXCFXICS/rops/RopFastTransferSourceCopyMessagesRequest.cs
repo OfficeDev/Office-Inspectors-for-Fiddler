@@ -35,17 +35,17 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> MessageIdCount;
 
         /// <summary>
-        /// An array of 64-bit identifiers that specifies the messages to copy. 
+        /// An array of 64-bit identifiers that specifies the messages to copy.
         /// </summary>
         public MessageID[] MessageIds;
 
         /// <summary>
-        /// A flags structure that contains flags that control the type of operation. 
+        /// A flags structure that contains flags that control the type of operation.
         /// </summary>
         public BlockT<CopyFlags_CopyMessages> CopyFlags;
 
         /// <summary>
-        /// A flags structure that contains flags that control the behavior of the operation. 
+        /// A flags structure that contains flags that control the behavior of the operation.
         /// </summary>
         public BlockT<SendOptions> SendOptions;
 

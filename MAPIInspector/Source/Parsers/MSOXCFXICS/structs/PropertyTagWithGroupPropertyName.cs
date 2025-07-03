@@ -3,7 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// This structure is a PropertyTag Structure (MS-OXCDATA section 2.9) which is special for named properties 
+    /// This structure is a PropertyTag Structure (MS-OXCDATA section 2.9) which is special for named properties
     /// 2.2.2.8.1.1 GroupPropertyName Structure
     /// </summary>
     public class PropertyTagWithGroupPropertyName : Block

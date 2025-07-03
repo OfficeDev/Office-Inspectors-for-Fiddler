@@ -10,12 +10,12 @@ namespace MAPIInspector.Parsers
     public class GetTemplateInfoRequest : BaseStructure
     {
         /// <summary>
-        /// A set of bit flags that specify options to the server. 
+        /// A set of bit flags that specify options to the server.
         /// </summary>
         public uint Flags;
 
         /// <summary>
-        /// An unsigned integer that specifies the display type of the template for which information is requested. 
+        /// An unsigned integer that specifies the display type of the template for which information is requested.
         /// </summary>
         public uint DisplayType;
 
@@ -25,7 +25,7 @@ namespace MAPIInspector.Parsers
         public bool HasTemplateDn;
 
         /// <summary>
-        /// A null-terminated ASCII string that specifies the DN of the template requested. 
+        /// A null-terminated ASCII string that specifies the DN of the template requested.
         /// </summary>
         public MAPIString TemplateDn;
 
@@ -45,7 +45,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

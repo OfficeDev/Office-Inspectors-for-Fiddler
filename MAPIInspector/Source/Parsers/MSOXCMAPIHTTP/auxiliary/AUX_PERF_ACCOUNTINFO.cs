@@ -11,12 +11,12 @@ namespace MAPIInspector.Parsers
     public class AUX_PERF_ACCOUNTINFO : BaseStructure
     {
         /// <summary>
-        /// The client-assigned identification number. 
+        /// The client-assigned identification number.
         /// </summary>
         public ushort ClientID;
 
         /// <summary>
-        /// Padding to enforce alignment of the data on a 4-byte field. 
+        /// Padding to enforce alignment of the data on a 4-byte field.
         /// </summary>
         public ushort Reserved;
 

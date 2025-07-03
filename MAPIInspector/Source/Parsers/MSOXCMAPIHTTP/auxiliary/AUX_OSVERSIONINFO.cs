@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
         public uint BuildNumber;
 
         /// <summary>
-        /// Reserved and MUST be ignored when received. 
+        /// Reserved and MUST be ignored when received.
         /// </summary>
         public byte[] Reserved1;
 
@@ -45,7 +45,7 @@ namespace MAPIInspector.Parsers
         public ushort ServicePackMinor;
 
         /// <summary>
-        /// Reserved and MUST be ignored when received. 
+        /// Reserved and MUST be ignored when received.
         /// </summary>
         public uint Reserved2;
 

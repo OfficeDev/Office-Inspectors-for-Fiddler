@@ -44,7 +44,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> EssdnSize;
 
         /// <summary>
-        /// A null-terminated ASCII string that specifies which mailbox to log on to. 
+        /// A null-terminated ASCII string that specifies which mailbox to log on to.
         /// </summary>
         public BlockString Essdn;
 

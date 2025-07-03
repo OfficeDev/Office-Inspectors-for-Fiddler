@@ -16,7 +16,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> Reservedbits0;
 
         /// <summary>
-        /// Indicates that the message SHOULD be forwarded as a Short Message Service (SMS) text message. 
+        /// Indicates that the message SHOULD be forwarded as a Short Message Service (SMS) text message.
         /// </summary>
         public BlockT<byte> TM;
 
@@ -26,12 +26,12 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> AT;
 
         /// <summary>
-        /// Forwards the message without making any changes to the message. 
+        /// Forwards the message without making any changes to the message.
         /// </summary>
         public BlockT<byte> NC;
 
         /// <summary>
-        /// Preserves the sender information and indicates that the message was auto forwarded. 
+        /// Preserves the sender information and indicates that the message was auto forwarded.
         /// </summary>
         public BlockT<byte> PR;
 

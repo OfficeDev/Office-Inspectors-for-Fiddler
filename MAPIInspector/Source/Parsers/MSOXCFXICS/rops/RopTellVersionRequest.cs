@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> InputHandleIndex;
 
         /// <summary>
-        /// An array of three unsigned 16-bit integers that contains the version information for the other server. 
+        /// An array of three unsigned 16-bit integers that contains the version information for the other server.
         /// </summary>
         public BlockBytes Version;
 

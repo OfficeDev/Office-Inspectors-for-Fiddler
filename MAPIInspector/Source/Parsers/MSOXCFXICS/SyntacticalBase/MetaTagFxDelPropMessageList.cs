@@ -8,7 +8,7 @@ namespace MAPIInspector.Parsers
     public class MetaTagFxDelPropMessageList : Block
     {
         /// <summary>
-        /// A MetaTagFXDelProp property. 
+        /// A MetaTagFXDelProp property.
         /// </summary>
         public MetaPropValue MetaTagFXDelProp;
 

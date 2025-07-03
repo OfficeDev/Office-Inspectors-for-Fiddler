@@ -13,12 +13,12 @@ namespace MAPIInspector.Parsers
         private BlockT<uint> ActionLength;
 
         /// <summary>
-        /// An integer that specifies the type of action (2). 
+        /// An integer that specifies the type of action (2).
         /// </summary>
         public BlockT<ActionType> _actionType;
 
         /// <summary>
-        /// The flags that are associated with a particular type of action (2). 
+        /// The flags that are associated with a particular type of action (2).
         /// </summary>
         public Block ActionFlavor;
 

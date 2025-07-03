@@ -59,7 +59,7 @@ namespace MAPIInspector.Parsers
         public BlockT<uint> DestinationMessageIdSize;
 
         /// <summary>
-        /// An array of bytes that identifies the destination message. 
+        /// An array of bytes that identifies the destination message.
         /// </summary>
         public BlockBytes DestinationMessageId;
 
@@ -69,7 +69,7 @@ namespace MAPIInspector.Parsers
         public BlockT<uint> ChangeNumberSize;
 
         /// <summary>
-        /// An array of bytes that specifies the change number of the message. 
+        /// An array of bytes that specifies the change number of the message.
         /// </summary>
         public BlockBytes ChangeNumber;
 

@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.19 RopGetCollapseState ROP
-    /// The RopGetCollapseState ROP ([MS-OXCROPS] section 2.2.5.18) returns the data necessary to rebuild the current expanded/collapsed state of the table. 
+    /// The RopGetCollapseState ROP ([MS-OXCROPS] section 2.2.5.18) returns the data necessary to rebuild the current expanded/collapsed state of the table.
     /// </summary>
     public class RopGetCollapseStateRequest : BaseStructure
     {
@@ -19,12 +19,12 @@ namespace MAPIInspector.Parsers
         public byte LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
         public byte InputHandleIndex;
 
         /// <summary>
-        /// An identifier that specifies the row to be preserved as the cursor. 
+        /// An identifier that specifies the row to be preserved as the cursor.
         /// </summary>
         public long RowId;
 

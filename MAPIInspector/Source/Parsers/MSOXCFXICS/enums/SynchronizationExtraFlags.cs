@@ -12,7 +12,7 @@
         Eid = 0x00000001,
 
         /// <summary>
-        /// Indicates whether the server includes the PidTagMessageSize property in the message change header. 
+        /// Indicates whether the server includes the PidTagMessageSize property in the message change header.
         /// </summary>
         MessageSize = 0x00000002,
 

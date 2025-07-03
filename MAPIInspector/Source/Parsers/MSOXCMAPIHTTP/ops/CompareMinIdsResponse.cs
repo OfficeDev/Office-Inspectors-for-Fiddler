@@ -5,7 +5,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the CompareMinIdsResponse structure.
-    /// 2.2.5 Request Types for Address Book Server Endpoint 
+    /// 2.2.5 Request Types for Address Book Server Endpoint
     /// 2.2.5.3 CompareMinIds
     /// </summary>
     public class CompareMinIdsResponse : BaseStructure
@@ -21,7 +21,7 @@ namespace MAPIInspector.Parsers
         public MAPIString[] AdditionalHeaders;
 
         /// <summary>
-        /// An unsigned integer that specifies the status of the request. 
+        /// An unsigned integer that specifies the status of the request.
         /// </summary>
         public uint StatusCode;
 
@@ -31,7 +31,7 @@ namespace MAPIInspector.Parsers
         public uint ErrorCode;
 
         /// <summary>
-        /// A signed integer that specifies the result of the comparison. 
+        /// A signed integer that specifies the result of the comparison.
         /// </summary>
         public int Result;
 
@@ -41,7 +41,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data returned from the server. 
+        /// An array of bytes that constitute the auxiliary payload data returned from the server.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

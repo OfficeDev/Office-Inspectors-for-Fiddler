@@ -15,12 +15,12 @@ namespace MAPIInspector.Parsers
         public uint Flags;
 
         /// <summary>
-        /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
+        /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

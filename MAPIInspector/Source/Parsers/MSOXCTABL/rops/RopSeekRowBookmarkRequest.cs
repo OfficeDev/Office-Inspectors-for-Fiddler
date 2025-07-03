@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.10 RopSeekRowBookmark ROP
-    /// The RopSeekRowBookmark ROP ([MS-OXCROPS] section 2.2.5.9) moves the table cursor to a specific location in the table. 
+    /// The RopSeekRowBookmark ROP ([MS-OXCROPS] section 2.2.5.9) moves the table cursor to a specific location in the table.
     /// </summary>
     public class RopSeekRowBookmarkRequest : BaseStructure
     {
@@ -19,7 +19,7 @@ namespace MAPIInspector.Parsers
         public byte LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
         public byte InputHandleIndex;
 
@@ -29,7 +29,7 @@ namespace MAPIInspector.Parsers
         public ushort BookmarkSize;
 
         /// <summary>
-        /// An array of bytes that specifies the origin for the seek operation. 
+        /// An array of bytes that specifies the origin for the seek operation.
         /// </summary>
         public byte[] Bookmark;
 

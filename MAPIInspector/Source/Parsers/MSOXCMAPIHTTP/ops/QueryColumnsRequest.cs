@@ -14,7 +14,7 @@ namespace MAPIInspector.Parsers
         public uint Reserved;
 
         /// <summary>
-        /// A set of bit flags that specify options to the server. 
+        /// A set of bit flags that specify options to the server.
         /// </summary>
         public uint MapiFlags;
 
@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

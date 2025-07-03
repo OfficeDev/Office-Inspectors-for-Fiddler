@@ -10,7 +10,7 @@ namespace MAPIInspector.Parsers
     public class AUX_PERF_REQUESTID : BaseStructure
     {
         /// <summary>
-        /// The session identification number. 
+        /// The session identification number.
         /// </summary>
         public ushort SessionID;
 

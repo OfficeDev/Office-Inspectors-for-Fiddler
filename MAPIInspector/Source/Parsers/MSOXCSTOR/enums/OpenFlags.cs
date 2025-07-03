@@ -9,7 +9,7 @@ namespace MAPIInspector.Parsers
     public enum OpenFlags : uint
     {
         /// <summary>
-        /// A request for administrative access to the mailbox. 
+        /// A request for administrative access to the mailbox.
         /// </summary>
         USE_ADMIN_PRIVILEGE = 0x00000001,
 

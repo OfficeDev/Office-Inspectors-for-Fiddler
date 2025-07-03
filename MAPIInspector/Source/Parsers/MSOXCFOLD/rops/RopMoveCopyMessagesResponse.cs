@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
-        /// An unsigned integer index that MUST be set to the value specified in the DestHandleIndex field in the request. 
+        /// An unsigned integer index that MUST be set to the value specified in the DestHandleIndex field in the request.
         /// </summary>
         public BlockT<uint> DestHandleIndex;
 

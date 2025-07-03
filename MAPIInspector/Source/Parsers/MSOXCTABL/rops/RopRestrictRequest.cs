@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.4 RopRestrict ROP
-    /// The RopRestrict ROP ([MS-OXCROPS] section 2.2.5.3) establishes a restriction on a table. 
+    /// The RopRestrict ROP ([MS-OXCROPS] section 2.2.5.3) establishes a restriction on a table.
     /// </summary>
     public class RopRestrictRequest : BaseStructure
     {
@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
         public byte InputHandleIndex;
 
         /// <summary>
-        /// A flags structure that contains flags that control this operation. 
+        /// A flags structure that contains flags that control this operation.
         /// </summary>
         public AsynchronousFlags RestrictFlags;
 

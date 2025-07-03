@@ -24,12 +24,12 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> InputHandleIndex;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
         /// </summary>
         public BlockT<byte> OutputHandleIndex;
 
         /// <summary>
-        /// An enumeration that specifies what type of folder to create. 
+        /// An enumeration that specifies what type of folder to create.
         /// </summary>
         public BlockT<FolderType> FolderType;
 
@@ -49,12 +49,12 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> Reserved;
 
         /// <summary>
-        /// A null-terminated string that specifies the name of the created folder. 
+        /// A null-terminated string that specifies the name of the created folder.
         /// </summary>
         public BlockString DisplayName;
 
         /// <summary>
-        /// A null-terminated folder string that specifies the folder comment that is associated with the created folder. 
+        /// A null-terminated folder string that specifies the folder comment that is associated with the created folder.
         /// </summary>
         public BlockString Comment;
 

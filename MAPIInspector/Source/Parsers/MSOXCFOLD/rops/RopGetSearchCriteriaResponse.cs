@@ -15,7 +15,7 @@ namespace MAPIInspector.Parsers
         public BlockT<RopIdType> RopId;
 
         /// <summary>
-        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
         public BlockT<byte> InputHandleIndex;
 
@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> RestrictionDataSize;
 
         /// <summary>
-        /// A restriction packet, as specified in [MS-OXCDATA] section 2.12, that specifies the filter for this search folder. 
+        /// A restriction packet, as specified in [MS-OXCDATA] section 2.12, that specifies the filter for this search folder.
         /// </summary>
         public RestrictionType RestrictionData;
 
@@ -45,12 +45,12 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> FolderIdCount;
 
         /// <summary>
-        /// An array of 64-bit identifiers that specifies which folders are searched. 
+        /// An array of 64-bit identifiers that specifies which folders are searched.
         /// </summary>
         public FolderID[] FolderIds;
 
         /// <summary>
-        /// A flags structure that contains flags that control the search for a search folder. 
+        /// A flags structure that contains flags that control the search for a search folder.
         /// </summary>
         public BlockT<SearchResponseFlags> SearchFlags;
 

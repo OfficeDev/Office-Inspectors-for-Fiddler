@@ -9,7 +9,7 @@ namespace MAPIInspector.Parsers
     public class LongTermIdRange : Block
     {
         /// <summary>
-        /// A LongTermId structure that specifies the beginning of a range. 
+        /// A LongTermId structure that specifies the beginning of a range.
         /// </summary>
         public LongTermID MinLongTermId;
 

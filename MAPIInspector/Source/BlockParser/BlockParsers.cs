@@ -70,7 +70,7 @@ namespace BlockParser
 
         public BlockT<T> ParseAs<U, T>() where U : struct where T : struct => ParseAs<U, T>(parser);
         /// <summary>
-        /// Parses binary data of type <typeparamref name="U"/> from the provided <see cref="BinaryParser"/> and converts it into 
+        /// Parses binary data of type <typeparamref name="U"/> from the provided <see cref="BinaryParser"/> and converts it into
         /// a block of type <typeparamref name="T"/>.
         /// </summary>
         /// <remarks>This method reads binary data as type <typeparamref name="U"/> and converts it to

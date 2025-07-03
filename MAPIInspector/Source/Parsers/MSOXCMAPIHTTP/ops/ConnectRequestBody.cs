@@ -11,37 +11,37 @@ namespace MAPIInspector.Parsers
     public class ConnectRequestBody : BaseStructure
     {
         /// <summary>
-        /// A null-terminated ASCII string that specifies the DN of the user who is requesting the connection. 
+        /// A null-terminated ASCII string that specifies the DN of the user who is requesting the connection.
         /// </summary>
         public MAPIString UserDn;
 
         /// <summary>
-        /// A set of flags that designate the type of connection being requested. 
+        /// A set of flags that designate the type of connection being requested.
         /// </summary>
         public uint Flags;
 
         /// <summary>
-        /// An unsigned integer that specifies the code page that the server is being requested to use for string values of properties. 
+        /// An unsigned integer that specifies the code page that the server is being requested to use for string values of properties.
         /// </summary>
         public uint DefaultCodePage;
 
         /// <summary>
-        /// An unsigned integer that specifies the language code identifier (LCID), as specified in [MS-LCID], to be used for sorting. 
+        /// An unsigned integer that specifies the language code identifier (LCID), as specified in [MS-LCID], to be used for sorting.
         /// </summary>
         public uint LcidSort;
 
         /// <summary>
-        /// An unsigned integer that specifies the language code identifier (LCID), as specified in [MS-LCID], to be used for everything other than sorting. 
+        /// An unsigned integer that specifies the language code identifier (LCID), as specified in [MS-LCID], to be used for everything other than sorting.
         /// </summary>
         public uint LcidString;
 
         /// <summary>
-        /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
+        /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

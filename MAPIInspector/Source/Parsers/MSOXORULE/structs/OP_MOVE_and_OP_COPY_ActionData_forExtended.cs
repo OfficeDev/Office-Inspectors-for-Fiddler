@@ -14,7 +14,7 @@ namespace MAPIInspector.Parsers
         public BlockT<uint> StoreEIDSize;
 
         /// <summary>
-        /// This field is not used and can be set to any non-null value by the client and the server. 
+        /// This field is not used and can be set to any non-null value by the client and the server.
         /// </summary>
         public BlockBytes StoreEID;
 
@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
         public BlockT<uint> FolderEIDSize;
 
         /// <summary>
-        /// A Folder EntryID structure, as specified in [MS-OXCDATA] section 2.2.4.1, that identifies the destination folder. 
+        /// A Folder EntryID structure, as specified in [MS-OXCDATA] section 2.2.4.1, that identifies the destination folder.
         /// </summary>
         public FolderEntryID FolderEID;
 

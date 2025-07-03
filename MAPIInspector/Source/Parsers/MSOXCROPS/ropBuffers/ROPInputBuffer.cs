@@ -318,7 +318,7 @@ namespace MAPIInspector.Parsers
 
                                         if ((RopIdType)target.First().Key == RopIdType.RopQueryRows || (RopIdType)target.First().Key == RopIdType.RopFindRow || (RopIdType)target.First().Key == RopIdType.RopExpandRow)
                                         {
-                                            // When the object handle is not equal to 0xFFFFFFFF, add objectHandle and Property Tags to the dictionary.                                    
+                                            // When the object handle is not equal to 0xFFFFFFFF, add objectHandle and Property Tags to the dictionary.
                                             Dictionary<int, Tuple<string, string, string, PropertyTag[]>> sessionTuples = new Dictionary<int, Tuple<string, string, string, PropertyTag[]>>();
                                             Tuple<string, string, string, PropertyTag[]> tuples;
 
@@ -382,7 +382,7 @@ namespace MAPIInspector.Parsers
 
                                             if ((RopIdType)target.First().Key == RopIdType.RopQueryRows || (RopIdType)target.First().Key == RopIdType.RopFindRow || (RopIdType)target.First().Key == RopIdType.RopExpandRow)
                                             {
-                                                // This is for Row related rops 
+                                                // This is for Row related rops
                                                 Dictionary<int, Tuple<string, string, string, PropertyTag[]>> sessionTuples = new Dictionary<int, Tuple<string, string, string, PropertyTag[]>>();
                                                 Tuple<string, string, string, PropertyTag[]> tuples;
 
@@ -446,7 +446,7 @@ namespace MAPIInspector.Parsers
 
                                         if ((RopIdType)target.First().Key == RopIdType.RopQueryRows || (RopIdType)target.First().Key == RopIdType.RopFindRow || (RopIdType)target.First().Key == RopIdType.RopExpandRow)
                                         {
-                                            // This is for Row related rops 
+                                            // This is for Row related rops
                                             Dictionary<int, Tuple<string, string, string, PropertyTag[]>> sessionTuples = new Dictionary<int, Tuple<string, string, string, PropertyTag[]>>();
                                             Tuple<string, string, string, PropertyTag[]> tuples;
 

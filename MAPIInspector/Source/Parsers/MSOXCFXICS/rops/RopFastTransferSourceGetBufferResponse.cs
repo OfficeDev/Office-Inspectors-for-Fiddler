@@ -25,7 +25,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
-        /// An enumeration that specifies the current status of the transfer. 
+        /// An enumeration that specifies the current status of the transfer.
         /// </summary>
         public BlockT<TransferStatus> TransferStatus;
 

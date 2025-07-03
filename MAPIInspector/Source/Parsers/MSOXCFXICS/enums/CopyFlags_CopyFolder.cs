@@ -1,7 +1,7 @@
 ﻿namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// An enumeration that specifies flags control the type of RopFastTransferSourceCopyFolder operation. 
+    /// An enumeration that specifies flags control the type of RopFastTransferSourceCopyFolder operation.
     /// 2.2.3.1.1.4.1 RopFastTransferSourceCopyFolder ROP Request Buffer
     /// </summary>
     public enum CopyFlags_CopyFolder : byte

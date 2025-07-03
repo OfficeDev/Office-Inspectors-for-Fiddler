@@ -34,7 +34,7 @@ namespace MAPIInspector.Parsers
         public FolderID[] FolderIds;
 
         /// <summary>
-        /// A flags structure that contains flags that provide details about the state of the mailbox. 
+        /// A flags structure that contains flags that provide details about the state of the mailbox.
         /// </summary>
         public BlockT<ResponseFlags> ResponseFlags;
 
@@ -54,7 +54,7 @@ namespace MAPIInspector.Parsers
         public BlockGuid ReplGuid;
 
         /// <summary>
-        /// A LogonTime structure that specifies the time at which the RopLogon occurred. 
+        /// A LogonTime structure that specifies the time at which the RopLogon occurred.
         /// </summary>
         public LogonTime LogonTime;
 

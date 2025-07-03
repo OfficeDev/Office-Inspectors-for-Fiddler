@@ -4,13 +4,13 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the CompareMinIdsRequest structure.
-    /// 2.2.5 Request Types for Address Book Server Endpoint 
+    /// 2.2.5 Request Types for Address Book Server Endpoint
     /// 2.2.5.3 CompareMinIds
     /// </summary>
     public class CompareMinIdsRequest : BaseStructure
     {
         /// <summary>
-        /// Reserved. The client MUST set this field to 0x00000000 and the server MUST ignore this field. 
+        /// Reserved. The client MUST set this field to 0x00000000 and the server MUST ignore this field.
         /// </summary>
         public uint Reserved;
 
@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         public byte HasState;
 
         /// <summary>
-        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container. 
+        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
         /// </summary>
         public STAT State;
 
@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

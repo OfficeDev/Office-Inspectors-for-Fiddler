@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.9 RopSeekRow ROP
-    /// The RopSeekRow ROP ([MS-OXCROPS] section 2.2.5.8) moves the table cursor to a specific location in the table. 
+    /// The RopSeekRow ROP ([MS-OXCROPS] section 2.2.5.8) moves the table cursor to a specific location in the table.
     /// </summary>
     public class RopSeekRowRequest : Block
     {
@@ -19,12 +19,12 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
         public BlockT<byte> InputHandleIndex;
 
         /// <summary>
-        /// An enumeration that specifies the origin of this seek operation. 
+        /// An enumeration that specifies the origin of this seek operation.
         /// </summary>
         public BlockT<Bookmarks> Origin;
 

@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.1.3 RopDeleteFolder ROP
-    /// The RopDeleteFolder ROP ([MS-OXCROPS] section 2.2.4.3) removes a folder. 
+    /// The RopDeleteFolder ROP ([MS-OXCROPS] section 2.2.4.3) removes a folder.
     /// </summary>
     public class RopDeleteFolderRequest : Block
     {
@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> InputHandleIndex;
 
         /// <summary>
-        /// A flags structure that contains flags that control how to delete the folder. 
+        /// A flags structure that contains flags that control how to delete the folder.
         /// </summary>
         public BlockT<DeleteFolderFlags> DeleteFolderFlags;
 

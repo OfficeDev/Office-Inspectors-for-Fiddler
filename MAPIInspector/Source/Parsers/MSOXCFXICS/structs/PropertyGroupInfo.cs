@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         public BlockT<uint> Reserved;
 
         /// <summary>
-        ///  An unsigned 32-bit integer value that specifies how many PropertyGroup structures are present in the Groups field. 
+        ///  An unsigned 32-bit integer value that specifies how many PropertyGroup structures are present in the Groups field.
         /// </summary>
         public BlockT<uint> GroupCount;
 

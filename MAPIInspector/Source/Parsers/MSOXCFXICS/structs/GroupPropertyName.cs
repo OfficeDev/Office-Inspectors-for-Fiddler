@@ -14,22 +14,22 @@ namespace MAPIInspector.Parsers
         public BlockGuid Guid;
 
         /// <summary>
-        /// A value that identifies the type of property. 
+        /// A value that identifies the type of property.
         /// </summary>
         public BlockT<uint> Kind;
 
         /// <summary>
-        /// A value that identifies the named property within its property set. 
+        /// A value that identifies the named property within its property set.
         /// </summary>
         public BlockT<uint> Lid;
 
         /// <summary>
-        /// A value that specifies the length of the Name field, in bytes. 
+        /// A value that specifies the length of the Name field, in bytes.
         /// </summary>
         public BlockT<uint> NameSize;
 
         /// <summary>
-        /// A Unicode (UTF-16) string that identifies the property within the property set. 
+        /// A Unicode (UTF-16) string that identifies the property within the property set.
         /// </summary>
         public PtypString Name;
 

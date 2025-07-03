@@ -10,7 +10,7 @@ namespace MAPIInspector.Parsers
     public class AddressBookPropertyValue : Block
     {
         /// <summary>
-        /// An unsigned integer when the PropertyType is known to be either PtypString, PtypString8, PtypBinary or PtypMultiple ([MS-OXCDATA] section 2.11.1). 
+        /// An unsigned integer when the PropertyType is known to be either PtypString, PtypString8, PtypBinary or PtypMultiple ([MS-OXCDATA] section 2.11.1).
         /// </summary>
         public BlockT<bool> HasValue;
 

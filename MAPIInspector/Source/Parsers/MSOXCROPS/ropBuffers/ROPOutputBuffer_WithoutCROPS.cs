@@ -4,7 +4,7 @@ using System.IO;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// A class indicates the ROP output buffer, which is sent by the server, includes an array of ROP response buffers. 
+    /// A class indicates the ROP output buffer, which is sent by the server, includes an array of ROP response buffers.
     /// </summary>
     public class ROPOutputBuffer_WithoutCROPS : BaseStructure
     {

@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
         public uint TimeToFailRequest;
 
         /// <summary>
-        /// The error code returned for the failed request. 
+        /// The error code returned for the failed request.
         /// </summary>
         public uint ResultCode;
 
@@ -50,7 +50,7 @@ namespace MAPIInspector.Parsers
         public byte RequestOperation;
 
         /// <summary>
-        /// Padding to enforce alignment of the data on a 4-byte field. 
+        /// Padding to enforce alignment of the data on a 4-byte field.
         /// </summary>
         public byte[] Reserved;
 

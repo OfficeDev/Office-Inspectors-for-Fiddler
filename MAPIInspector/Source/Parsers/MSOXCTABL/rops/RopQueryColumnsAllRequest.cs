@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.13 RopQueryColumnsAll ROP
-    /// The RopQueryColumnsAll ROP ([MS-OXCROPS] section 2.2.5.12) returns a complete list of all columns for the table. 
+    /// The RopQueryColumnsAll ROP ([MS-OXCROPS] section 2.2.5.12) returns a complete list of all columns for the table.
     /// </summary>
     public class RopQueryColumnsAllRequest : BaseStructure
     {

@@ -11,7 +11,7 @@ namespace MAPIInspector.Parsers
     public class ModLinkAttRequest : BaseStructure
     {
         /// <summary>
-        /// A set of bit flags that specify options to the server. 
+        /// A set of bit flags that specify options to the server.
         /// </summary>
         public uint Flags;
 
@@ -31,12 +31,12 @@ namespace MAPIInspector.Parsers
         public bool HasEntryIds;
 
         /// <summary>
-        /// An unsigned integer that specifies the count of structures in the EntryIds field. 
+        /// An unsigned integer that specifies the count of structures in the EntryIds field.
         /// </summary>
         public uint? EntryIdCount;
 
         /// <summary>
-        /// An array of entry IDs, each of which is either an EphemeralEntryID structure or a PermanentEntryID structure. 
+        /// An array of entry IDs, each of which is either an EphemeralEntryID structure or a PermanentEntryID structure.
         /// </summary>
         public object[] EntryIds;
 
@@ -46,7 +46,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

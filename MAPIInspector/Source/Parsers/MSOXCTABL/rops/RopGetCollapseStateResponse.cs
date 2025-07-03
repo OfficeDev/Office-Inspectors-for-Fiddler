@@ -14,7 +14,7 @@ namespace MAPIInspector.Parsers
         public RopIdType RopId;
 
         /// <summary>
-        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
         public byte InputHandleIndex;
 
@@ -29,7 +29,7 @@ namespace MAPIInspector.Parsers
         public ushort? CollapseStateSize;
 
         /// <summary>
-        /// An array of bytes that specifies a collapse state for a categorized table. 
+        /// An array of bytes that specifies a collapse state for a categorized table.
         /// </summary>
         public byte?[] CollapseState;
 

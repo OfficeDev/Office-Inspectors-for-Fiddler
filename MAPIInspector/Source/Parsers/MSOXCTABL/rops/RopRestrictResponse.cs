@@ -14,7 +14,7 @@ namespace MAPIInspector.Parsers
         public RopIdType RopId;
 
         /// <summary>
-        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request. 
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
         public byte InputHandleIndex;
 
@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
         public object ReturnValue;
 
         /// <summary>
-        /// An enumeration that specifies the status of the table. 
+        /// An enumeration that specifies the status of the table.
         /// </summary>
         public TableStatus? TableStatus;
 

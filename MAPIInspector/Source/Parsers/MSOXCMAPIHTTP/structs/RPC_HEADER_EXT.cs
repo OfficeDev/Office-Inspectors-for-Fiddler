@@ -13,12 +13,12 @@ namespace MAPIInspector.Parsers
         public ushort Version;
 
         /// <summary>
-        /// The flags that specify how data that follows this header MUST be interpreted. 
+        /// The flags that specify how data that follows this header MUST be interpreted.
         /// </summary>
         public RpcHeaderFlags Flags;
 
         /// <summary>
-        /// The total length of the payload data that follows the RPC_HEADER_EXT structure. 
+        /// The total length of the payload data that follows the RPC_HEADER_EXT structure.
         /// </summary>
         public ushort Size;
 
@@ -28,7 +28,7 @@ namespace MAPIInspector.Parsers
         public ushort SizeActual;
 
         /// <summary>
-        /// Parse the RPC_HEADER_EXT. 
+        /// Parse the RPC_HEADER_EXT.
         /// </summary>
         /// <param name="s">A stream related to the RPC_HEADER_EXT.</param>
         public override void Parse(Stream s)

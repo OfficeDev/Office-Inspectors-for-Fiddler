@@ -358,7 +358,7 @@ namespace MapiInspector
                 if (parameters != null &&
                     parameters.Length > 0)
                 {
-                    // parsing the previous sessions until DecodingContext.LogonFlagMapLogId contains the LogOn Id in this RopSetMessageReadFlag ROP. 
+                    // parsing the previous sessions until DecodingContext.LogonFlagMapLogId contains the LogOn Id in this RopSetMessageReadFlag ROP.
                     Dictionary<int, uint> dic = new Dictionary<int, uint>();
                     Dictionary<ushort, Dictionary<int, uint>> targetDic = new Dictionary<ushort, Dictionary<int, uint>>();
                     dic.Add(thisSessionID, parameters[0]);
@@ -461,7 +461,7 @@ namespace MapiInspector
                     dic.Add(thisSessionID, parameters[0]);
                     targetDic.Add(sourceRopID, dic);
 
-                    // Parsing the previous sessions until DecodingContext.LogonFlagMapLogId contains the LogOn Id in this RopWritePerUserInformation ROP. 
+                    // Parsing the previous sessions until DecodingContext.LogonFlagMapLogId contains the LogOn Id in this RopWritePerUserInformation ROP.
                     TargetHandle.Push(targetDic);
 
                     do
@@ -850,7 +850,7 @@ sessionID >= currentSessionID)
 
                 if (DecodingContext.Notify_handlePropertyTags.ContainsKey(parameters[1]))
                 {
-                    // Just get a biggest value for the distance for initial                                    
+                    // Just get a biggest value for the distance for initial
                     string searchkey = parameters[0] == 0 ? "RopGetHierarchyTableRequest" : "RopGetContentsTableRequest";
 
                     foreach (uint sessionID in DecodingContext.Notify_handlePropertyTags[parameters[1]].Keys)
@@ -1758,7 +1758,7 @@ sessionID >= currentSessionID)
 
         /// <summary>
         /// Method to judge whether a session is MAPIHTTP message or not when Automation Test
-        /// </summary>        
+        /// </summary>
         /// <returns>Boole value indicates whether this session is MAPIHTTP layer message</returns>
         public static bool IsMapihttpWithoutUI()
         {

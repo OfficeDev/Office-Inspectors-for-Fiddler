@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> InputHandleIndex;
 
         /// <summary>
-        /// A LongTermID structure that specifies the public folder. 
+        /// A LongTermID structure that specifies the public folder.
         /// </summary>
         public LongTermID LongTermId;
 

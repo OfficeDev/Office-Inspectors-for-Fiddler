@@ -9,7 +9,7 @@ namespace MAPIInspector.Parsers
     public class GetPropsRequest : BaseStructure
     {
         /// <summary>
-        /// A set of bit flags that specify options to the server. 
+        /// A set of bit flags that specify options to the server.
         /// </summary>
         public uint Flags;
 
@@ -19,7 +19,7 @@ namespace MAPIInspector.Parsers
         public bool HasState;
 
         /// <summary>
-        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container. 
+        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
         /// </summary>
         public STAT State;
 
@@ -29,7 +29,7 @@ namespace MAPIInspector.Parsers
         public bool HasPropertyTags;
 
         /// <summary>
-        /// A LargePropertyTagArray structure (section 2.2.1.8) that contains the property tags of the properties that the client is requesting. 
+        /// A LargePropertyTagArray structure (section 2.2.1.8) that contains the property tags of the properties that the client is requesting.
         /// </summary>
         public LargePropertyTagArray PropertyTags;
 
@@ -39,7 +39,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

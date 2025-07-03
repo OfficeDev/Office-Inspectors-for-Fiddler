@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         public MAPIString[] AdditionalHeaders;
 
         /// <summary>
-        /// An unsigned integer that specifies the status of the request. 
+        /// An unsigned integer that specifies the status of the request.
         /// </summary>
         public uint StatusCode;
 
@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
         public uint ErrorCode;
 
         /// <summary>
-        /// An unsigned integer that specifies the code page that the server used to express string properties. 
+        /// An unsigned integer that specifies the code page that the server used to express string properties.
         /// </summary>
         public uint CodePage;
 
@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
         public bool HasPropertyValues;
 
         /// <summary>
-        /// An AddressBookPropertyValueList structure (section 2.2.1.3) that contains the values of the properties requested. 
+        /// An AddressBookPropertyValueList structure (section 2.2.1.3) that contains the values of the properties requested.
         /// </summary>
         public AddressBookPropertyValueList PropertyValues;
 
@@ -50,7 +50,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

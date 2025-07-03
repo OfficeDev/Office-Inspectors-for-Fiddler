@@ -16,7 +16,7 @@
         IstUnlock = 0x01,
 
         /// <summary>
-        /// Mark the message as ready for processing by the server. 
+        /// Mark the message as ready for processing by the server.
         /// </summary>
         IstFininshed = 0x02
     }

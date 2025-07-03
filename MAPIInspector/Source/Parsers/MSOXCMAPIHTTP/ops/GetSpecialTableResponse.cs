@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         public MAPIString[] AdditionalHeaders;
 
         /// <summary>
-        /// An unsigned integer that specifies the status of the request. 
+        /// An unsigned integer that specifies the status of the request.
         /// </summary>
         public uint StatusCode;
 
@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
         public uint ErrorCode;
 
         /// <summary>
-        /// An unsigned integer that specifies the code page the server used to express string properties. 
+        /// An unsigned integer that specifies the code page the server used to express string properties.
         /// </summary>
         public uint CodePage;
 
@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
         public bool HasVersion;
 
         /// <summary>
-        /// An unsigned integer that specifies the version number of the address book hierarchy table that the server has. 
+        /// An unsigned integer that specifies the version number of the address book hierarchy table that the server has.
         /// </summary>
         public uint Version;
 
@@ -50,12 +50,12 @@ namespace MAPIInspector.Parsers
         public bool HasRows;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of structures in the Rows field. 
+        /// An unsigned integer that specifies the number of structures in the Rows field.
         /// </summary>
         public uint RowsCount;
 
         /// <summary>
-        /// An array of AddressBookPropertyValueList structures, each of which contains a row of the table that the client requested. 
+        /// An array of AddressBookPropertyValueList structures, each of which contains a row of the table that the client requested.
         /// </summary>
         public AddressBookPropertyValueList[] Rows;
 
@@ -65,7 +65,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

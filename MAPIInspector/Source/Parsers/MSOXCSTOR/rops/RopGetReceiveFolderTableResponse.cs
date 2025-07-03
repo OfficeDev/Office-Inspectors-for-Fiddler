@@ -44,7 +44,7 @@ namespace MAPIInspector.Parsers
             ReturnValue = ParseT<ErrorCodes>();
             if (ReturnValue == ErrorCodes.Success)
             {
-                // PidTagMessageClass is defined as PtypString8 due to Open Specification said all characters in this property MUST be from the ASCII characters 0x20 through 0x7F. 
+                // PidTagMessageClass is defined as PtypString8 due to Open Specification said all characters in this property MUST be from the ASCII characters 0x20 through 0x7F.
                 var properties_GetReceiveFolderTable = new PropertyTag[3]
                 {
                       new PropertyTag(PropertyDataType.PtypInteger64, PidTagPropertyEnum.PidTagFolderId),

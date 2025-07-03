@@ -22,12 +22,12 @@ namespace MAPIInspector.Parsers
         public bool HasNames;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of null-terminated Unicode strings in the NameValues field. 
+        /// An unsigned integer that specifies the number of null-terminated Unicode strings in the NameValues field.
         /// </summary>
         public uint? NameCount;
 
         /// <summary>
-        /// An array of null-terminated ASCII strings which are distinguished names (DNs) to be mapped to Minimal Entry IDs. 
+        /// An array of null-terminated ASCII strings which are distinguished names (DNs) to be mapped to Minimal Entry IDs.
         /// </summary>
         public MAPIString[] NameValues;
 
@@ -37,7 +37,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data returned from the server. 
+        /// An array of bytes that constitute the auxiliary payload data returned from the server.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

@@ -10,7 +10,7 @@ namespace MAPIInspector.Parsers
     public class AddressBookFlaggedPropertyValue : BaseStructure
     {
         /// <summary>
-        /// An unsigned integer. This value of this flag determines what is conveyed in the PropertyValue field. 
+        /// An unsigned integer. This value of this flag determines what is conveyed in the PropertyValue field.
         /// </summary>
         public byte Flag;
 

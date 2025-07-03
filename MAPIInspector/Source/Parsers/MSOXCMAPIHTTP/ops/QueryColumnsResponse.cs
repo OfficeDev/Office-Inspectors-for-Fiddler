@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         public MAPIString[] AdditionalHeaders;
 
         /// <summary>
-        /// An unsigned integer that specifies the status of the request. 
+        /// An unsigned integer that specifies the status of the request.
         /// </summary>
         public uint StatusCode;
 
@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
         public bool HasColumns;
 
         /// <summary>
-        /// A LargePropertyTagArray structure that specifies the properties that exist on the address book. 
+        /// A LargePropertyTagArray structure that specifies the properties that exist on the address book.
         /// </summary>
         public LargePropertyTagArray Columns;
 
@@ -45,7 +45,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

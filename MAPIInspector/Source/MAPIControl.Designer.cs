@@ -7,12 +7,12 @@ namespace MapiInspector
 {
     public partial class MAPIControl
     {
-        /// <summary> 
+        /// <summary>
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary> 
+        /// <summary>
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
@@ -27,8 +27,8 @@ namespace MapiInspector
 
         #region Component Designer generated code
 
-        /// <summary> 
-        /// Required method for Designer support - do not modify 
+        /// <summary>
+        /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
@@ -44,9 +44,9 @@ namespace MapiInspector
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // mapiTreeView
-            // 
+            //
             this.mapiTreeView.Dock = System.Windows.Forms.DockStyle.Left;
             this.mapiTreeView.Location = new System.Drawing.Point(0, 0);
             this.mapiTreeView.Name = "mapiTreeView";
@@ -62,9 +62,9 @@ namespace MapiInspector
             mapiTreeViewMenuItem2.Click += new EventHandler(MapiTreeViewMenuItem2_Click);
             mapiTreeViewMenuItem3.Click += new EventHandler(MapiTreeViewMenuItem3_Click);
             mapiTreeViewMenuItem4.Click += new EventHandler(MapiTreeViewMenuItem4_Click);
-            // 
+            //
             // mapiRichTextBox
-            // 
+            //
             this.mapiRichTextBox.BackColor = System.Drawing.SystemColors.Window;
             this.mapiRichTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.mapiRichTextBox.Location = new System.Drawing.Point(0, 0);
@@ -73,31 +73,31 @@ namespace MapiInspector
             this.mapiRichTextBox.TabIndex = 2;
             this.mapiRichTextBox.Text = "";
             this.mapiRichTextBox.Visible = false;
-            // 
+            //
             // splitContainer
-            // 
+            //
             this.splitContainer.Cursor = System.Windows.Forms.Cursors.Default;
             this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer.Location = new System.Drawing.Point(424, 0);
             this.splitContainer.Name = "splitContainer";
             this.splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
+            //
             // splitContainer.Panel1
-            // 
+            //
             this.splitContainer.Panel1.AutoScroll = true;
             this.splitContainer.Panel1.Controls.Add(this.mapiHexBox);
             this.splitContainer.Panel1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            // 
+            //
             // splitContainer.Panel2
-            // 
+            //
             this.splitContainer.Panel2.Controls.Add(this.cropsHexBox);
             this.splitContainer.Panel2Collapsed = true;
             this.splitContainer.Size = new System.Drawing.Size(644, 472);
             this.splitContainer.SplitterDistance = 214;
             this.splitContainer.TabIndex = 4;
-            // 
+            //
             // mapiHexBox
-            // 
+            //
             this.mapiHexBox.AccessibleRole = System.Windows.Forms.AccessibleRole.ScrollBar;
             this.mapiHexBox.BodyOffset = 0;
             this.mapiHexBox.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -127,9 +127,9 @@ namespace MapiInspector
             item5.Click += new EventHandler(MAPI_CopyAsCodeBlock);
 
 
-            // 
+            //
             // cropsHexBox
-            // 
+            //
             this.cropsHexBox.BodyOffset = 1;
             this.cropsHexBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cropsHexBox.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -149,17 +149,17 @@ namespace MapiInspector
             item_crops.Click += new EventHandler(CROPS_Copy);
 
 
-            // 
+            //
             // splitter
-            // 
+            //
             this.splitter.Location = new System.Drawing.Point(424, 0);
             this.splitter.Name = "splitter";
             this.splitter.Size = new System.Drawing.Size(3, 472);
             this.splitter.TabIndex = 5;
             this.splitter.TabStop = false;
-            // 
+            //
             // MAPIControl
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;

@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.14 RopFindRow ROP
-    /// The RopFindRow ROP ([MS-OXCROPS] section 2.2.5.13) returns the next row in a table that matches the search criteria and moves the cursor to that row. 
+    /// The RopFindRow ROP ([MS-OXCROPS] section 2.2.5.13) returns the next row in a table that matches the search criteria and moves the cursor to that row.
     /// </summary>
     public class RopFindRowRequest : BaseStructure
     {
@@ -19,12 +19,12 @@ namespace MAPIInspector.Parsers
         public byte LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
         public byte InputHandleIndex;
 
         /// <summary>
-        /// A flags structure that contains flags that control this operation. 
+        /// A flags structure that contains flags that control this operation.
         /// </summary>
         public FindRowFlags FindRowFlags;
 
@@ -34,12 +34,12 @@ namespace MAPIInspector.Parsers
         public ushort RestrictionDataSize;
 
         /// <summary>
-        /// A restriction packet, as specified in [MS-OXCDATA] section 2.12, that specifies the filter for this operation. 
+        /// A restriction packet, as specified in [MS-OXCDATA] section 2.12, that specifies the filter for this operation.
         /// </summary>
         public RestrictionType RestrictionData;
 
         /// <summary>
-        /// An enumeration that specifies where this operation begins its search. 
+        /// An enumeration that specifies where this operation begins its search.
         /// </summary>
         public Bookmarks Origin;
 

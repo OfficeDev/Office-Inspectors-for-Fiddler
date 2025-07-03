@@ -11,12 +11,12 @@ namespace MAPIInspector.Parsers
     public class AUX_SERVER_SESSION_INFO : BaseStructure
     {
         /// <summary>
-        /// The offset from the beginning of the AUX_HEADER structure to the ServerSessionContextInfo field. 
+        /// The offset from the beginning of the AUX_HEADER structure to the ServerSessionContextInfo field.
         /// </summary>
         public ushort OffsetServerSessionContextInfo;
 
         /// <summary>
-        /// A null-terminated Unicode string that contains opaque server session context information to be logged by the client. 
+        /// A null-terminated Unicode string that contains opaque server session context information to be logged by the client.
         /// </summary>
         public MAPIString ServerSessionContextInfo;
 

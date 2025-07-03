@@ -55,7 +55,7 @@ namespace MAPIInspector.Parsers
         public RestrictionType RestrictionData;
 
         /// <summary>
-        /// A flags structure that contains flags control the additional behavior of the synchronization. 
+        /// A flags structure that contains flags control the additional behavior of the synchronization.
         /// </summary>
         public BlockT<SynchronizationExtraFlags> SynchronizationExtraFlags;
 

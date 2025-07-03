@@ -21,77 +21,77 @@ namespace MAPIInspector.Parsers
         public ushort ClientID;
 
         /// <summary>
-        /// The offset from the beginning of the AUX_HEADER structure to the MachineName field. 
+        /// The offset from the beginning of the AUX_HEADER structure to the MachineName field.
         /// </summary>
         public ushort MachineNameOffset;
 
         /// <summary>
-        /// The offset from the beginning of the AUX_HEADER structure to the UserName field. 
+        /// The offset from the beginning of the AUX_HEADER structure to the UserName field.
         /// </summary>
         public ushort UserNameOffset;
 
         /// <summary>
-        /// The size of the client IP address referenced by the ClientIPOffset field. 
+        /// The size of the client IP address referenced by the ClientIPOffset field.
         /// </summary>
         public ushort ClientIPSize;
 
         /// <summary>
-        /// The offset from the beginning of the AUX_HEADER structure to the ClientIP field. 
+        /// The offset from the beginning of the AUX_HEADER structure to the ClientIP field.
         /// </summary>
         public ushort ClientIPOffset;
 
         /// <summary>
-        /// The size of the client IP subnet mask referenced by the ClientIPMaskOffset field. 
+        /// The size of the client IP subnet mask referenced by the ClientIPMaskOffset field.
         /// </summary>
         public ushort ClientIPMaskSize;
 
         /// <summary>
-        /// The offset from the beginning of the AUX_HEADER structure to the ClientIPMask field. 
+        /// The offset from the beginning of the AUX_HEADER structure to the ClientIPMask field.
         /// </summary>
         public ushort ClientIPMaskOffset;
 
         /// <summary>
-        /// The offset from the beginning of the AUX_HEADER structure to the AdapterName field. 
+        /// The offset from the beginning of the AUX_HEADER structure to the AdapterName field.
         /// </summary>
         public ushort AdapterNameOffset;
 
         /// <summary>
-        /// The size of the network adapter Media Access Control (MAC) address referenced by the MacAddressOffset field. 
+        /// The size of the network adapter Media Access Control (MAC) address referenced by the MacAddressOffset field.
         /// </summary>
         public ushort MacAddressSize;
 
         /// <summary>
-        /// The offset from the beginning of the AUX_HEADER structure to the MacAddress field. 
+        /// The offset from the beginning of the AUX_HEADER structure to the MacAddress field.
         /// </summary>
         public ushort MacAddressOffset;
 
         /// <summary>
-        /// A flag that shows the mode in which the client is running. 
+        /// A flag that shows the mode in which the client is running.
         /// </summary>
         public ClientModeFlag ClientMode;
 
         /// <summary>
-        /// Padding to enforce alignment of the data on a 4-byte field. 
+        /// Padding to enforce alignment of the data on a 4-byte field.
         /// </summary>
         public ushort Reserved;
 
         /// <summary>
-        /// A null-terminated Unicode string that contains the client computer name. 
+        /// A null-terminated Unicode string that contains the client computer name.
         /// </summary>
         public MAPIString MachineName;
 
         /// <summary>
-        /// A null-terminated Unicode string that contains the user's account name. 
+        /// A null-terminated Unicode string that contains the user's account name.
         /// </summary>
         public MAPIString UserName;
 
         /// <summary>
-        /// The client's IP address. 
+        /// The client's IP address.
         /// </summary>
         public byte?[] ClientIP;
 
         /// <summary>
-        /// The client's IP subnet mask. 
+        /// The client's IP subnet mask.
         /// </summary>
         public byte?[] ClientIPMask;
 
@@ -101,7 +101,7 @@ namespace MAPIInspector.Parsers
         public MAPIString AdapterName;
 
         /// <summary>
-        /// The client's network adapter MAC address. 
+        /// The client's network adapter MAC address.
         /// </summary>
         public byte?[] MacAddress;
 

@@ -11,52 +11,52 @@ namespace MAPIInspector.Parsers
     public class AUX_PROTOCOL_DEVICE_IDENTIFICATION : BaseStructure
     {
         /// <summary>
-        /// The offset from the beginning of the AUX_HEADER structure, as specified in section 2.2.2.2, to the DeviceManufacturer field. 
+        /// The offset from the beginning of the AUX_HEADER structure, as specified in section 2.2.2.2, to the DeviceManufacturer field.
         /// </summary>
         public ushort DeviceManufacturerOffset;
 
         /// <summary>
-        /// The offset from the beginning of the AUX_HEADER structure to the DeviceModel field. 
+        /// The offset from the beginning of the AUX_HEADER structure to the DeviceModel field.
         /// </summary>
         public ushort DeviceModelOffset;
 
         /// <summary>
-        /// The offset from the beginning of the AUX_HEADER structure to the DeviceSerialNumber field. 
+        /// The offset from the beginning of the AUX_HEADER structure to the DeviceSerialNumber field.
         /// </summary>
         public ushort DeviceSerialNumberOffset;
 
         /// <summary>
-        /// The offset from the beginning of the AUX_HEADER structure to the DeviceVersion field. 
+        /// The offset from the beginning of the AUX_HEADER structure to the DeviceVersion field.
         /// </summary>
         public ushort DeviceVersionOffset;
 
         /// <summary>
-        /// The offset from the beginning of the AUX_HEADER structure to the DeviceFirmwareVersion field. 
+        /// The offset from the beginning of the AUX_HEADER structure to the DeviceFirmwareVersion field.
         /// </summary>
         public ushort DeviceFirmwareVersionOffset;
 
         /// <summary>
-        /// A null-terminated Unicode string that contains the name of the manufacturer of the device. 
+        /// A null-terminated Unicode string that contains the name of the manufacturer of the device.
         /// </summary>
         public MAPIString DeviceManufacturer;
 
         /// <summary>
-        /// A null-terminated Unicode string that contains the model name of the device. 
+        /// A null-terminated Unicode string that contains the model name of the device.
         /// </summary>
         public MAPIString DeviceModel;
 
         /// <summary>
-        /// A null-terminated Unicode string that contains the serial number of the device. 
+        /// A null-terminated Unicode string that contains the serial number of the device.
         /// </summary>
         public MAPIString DeviceSerialNumber;
 
         /// <summary>
-        /// A null-terminated Unicode string that contains the version number of the device. 
+        /// A null-terminated Unicode string that contains the version number of the device.
         /// </summary>
         public MAPIString DeviceVersion;
 
         /// <summary>
-        /// A null-terminated Unicode string that contains the firmware version of the device. 
+        /// A null-terminated Unicode string that contains the firmware version of the device.
         /// </summary>
         public MAPIString DeviceFirmwareVersion;
 

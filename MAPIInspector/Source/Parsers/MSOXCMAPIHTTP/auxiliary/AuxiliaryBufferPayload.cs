@@ -8,7 +8,7 @@ namespace MAPIInspector.Parsers
     public class AuxiliaryBufferPayload : BaseStructure
     {
         /// <summary>
-        /// An AUX_HEADER structure that provides information about the auxiliary block structures that follow it. 
+        /// An AUX_HEADER structure that provides information about the auxiliary block structures that follow it.
         /// </summary>
         public AUX_HEADER AUXHEADER;
 

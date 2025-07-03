@@ -10,12 +10,12 @@ namespace MAPIInspector.Parsers
     public class AUX_CLIENT_CONTROL : BaseStructure
     {
         /// <summary>
-        /// The flags that instruct the client to either enable or disable behavior. 
+        /// The flags that instruct the client to either enable or disable behavior.
         /// </summary>
         public EnableFlags EnableFlags;
 
         /// <summary>
-        /// The number of milliseconds the client keeps unsent performance data before the data is expired. 
+        /// The number of milliseconds the client keeps unsent performance data before the data is expired.
         /// </summary>
         public uint ExpiryTime;
 

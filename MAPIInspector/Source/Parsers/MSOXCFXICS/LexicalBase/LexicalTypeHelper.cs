@@ -107,7 +107,7 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Indicate whether a PropertyDataType is either PtypString, PtypString8 or PtypBinary, PtypServerId, or PtypObject. 
+        /// Indicate whether a PropertyDataType is either PtypString, PtypString8 or PtypBinary, PtypServerId, or PtypObject.
         /// </summary>
         /// <param name="type">A PropertyDataType.</param>
         /// <returns>If the PropertyDataType is a either PtypString, PtypString8 or PtypBinary, PtypServerId, or PtypObject return true, else false.</returns>
@@ -137,7 +137,7 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Indicate whether a PropertyDataType value is a codePage property type. 
+        /// Indicate whether a PropertyDataType value is a codePage property type.
         /// </summary>
         /// <param name="type">A PropertyDataType value.</param>
         /// <returns>If the PropertyDataType is a either PtypCodePageUnicode, PtypCodePageUnicodeBigendian or PtypCodePageWesternEuropean return true, else false.</returns>

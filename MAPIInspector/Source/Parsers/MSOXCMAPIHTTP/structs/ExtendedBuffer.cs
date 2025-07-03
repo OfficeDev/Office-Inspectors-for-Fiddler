@@ -15,12 +15,12 @@ namespace MAPIInspector.Parsers
         public RPC_HEADER_EXT RPCHEADEREXT;
 
         /// <summary>
-        /// A structure of bytes that constitute the auxiliary payload data returned from the server. 
+        /// A structure of bytes that constitute the auxiliary payload data returned from the server.
         /// </summary>
         public AuxiliaryBufferPayload[] Payload;
 
         /// <summary>
-        /// Parse the ExtendedBuffer. 
+        /// Parse the ExtendedBuffer.
         /// </summary>
         /// <param name="s">A stream of the extended buffers.</param>
         public override void Parse(Stream s)

@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         public MAPIString[] AdditionalHeaders;
 
         /// <summary>
-        /// An unsigned integer that specifies the status of the request. 
+        /// An unsigned integer that specifies the status of the request.
         /// </summary>
         public uint StatusCode;
 
@@ -40,12 +40,12 @@ namespace MAPIInspector.Parsers
         public bool HasMinimalIds;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of structures in the MinimalIds field. 
+        /// An unsigned integer that specifies the number of structures in the MinimalIds field.
         /// </summary>
         public uint MinimalIdCount;
 
         /// <summary>
-        /// An array of MinimalEntryID structures, each of which specifies a Minimal Entry ID matching a name requested by the client. 
+        /// An array of MinimalEntryID structures, each of which specifies a Minimal Entry ID matching a name requested by the client.
         /// </summary>
         public MinimalEntryID[] MinimalIds;
 
@@ -55,17 +55,17 @@ namespace MAPIInspector.Parsers
         public bool HasRowsAndCols;
 
         /// <summary>
-        /// A LargePropertyTagArray structure that specifies the properties returned for the rows in the RowData field. 
+        /// A LargePropertyTagArray structure that specifies the properties returned for the rows in the RowData field.
         /// </summary>
         public LargePropertyTagArray PropertyTags;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of structures in the RowData field. 
+        /// An unsigned integer that specifies the number of structures in the RowData field.
         /// </summary>
         public uint RowCount;
 
         /// <summary>
-        /// An array of AddressBookPropertyRow structures (section 2.2.1.7), each of which specifies the row data requested. 
+        /// An array of AddressBookPropertyRow structures (section 2.2.1.7), each of which specifies the row data requested.
         /// </summary>
         public AddressBookPropertyRow[] RowData;
 
@@ -75,7 +75,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

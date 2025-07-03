@@ -35,12 +35,12 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> Level;
 
         /// <summary>
-        /// A flags structure that contains flags that control the type of operation. 
+        /// A flags structure that contains flags that control the type of operation.
         /// </summary>
         public BlockT<CopyFlags_CopyTo> CopyFlags;
 
         /// <summary>
-        /// A flags structure that contains flags that control the behavior of the operation. 
+        /// A flags structure that contains flags that control the behavior of the operation.
         /// </summary>
         public BlockT<SendOptions> SendOptions;
 

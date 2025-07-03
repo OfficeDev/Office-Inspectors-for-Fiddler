@@ -15,7 +15,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> RecipientCount;
 
         /// <summary>
-        /// An array of RecipientBlockData structures, each of which specifies information about one recipient (2). 
+        /// An array of RecipientBlockData structures, each of which specifies information about one recipient (2).
         /// </summary>
         public RecipientBlockData[] RecipientBlocks;
 

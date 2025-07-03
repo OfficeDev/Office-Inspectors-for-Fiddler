@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> RestrictionDataSize;
 
         /// <summary>
-        /// A restriction packet, as specified in [MS-OXCDATA] section 2.12, that specifies the filter for this search folder. 
+        /// A restriction packet, as specified in [MS-OXCDATA] section 2.12, that specifies the filter for this search folder.
         /// </summary>
         public RestrictionType RestrictionData;
 
@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> FolderIdCount;
 
         /// <summary>
-        /// An array of 64-bit identifiers that specifies which folders are searched. 
+        /// An array of 64-bit identifiers that specifies which folders are searched.
         /// </summary>
         public FolderID[] FolderIds;
 

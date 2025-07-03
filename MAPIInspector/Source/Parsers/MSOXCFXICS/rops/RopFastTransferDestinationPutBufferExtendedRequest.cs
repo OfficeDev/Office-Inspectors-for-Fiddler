@@ -25,7 +25,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> InputHandleIndex;
 
         /// <summary>
-        /// An unsigned integer that specifies the size of the TransferData field. 
+        /// An unsigned integer that specifies the size of the TransferData field.
         /// </summary>
         public BlockT<ushort> TransferDataSize;
 

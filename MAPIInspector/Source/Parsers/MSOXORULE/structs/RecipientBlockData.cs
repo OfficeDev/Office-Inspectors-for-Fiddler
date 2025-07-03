@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> NoOfProperties;
 
         /// <summary>
-        /// An array of TaggedPropertyValue structures, each of which contains a property that provides some information about the recipient (2). 
+        /// An array of TaggedPropertyValue structures, each of which contains a property that provides some information about the recipient (2).
         /// </summary>
         public TaggedPropertyValue[] PropertyValues;
 

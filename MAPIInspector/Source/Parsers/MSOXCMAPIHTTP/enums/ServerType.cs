@@ -1,7 +1,7 @@
 ﻿namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// The server type assigned by client. 
+    /// The server type assigned by client.
     /// </summary>
     public enum ServerType : ushort
     {

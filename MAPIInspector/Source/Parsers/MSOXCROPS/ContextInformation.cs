@@ -1,7 +1,7 @@
 ﻿namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// The ContextInformation is used to save the related parameters during parsing.  
+    /// The ContextInformation is used to save the related parameters during parsing.
     /// </summary>
     public class ContextInformation
     {

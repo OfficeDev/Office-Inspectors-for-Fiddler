@@ -7,7 +7,7 @@ namespace MAPIInspector.Parsers
     /// <summary>
     /// 2.2.1.1 RopOpenFolder ROP
     /// 2.2.1.1.2 RopOpenFolder ROP Response Buffer
-    /// The RopOpenFolder ROP ([MS-OXCROPS] section 2.2.4.1) opens an existing folder. 
+    /// The RopOpenFolder ROP ([MS-OXCROPS] section 2.2.4.1) opens an existing folder.
     /// 2.2.4.1.2 RopOpenFolder ROP Success Response Buffer
     /// 2.2.4.1.3 RopOpenFolder ROP Failure Response Buffer
     /// </summary>
@@ -19,7 +19,7 @@ namespace MAPIInspector.Parsers
         public BlockT<RopIdType> RopId;
 
         /// <summary>
-        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request. 
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
         /// </summary>
         public BlockT<byte> OutputHandleIndex;
 
@@ -49,7 +49,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> CheapServerCount;
 
         /// <summary>
-        /// A list of null-terminated ASCII strings that specify which servers have replicas (2) of this folder. 
+        /// A list of null-terminated ASCII strings that specify which servers have replicas (2) of this folder.
         /// </summary>
         public BlockString[] Servers;
 

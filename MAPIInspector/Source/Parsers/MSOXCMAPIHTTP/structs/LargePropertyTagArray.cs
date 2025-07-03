@@ -12,7 +12,7 @@ namespace MAPIInspector.Parsers
     public class LargePropertyTagArray : BaseStructure
     {
         /// <summary>
-        /// An unsigned integer that specifies the number of structures contained in the PropertyTags field. 
+        /// An unsigned integer that specifies the number of structures contained in the PropertyTags field.
         /// </summary>
         public uint PropertyTagCount;
 

@@ -5,7 +5,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.3 RopSortTable ROP
-    /// The RopSortTable ROP ([MS-OXCROPS] section 2.2.5.2) orders the rows of a contents table based on sort criteria. 
+    /// The RopSortTable ROP ([MS-OXCROPS] section 2.2.5.2) orders the rows of a contents table based on sort criteria.
     /// </summary>
     public class RopSortTableRequest : Block
     {
@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
         public BlockT<byte> InputHandleIndex;
 
@@ -45,7 +45,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> ExpandedCount;
 
         /// <summary>
-        /// An array of SortOrder structures that specifies the sort order for the rows in the table. 
+        /// An array of SortOrder structures that specifies the sort order for the rows in the table.
         /// </summary>
         public SortOrder[] SortOrders;
 

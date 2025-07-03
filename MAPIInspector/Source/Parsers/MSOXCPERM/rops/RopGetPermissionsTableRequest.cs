@@ -19,17 +19,17 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
         public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the output Server object will be stored.
-        /// </summary>     
+        /// </summary>
         public BlockT<byte> OutputHandleIndex;
 
         /// <summary>
-        /// A flags structure that contains flags that control the type of table. 
+        /// A flags structure that contains flags that control the type of table.
         /// </summary>
         public BlockT<TableFlagsRopGetPermissionsTable> TableFlags;
 

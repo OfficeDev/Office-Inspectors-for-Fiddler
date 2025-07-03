@@ -37,7 +37,7 @@ namespace MAPIInspector.Parsers
         /// Verify that a stream's current position contains a serialized messageChangeFull.
         /// </summary>
         /// <param name="parser">A BinaryParser.</param>
-        /// <returns>If the stream's current position contains 
+        /// <returns>If the stream's current position contains
         /// a serialized messageChangeFull, return true, else false.</returns>
         public static bool Verify(BinaryParser parser)
         {

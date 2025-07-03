@@ -15,7 +15,7 @@ namespace MAPIInspector.Parsers
         public BlockT<RopIdType> RopId;
 
         /// <summary>
-        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request. 
+        /// An unsigned integer index that MUST be set to the value specified in the OutputHandleIndex field in the request.
         /// </summary>
         public BlockT<byte> OutputHandleIndex;
 
@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
         public BlockT<bool> HasRules;
 
         /// <summary>
-        /// A Boolean that indicates whether the server is an active replica of this folder. 
+        /// A Boolean that indicates whether the server is an active replica of this folder.
         /// </summary>
         public BlockT<bool> IsGhosted;
 

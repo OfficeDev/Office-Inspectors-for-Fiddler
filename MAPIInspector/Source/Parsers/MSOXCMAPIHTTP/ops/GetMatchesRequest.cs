@@ -21,7 +21,7 @@ namespace MAPIInspector.Parsers
         public bool HasState;
 
         /// <summary>
-        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container. 
+        /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
         /// </summary>
         public STAT State;
 
@@ -31,12 +31,12 @@ namespace MAPIInspector.Parsers
         public bool HasMinimalIds;
 
         /// <summary>
-        /// An unsigned integer that specifies the number of structures present in the MinimalIds field. 
+        /// An unsigned integer that specifies the number of structures present in the MinimalIds field.
         /// </summary>
         public uint? MinimalIdCount;
 
         /// <summary>
-        /// An array of MinimalEntryID structures ([MS-OXNSPI] section 2.2.9.1) that constitute an Explicit Table. 
+        /// An array of MinimalEntryID structures ([MS-OXNSPI] section 2.2.9.1) that constitute an Explicit Table.
         /// </summary>
         public MinimalEntryID[] MinimalIds;
 
@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
         public bool HasFilter;
 
         /// <summary>
-        /// A restriction, as specified in [MS-OXCDATA] section 2.12, that is to be applied to the rows in the address book container. 
+        /// A restriction, as specified in [MS-OXCDATA] section 2.12, that is to be applied to the rows in the address book container.
         /// </summary>
         public RestrictionType Filter;
 
@@ -61,12 +61,12 @@ namespace MAPIInspector.Parsers
         public bool HasPropertyName;
 
         /// <summary>
-        /// The GUID of the property to be opened. 
+        /// The GUID of the property to be opened.
         /// </summary>
         public Guid? PropertyNameGuid;
 
         /// <summary>
-        /// A 4-byte value that specifies the ID of the property to be opened. 
+        /// A 4-byte value that specifies the ID of the property to be opened.
         /// </summary>
         public uint? PropertyNameId;
 
@@ -81,7 +81,7 @@ namespace MAPIInspector.Parsers
         public bool HasColumns;
 
         /// <summary>
-        /// A LargePropertyTagArray structure (section 2.2.1.8) that specifies the columns that the client is requesting. 
+        /// A LargePropertyTagArray structure (section 2.2.1.8) that specifies the columns that the client is requesting.
         /// </summary>
         public LargePropertyTagArray Columns;
 
@@ -91,7 +91,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

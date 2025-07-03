@@ -19,7 +19,7 @@ namespace MAPIInspector.Parsers
         NoAdvance = 0x01,
 
         /// <summary>
-        /// Enable packed buffers for the response. 
+        /// Enable packed buffers for the response.
         /// </summary>
         EnablePackedBuffers = 0x02
     }

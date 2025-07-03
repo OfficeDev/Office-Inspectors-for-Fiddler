@@ -27,7 +27,7 @@ namespace MAPIInspector.Parsers
     }
 
     /// <summary>
-    /// BaseStructure class 
+    /// BaseStructure class
     /// </summary>
     public abstract class BaseStructure
     {
@@ -248,7 +248,7 @@ namespace MAPIInspector.Parsers
                 FieldInfo[] info = t.GetFields();
                 int bitLength = 0;
 
-                // The is only for FastTransfer stream parse, Polymorphic in PropValue and NamedPropInfo 
+                // The is only for FastTransfer stream parse, Polymorphic in PropValue and NamedPropInfo
                 if (obj is PropValue || obj is NamedPropInfo)
                 {
                     info = MoveFirstNFieldsBehind(info, info.Length - 2);
@@ -271,7 +271,7 @@ namespace MAPIInspector.Parsers
                         type = type.GetGenericArguments()[0];
                     }
 
-                    // Check whether the field data type is simple type: 
+                    // Check whether the field data type is simple type:
                     // Boolean, Byte, Char, Double, Decimal,Single, GUID, Int16, Int32, Int64, SByte, String, UInt16, UInt32, UInt64, DateTime
                     // calculate each field's offset and length.
                     if (Enum.IsDefined(typeof(DataType), type.Name))
@@ -343,7 +343,7 @@ namespace MAPIInspector.Parsers
                     {
                         // Else if the field data type is enum data type, its underlying type is simple type and its value is not null, calculate each field's offset
                         // and length. There are two situations: one is string type, we should calculate it's actual length (via getting value); another one is calculating
-                        // the size of underlying type of enum. 
+                        // the size of underlying type of enum.
                         Type fieldType = type;
 
                         TreeNode tn = new TreeNode(string.Format("{0}:{1}", info[i].Name, Utilities.EnumToString(info[i].GetValue(obj))));
@@ -1000,7 +1000,7 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Record start position and byte counts consumed 
+        /// Record start position and byte counts consumed
         /// </summary>
         public class Position
         {
@@ -1055,7 +1055,7 @@ namespace MAPIInspector.Parsers
     public class BitAttribute : System.Attribute
     {
         /// <summary>
-        /// Specify the length in bit 
+        /// Specify the length in bit
         /// </summary>
         public readonly int BitLength;
 
@@ -1076,7 +1076,7 @@ namespace MAPIInspector.Parsers
     public class BytesAttribute : System.Attribute
     {
         /// <summary>
-        /// Specify the length in byte 
+        /// Specify the length in byte
         /// </summary>
         public readonly uint ByteLength;
 

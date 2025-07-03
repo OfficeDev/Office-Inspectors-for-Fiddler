@@ -5,7 +5,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.2 RopSetColumns ROP
-    /// The RopSetColumns ROP ([MS-OXCROPS] section 2.2.5.1) sets the properties that the client requests to be included in the table. 
+    /// The RopSetColumns ROP ([MS-OXCROPS] section 2.2.5.1) sets the properties that the client requests to be included in the table.
     /// </summary>
     public class RopSetColumnsRequest : Block
     {
@@ -25,7 +25,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> InputHandleIndex;
 
         /// <summary>
-        /// A flags structure that contains flags that control this operation. 
+        /// A flags structure that contains flags that control this operation.
         /// </summary>
         public BlockT<AsynchronousFlags> SetColumnsFlags;
 
@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> PropertyTagCount;
 
         /// <summary>
-        /// An array of PropertyTag structures that specifies the property values that are visible in table rows. 
+        /// An array of PropertyTag structures that specifies the property values that are visible in table rows.
         /// </summary>
         public PropertyTag[] PropertyTags;
 

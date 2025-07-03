@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         public uint RopBufferSize;
 
         /// <summary>
-        /// An structure of bytes that constitute the ROP request payload. 
+        /// An structure of bytes that constitute the ROP request payload.
         /// </summary>
         public RgbInputBuffer RopBuffer;
 
@@ -30,12 +30,12 @@ namespace MAPIInspector.Parsers
         public uint MaxRopOut;
 
         /// <summary>
-        /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field. 
+        /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

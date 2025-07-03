@@ -10,7 +10,7 @@ namespace MAPIInspector.Parsers
     public class PropertyGroup : Block
     {
         /// <summary>
-        /// An unsigned 32-bit integer value that specifies how many PropertyTag structures are present in the PropertyTags field. 
+        /// An unsigned 32-bit integer value that specifies how many PropertyTag structures are present in the PropertyTags field.
         /// </summary>
         public BlockT<uint> PropertyTagCount;
 

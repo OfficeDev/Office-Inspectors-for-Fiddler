@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> LongTermIdCount;
 
         /// <summary>
-        /// An array of LongTermID structures that specifies which folders the user has per-user information about. 
+        /// An array of LongTermID structures that specifies which folders the user has per-user information about.
         /// </summary>
         public LongTermID[] LongTermIds;
 

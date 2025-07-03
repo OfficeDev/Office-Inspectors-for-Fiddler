@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
         public STAT State;
 
         /// <summary>
-        /// A Boolean value that specifies whether the client is requesting a value to be returned in the Delta field of the response. 
+        /// A Boolean value that specifies whether the client is requesting a value to be returned in the Delta field of the response.
         /// </summary>
         public bool DeltaRequested;
 
@@ -34,7 +34,7 @@ namespace MAPIInspector.Parsers
         public uint AuxiliaryBufferSize;
 
         /// <summary>
-        /// An array of bytes that constitute the auxiliary payload data sent from the client. 
+        /// An array of bytes that constitute the auxiliary payload data sent from the client.
         /// </summary>
         public ExtendedBuffer AuxiliaryBuffer;
 

@@ -15,7 +15,7 @@ namespace MAPIInspector.Parsers
         public ushort ProcessID;
 
         /// <summary>
-        /// The client identification number. 
+        /// The client identification number.
         /// </summary>
         public ushort ClientID;
 
@@ -45,7 +45,7 @@ namespace MAPIInspector.Parsers
         public byte RequestOperation;
 
         /// <summary>
-        /// Padding to enforce alignment of the data on a 4-byte field. 
+        /// Padding to enforce alignment of the data on a 4-byte field.
         /// </summary>
         public byte[] Reserved;
 

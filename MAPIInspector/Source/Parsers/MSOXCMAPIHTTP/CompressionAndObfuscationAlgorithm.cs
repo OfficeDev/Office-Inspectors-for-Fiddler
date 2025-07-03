@@ -108,7 +108,7 @@ namespace MAPIInspector.Parsers
             // Add the minimum match - 3 bytes
             length += 3;
 
-            // Every other time that the length is greater than 9, 
+            // Every other time that the length is greater than 9,
             // an additional byte follows the initial 2-byte MetaData
             if (length > 9)
             {
@@ -135,7 +135,7 @@ namespace MAPIInspector.Parsers
                 decodingPosition++;
             }
 
-            // For lengths that are equal to 280 or greater, the length is calculated only 
+            // For lengths that are equal to 280 or greater, the length is calculated only
             // from these last 2 bytes and is not added to the previous length bits.
             if (length > 279)
             {

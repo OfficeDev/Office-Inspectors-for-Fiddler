@@ -25,7 +25,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
-        /// A unsigned integer that indicates the state of the mailbox for the logged on user. 
+        /// A unsigned integer that indicates the state of the mailbox for the logged on user.
         /// </summary>
         public BlockT<uint> StoreState;
 

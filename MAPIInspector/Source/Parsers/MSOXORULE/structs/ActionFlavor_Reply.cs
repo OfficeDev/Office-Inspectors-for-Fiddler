@@ -16,7 +16,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> Reservedbits0;
 
         /// <summary>
-        /// Server will use fixed, server-defined text in the reply message and ignore the text in the reply template. 
+        /// Server will use fixed, server-defined text in the reply message and ignore the text in the reply template.
         /// </summary>
         public BlockT<byte> ST;
 

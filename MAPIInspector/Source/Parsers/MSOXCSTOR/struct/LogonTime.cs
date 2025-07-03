@@ -33,7 +33,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> Day;
 
         /// <summary>
-        /// An unsigned integer that specifies the current month 
+        /// An unsigned integer that specifies the current month
         /// </summary>
         public BlockT<Month> Month;
 

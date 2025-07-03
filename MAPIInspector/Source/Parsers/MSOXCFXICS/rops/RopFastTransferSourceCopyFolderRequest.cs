@@ -34,7 +34,7 @@ namespace MAPIInspector.Parsers
         public BlockT<CopyFlags_CopyFolder> CopyFlags;
 
         /// <summary>
-        /// A flags structure that contains flags that control the behavior of the operation. 
+        /// A flags structure that contains flags that control the behavior of the operation.
         /// </summary>
         public BlockT<SendOptions> SendOptions;
 

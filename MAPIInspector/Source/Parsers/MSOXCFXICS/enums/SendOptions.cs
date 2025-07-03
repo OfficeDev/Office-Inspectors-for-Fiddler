@@ -3,7 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// An enumeration that specifies flags control the behavior of RopFastTransferSourceCopy operations. 
+    /// An enumeration that specifies flags control the behavior of RopFastTransferSourceCopy operations.
     /// 2.2.3.1.1.1.1 RopFastTransferSourceCopyTo ROP Request Buffer
     /// </summary>
     [Flags]

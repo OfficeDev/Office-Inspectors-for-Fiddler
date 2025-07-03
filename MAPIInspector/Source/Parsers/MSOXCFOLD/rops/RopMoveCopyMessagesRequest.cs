@@ -5,7 +5,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.1.6 RopMoveCopyMessages ROP
-    /// The RopMoveCopyMessages ROP ([MS-OXCROPS] section 2.2.4.6) moves or copies messages from a source folder to a destination folder. 
+    /// The RopMoveCopyMessages ROP ([MS-OXCROPS] section 2.2.4.6) moves or copies messages from a source folder to a destination folder.
     /// </summary>
     public class RopMoveCopyMessagesRequest : Block
     {
@@ -20,12 +20,12 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> LogonId;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the source Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the source Server object is stored.
         /// </summary>
         public BlockT<byte> SourceHandleIndex;
 
         /// <summary>
-        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the destination Server object is stored. 
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the destination Server object is stored.
         /// </summary>
         public BlockT<byte> DestHandleIndex;
 
@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> MessageIdCount;
 
         /// <summary>
-        /// An array of 64-bit identifiers that specifies which messages to move or copy. 
+        /// An array of 64-bit identifiers that specifies which messages to move or copy.
         /// </summary>
         public MessageID[] MessageIds;
 

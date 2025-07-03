@@ -15,7 +15,7 @@ namespace MAPIInspector.Parsers
         public PropertyDataType PropertyType;
 
         /// <summary>
-        /// An unsigned integer. This flag MUST be set one of three possible values: 0x0, 0x1, or 0xA, which determines what is conveyed in the PropertyValue field. 
+        /// An unsigned integer. This flag MUST be set one of three possible values: 0x0, 0x1, or 0xA, which determines what is conveyed in the PropertyValue field.
         /// </summary>
         public byte Flag;
 

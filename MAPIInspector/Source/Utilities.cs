@@ -11,7 +11,7 @@ namespace MapiInspector
     public class Utilities
     {
         /// <summary>
-        /// Convert the data format from uInt to string 
+        /// Convert the data format from uInt to string
         /// </summary>
         /// <param name="data">The UInt data</param>
         /// <returns>The converted string result</returns>
@@ -21,7 +21,7 @@ namespace MapiInspector
         }
 
         /// <summary>
-        /// Convert the data format from uShort to string 
+        /// Convert the data format from uShort to string
         /// </summary>
         /// <param name="data">The uShort data</param>
         /// <returns>The converted string result</returns>
