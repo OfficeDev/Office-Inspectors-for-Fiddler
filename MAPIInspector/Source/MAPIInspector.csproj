@@ -599,10 +599,10 @@
     <Compile Include="Parsers\MSOXCPRPT\rops\RopWriteStreamResponse.cs" />
     <Compile Include="Parsers\MSOXCROPS\enums\LockState.cs" />
     <Compile Include="Parsers\MSOXCROPS\enums\MessageFlags.cs" />
-    <Compile Include="Parsers\MSOXCROPS\structs\MissingInformationException.cs" />
+    <Compile Include="Parsers\MSOXCROPS\MissingInformationException.cs" />
     <Compile Include="Parsers\MSOXCROPS\structs\BackoffRop.cs" />
     <Compile Include="Parsers\MSOXCROPS\DecodingContext.cs" />
-    <Compile Include="Parsers\MSOXCROPS\structs\ContextInformation.cs" />
+    <Compile Include="Parsers\MSOXCROPS\ContextInformation.cs" />
     <Compile Include="Parsers\MSOXCROPS\enums\RopIdType.cs" />
     <Compile Include="Parsers\MSOXCROPS\ropBuffers\ROPInputBuffer_WithoutCROPS.cs" />
     <Compile Include="Parsers\MSOXCROPS\ropBuffers\ROPOutputBuffer.cs" />

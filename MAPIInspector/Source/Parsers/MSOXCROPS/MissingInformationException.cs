@@ -2,8 +2,6 @@
 
 namespace MAPIInspector.Parsers
 {
-    #region Helper method for Decoding
-
     /// <summary>
     /// The MissingInformationException is used to define the exception, which are caused by missing context information.
     /// </summary>
@@ -37,5 +35,4 @@ namespace MAPIInspector.Parsers
             Parameters = parameter;
         }
     }
-    #endregion
 }

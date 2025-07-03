@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
-    #region Helper method for Decoding
     /// <summary>
     ///  The DecodingContext is shared between some ROP request and response.
     /// </summary>
@@ -258,5 +257,4 @@ namespace MAPIInspector.Parsers
             }
         }
     }
-    #endregion
 }

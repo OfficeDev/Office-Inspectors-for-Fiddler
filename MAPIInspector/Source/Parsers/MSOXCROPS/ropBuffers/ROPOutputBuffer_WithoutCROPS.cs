@@ -3,9 +3,6 @@ using System.IO;
 
 namespace MAPIInspector.Parsers
 {
-    #region ROP Input Buffer
-    #endregion
-
     /// <summary>
     /// A class indicates the ROP output buffer, which is sent by the server, includes an array of ROP response buffers. 
     /// </summary>
