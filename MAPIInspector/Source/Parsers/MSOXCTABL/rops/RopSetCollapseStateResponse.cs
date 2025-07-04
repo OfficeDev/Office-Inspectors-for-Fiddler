@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -6,50 +6,57 @@ namespace MAPIInspector.Parsers
     /// 2.2.2.20 RopSetCollapseState ROP
     /// A class indicates the RopSetCollapseState ROP Response Buffer.
     /// </summary>
-    public class RopSetCollapseStateResponse : BaseStructure
+    public class RopSetCollapseStateResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer that specifies the size of the Bookmark field.
         /// </summary>
-        public ushort? BookmarkSize;
+        public BlockT<ushort> BookmarkSize;
 
         /// <summary>
         /// An array of bytes that specifies the origin for the seek operation.
         /// </summary>
-        public byte?[] Bookmark;
+        public BlockBytes Bookmark;
 
         /// <summary>
         /// Parse the RopSetCollapseStateResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSetCollapseStateResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
-
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
-                BookmarkSize = ReadUshort();
-                Bookmark = ConvertArray(ReadBytes((int)BookmarkSize));
+                BookmarkSize = ParseT<ushort>();
+                Bookmark = ParseBytes((int)BookmarkSize);
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopSetCollapseStateResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(BookmarkSize, "BookmarkSize");
+            AddChildBytes(Bookmark, "Bookmark");
         }
     }
 }

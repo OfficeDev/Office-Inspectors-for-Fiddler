@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,32 +7,32 @@ namespace MAPIInspector.Parsers
     /// 2.2.2.5 RopQueryRows ROP
     /// A class indicates the RopQueryRows ROP Response Buffer.
     /// </summary>
-    public class RopQueryRowsResponse : BaseStructure
+    public class RopQueryRowsResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An enumeration that specifies current location of the cursor.
         /// </summary>
-        public Bookmarks? Origin;
+        public BlockT<Bookmarks> Origin;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures in the RowData field.
         /// </summary>
-        public ushort? RowCount;
+        public BlockT<ushort> RowCount;
 
         /// <summary>
         /// A list of PropertyRow structures.
@@ -56,32 +56,40 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopQueryRows structure.
         /// </summary>
-        /// <param name="s">A stream containing RopQueryRows structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
-
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
-                Origin = (Bookmarks)ReadByte();
-                RowCount = ReadUshort();
+                Origin = ParseT<Bookmarks>();
+                RowCount = ParseT<ushort>();
                 if (RowCount != 0)
                 {
-                    List<PropertyRow> tempPropertyRows = new List<PropertyRow>();
+                    var tempPropertyRows = new List<PropertyRow>();
                     for (int i = 0; i < RowCount; i++)
                     {
-                        PropertyRow tempPropertyRow = new PropertyRow(propertiesBySetColum);
-                        tempPropertyRow.Parse(s);
+                        var tempPropertyRow = new PropertyRow(propertiesBySetColum);
+                        tempPropertyRow.Parse(parser);
                         tempPropertyRows.Add(tempPropertyRow);
                     }
 
                     RowData = tempPropertyRows.ToArray();
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopQueryRowsResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(Origin, "Origin");
+            AddChildBlockT(RowCount, "RowCount");
+            AddLabeledChildren(RowData, "RowData");
         }
     }
 }

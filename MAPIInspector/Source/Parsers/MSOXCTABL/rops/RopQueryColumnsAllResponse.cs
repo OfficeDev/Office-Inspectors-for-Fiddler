@@ -1,6 +1,5 @@
 ﻿using BlockParser;
 using System.Collections.Generic;
-using System.IO;
 
 namespace MAPIInspector.Parsers
 {
@@ -8,27 +7,27 @@ namespace MAPIInspector.Parsers
     /// 2.2.2.13 RopQueryColumnsAll ROP
     /// A class indicates the RopQueryColumnsAll ROP Response Buffer.
     /// </summary>
-    public class RopQueryColumnsAllResponse : BaseStructure
+    public class RopQueryColumnsAllResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer that specifies how many tags are present in the PropertyTags field.
         /// </summary>
-        public ushort? PropertyTagCount;
+        public BlockT<ushort> PropertyTagCount;
 
         /// <summary>
         /// An array of PropertyTag structures that specifies the columns of the table.
@@ -38,27 +37,33 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopQueryColumnsAllResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopQueryColumnsAllResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
-
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
-                PropertyTagCount = ReadUshort();
-                List<PropertyTag> tempPropertyTags = new List<PropertyTag>();
+                PropertyTagCount = ParseT<ushort>();
+                var tempPropertyTags = new List<PropertyTag>();
                 for (int i = 0; i < PropertyTagCount; i++)
                 {
-                    PropertyTag tempPropertyTag = Block.Parse<PropertyTag>(s);
-                    tempPropertyTags.Add(tempPropertyTag);
+                    tempPropertyTags.Add(Parse<PropertyTag>());
                 }
 
                 PropertyTags = tempPropertyTags.ToArray();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopQueryColumnsAllResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(PropertyTagCount, "PropertyTagCount");
+            AddLabeledChildren(PropertyTags, "PropertyTags");
         }
     }
 }
