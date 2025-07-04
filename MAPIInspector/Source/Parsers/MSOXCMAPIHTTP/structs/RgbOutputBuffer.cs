@@ -45,9 +45,9 @@ namespace MAPIInspector.Parsers
             RPCHEADEREXT = new RPC_HEADER_EXT();
             RPCHEADEREXT.Parse(s);
 
-            if (RPCHEADEREXT.Size > 0)
+            if (RPCHEADEREXT._Size > 0)
             {
-                byte[] payloadBytes = ReadBytes((int)RPCHEADEREXT.Size);
+                byte[] payloadBytes = ReadBytes(RPCHEADEREXT._Size);
                 bool isCompressedXOR = false;
 
                 if (((ushort)RPCHEADEREXT.Flags & (ushort)RpcHeaderFlags.XorMagic) == (ushort)RpcHeaderFlags.XorMagic)

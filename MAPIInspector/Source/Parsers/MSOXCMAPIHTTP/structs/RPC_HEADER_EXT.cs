@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// The total length of the payload data that follows the RPC_HEADER_EXT structure.
         /// </summary>
-        public ushort Size;
+        public ushort _Size;
 
         /// <summary>
         /// The length of the payload data after it has been uncompressed.
@@ -36,7 +36,7 @@ namespace MAPIInspector.Parsers
             base.Parse(s);
             Version = ReadUshort();
             Flags = (RpcHeaderFlags)ReadUshort();
-            Size = ReadUshort();
+            _Size = ReadUshort();
             SizeActual = ReadUshort();
         }
     }
