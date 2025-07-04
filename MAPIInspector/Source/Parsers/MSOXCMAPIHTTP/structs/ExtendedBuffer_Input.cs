@@ -48,13 +48,13 @@ namespace MAPIInspector.Parsers
                 byte[] payloadBytes = ReadBytes((int)RPCHEADEREXT._Size);
                 bool isCompressedXOR = false;
 
-                if (((ushort)RPCHEADEREXT.Flags & (ushort)RpcHeaderFlags.XorMagic) == (ushort)RpcHeaderFlags.XorMagic)
+                if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.XorMagic))
                 {
                     payloadBytes = CompressionAndObfuscationAlgorithm.XOR(payloadBytes);
                     isCompressedXOR = true;
                 }
 
-                if (((ushort)RPCHEADEREXT.Flags & (ushort)RpcHeaderFlags.Compressed) == (ushort)RpcHeaderFlags.Compressed)
+                if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.Compressed))
                 {
                     payloadBytes = CompressionAndObfuscationAlgorithm.LZ77Decompress(payloadBytes, (int)RPCHEADEREXT.SizeActual);
                     isCompressedXOR = true;

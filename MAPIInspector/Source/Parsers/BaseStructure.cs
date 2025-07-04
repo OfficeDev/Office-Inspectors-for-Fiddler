@@ -525,8 +525,8 @@ namespace MAPIInspector.Parsers
                             // The below logical is used to check whether the payload is compressed or XOR.
                             if (fieldName == "RPCHEADEREXT")
                             {
-                                if (((ushort)((RPC_HEADER_EXT)info[i].GetValue(obj)).Flags & 0x0002) == (ushort)RpcHeaderFlags.XorMagic
-                                    || ((ushort)((RPC_HEADER_EXT)info[i].GetValue(obj)).Flags & 0x0001) == (ushort)RpcHeaderFlags.Compressed)
+                                if (((RPC_HEADER_EXT)info[i].GetValue(obj)).Flags.Data.HasFlag(RpcHeaderFlags.XorMagic)
+                                    || ((RPC_HEADER_EXT)info[i].GetValue(obj)).Flags.Data.HasFlag(RpcHeaderFlags.Compressed))
                                 {
                                     IsCompressedXOR = true;
                                 }
