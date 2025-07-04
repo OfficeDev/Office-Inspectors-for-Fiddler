@@ -18,11 +18,6 @@ namespace MAPIInspector.Parsers
         public Block _PropertyValue;
 
         /// <summary>
-        /// Source property tag information
-        /// </summary>
-        public AnnotatedComment PropertyTag;
-
-        /// <summary>
         /// The Count wide size of ptypMutiple type.
         /// </summary>
         private CountWideEnum countWide;
@@ -54,7 +49,7 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                SetText("PropertyValue is null");
+                AddHeader("PropertyValue is null");
             }
         }
     }
