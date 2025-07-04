@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -6,17 +6,17 @@ namespace MAPIInspector.Parsers
     /// A class indicates the UpdateStatRequest structure.
     /// 2.2.5.17 UpdateStat
     /// </summary>
-    public class UpdateStatRequest : BaseStructure
+    public class UpdateStatRequest : Block
     {
         /// <summary>
         /// Reserved. The client MUST set this field to 0x00000000 and the server MUST ignore this field.
         /// </summary>
-        public uint Reserved;
+        public BlockT<uint> Reserved;
 
         /// <summary>
         /// A Boolean value that specifies whether the State field is present.
         /// </summary>
-        public bool HasState;
+        public BlockT<bool> HasState;
 
         /// <summary>
         /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
@@ -26,12 +26,12 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A Boolean value that specifies whether the client is requesting a value to be returned in the Delta field of the response.
         /// </summary>
-        public bool DeltaRequested;
+        public BlockT<bool> DeltaRequested;
 
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -41,27 +41,25 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the UpdateStatRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing UpdateStatRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Reserved = ReadUint();
-            HasState = ReadBoolean();
+            Reserved = ParseT<uint>();
+            HasState = ParseAs<byte, bool>();
+            if (HasState) State = Parse<STAT>();
+            DeltaRequested = ParseAs<byte, bool>();
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
+        }
 
-            if (HasState)
-            {
-                State = new STAT();
-                State.Parse(s);
-            }
-
-            DeltaRequested = ReadBoolean();
-            AuxiliaryBufferSize = ReadUint();
-
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
+        protected override void ParseBlocks()
+        {
+            SetText("UpdateStatRequest");
+            AddChildBlockT(Reserved, "Reserved");
+            AddChildBlockT(HasState, "HasState");
+            AddChild(State, "State");
+            AddChildBlockT(DeltaRequested, "DeltaRequested");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }

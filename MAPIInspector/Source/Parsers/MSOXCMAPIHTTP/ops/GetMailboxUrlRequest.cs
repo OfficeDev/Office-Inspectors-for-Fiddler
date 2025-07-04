@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Text;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,22 +6,22 @@ namespace MAPIInspector.Parsers
     /// A class indicates the GetMailboxUrlRequest structure.
     /// 2.2.5.18 GetMailboxUrl
     /// </summary>
-    public class GetMailboxUrlRequest : BaseStructure
+    public class GetMailboxUrlRequest : Block
     {
         /// <summary>
         /// Not used. The client MUST set this field to 0x00000000 and the server MUST ignore this field.
         /// </summary>
-        public uint Flags;
+        public BlockT<uint> Flags;
 
         /// <summary>
         /// A null-terminated Unicode string that specifies the distinguished name (DN) of the mailbox server for which to look up the URL.
         /// </summary>
-        public MAPIString ServerDn;
+        public BlockString ServerDn;
 
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -32,20 +31,21 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetMailboxUrlRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing GetMailboxUrlRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Flags = ReadUint();
-            ServerDn = new MAPIString(Encoding.Unicode);
-            ServerDn.Parse(s);
-            AuxiliaryBufferSize = ReadUint();
+            Flags = ParseT<uint>();
+            ServerDn = ParseStringW();
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
+        }
 
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
+        protected override void ParseBlocks()
+        {
+            SetText("GetMailboxUrlRequest");
+            AddChildBlockT(Flags, "Flags");
+            AddChild(ServerDn, "ServerDn");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }

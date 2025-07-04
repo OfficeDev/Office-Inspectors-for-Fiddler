@@ -1,87 +1,101 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AUX_PERF_FAILURE_V2 Auxiliary Block Structure
     /// Section 2.2.2.2 AUX_HEADER Structure
-    /// Section 2.2.2.2.14   AUX_PERF_FAILURE_V2 Auxiliary Block Structure
+    /// Section 2.2.2.2.14 AUX_PERF_FAILURE_V2 Auxiliary Block Structure
     /// </summary>
-    public class AUX_PERF_FAILURE_V2 : BaseStructure
+    public class AUX_PERF_FAILURE_V2 : Block
     {
         /// <summary>
         /// The process identification number.
         /// </summary>
-        public ushort ProcessID;
+        public BlockT<ushort> ProcessID;
 
         /// <summary>
         /// The client identification number.
         /// </summary>
-        public ushort ClientID;
+        public BlockT<ushort> ClientID;
 
         /// <summary>
         /// The server identification number.
         /// </summary>
-        public ushort ServerID;
+        public BlockT<ushort> ServerID;
 
         /// <summary>
         /// The session identification number.
         /// </summary>
-        public ushort SessionID;
+        public BlockT<ushort> SessionID;
 
         /// <summary>
         /// The request identification number.
         /// </summary>
-        public ushort RequestID;
+        public BlockT<ushort> RequestID;
 
         /// <summary>
         /// Padding to enforce alignment of the data on a 4-byte field.
         /// </summary>
-        public ushort Reserved1;
+        public BlockT<ushort> Reserved1;
 
         /// <summary>
         /// The number of milliseconds since a request failure occurred.
         /// </summary>
-        public uint TimeSinceRequest;
+        public BlockT<uint> TimeSinceRequest;
 
         /// <summary>
         /// The number of milliseconds the request failure took to complete.
         /// </summary>
-        public uint TimeToFailRequest;
+        public BlockT<uint> TimeToFailRequest;
 
         /// <summary>
         /// The error code returned for the failed request.
         /// </summary>
-        public uint ResultCode;
+        public BlockT<ErrorCodes> ResultCode;
 
         /// <summary>
         /// The client-defined operation that failed.
         /// </summary>
-        public byte RequestOperation;
+        public BlockT<byte> RequestOperation;
 
         /// <summary>
         /// Padding to enforce alignment of the data on a 4-byte field.
         /// </summary>
-        public byte[] Reserved2;
+        public BlockBytes Reserved2;
 
         /// <summary>
         /// Parse the AUX_PERF_FAILURE_V2 structure.
         /// </summary>
-        /// <param name="s">A stream containing the AUX_PERF_FAILURE_V2 structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            ProcessID = ReadUshort();
-            ClientID = ReadUshort();
-            ServerID = ReadUshort();
-            SessionID = ReadUshort();
-            RequestID = ReadUshort();
-            Reserved1 = ReadUshort();
-            TimeSinceRequest = ReadUint();
-            TimeToFailRequest = ReadUint();
-            ResultCode = ReadUint();
-            RequestOperation = ReadByte();
-            Reserved2 = ReadBytes(3);
+            ProcessID = ParseT<ushort>();
+            ClientID = ParseT<ushort>();
+            ServerID = ParseT<ushort>();
+            SessionID = ParseT<ushort>();
+            RequestID = ParseT<ushort>();
+            Reserved1 = ParseT<ushort>();
+            TimeSinceRequest = ParseT<uint>();
+            TimeToFailRequest = ParseT<uint>();
+            ResultCode = ParseT<ErrorCodes>();
+            RequestOperation = ParseT<byte>();
+            Reserved2 = ParseBytes(3);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AUX_PERF_FAILURE_V2");
+            AddChildBlockT(ProcessID, "ProcessID");
+            AddChildBlockT(ClientID, "ClientID");
+            AddChildBlockT(ServerID, "ServerID");
+            AddChildBlockT(SessionID, "SessionID");
+            AddChildBlockT(RequestID, "RequestID");
+            AddChildBlockT(Reserved1, "Reserved1");
+            AddChildBlockT(TimeSinceRequest, "TimeSinceRequest");
+            AddChildBlockT(TimeToFailRequest, "TimeToFailRequest");
+            if (ResultCode != null) AddChild(ResultCode, $"ResultCode:{ResultCode.Data.FormatErrorCode()}");
+            AddChildBlockT(RequestOperation, "RequestOperation");
+            AddChildBytes(Reserved2, "Reserved2");
         }
     }
 }

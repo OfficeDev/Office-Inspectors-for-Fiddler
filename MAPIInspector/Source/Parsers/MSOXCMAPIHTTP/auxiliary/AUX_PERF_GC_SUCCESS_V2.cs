@@ -1,69 +1,80 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AUX_PERF_GC_SUCCESS_V2 Auxiliary Block Structure
     ///  Section 2.2.2.2 AUX_HEADER Structure
-    ///  Section 2.2.2.2.12   AUX_PERF_GC_SUCCESS_V2 Auxiliary Block Structure
+    ///  Section 2.2.2.2.12 AUX_PERF_GC_SUCCESS_V2 Auxiliary Block Structure
     /// </summary>
-    public class AUX_PERF_GC_SUCCESS_V2 : BaseStructure
+    public class AUX_PERF_GC_SUCCESS_V2 : Block
     {
         /// <summary>
         /// The process identification number.
         /// </summary>
-        public ushort ProcessID;
+        public BlockT<ushort> ProcessID;
 
         /// <summary>
         /// The client identification number.
         /// </summary>
-        public ushort ClientID;
+        public BlockT<ushort> ClientID;
 
         /// <summary>
         /// The server identification number.
         /// </summary>
-        public ushort ServerID;
+        public BlockT<ushort> ServerID;
 
         /// <summary>
         /// The session identification number.
         /// </summary>
-        public ushort SessionID;
+        public BlockT<ushort> SessionID;
 
         /// <summary>
         /// The number of milliseconds since a successful request occurred.
         /// </summary>
-        public uint TimeSinceRequest;
+        public BlockT<uint> TimeSinceRequest;
 
         /// <summary>
         /// The number of milliseconds the successful request took to complete.
         /// </summary>
-        public uint TimeToCompleteRequest;
+        public BlockT<uint> TimeToCompleteRequest;
 
         /// <summary>
         /// The client-defined operation that was successful.
         /// </summary>
-        public byte RequestOperation;
+        public BlockT<byte> RequestOperation;
 
         /// <summary>
         /// Padding to enforce alignment of the data on a 4-byte field.
         /// </summary>
-        public byte[] Reserved;
+        public BlockBytes Reserved; // 3 bytes
 
         /// <summary>
         /// Parse the AUX_PERF_GC_SUCCESS_V2 structure.
         /// </summary>
-        /// <param name="s">A stream containing the AUX_PERF_GC_SUCCESS_V2 structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            ProcessID = ReadUshort();
-            ClientID = ReadUshort();
-            ServerID = ReadUshort();
-            SessionID = ReadUshort();
-            TimeSinceRequest = ReadUint();
-            TimeToCompleteRequest = ReadUint();
-            RequestOperation = ReadByte();
-            Reserved = ReadBytes(3);
+            ProcessID = ParseT<ushort>();
+            ClientID = ParseT<ushort>();
+            ServerID = ParseT<ushort>();
+            SessionID = ParseT<ushort>();
+            TimeSinceRequest = ParseT<uint>();
+            TimeToCompleteRequest = ParseT<uint>();
+            RequestOperation = ParseT<byte>();
+            Reserved = ParseBytes(3);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AUX_PERF_GC_SUCCESS_V2");
+            AddChildBlockT(ProcessID, "ProcessID");
+            AddChildBlockT(ClientID, "ClientID");
+            AddChildBlockT(ServerID, "ServerID");
+            AddChildBlockT(SessionID, "SessionID");
+            AddChildBlockT(TimeSinceRequest, "TimeSinceRequest");
+            AddChildBlockT(TimeToCompleteRequest, "TimeToCompleteRequest");
+            AddChildBlockT(RequestOperation, "RequestOperation");
+            AddChildBytes(Reserved, "Reserved");
         }
     }
 }

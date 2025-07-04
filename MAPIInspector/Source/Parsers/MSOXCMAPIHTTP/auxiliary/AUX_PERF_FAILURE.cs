@@ -1,75 +1,87 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AUX_PERF_FAILURE Auxiliary Block Structure
     ///  Section 2.2.2.2 AUX_HEADER Structure
-    ///  Section 2.2.2.2.13   AUX_PERF_FAILURE Auxiliary Block Structure
+    ///  Section 2.2.2.2.13 AUX_PERF_FAILURE Auxiliary Block Structure
     /// </summary>
-    public class AUX_PERF_FAILURE : BaseStructure
+    public class AUX_PERF_FAILURE : Block
     {
         /// <summary>
         /// The client identification number.
         /// </summary>
-        public ushort ClientID;
+        public BlockT<ushort> ClientID;
 
         /// <summary>
         /// The server identification number.
         /// </summary>
-        public ushort ServerID;
+        public BlockT<ushort> ServerID;
 
         /// <summary>
         /// The session identification number.
         /// </summary>
-        public ushort SessionID;
+        public BlockT<ushort> SessionID;
 
         /// <summary>
         /// The request identification number.
         /// </summary>
-        public ushort RequestID;
+        public BlockT<ushort> RequestID;
 
         /// <summary>
         /// The number of milliseconds since a request failure occurred.
         /// </summary>
-        public uint TimeSinceRequest;
+        public BlockT<uint> TimeSinceRequest;
 
         /// <summary>
         /// The number of milliseconds the failed request took to complete.
         /// </summary>
-        public uint TimeToFailRequest;
+        public BlockT<uint> TimeToFailRequest;
 
         /// <summary>
         /// The error code returned for the failed request.
         /// </summary>
-        public uint ResultCode;
+        public BlockT<ErrorCodes> ResultCode;
 
         /// <summary>
         /// The client-defined operation that failed.
         /// </summary>
-        public byte RequestOperation;
+        public BlockT<byte> RequestOperation;
 
         /// <summary>
         /// Padding to enforce alignment of the data on a 4-byte field.
         /// </summary>
-        public byte[] Reserved;
+        public BlockBytes Reserved; // 3 bytes
 
         /// <summary>
         /// Parse the AUX_PERF_FAILURE structure.
         /// </summary>
-        /// <param name="s">A stream containing the AUX_PERF_FAILURE structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            ClientID = ReadUshort();
-            ServerID = ReadUshort();
-            SessionID = ReadUshort();
-            RequestID = ReadUshort();
-            TimeSinceRequest = ReadUint();
-            TimeToFailRequest = ReadUint();
-            ResultCode = ReadUint();
-            RequestOperation = ReadByte();
-            Reserved = ReadBytes(3);
+            ClientID = ParseT<ushort>();
+            ServerID = ParseT<ushort>();
+            SessionID = ParseT<ushort>();
+            RequestID = ParseT<ushort>();
+            TimeSinceRequest = ParseT<uint>();
+            TimeToFailRequest = ParseT<uint>();
+            ResultCode = ParseT<ErrorCodes>();
+            RequestOperation = ParseT<byte>();
+            Reserved = ParseBytes(3);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AUX_PERF_FAILURE");
+            AddChildBlockT(ClientID, "ClientID");
+            AddChildBlockT(ServerID, "ServerID");
+            AddChildBlockT(SessionID, "SessionID");
+            AddChildBlockT(RequestID, "RequestID");
+            AddChildBlockT(TimeSinceRequest, "TimeSinceRequest");
+            AddChildBlockT(TimeToFailRequest, "TimeToFailRequest");
+            if (ResultCode != null) AddChild(ResultCode, $"ResultCode:{ResultCode.Data.FormatErrorCode()}");
+            AddChildBlockT(RequestOperation, "RequestOperation");
+            AddChildBytes(Reserved, "Reserved");
         }
     }
 }

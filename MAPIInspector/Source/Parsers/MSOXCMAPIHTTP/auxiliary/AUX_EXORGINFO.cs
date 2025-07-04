@@ -1,27 +1,31 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AUX_EXORGINFO Auxiliary Block Structure
     /// Section 2.2.2.2 AUX_HEADER Structure
-    /// Section 2.2.2.2.17   AUX_EXORGINFO Auxiliary Block Structure
+    /// Section 2.2.2.2.17 AUX_EXORGINFO Auxiliary Block Structure
     /// </summary>
-    public class AUX_EXORGINFO : BaseStructure
+    public class AUX_EXORGINFO : Block
     {
         /// <summary>
         /// The OrgFlags
         /// </summary>
-        public OrgFlags OrgFlags;
+        public BlockT<OrgFlags> OrgFlags;
 
         /// <summary>
         /// Parse the AUX_EXORGINFO structure.
         /// </summary>
-        /// <param name="s">A stream containing the AUX_EXORGINFO structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            OrgFlags = (OrgFlags)ReadUint();
+            OrgFlags = ParseT<OrgFlags>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AUX_EXORGINFO");
+            AddChildBlockT(OrgFlags, "OrgFlags");
         }
     }
 }

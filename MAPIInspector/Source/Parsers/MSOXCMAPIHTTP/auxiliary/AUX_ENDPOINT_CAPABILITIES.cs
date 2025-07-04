@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,21 +7,25 @@ namespace MAPIInspector.Parsers
     ///  Section 2.2.2.2 AUX_HEADER Structure
     ///  Section 2.2.2.2.19  AUX_ENDPOINT_CAPABILITIES
     /// </summary>
-    public class AUX_ENDPOINT_CAPABILITIES : BaseStructure
+    public class AUX_ENDPOINT_CAPABILITIES : Block
     {
         /// <summary>
         /// A flag that indicates that the server combines capabilities on a single endpoint.
         /// </summary>
-        public EndpointCapabilityFlag EndpointCapabilityFlag;
+        public BlockT<EndpointCapabilityFlag> EndpointCapabilityFlag;
 
         /// <summary>
         /// Parse the AUX_ENDPOINT_CAPABILITIES structure.
         /// </summary>
-        /// <param name="s">A stream containing the AUX_ENDPOINT_CAPABILITIES structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            EndpointCapabilityFlag = (EndpointCapabilityFlag)ReadUint();
+            EndpointCapabilityFlag = ParseT<EndpointCapabilityFlag>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AUX_ENDPOINT_CAPABILITIES");
+            AddChildBlockT(EndpointCapabilityFlag, "EndpointCapabilityFlag");
         }
     }
 }

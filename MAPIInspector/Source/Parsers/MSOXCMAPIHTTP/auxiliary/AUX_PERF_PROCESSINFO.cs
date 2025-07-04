@@ -1,64 +1,71 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AUX_PERF_PROCESSINFO Auxiliary Block Structure
     ///  Section 2.2.2.2 AUX_HEADER Structure
-    ///  Section 2.2.2.2.6   AUX_PERF_PROCESSINFO Auxiliary Block Structure
+    ///  Section 2.2.2.2.6 AUX_PERF_PROCESSINFO Auxiliary Block Structure
     /// </summary>
-    public class AUX_PERF_PROCESSINFO : BaseStructure
+    public class AUX_PERF_PROCESSINFO : Block
     {
         /// <summary>
         /// The client-assigned process identification number.
         /// </summary>
-        public ushort ProcessID;
+        public BlockT<ushort> ProcessID;
 
         /// <summary>
         /// Padding to enforce alignment of the data on a 4-byte field.
         /// </summary>
-        public ushort Reserved1;
+        public BlockT<ushort> Reserved1;
 
         /// <summary>
         /// The GUID representing the client process to associate with the process identification number in the ProcessID field.
         /// </summary>
-        public Guid ProcessGuid;
+        public BlockGuid ProcessGuid;
 
         /// <summary>
         /// The offset from the beginning of the AUX_HEADER structure to the ProcessName field.
         /// </summary>
-        public ushort ProcessNameOffset;
+        public BlockT<ushort> ProcessNameOffset;
 
         /// <summary>
         /// Padding to enforce alignment of the data on a 4-byte field.
         /// </summary>
-        public ushort Reserved2;
+        public BlockT<ushort> Reserved2;
 
         /// <summary>
         /// A null-terminated Unicode string that contains the client process name.
         /// </summary>
-        public MAPIString ProcessName;
+        public BlockString ProcessName;
 
         /// <summary>
         /// Parse the AUX_PERF_PROCESSINFO structure.
         /// </summary>
-        /// <param name="s">A stream containing the AUX_PERF_PROCESSINFO structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            ProcessID = ReadUshort();
-            Reserved1 = ReadUshort();
-            ProcessGuid = ReadGuid();
-            ProcessNameOffset = ReadUshort();
-            Reserved2 = ReadUshort();
+            ProcessID = ParseT<ushort>();
+            Reserved1 = ParseT<ushort>();
+            ProcessGuid = Parse<BlockGuid>();
+            ProcessNameOffset = ParseT<ushort>();
+            Reserved2 = ParseT<ushort>();
 
             if (ProcessNameOffset != 0)
             {
-                ProcessName = new MAPIString(Encoding.Unicode);
-                ProcessName.Parse(s);
+                // TODO: Use the actual offset to parse string
+                ProcessName = ParseStringW();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AUX_PERF_PROCESSINFO");
+            AddChildBlockT(ProcessID, "ProcessID");
+            AddChildBlockT(Reserved1, "Reserved1");
+            this.AddChildGuid(ProcessGuid, "ProcessGuid");
+            AddChildBlockT(ProcessNameOffset, "ProcessNameOffset");
+            AddChildBlockT(Reserved2, "Reserved2");
+            AddChildString(ProcessName, "ProcessName");
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using BlockParser;
 using System.Collections.Generic;
-using System.IO;
 
 namespace MAPIInspector.Parsers
 {
@@ -9,12 +8,12 @@ namespace MAPIInspector.Parsers
     /// 2.2.1 Common Data Types
     /// 2.2.1.8 LargePropertyTagArray Structure
     /// </summary>
-    public class LargePropertyTagArray : BaseStructure
+    public class LargePropertyTagArray : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the number of structures contained in the PropertyTags field.
         /// </summary>
-        public uint PropertyTagCount;
+        public BlockT<uint> PropertyTagCount;
 
         /// <summary>
         /// An array of PropertyTag structures, each of which contains a property tag that specifies a property.
@@ -24,19 +23,23 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the LargePropertyTagArray structure.
         /// </summary>
-        /// <param name="s">A stream containing LargePropertyTagArray structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            PropertyTagCount = ReadUint();
-            List<PropertyTag> tempPT = new List<PropertyTag>();
-
+            PropertyTagCount = ParseT<uint>();
+            var tempPT = new List<PropertyTag>();
             for (int i = 0; i < PropertyTagCount; i++)
             {
-                tempPT.Add(Block.Parse<PropertyTag>(s));
+                tempPT.Add(Parse<PropertyTag>());
             }
 
             PropertyTags = tempPT.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("LargePropertyTagArray");
+            AddChildBlockT(PropertyTagCount, "PropertyTagCount");
+            AddLabeledChildren(PropertyTags, "PropertyTags");
         }
     }
 }

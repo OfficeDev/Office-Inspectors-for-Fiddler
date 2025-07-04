@@ -1,6 +1,6 @@
-﻿using MapiInspector;
+﻿using BlockParser;
+using MapiInspector;
 using System.Collections.Generic;
-using System.IO;
 
 namespace MAPIInspector.Parsers
 {
@@ -9,17 +9,17 @@ namespace MAPIInspector.Parsers
     /// 2.2.1 Common Data Types
     /// 2.2.1.7 AddressBookPropertyRow Structure
     /// </summary>
-    public class AddressBookPropertyRow : BaseStructure
+    public class AddressBookPropertyRow : Block
     {
         /// <summary>
         /// An unsigned integer that indicates whether all property values are present and without error in the ValueArray field.
         /// </summary>
-        public byte Flags;
+        public BlockT<byte> Flags;
 
         /// <summary>
         /// An array of variable-sized structures.
         /// </summary>
-        public object[] ValueArray;
+        public Block[] ValueArray;
 
         /// <summary>
         /// The LargePropertyTagArray type used to initialize the constructed function.
@@ -45,31 +45,29 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the AddressBookPropertyRow structure.
         /// </summary>
-        /// <param name="s">A stream containing AddressBookPropertyRow structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Flags = ReadByte();
-            List<object> result = new List<object>();
+            Flags = ParseT<byte>();
+            var result = new List<Block>();
 
             if (largePropTagArray is LargePropertyTagArray)
             {
                 foreach (var propTag in largePropTagArray.PropertyTags)
                 {
-                    object addrRowValue = null;
+                    Block addrRowValue = null;
 
                     if (Flags == 0x00)
                     {
                         if (propTag.PropertyType != PropertyDataType.PtypUnspecified)
                         {
-                            AddressBookPropertyValue propValue = new AddressBookPropertyValue(propTag.PropertyType, ptypMultiCountSize);
-                            propValue.Parse(s);
+                            var propValue = new AddressBookPropertyValue(propTag.PropertyType, ptypMultiCountSize);
+                            propValue.Parse(parser);
                             propValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId.Data)}";
                             addrRowValue = propValue;
                         }
                         else
                         {
-                            AddressBookTypedPropertyValue typePropValue = new AddressBookTypedPropertyValue();
+                            var typePropValue = new AddressBookTypedPropertyValue();
                             typePropValue.Parse(s);
                             typePropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId.Data)}";
                             addrRowValue = typePropValue;
@@ -79,15 +77,15 @@ namespace MAPIInspector.Parsers
                     {
                         if (propTag.PropertyType != PropertyDataType.PtypUnspecified)
                         {
-                            AddressBookFlaggedPropertyValue flagPropValue = new AddressBookFlaggedPropertyValue(propTag.PropertyType);
-                            flagPropValue.Parse(s);
+                            var flagPropValue = new AddressBookFlaggedPropertyValue(propTag.PropertyType);
+                            flagPropValue.Parse(parser);
                             flagPropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId.Data)}";
                             addrRowValue = flagPropValue;
                         }
                         else
                         {
-                            AddressBookFlaggedPropertyValueWithType flagPropValue = new AddressBookFlaggedPropertyValueWithType();
-                            flagPropValue.Parse(s);
+                            var flagPropValue = new AddressBookFlaggedPropertyValueWithType();
+                            flagPropValue.Parse(parser);
                             flagPropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId.Data)}";
                             addrRowValue = flagPropValue;
                         }

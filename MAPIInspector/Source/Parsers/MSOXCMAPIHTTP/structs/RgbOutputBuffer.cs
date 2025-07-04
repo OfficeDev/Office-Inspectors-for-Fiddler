@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BlockParser;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -8,7 +9,7 @@ namespace MAPIInspector.Parsers
     /// 3.1.4.1.1.1.2 rgbAuxOut Output Buffer
     /// The rgbOutputBuffer contains the ROP request payload. It is defined in section 3.1.4.2.1.1.2 of MS-OXCRPC.
     /// </summary>
-    public class RgbOutputBuffer : BaseStructure
+    public class RgbOutputBuffer : Block
     {
         /// <summary>
         /// The RPC_HEADER_EXT structure provides information about the payload.
@@ -18,7 +19,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A structure of bytes that constitute the ROP responses payload.
         /// </summary>
-        public object Payload;
+        public Block Payload;
 
         /// <summary>
         /// Indicates the index of this rgbOutputBuffer in all buffers
@@ -37,26 +38,22 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the rgbOutputBuffer.
         /// </summary>
-        /// <param name="s">A stream containing the rgbOutputBuffer.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RPCHEADEREXT = Parse<RPC_HEADER_EXT>();
 
-            RPCHEADEREXT = new RPC_HEADER_EXT();
-            RPCHEADEREXT.Parse(s);
-
-            if (RPCHEADEREXT.Size > 0)
+            if (RPCHEADEREXT._Size > 0)
             {
-                byte[] payloadBytes = ReadBytes((int)RPCHEADEREXT.Size);
+                var payloadBytes = ParseBytes((int)RPCHEADEREXT.Size);
                 bool isCompressedXOR = false;
 
-                if (((ushort)RPCHEADEREXT.Flags & (ushort)RpcHeaderFlags.XorMagic) == (ushort)RpcHeaderFlags.XorMagic)
+                if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.XorMagic))
                 {
                     payloadBytes = CompressionAndObfuscationAlgorithm.XOR(payloadBytes);
                     isCompressedXOR = true;
                 }
 
-                if (((ushort)RPCHEADEREXT.Flags & (ushort)RpcHeaderFlags.Compressed) == (ushort)RpcHeaderFlags.Compressed)
+                if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.Compressed))
                 {
                     payloadBytes = CompressionAndObfuscationAlgorithm.LZ77Decompress(payloadBytes, (int)RPCHEADEREXT.SizeActual);
                     isCompressedXOR = true;
@@ -99,7 +96,7 @@ namespace MAPIInspector.Parsers
 
                 if (MapiInspector.MAPIParser.IsOnlyGetServerHandle)
                 {
-                    ROPOutputBuffer_WithoutCROPS outputBufferWithoutCROPS = new ROPOutputBuffer_WithoutCROPS();
+                    var outputBufferWithoutCROPS = new ROPOutputBuffer_WithoutCROPS();
                     outputBufferWithoutCROPS.Parse(stream);
                     Payload = outputBufferWithoutCROPS;
                 }
@@ -119,6 +116,13 @@ namespace MAPIInspector.Parsers
                     }
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RgbOutputBuffer");
+            AddChild(RPCHEADEREXT, "RPCHEADEREXT");
+            AddChild(Payload, "Payload");
         }
     }
 }

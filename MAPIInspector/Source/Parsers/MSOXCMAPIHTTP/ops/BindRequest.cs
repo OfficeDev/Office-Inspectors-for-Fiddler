@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,17 +7,17 @@ namespace MAPIInspector.Parsers
     /// 2.2.5 Request Types for Address Book Server Endpoint
     /// 2.2.5.1 Bind
     /// </summary>
-    public class BindRequest : BaseStructure
+    public class BindRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specify the authentication type for the connection.
         /// </summary>
-        public uint Flags;
+        public BlockT<uint> Flags;
 
         /// <summary>
         /// A Boolean value that specifies whether the State field is present.
         /// </summary>
-        public byte HasState;
+        public BlockT<byte> HasState;
 
         /// <summary>
         /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
@@ -27,7 +27,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -37,35 +37,23 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">A stream of HTTP payload of session</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            Flags = ParseT<uint>();
+            HasState = ParseT<byte>();
+            if (HasState != 0) State = Parse<STAT>();
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
+        }
 
-            Flags = ReadUint();
-            HasState = ReadByte();
-
-            if (HasState != 0)
-            {
-                State = new STAT();
-                State.Parse(s);
-            }
-            else
-            {
-                State = null;
-            }
-
-            AuxiliaryBufferSize = ReadUint();
-
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
-            else
-            {
-                AuxiliaryBuffer = null;
-            }
+        protected override void ParseBlocks()
+        {
+            SetText("BindRequest");
+            AddChildBlockT(Flags, "Flags");
+            AddChildBlockT(HasState, "HasState");
+            AddChild(State, "State");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }

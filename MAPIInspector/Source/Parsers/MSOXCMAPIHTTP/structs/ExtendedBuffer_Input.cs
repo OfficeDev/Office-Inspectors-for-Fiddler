@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BlockParser;
+using System.Collections.Generic;
 using System.IO;
 
 namespace MAPIInspector.Parsers
@@ -6,7 +7,7 @@ namespace MAPIInspector.Parsers
     /// <summary>
     /// The ExtendedBuffer_Input class
     /// </summary>
-    public class ExtendedBuffer_Input : BaseStructure
+    public class ExtendedBuffer_Input : Block
     {
         /// <summary>
         /// The RPC_HEADER_EXT structure provides information about the payload.
@@ -16,7 +17,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A structure of bytes that constitute the ROP request payload.
         /// </summary>
-        public object Payload;
+        public Block Payload;
 
         /// <summary>
         /// Buffer index in one session
@@ -35,17 +36,14 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the rgbInputBuffer.
         /// </summary>
-        /// <param name="s">A stream containing the rgbInputBuffer.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
 
-            RPCHEADEREXT = new RPC_HEADER_EXT();
-            RPCHEADEREXT.Parse(s);
+            RPCHEADEREXT = Parse<RPC_HEADER_EXT>();
 
-            if (RPCHEADEREXT.Size > 0)
+            if (RPCHEADEREXT._Size > 0)
             {
-                byte[] payloadBytes = ReadBytes((int)RPCHEADEREXT.Size);
+                byte[] payloadBytes = ParseBytes((int)RPCHEADEREXT.Size);
                 bool isCompressedXOR = false;
 
                 if (((ushort)RPCHEADEREXT.Flags & (ushort)RpcHeaderFlags.XorMagic) == (ushort)RpcHeaderFlags.XorMagic)

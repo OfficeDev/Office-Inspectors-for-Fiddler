@@ -8,11 +8,11 @@
         /// <summary>
         /// AUX_VERSION_1 flag
         /// </summary>
-        AUX_VERSION_1 = 0x01,
+      AUX_VERSION_1 = 0x01,
 
         /// <summary>
         /// AUX_VERSION_2 flag
         /// </summary>
-        AUX_VERSION_2 = 0x02
+      AUX_VERSION_2 = 0x02
     }
 }

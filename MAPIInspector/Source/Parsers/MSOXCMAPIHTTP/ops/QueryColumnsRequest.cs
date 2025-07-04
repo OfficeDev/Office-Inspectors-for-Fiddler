@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -6,22 +6,22 @@ namespace MAPIInspector.Parsers
     /// A class indicates the QueryColumnsRequest structure.
     /// 2.2.5.13 QueryColumns
     /// </summary>
-    public class QueryColumnsRequest : BaseStructure
+    public class QueryColumnsRequest : Block
     {
         /// <summary>
         /// Reserved. The client MUST set this field to 0x00000000 and the server MUST ignore this field.
         /// </summary>
-        public uint Reserved;
+        public BlockT<uint> Reserved;
 
         /// <summary>
         /// A set of bit flags that specify options to the server.
         /// </summary>
-        public uint MapiFlags;
+        public BlockT<uint> MapiFlags;
 
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -31,19 +31,22 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the QueryColumnsRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing QueryColumnsRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Reserved = ReadUint();
-            MapiFlags = ReadUint();
-            AuxiliaryBufferSize = ReadUint();
-
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
+            Reserved = ParseT<uint>();
+            MapiFlags = ParseT<uint>();
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
         }
+
+        protected override void ParseBlocks()
+        {
+            SetText("QueryColumnsRequest");
+            AddChildBlockT(Reserved, "Reserved");
+            AddChildBlockT(MapiFlags, "MapiFlags");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
+        }
+
     }
 }

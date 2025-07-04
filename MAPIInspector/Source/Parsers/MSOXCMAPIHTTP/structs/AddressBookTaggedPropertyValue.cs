@@ -1,5 +1,4 @@
-﻿using MapiInspector;
-using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -8,17 +7,17 @@ namespace MAPIInspector.Parsers
     /// 2.2.1 Common Data Types
     /// 2.2.1.2 AddressBookTaggedPropertyValue Structure
     /// </summary>
-    public class AddressBookTaggedPropertyValue : BaseStructure
+    public class AddressBookTaggedPropertyValue : Block
     {
         /// <summary>
         /// An unsigned integer that identifies the data type of the property value ([MS-OXCDATA] section 2.11.1).
         /// </summary>
-        public PropertyDataType PropertyType;
+        public BlockT<PropertyDataType> PropertyType;
 
         /// <summary>
         /// An unsigned integer that identifies the property.
         /// </summary>
-        public PidTagPropertyEnum PropertyId;
+        public BlockT<PidTagPropertyEnum> PropertyId;
 
         /// <summary>
         /// An AddressBookPropertyValue structure
@@ -26,23 +25,22 @@ namespace MAPIInspector.Parsers
         public AddressBookPropertyValue PropertyValue;
 
         /// <summary>
-        /// Source property tag information
-        /// </summary>
-        public AnnotatedComment PropertyTag;
-
-        /// <summary>
         /// Parse the AddressBookTaggedPropertyValue structure.
         /// </summary>
-        /// <param name="s">A stream containing AddressBookTaggedPropertyValue structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            PropertyType = (PropertyDataType)ReadUshort();
-            PropertyId = (PidTagPropertyEnum)ReadUshort();
-            AddressBookPropertyValue addressBookValue = new AddressBookPropertyValue(PropertyType);
-            addressBookValue.Parse(s);
-            PropertyValue = addressBookValue;
-            PropertyTag = $"{PropertyType}:{Utilities.EnumToString(PropertyId)}";
+            PropertyType = ParseT<PropertyDataType>();
+            PropertyId = ParseT<PidTagPropertyEnum>();
+            PropertyValue = new AddressBookPropertyValue(PropertyType);
+            PropertyValue.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AddressBookTaggedPropertyValue");
+            AddChild(PropertyType, "PropertyType");
+            AddChild(PropertyId, "PropertyId");
+            AddChild(PropertyValue, "PropertyValue");
         }
     }
 }

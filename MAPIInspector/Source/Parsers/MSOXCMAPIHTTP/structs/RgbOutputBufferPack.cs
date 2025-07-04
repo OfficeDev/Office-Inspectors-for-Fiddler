@@ -1,6 +1,6 @@
-﻿using System;
+﻿using BlockParser;
+using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace MAPIInspector.Parsers
 {
@@ -8,7 +8,7 @@ namespace MAPIInspector.Parsers
     /// 3.1.4.1.1.1.2 rgbAuxOut Output Buffer
     /// The rgbOutputBufferPack contains multiple rgbOutputBuffer structure. It is defined in section 3.1.4.2.1.1.2 of MS-OXCRPC.
     /// </summary>
-    public class RgbOutputBufferPack : BaseStructure
+    public class RgbOutputBufferPack : Block
     {
         /// <summary>
         /// An unsigned int indicates the total size of the rgbOutputBuffers, this is a customized value.
@@ -32,12 +32,10 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the rgbOutputBufferPack.
         /// </summary>
-        /// <param name="s">A stream containing the rgbOutputBufferPack.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
             int index = 0;
-            List<RgbOutputBuffer> rgbOutputBufferList = new List<RgbOutputBuffer>();
+            var rgbOutputBufferList = new List<RgbOutputBuffer>();
             long startPosition = s.Position;
             MapiInspector.MAPIParser.OutputPayLoadCompressedXOR = new List<byte[]>();
             MapiInspector.MAPIParser.BuffersIsCompressed = new List<bool>();

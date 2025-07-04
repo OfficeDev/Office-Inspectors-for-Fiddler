@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -6,12 +6,12 @@ namespace MAPIInspector.Parsers
     /// A class indicates the GetPropListRequest structure.
     /// 2.2.5.6 GetPropList
     /// </summary>
-    public class GetPropListRequest : BaseStructure
+    public class GetPropListRequest : Block
     {
         /// <summary>
         /// A set of bit flags that specify options to the server.
         /// </summary>
-        public uint Flags;
+        public BlockT<uint> Flags;
 
         /// <summary>
         /// A MinimalEntryID structure that specifies the object for which to return properties.
@@ -21,12 +21,12 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the code page that the server is being requested to use for string values of properties.
         /// </summary>
-        public uint CodePage;
+        public BlockT<uint> CodePage;
 
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -36,21 +36,24 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetPropListRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing GetPropListRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Flags = ReadUint();
-            MinimalId = new MinimalEntryID();
-            MinimalId.Parse(s);
-            CodePage = ReadUint();
-            AuxiliaryBufferSize = ReadUint();
-
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
+            Flags = ParseT<uint>();
+            MinimalId = Parse<MinimalEntryID>();
+            CodePage = ParseT<uint>();
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
         }
+
+        protected override void ParseBlocks()
+        {
+            SetText("GetPropListRequest");
+            AddChildBlockT(Flags, "Flags");
+            AddChild(MinimalId, "MinimalId");
+            AddChildBlockT(CodePage, "CodePage");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
+        }
+
     }
 }

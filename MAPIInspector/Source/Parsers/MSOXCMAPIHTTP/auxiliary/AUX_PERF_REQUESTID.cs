@@ -1,33 +1,38 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AUX_PERF_REQUESTID Auxiliary Block Structure
     ///  Section 2.2.2.2 AUX_HEADER Structure
-    ///  Section 2.2.2.2.1   AUX_PERF_REQUESTID Auxiliary Block Structure
+    ///  Section 2.2.2.2.1 AUX_PERF_REQUESTID Auxiliary Block Structure
     /// </summary>
-    public class AUX_PERF_REQUESTID : BaseStructure
+    public class AUX_PERF_REQUESTID : Block
     {
         /// <summary>
         /// The session identification number.
         /// </summary>
-        public ushort SessionID;
+        public BlockT<ushort> SessionID;
 
         /// <summary>
         /// The request identification number.
         /// </summary>
-        public ushort RequestID;
+        public BlockT<ushort> RequestID;
 
         /// <summary>
         /// Parse the AUX_PERF_REQUESTID structure.
         /// </summary>
-        /// <param name="s">A stream containing the AUX_PERF_REQUESTID structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            SessionID = ReadUshort();
-            RequestID = ReadUshort();
+            SessionID = ParseT<ushort>();
+            RequestID = ParseT<ushort>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AUX_PERF_REQUESTID");
+            AddChildBlockT(SessionID, "SessionID");
+            AddChildBlockT(RequestID, "RequestID");
         }
     }
 }

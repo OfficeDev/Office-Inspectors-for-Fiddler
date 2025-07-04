@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 using System.Text;
 
 namespace MAPIInspector.Parsers
@@ -7,25 +7,24 @@ namespace MAPIInspector.Parsers
     /// <summary>
     /// Parse the additional headers in Common Response Format
     /// </summary>
-    public class ParseMAPIMethod : BaseStructure
+    public class ParseMAPIMethod
     {
         /// <summary>
-        /// ParseAddtionlHeader method
+        /// ParseAdditionalHeader method
         /// </summary>
-        /// <param name="s">The stream to parse</param>
+        /// <param name="parser">The stream to parse</param>
         /// <param name="metaTags">MetaTags string</param>
         /// <param name="additionalHeaders">AdditionalHeaders string</param>
-        public void ParseAddtionlHeader(Stream s, out List<MAPIString> metaTags, out List<MAPIString> additionalHeaders)
+        public static void ParseAdditionalHeader(BinaryParser parser, out List<BlockString> metaTags, out List<BlockString> additionalHeaders)
         {
-            Parse(s);
             string str = null;
-            List<MAPIString> tempmetaTags = new List<MAPIString>();
-            List<MAPIString> tempadditionalHeaders = new List<MAPIString>();
+            var tempmetaTags = new List<BlockString>();
+            var tempadditionalHeaders = new List<BlockString>();
 
             while ((str != string.Empty) && (s.Position < s.Length - 1))
             {
                 str = ReadString(Encoding.ASCII, "\r\n");
-                MAPIString tempString = new MAPIString(Encoding.ASCII, "\r\n");
+                var tempString = new BlockString(Encoding.ASCII, "\r\n");
                 tempString.Value = str;
                 switch (str)
                 {
@@ -51,15 +50,6 @@ namespace MAPIInspector.Parsers
 
             metaTags = tempmetaTags;
             additionalHeaders = tempadditionalHeaders;
-        }
-
-        /// <summary>
-        /// Override parse method.
-        /// </summary>
-        /// <param name="s">The stream to parse</param>
-        public override void Parse(Stream s)
-        {
-            base.Parse(s);
         }
     }
 }

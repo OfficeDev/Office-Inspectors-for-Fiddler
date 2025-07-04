@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,7 +7,7 @@ namespace MAPIInspector.Parsers
     /// 2.2.1 Common Data Types
     /// 2.2.1.4 AddressBookTypedPropertyValue Structure
     /// </summary>
-    public class AddressBookTypedPropertyValue : BaseStructure
+    public class AddressBookTypedPropertyValue : Block
     {
         /// <summary>
         /// An unsigned integer that identifies the data type of the property value
@@ -27,14 +27,17 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the AddressBookTypedPropertyValue structure.
         /// </summary>
-        /// <param name="s">A stream containing AddressBookTypedPropertyValue structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            PropertyType = (PropertyDataType)ReadUshort();
-            AddressBookPropertyValue addressBookPropValue = new AddressBookPropertyValue(PropertyType);
-            addressBookPropValue.Parse(s);
-            PropertyValue = addressBookPropValue;
+            PropertyType = ParseT<PropertyDataType>();
+            PropertyValue = new AddressBookPropertyValue(PropertyType);
+            PropertyValue.Parse(parser);
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AddressBookTypedPropertyValue");
+            AddChild(PropertyValue, "PropertyValue");
         }
     }
 }

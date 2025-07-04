@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BlockParser;
+using System.Collections.Generic;
 using System.IO;
 
 namespace MAPIInspector.Parsers
@@ -7,7 +8,7 @@ namespace MAPIInspector.Parsers
     /// 3.1.4.1.1.1 Extended Buffer Format
     /// The auxiliary blocks sent from the server to the client in the rgbAuxOut parameter auxiliary buffer on the EcDoConnectEx method. It is defined in section 3.1.4.1.1.1 of MS-OXCRPC.
     /// </summary>
-    public class ExtendedBuffer : BaseStructure
+    public class ExtendedBuffer : Block
     {
         /// <summary>
         /// The RPC_HEADER_EXT structure provides information about the payload.
@@ -22,24 +23,20 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ExtendedBuffer.
         /// </summary>
-        /// <param name="s">A stream of the extended buffers.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
             try
             {
-                base.Parse(s);
+                RPCHEADEREXT = Parse<RPC_HEADER_EXT>();
 
-                RPCHEADEREXT = new RPC_HEADER_EXT();
-                RPCHEADEREXT.Parse(s);
-
-                if (RPCHEADEREXT.Size > 0)
+                if (RPCHEADEREXT._Size > 0)
                 {
-                    byte[] payloadBytes = ReadBytes((int)RPCHEADEREXT.Size);
+                    BlockBytes payloadBytes = ParseBytes((int)RPCHEADEREXT.Size);
                     bool isCompressedXOR = false;
 
                     if (((ushort)RPCHEADEREXT.Flags & (ushort)RpcHeaderFlags.XorMagic) == (ushort)RpcHeaderFlags.XorMagic)
                     {
-                        payloadBytes = CompressionAndObfuscationAlgorithm.XOR(payloadBytes);
+                        payloadBytes = CompressionAndObfuscationAlgorithm.XOR(payloadBytes.Data);
                         isCompressedXOR = true;
                     }
 
@@ -59,16 +56,22 @@ namespace MAPIInspector.Parsers
 
                     for (int length = 0; length < RPCHEADEREXT.Size;)
                     {
-                        AuxiliaryBufferPayload buffer = new AuxiliaryBufferPayload();
-                        buffer.Parse(stream);
+                        var buffer = Parse<AuxiliaryBufferPayload>();
                         payload.Add(buffer);
-                        length += buffer.AUXHEADER.Size;
+                        length += buffer.AUXHEADER._Size;
                     }
 
                     Payload = payload.ToArray();
                 }
             }
             catch { }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ExtendedBuffer");
+            AddChild(RPCHEADEREXT, "RPCHEADEREXT");
+            AddLabeledChildren(Payload, "Payload");
         }
     }
 }
