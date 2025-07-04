@@ -261,7 +261,7 @@ namespace MAPIInspector.Parsers
 
                     default:
                         {
-                            AnnotatedBytes auxiliaryBlock = new AnnotatedBytes(AUXHEADER.Size - 4);
+                            AnnotatedBytes auxiliaryBlock = new AnnotatedBytes(AUXHEADER._Size - 4);
                             auxiliaryBlock.Parse(s);
                             AuxiliaryBlock = auxiliaryBlock;
                             break;
@@ -363,7 +363,7 @@ namespace MAPIInspector.Parsers
 
                     default:
                         {
-                            AnnotatedBytes auxiliaryBlock = new AnnotatedBytes(AUXHEADER.Size - 4);
+                            AnnotatedBytes auxiliaryBlock = new AnnotatedBytes(AUXHEADER._Size - 4);
                             auxiliaryBlock.Parse(s);
                             AuxiliaryBlock = auxiliaryBlock;
                             break;
@@ -372,7 +372,7 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                AnnotatedBytes auxiliaryBlock = new AnnotatedBytes(AUXHEADER.Size - 4);
+                AnnotatedBytes auxiliaryBlock = new AnnotatedBytes(AUXHEADER._Size - 4);
                 auxiliaryBlock.Parse(s);
                 AuxiliaryBlock = auxiliaryBlock;
             }

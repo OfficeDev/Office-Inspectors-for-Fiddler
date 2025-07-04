@@ -62,7 +62,7 @@ namespace MAPIInspector.Parsers
                         AuxiliaryBufferPayload buffer = new AuxiliaryBufferPayload();
                         buffer.Parse(stream);
                         payload.Add(buffer);
-                        length += buffer.AUXHEADER.Size;
+                        length += buffer.AUXHEADER._Size;
                     }
 
                     Payload = payload.ToArray();

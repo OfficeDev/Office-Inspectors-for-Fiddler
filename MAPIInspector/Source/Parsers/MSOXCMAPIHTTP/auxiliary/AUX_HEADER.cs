@@ -11,7 +11,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// The size of the AUX_HEADER structure plus any additional payload data.
         /// </summary>
-        public ushort Size;
+        public ushort _Size;
 
         /// <summary>
         /// The version information of the payload data.
@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
         public override void Parse(Stream s)
         {
             base.Parse(s);
-            Size = ReadUshort();
+            _Size = ReadUshort();
             Version = (PayloadDataVersion)ReadByte();
 
             if (Version == PayloadDataVersion.AUX_VERSION_1)
