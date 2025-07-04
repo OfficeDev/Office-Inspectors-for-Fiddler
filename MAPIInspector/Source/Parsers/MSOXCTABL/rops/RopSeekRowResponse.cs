@@ -54,8 +54,8 @@ namespace MAPIInspector.Parsers
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
-            if (HasSoughtLess != null) AddChildBlockT(HasSoughtLess, "HasSoughtLess");
-            if (RowsSought != null) AddChildBlockT(RowsSought, "RowsSought");
+            AddChildBlockT(HasSoughtLess, "HasSoughtLess");
+            AddChildBlockT(RowsSought, "RowsSought");
         }
     }
 }

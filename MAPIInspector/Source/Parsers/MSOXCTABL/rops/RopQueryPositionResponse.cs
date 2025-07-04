@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -6,50 +6,57 @@ namespace MAPIInspector.Parsers
     /// 2.2.2.8 RopQueryPosition ROP
     /// A class indicates the  RopQueryPosition ROP Response Buffer.
     /// </summary>
-    public class RopQueryPositionResponse : BaseStructure
+    public class RopQueryPositionResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An unsigned integer that indicates the index (0-based) of the current row.
         /// </summary>
-        public uint? Numerator;
+        BlockT<uint> Numerator;
 
         /// <summary>
         /// An unsigned integer that indicates the total number of rows in the table.
         /// </summary>
-        public uint? Denominator;
+        BlockT<uint> Denominator;
 
         /// <summary>
         /// Parse the RopQueryPositionResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopQueryPositionResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
-
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
-                Numerator = ReadUint();
-                Denominator = ReadUint();
+                Numerator = ParseT<uint>();
+                Denominator = ParseT<uint>();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopQueryPositionResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(Numerator, "Numerator");
+            AddChildBlockT(Denominator, "Denominator");
         }
     }
 }

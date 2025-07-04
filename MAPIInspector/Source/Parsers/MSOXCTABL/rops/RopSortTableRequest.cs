@@ -78,7 +78,7 @@ namespace MAPIInspector.Parsers
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(SortTableFlags, "SortTableFlags");
             AddChildBlockT(SortOrderCount, "SortOrderCount");
-            AddChildBlockT(SortOrderCount, "SortOrderCount");
+            AddChildBlockT(CategoryCount, "CategoryCount");
             AddChildBlockT(ExpandedCount, "ExpandedCount");
             AddLabeledChildren(SortOrders, "SortOrders");
         }

@@ -46,10 +46,7 @@ namespace MAPIInspector.Parsers
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
-            if (TableStatus.Parsed)
-            {
-                AddChildBlockT(TableStatus, "TableStatus");
-            }
+            AddChildBlockT(TableStatus, "TableStatus");
         }
     }
 }

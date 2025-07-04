@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -6,44 +6,50 @@ namespace MAPIInspector.Parsers
     /// 2.2.2.3 RopSortTable ROP
     /// A class indicates the RopSortTable ROP Response Buffer.
     /// </summary>
-    public class RopSortTableResponse : BaseStructure
+    public class RopSortTableResponse : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the type of ROP.
         /// </summary>
-        public RopIdType RopId;
+        public BlockT<RopIdType> RopId;
 
         /// <summary>
         /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
-        public byte InputHandleIndex;
+        public BlockT<byte> InputHandleIndex;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
-        public object ReturnValue;
+        public BlockT<ErrorCodes> ReturnValue;
 
         /// <summary>
         /// An enumeration that specifies the status of the table.
         /// </summary>
-        public TableStatus? TableStatus;
+        public BlockT<TableStatus> TableStatus;
 
         /// <summary>
         /// Parse the RopSortTableResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSortTableResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            RopId = ParseT<RopIdType>();
+            InputHandleIndex = ParseT<byte>();
+            ReturnValue = ParseT<ErrorCodes>();
 
-            RopId = (RopIdType)ReadByte();
-            InputHandleIndex = ReadByte();
-            ReturnValue = HelpMethod.FormatErrorCode((ErrorCodes)ReadUint());
-
-            if ((ErrorCodes)ReturnValue == ErrorCodes.Success)
+            if (ReturnValue == ErrorCodes.Success)
             {
-                TableStatus = (TableStatus)ReadByte();
+                TableStatus = ParseT<TableStatus>();
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RopSortTableResponse");
+            AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            AddChildBlockT(TableStatus, "TableStatus");
         }
     }
 }

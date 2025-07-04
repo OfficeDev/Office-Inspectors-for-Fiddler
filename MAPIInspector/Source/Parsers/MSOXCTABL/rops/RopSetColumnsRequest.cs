@@ -42,7 +42,6 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSetColumnsRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSetColumnsRequest structure.</param>
         protected override void Parse()
         {
             RopId = ParseT<RopIdType>();
@@ -51,12 +50,10 @@ namespace MAPIInspector.Parsers
             SetColumnsFlags = ParseT<AsynchronousFlags>();
             PropertyTagCount = ParseT<ushort>();
 
-            List<PropertyTag> tempPropertyTags = new List<PropertyTag>();
+            var tempPropertyTags = new List<PropertyTag>();
             for (int i = 0; i < PropertyTagCount; i++)
             {
-                PropertyTag tempPropertyTag = new PropertyTag();
-                tempPropertyTag.Parse(parser);
-                tempPropertyTags.Add(tempPropertyTag);
+                tempPropertyTags.Add(Parse<PropertyTag>());
             }
 
             PropertyTags = tempPropertyTags.ToArray();

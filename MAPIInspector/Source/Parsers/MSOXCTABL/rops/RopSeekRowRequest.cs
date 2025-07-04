@@ -41,7 +41,6 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the RopSeekRowRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing RopSeekRowRequest structure.</param>
         protected override void Parse()
         {
             RopId = ParseT<RopIdType>();
