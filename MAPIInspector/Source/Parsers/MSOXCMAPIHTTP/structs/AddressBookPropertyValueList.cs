@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
@@ -8,12 +8,12 @@ namespace MAPIInspector.Parsers
     /// 2.2.1 Common Data Types
     /// 2.2.1.3 AddressBookPropertyValueList Structure
     /// </summary>
-    public class AddressBookPropertyValueList : BaseStructure
+    public class AddressBookPropertyValueList : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the number of structures contained in the PropertyValues field.
         /// </summary>
-        public uint PropertyValueCount;
+        public BlockT<uint> PropertyValueCount;
 
         /// <summary>
         /// An array of AddressBookTaggedPropertyValue structures
@@ -23,21 +23,23 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the AddressBookPropertyValueList structure.
         /// </summary>
-        /// <param name="s">A stream containing AddressBookPropertyValueList structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            PropertyValueCount = ReadUint();
-            List<AddressBookTaggedPropertyValue> tempABTP = new List<AddressBookTaggedPropertyValue>();
-
+            PropertyValueCount = ParseT<uint>();
+            var tempABTP = new List<AddressBookTaggedPropertyValue>();
             for (int i = 0; i < PropertyValueCount; i++)
             {
-                AddressBookTaggedPropertyValue abtp = new AddressBookTaggedPropertyValue();
-                abtp.Parse(s);
-                tempABTP.Add(abtp);
+                tempABTP.Add(Parse<AddressBookTaggedPropertyValue>());
             }
 
             PropertyValues = tempABTP.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AddressBookPropertyValueList");
+            AddChildBlockT(PropertyValueCount, "PropertyValueCount");
+            AddLabeledChildren(PropertyValues, "PropertyValues");
         }
     }
 }

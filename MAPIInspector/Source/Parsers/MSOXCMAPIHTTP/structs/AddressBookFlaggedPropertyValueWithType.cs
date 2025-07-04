@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,17 +7,17 @@ namespace MAPIInspector.Parsers
     /// 2.2.1 Common Data Types
     /// 2.2.1.6 AddressBookFlaggedPropertyValueWithType Structure
     /// </summary>
-    public class AddressBookFlaggedPropertyValueWithType : BaseStructure
+    public class AddressBookFlaggedPropertyValueWithType : Block
     {
         /// <summary>
         /// An unsigned integer that identifies the data type of the property value ([MS-OXCDATA] section 2.11.1).
         /// </summary>
-        public PropertyDataType PropertyType;
+        public BlockT<PropertyDataType> PropertyType;
 
         /// <summary>
         /// An unsigned integer. This flag MUST be set one of three possible values: 0x0, 0x1, or 0xA, which determines what is conveyed in the PropertyValue field.
         /// </summary>
-        public byte Flag;
+        public BlockT<byte> Flag;
 
         /// <summary>
         /// An AddressBookPropertyValue structure, as specified in section 2.2.1.1, unless Flag field is set to 0x01
@@ -25,34 +25,42 @@ namespace MAPIInspector.Parsers
         public AddressBookPropertyValue PropertyValue;
 
         /// <summary>
-        /// Source property tag information
-        /// </summary>
-        public AnnotatedComment PropertyTag;
-
-        /// <summary>
         /// Parse the AddressBookFlaggedPropertyValueWithType structure.
         /// </summary>
-        /// <param name="s">A stream containing AddressBookFlaggedPropertyValueWithType structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            PropertyType = (PropertyDataType)ReadUshort();
-            Flag = ReadByte();
+            PropertyType = ParseT<PropertyDataType>();
+            Flag = ParseT<byte>();
 
             if (Flag != 0x01)
             {
                 if (Flag == 0x00)
                 {
-                    AddressBookPropertyValue addressPropValue = new AddressBookPropertyValue(PropertyType);
-                    addressPropValue.Parse(s);
+                    var addressPropValue = new AddressBookPropertyValue(PropertyType);
+                    addressPropValue.Parse(parser);
                     PropertyValue = addressPropValue;
                 }
                 else if (Flag == 0x0A)
                 {
-                    AddressBookPropertyValue addressPropValueForErrorCode = new AddressBookPropertyValue(PropertyDataType.PtypErrorCode);
-                    addressPropValueForErrorCode.Parse(s);
+                    var addressPropValueForErrorCode = new AddressBookPropertyValue(PropertyDataType.PtypErrorCode);
+                    addressPropValueForErrorCode.Parse(parser);
                     PropertyValue = addressPropValueForErrorCode;
                 }
+            }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AddressBookFlaggedPropertyValueWithType");
+            AddChildBlockT(PropertyType, "PropertyType");
+            AddChildBlockT(Flag, "Flag");
+            if (PropertyValue != null)
+            {
+                AddLabeledChild(PropertyValue, "PropertyValue");
+            }
+            else
+            {
+                AddHeader("PropertyValue is null");
             }
         }
     }

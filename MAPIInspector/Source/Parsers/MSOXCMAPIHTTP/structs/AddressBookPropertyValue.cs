@@ -30,11 +30,6 @@ namespace MAPIInspector.Parsers
         private CountWideEnum countWide;
 
         /// <summary>
-        /// Source property tag information
-        /// </summary>
-        public AnnotatedComment PropertyTag;
-
-        /// <summary>
         /// Initializes a new instance of the AddressBookPropertyValue class.
         /// </summary>
         /// <param name="propertyDataType">The PropertyDataType for this structure</param>
@@ -80,7 +75,7 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                SetText("PropertyValue is null");
+                AddHeader("PropertyValue is null");
             }
         }
     }
