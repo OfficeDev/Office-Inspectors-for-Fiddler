@@ -31,16 +31,16 @@ namespace MAPIInspector.Parsers
 
                 if (RPCHEADEREXT._Size > 0)
                 {
-                    BlockBytes payloadBytes = ParseBytes((int)RPCHEADEREXT.Size);
+                    BlockBytes payloadBytes = ParseBytes((int)RPCHEADEREXT._Size);
                     bool isCompressedXOR = false;
 
-                    if (((ushort)RPCHEADEREXT.Flags & (ushort)RpcHeaderFlags.XorMagic) == (ushort)RpcHeaderFlags.XorMagic)
+                    if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.XorMagic))
                     {
                         payloadBytes = CompressionAndObfuscationAlgorithm.XOR(payloadBytes.Data);
                         isCompressedXOR = true;
                     }
 
-                    if (((ushort)RPCHEADEREXT.Flags & (ushort)RpcHeaderFlags.Compressed) == (ushort)RpcHeaderFlags.Compressed)
+                    if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.Compressed))
                     {
                         payloadBytes = CompressionAndObfuscationAlgorithm.LZ77Decompress(payloadBytes, (int)RPCHEADEREXT.SizeActual);
                         isCompressedXOR = true;
@@ -54,7 +54,7 @@ namespace MAPIInspector.Parsers
                     Stream stream = new MemoryStream(payloadBytes);
                     List<AuxiliaryBufferPayload> payload = new List<AuxiliaryBufferPayload>();
 
-                    for (int length = 0; length < RPCHEADEREXT.Size;)
+                    for (int length = 0; length < RPCHEADEREXT._Size;)
                     {
                         var buffer = Parse<AuxiliaryBufferPayload>();
                         payload.Add(buffer);

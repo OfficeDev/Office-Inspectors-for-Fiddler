@@ -43,7 +43,7 @@ namespace MAPIInspector.Parsers
                 var extendedBuffer_Input = new ExtendedBuffer_Input(index);
                 extendedBuffer_Input.Parse(parser);
                 extendedBuffer_Inputs.Add(extendedBuffer_Input);
-                ropBufferSize -= (uint)(extendedBuffer_Input.RPCHEADEREXT.Size + 8);
+                ropBufferSize -= (uint)(extendedBuffer_Input.RPCHEADEREXT._Size + 8);
                 index += 1;
             }
 

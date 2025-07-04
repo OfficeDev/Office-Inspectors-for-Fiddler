@@ -44,7 +44,7 @@ namespace MAPIInspector.Parsers
 
             if (RPCHEADEREXT._Size > 0)
             {
-                var payloadBytes = ParseBytes((int)RPCHEADEREXT.Size);
+                var payloadBytes = ParseBytes((int)RPCHEADEREXT._Size);
                 bool isCompressedXOR = false;
 
                 if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.XorMagic))

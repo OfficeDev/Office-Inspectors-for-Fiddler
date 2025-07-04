@@ -322,7 +322,7 @@ namespace MAPIInspector.Parsers
                                 os = 0;
                                 if (obj is RgbOutputBuffer buffer)
                                 {
-                                    os = buffer.RPCHEADEREXT.Size;
+                                    os = buffer.RPCHEADEREXT._Size;
                                 }
                             }
                             else if (type.Name != "Boolean")
@@ -525,8 +525,8 @@ namespace MAPIInspector.Parsers
                             // The below logical is used to check whether the payload is compressed or XOR.
                             if (fieldName == "RPCHEADEREXT")
                             {
-                                if (((ushort)((RPC_HEADER_EXT)info[i].GetValue(obj)).Flags & 0x0002) == (ushort)RpcHeaderFlags.XorMagic
-                                    || ((ushort)((RPC_HEADER_EXT)info[i].GetValue(obj)).Flags & 0x0001) == (ushort)RpcHeaderFlags.Compressed)
+                                if (((RPC_HEADER_EXT)info[i].GetValue(obj)).Flags.Data.HasFlag(RpcHeaderFlags.XorMagic)
+                                    || ((RPC_HEADER_EXT)info[i].GetValue(obj)).Flags.Data.HasFlag(RpcHeaderFlags.Compressed))
                                 {
                                     IsCompressedXOR = true;
                                 }
@@ -543,7 +543,7 @@ namespace MAPIInspector.Parsers
                                 node = AddNodesForTree(fieldName, info[i].GetValue(obj), current, out os);
                                 if (node.Tag is Position nodePosition && nodePosition != null)
                                 {
-                                    nodePosition.Offset = header.Size;
+                                    nodePosition.Offset = header._Size;
                                     os = nodePosition.Offset;
                                     node.Tag = nodePosition;
                                 }
