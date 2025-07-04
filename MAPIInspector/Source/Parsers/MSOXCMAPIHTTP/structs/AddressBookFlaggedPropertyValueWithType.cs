@@ -12,7 +12,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that identifies the data type of the property value ([MS-OXCDATA] section 2.11.1).
         /// </summary>
-        public PropertyDataType PropertyType;
+        public BlockT<PropertyDataType> PropertyType;
 
         /// <summary>
         /// An unsigned integer. This flag MUST be set one of three possible values: 0x0, 0x1, or 0xA, which determines what is conveyed in the PropertyValue field.
@@ -23,11 +23,6 @@ namespace MAPIInspector.Parsers
         /// An AddressBookPropertyValue structure, as specified in section 2.2.1.1, unless Flag field is set to 0x01
         /// </summary>
         public AddressBookPropertyValue PropertyValue;
-
-        /// <summary>
-        /// Source property tag information
-        /// </summary>
-        public AnnotatedComment PropertyTag;
 
         /// <summary>
         /// Parse the AddressBookFlaggedPropertyValueWithType structure.
@@ -51,6 +46,21 @@ namespace MAPIInspector.Parsers
                     addressPropValueForErrorCode.Parse(parser);
                     PropertyValue = addressPropValueForErrorCode;
                 }
+            }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AddressBookFlaggedPropertyValueWithType");
+            AddChildBlockT(PropertyType, "PropertyType");
+            AddChildBlockT(Flag, "Flag");
+            if (PropertyValue != null)
+            {
+                AddLabeledChild(PropertyValue, "PropertyValue");
+            }
+            else
+            {
+                AddHeader("PropertyValue is null");
             }
         }
     }

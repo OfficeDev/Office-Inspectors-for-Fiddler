@@ -25,11 +25,6 @@ namespace MAPIInspector.Parsers
         private PropertyDataType propertyDataType;
 
         /// <summary>
-        /// Source property tag information
-        /// </summary>
-        public AnnotatedComment PropertyTag;
-
-        /// <summary>
         /// Initializes a new instance of the AddressBookFlaggedPropertyValue class.
         /// </summary>
         /// <param name="propertyDataType">The PropertyDataType parameter for AddressBookFlaggedPropertyValue</param>

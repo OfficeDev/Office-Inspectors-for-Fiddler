@@ -20,11 +20,6 @@ namespace MAPIInspector.Parsers
         public AddressBookPropertyValue PropertyValue;
 
         /// <summary>
-        /// Source property tag information
-        /// </summary>
-        public AnnotatedComment PropertyTag;
-
-        /// <summary>
         /// Parse the AddressBookTypedPropertyValue structure.
         /// </summary>
         protected override void Parse()

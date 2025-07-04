@@ -49,5 +49,11 @@ namespace MAPIInspector.Parsers
 
             Buffers = extendedBuffer_Inputs.ToArray();
         }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RgbInputBuffer");
+            AddLabeledChildren(Buffers, "Buffers");
+        }
     }
 }

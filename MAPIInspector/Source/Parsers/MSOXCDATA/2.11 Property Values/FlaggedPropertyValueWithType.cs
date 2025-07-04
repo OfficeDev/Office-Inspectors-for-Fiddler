@@ -62,7 +62,7 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                SetText("PropertyValue is null");
+                AddHeader("PropertyValue is null");
             }
         }
     }

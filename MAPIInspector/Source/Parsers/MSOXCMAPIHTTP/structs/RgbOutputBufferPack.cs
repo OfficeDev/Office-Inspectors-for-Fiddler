@@ -60,5 +60,11 @@ namespace MAPIInspector.Parsers
 
             RgbOutputBuffers = rgbOutputBufferList.ToArray();
         }
+
+        protected override void ParseBlocks()
+        {
+            SetText("RgbOutputBufferPack");
+            AddLabeledChildren(RgbOutputBuffers, "RgbOutputBuffers");
+        }
     }
 }
