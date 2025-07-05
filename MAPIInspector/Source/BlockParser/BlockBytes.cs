@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 
 namespace BlockParser
@@ -11,7 +10,7 @@ namespace BlockParser
 
         public BlockBytes() { }
 
-        public IReadOnlyList<byte> Data => _data;
+        public byte[] Data => _data;
         public int Count => _data.Length;
         public bool Empty => _data.Length == 0;
 

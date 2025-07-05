@@ -43,7 +43,8 @@ namespace MAPIInspector.Parsers
 
             if (RPCHEADEREXT._Size > 0)
             {
-                byte[] payloadBytes = ParseBytes((int)RPCHEADEREXT._Size);
+                var payloadBlock = ParseBytes((int)RPCHEADEREXT._Size);
+                var payloadBytes = payloadBlock.Data;
                 bool isCompressedXOR = false;
 
                 if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.XorMagic))
@@ -95,13 +96,13 @@ namespace MAPIInspector.Parsers
 
                 if (MapiInspector.MAPIParser.IsOnlyGetServerHandle)
                 {
-                    ROPInputBuffer_WithoutCROPS inputBufferWithoutCROPS = new ROPInputBuffer_WithoutCROPS();
+                    var inputBufferWithoutCROPS = new ROPInputBuffer_WithoutCROPS();
                     inputBufferWithoutCROPS.Parse(stream);
                     Payload = inputBufferWithoutCROPS;
                 }
                 else
                 {
-                    ROPInputBuffer inputBuffer = new ROPInputBuffer();
+                    var inputBuffer = new ROPInputBuffer();
                     inputBuffer.Parse(stream);
                     Payload = inputBuffer;
                 }

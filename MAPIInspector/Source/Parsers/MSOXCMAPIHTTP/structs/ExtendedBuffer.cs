@@ -1,6 +1,5 @@
 ﻿using BlockParser;
 using System.Collections.Generic;
-using System.IO;
 
 namespace MAPIInspector.Parsers
 {
@@ -25,46 +24,43 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            try
+            RPCHEADEREXT = Parse<RPC_HEADER_EXT>();
+
+            if (RPCHEADEREXT._Size > 0)
             {
-                RPCHEADEREXT = Parse<RPC_HEADER_EXT>();
+                var payloadBlock = ParseBytes((int)RPCHEADEREXT._Size);
+                var payloadBytes = payloadBlock.Data;
+                bool isCompressedXOR = false;
 
-                if (RPCHEADEREXT._Size > 0)
+                if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.XorMagic))
                 {
-                    BlockBytes payloadBytes = ParseBytes((int)RPCHEADEREXT._Size);
-                    bool isCompressedXOR = false;
-
-                    if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.XorMagic))
-                    {
-                        payloadBytes = CompressionAndObfuscationAlgorithm.XOR(payloadBytes.Data);
-                        isCompressedXOR = true;
-                    }
-
-                    if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.Compressed))
-                    {
-                        payloadBytes = CompressionAndObfuscationAlgorithm.LZ77Decompress(payloadBytes, (int)RPCHEADEREXT.SizeActual);
-                        isCompressedXOR = true;
-                    }
-
-                    if (isCompressedXOR)
-                    {
-                        MapiInspector.MAPIParser.AuxPayLoadCompressedXOR = payloadBytes;
-                    }
-
-                    Stream stream = new MemoryStream(payloadBytes);
-                    List<AuxiliaryBufferPayload> payload = new List<AuxiliaryBufferPayload>();
-
-                    for (int length = 0; length < RPCHEADEREXT._Size;)
-                    {
-                        var buffer = Parse<AuxiliaryBufferPayload>();
-                        payload.Add(buffer);
-                        length += buffer.AUXHEADER._Size;
-                    }
-
-                    Payload = payload.ToArray();
+                    payloadBytes = CompressionAndObfuscationAlgorithm.XOR(payloadBytes);
+                    isCompressedXOR = true;
                 }
+
+                if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.Compressed))
+                {
+                    payloadBytes = CompressionAndObfuscationAlgorithm.LZ77Decompress(payloadBytes, (int)RPCHEADEREXT.SizeActual);
+                    isCompressedXOR = true;
+                }
+
+                if (isCompressedXOR)
+                {
+                    MapiInspector.MAPIParser.AuxPayLoadCompressedXOR = payloadBytes;
+                }
+
+                var newParser = new BinaryParser(payloadBytes);
+                var payload = new List<AuxiliaryBufferPayload>();
+
+                for (int length = 0; length < RPCHEADEREXT._Size;)
+                {
+                    var buffer = Parse<AuxiliaryBufferPayload>(newParser);
+                    payload.Add(buffer);
+                    length += buffer.AUXHEADER._Size;
+                }
+
+                Payload = payload.ToArray();
             }
-            catch { }
         }
 
         protected override void ParseBlocks()
