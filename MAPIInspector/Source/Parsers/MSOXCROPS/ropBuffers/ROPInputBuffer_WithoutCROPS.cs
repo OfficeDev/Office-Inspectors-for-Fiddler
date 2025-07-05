@@ -1,48 +1,66 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the ROP output buffer, which is sent by the server, includes an array of ROP response buffers.
     /// </summary>
-    public class ROPInputBuffer_WithoutCROPS : BaseStructure
+    public class ROPInputBuffer_WithoutCROPS : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the size of both this field and the RopsList field.
         /// </summary>
-        public ushort RopSize;
+        public BlockT<ushort> RopSize;
 
         /// <summary>
         /// An array of ROP request buffers.
         /// </summary>
-        public byte[] RopsList;
+        public BlockBytes RopsList;
 
         /// <summary>
         /// An array of 32-bit values. Each 32-bit value specifies a Server object handle that is referenced by a ROP buffer.
         /// </summary>
-        public uint[] ServerObjectHandleTable;
+        public BlockT<uint>[] ServerObjectHandleTable;
+        public List<uint> ServerObjectHandleTableList
+        {
+            get
+            {
+                var list = new List<uint>();
+                if (ServerObjectHandleTable != null)
+                {
+                    foreach (var handle in ServerObjectHandleTable)
+                    {
+                        list.Add(handle.Data);
+                    }
+                }
+                return list;
+            }
+        }
 
         /// <summary>
         /// Parse the ROPInputBuffer_WithoutCROPS structure.
         /// </summary>
-        /// <param name="s">A stream containing the ROPInputBuffer structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            RopSize = ReadUshort();
-            List<object> ropsList = new List<object>();
-            List<uint> serverObjectHandleTable = new List<uint>();
-            byte[] ropListBytes = ReadBytes(RopSize - 2);
-            RopsList = ropListBytes;
+            RopSize = ParseT<ushort>();
+            RopsList = ParseBytes(RopSize - 2);
 
-            while (s.Position < s.Length)
+            var serverObjectHandleTable = new List<BlockT<uint>>();
+            while (parser.RemainingBytes > sizeof(uint))
             {
-                uint serverObjectHandle = ReadUint();
-                serverObjectHandleTable.Add(serverObjectHandle);
+                serverObjectHandleTable.Add(ParseT<uint>());
             }
 
             ServerObjectHandleTable = serverObjectHandleTable.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ROPInputBuffer_WithoutCROPS");
+            AddChildBlockT(RopSize, "RopSize");
+            AddChildBytes(RopsList, "RopsList");
+            AddLabeledChildren(ServerObjectHandleTable, "ServerObjectHandleTable");
         }
     }
 }
