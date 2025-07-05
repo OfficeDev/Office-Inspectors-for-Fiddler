@@ -290,7 +290,14 @@ namespace MAPIInspector.Parsers
         {
             SetText("AuxiliaryBufferPayload");
             AddChild(AUXHEADER, "AUXHEADER");
-            AddChild(AuxiliaryBlock, "AuxiliaryBlock");
+            if (AuxiliaryBlock is BlockBytes bb)
+            {
+                AddChildBytes(bb, "AuxiliaryBlock");
+            }
+            else
+            {
+                AddChild(AuxiliaryBlock, "AuxiliaryBlock");
+            }
         }
     }
 }

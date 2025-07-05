@@ -47,8 +47,8 @@ namespace MAPIInspector.Parsers
             SetText("AUX_HEADER");
             AddChildBlockT(_Size, "_Size");
             AddChildBlockT(Version, "Version");
-            AddChildBlockT(Type1, "Type1");
-            AddChildBlockT(Type2, "Type2");
+            AddChildBlockT(Type1, "Type");
+            AddChildBlockT(Type2, "Type");
         }
     }
 }
