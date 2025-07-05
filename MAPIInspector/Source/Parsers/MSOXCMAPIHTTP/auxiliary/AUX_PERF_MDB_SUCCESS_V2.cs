@@ -1,69 +1,80 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AUX_PERF_MDB_SUCCESS_V2 Auxiliary Block Structure
     ///  Section 2.2.2.2 AUX_HEADER Structure
-    ///  Section 2.2.2.2.10   AUX_PERF_MDB_SUCCESS_V2 Auxiliary Block Structure
+    ///  Section 2.2.2.2.10 AUX_PERF_MDB_SUCCESS_V2 Auxiliary Block Structure
     /// </summary>
-    public class AUX_PERF_MDB_SUCCESS_V2 : BaseStructure
+    public class AUX_PERF_MDB_SUCCESS_V2 : Block
     {
         /// <summary>
         /// The process identification number.
         /// </summary>
-        public ushort ProcessID;
+        public BlockT<ushort> ProcessID;
 
         /// <summary>
         /// The client identification number.
         /// </summary>
-        public ushort ClientID;
+        public BlockT<ushort> ClientID;
 
         /// <summary>
         /// The server identification number.
         /// </summary>
-        public ushort ServerID;
+        public BlockT<ushort> ServerID;
 
         /// <summary>
         /// The session identification number.
         /// </summary>
-        public ushort SessionID;
+        public BlockT<ushort> SessionID;
 
         /// <summary>
         /// The request identification number.
         /// </summary>
-        public ushort RequestID;
+        public BlockT<ushort> RequestID;
 
         /// <summary>
         /// Padding to enforce alignment of the data on a 4-byte field.
         /// </summary>
-        public ushort Reserved;
+        public BlockT<ushort> Reserved;
 
         /// <summary>
         /// The number of milliseconds since a successful request occurred.
         /// </summary>
-        public uint TimeSinceRequest;
+        public BlockT<uint> TimeSinceRequest;
 
         /// <summary>
         /// The number of milliseconds the successful request took to complete.
         /// </summary>
-        public uint TimeToCompleteRequest;
+        public BlockT<uint> TimeToCompleteRequest;
 
         /// <summary>
         /// Parse the AUX_PERF_MDB_SUCCESS_V2 structure.
         /// </summary>
-        /// <param name="s">A stream containing the AUX_PERF_MDB_SUCCESS_V2 structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            ProcessID = ReadUshort();
-            ClientID = ReadUshort();
-            ServerID = ReadUshort();
-            SessionID = ReadUshort();
-            RequestID = ReadUshort();
-            Reserved = ReadUshort();
-            TimeSinceRequest = ReadUint();
-            TimeToCompleteRequest = ReadUint();
+            ProcessID = ParseT<ushort>();
+            ClientID = ParseT<ushort>();
+            ServerID = ParseT<ushort>();
+            SessionID = ParseT<ushort>();
+            RequestID = ParseT<ushort>();
+            Reserved = ParseT<ushort>();
+            TimeSinceRequest = ParseT<uint>();
+            TimeToCompleteRequest = ParseT<uint>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("AUX_PERF_MDB_SUCCESS_V2");
+            AddChildBlockT(ProcessID, "ProcessID");
+            AddChildBlockT(ClientID, "ClientID");
+            AddChildBlockT(ServerID, "ServerID");
+            AddChildBlockT(SessionID, "SessionID");
+            AddChildBlockT(RequestID, "RequestID");
+            AddChildBlockT(Reserved, "Reserved");
+            AddChildBlockT(TimeSinceRequest, "TimeSinceRequest");
+            AddChildBlockT(TimeToCompleteRequest, "TimeToCompleteRequest");
         }
     }
 }
