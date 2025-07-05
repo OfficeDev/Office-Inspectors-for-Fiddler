@@ -1062,7 +1062,8 @@ sessionID >= currentSessionID)
                                 if ((mapiRequest as ExecuteRequestBody).RopBuffer != null &&
                                     (mapiRequest as ExecuteRequestBody).RopBuffer.Buffers.Count() != 0)
                                 {
-                                    handlePutDic.Add(parsingSessionID, ((ROPInputBuffer_WithoutCROPS)(mapiRequest as ExecuteRequestBody).RopBuffer.Buffers[0].Payload).ServerObjectHandleTable.ToList());
+                                    handlePutDic.Add(parsingSessionID,
+                                        ((ROPInputBuffer_WithoutCROPS)(mapiRequest as ExecuteRequestBody).RopBuffer.Buffers[0].Payload).ServerObjectHandleTableList);
                                 }
                             }
                         }

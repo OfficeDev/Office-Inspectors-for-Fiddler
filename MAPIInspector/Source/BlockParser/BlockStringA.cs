@@ -5,6 +5,7 @@ namespace BlockParser
 {
     public class BlockStringA : BlockString
     {
+        public bool LineMode { get; set; } = false;
         protected override void Parse()
         {
             Parsed = false;
@@ -27,7 +28,39 @@ namespace BlockParser
 
             if (length >= 0)
             {
-                data = Strings.RemoveInvalidCharacters(Encoding.ASCII.GetString(bytes, 0, length));
+                data = Encoding.ASCII.GetString(bytes, 0, length);
+                if (LineMode)
+                {
+                    // We want to read until the first line feed (LF) character, which is either '\n' or "\r\n"
+                    // Our length should include the LF character(s), but the data should not include them
+                    int lfIndexRN = data.IndexOf("\r\n");
+                    int lfIndexN = data.IndexOf('\n');
+
+                    int lfIndex = -1;
+                    int lineEndingLength = 0;
+
+                    if (lfIndexRN >= 0 && (lfIndexN == -1 || lfIndexRN < lfIndexN))
+                    {
+                        lfIndex = lfIndexRN;
+                        lineEndingLength = 2;
+                        fixedLength = true; // We don't want to skip a null because we stopped at the line ending
+                    }
+                    else if (lfIndexN >= 0)
+                    {
+                        lfIndex = lfIndexN;
+                        lineEndingLength = 1;
+                        fixedLength = true; // We don't want to skip a null because we stopped at the line ending
+                    }
+
+                    if (lfIndex >= 0)
+                    {
+                        data = data.Substring(0, lfIndex);
+                        length = lfIndex + lineEndingLength;
+                    }
+                }
+
+                data = Strings.RemoveInvalidCharacters(data);
+
                 SetText(data);
                 parser.Advance(length);
                 // If we were given a length, that's all we read. But if we were not given a length, we read until the null terminator.

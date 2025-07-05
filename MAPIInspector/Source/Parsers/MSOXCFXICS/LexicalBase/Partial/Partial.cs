@@ -521,7 +521,7 @@ namespace MAPIInspector.Parsers
                                         (mapiRequest as ExecuteRequestBody).RopBuffer != null &&
                                         (mapiRequest as ExecuteRequestBody).RopBuffer.Buffers.Count() != 0)
                                     {
-                                        tableHandles = ((ROPInputBuffer_WithoutCROPS)(mapiRequest as ExecuteRequestBody).RopBuffer.Buffers[0].Payload).ServerObjectHandleTable.ToList();
+                                        tableHandles = ((ROPInputBuffer_WithoutCROPS)(mapiRequest as ExecuteRequestBody).RopBuffer.Buffers[0].Payload).ServerObjectHandleTableList;
                                     }
                                 }
                                 finally
