@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,7 +7,7 @@ namespace MAPIInspector.Parsers
     /// 3.1.4.1.1.1 Extended Buffer Format
     /// The auxiliary blocks sent from the server to the client in the rgbAuxOut parameter auxiliary buffer on the EcDoConnectEx method. It is defined in section 3.1.4.1.1.1 of MS-OXCRPC.
     /// </summary>
-    public class ExtendedBuffer : BaseStructure
+    public class ExtendedBuffer : Block
     {
         /// <summary>
         /// The RPC_HEADER_EXT structure provides information about the payload.
@@ -22,53 +22,52 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ExtendedBuffer.
         /// </summary>
-        /// <param name="s">A stream of the extended buffers.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            try
+            RPCHEADEREXT = Parse<RPC_HEADER_EXT>();
+
+            if (RPCHEADEREXT._Size > 0)
             {
-                base.Parse(s);
+                var payloadBlock = ParseBytes((int)RPCHEADEREXT._Size);
+                var payloadBytes = payloadBlock.Data;
+                bool isCompressedXOR = false;
 
-                RPCHEADEREXT = new RPC_HEADER_EXT();
-                RPCHEADEREXT.Parse(s);
-
-                if (RPCHEADEREXT._Size > 0)
+                if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.XorMagic))
                 {
-                    byte[] payloadBytes = ReadBytes(RPCHEADEREXT._Size);
-                    bool isCompressedXOR = false;
-
-                    if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.XorMagic))
-                    {
-                        payloadBytes = CompressionAndObfuscationAlgorithm.XOR(payloadBytes);
-                        isCompressedXOR = true;
-                    }
-
-                    if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.Compressed))
-                    {
-                        payloadBytes = CompressionAndObfuscationAlgorithm.LZ77Decompress(payloadBytes, (int)RPCHEADEREXT.SizeActual);
-                        isCompressedXOR = true;
-                    }
-
-                    if (isCompressedXOR)
-                    {
-                        MapiInspector.MAPIParser.AuxPayLoadCompressedXOR = payloadBytes;
-                    }
-
-                    Stream stream = new MemoryStream(payloadBytes);
-                    List<AuxiliaryBufferPayload> payload = new List<AuxiliaryBufferPayload>();
-
-                    for (int length = 0; length < RPCHEADEREXT._Size;)
-                    {
-                        AuxiliaryBufferPayload buffer = new AuxiliaryBufferPayload();
-                        buffer.Parse(stream);
-                        payload.Add(buffer);
-                        length += buffer.AUXHEADER._Size;
-                    }
-
-                    Payload = payload.ToArray();
+                    payloadBytes = CompressionAndObfuscationAlgorithm.XOR(payloadBytes);
+                    isCompressedXOR = true;
                 }
+
+                if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.Compressed))
+                {
+                    payloadBytes = CompressionAndObfuscationAlgorithm.LZ77Decompress(payloadBytes, (int)RPCHEADEREXT.SizeActual);
+                    isCompressedXOR = true;
+                }
+
+                if (isCompressedXOR)
+                {
+                    MapiInspector.MAPIParser.AuxPayLoadCompressedXOR = payloadBytes;
+                }
+
+                var newParser = new BinaryParser(payloadBytes);
+                var payload = new List<AuxiliaryBufferPayload>();
+
+                for (int length = 0; length < RPCHEADEREXT._Size;)
+                {
+                    var buffer = Parse<AuxiliaryBufferPayload>(newParser);
+                    payload.Add(buffer);
+                    length += buffer.AUXHEADER._Size;
+                }
+
+                Payload = payload.ToArray();
             }
-            catch { }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ExtendedBuffer");
+            AddChild(RPCHEADEREXT, "RPCHEADEREXT");
+            AddLabeledChildren(Payload, "Payload");
         }
     }
 }
