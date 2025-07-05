@@ -152,6 +152,26 @@ namespace BlockParser
             return ret;
         }
 
+        public BlockString ParseStringLineW(int cchChar = -1) => ParseStringLineW(parser, cchChar);
+        /// <summary>
+        /// Parses a single line of a Unicode (wide) string from the binary parser and returns a <see cref="BlockStringW"/> instance.
+        /// </summary>
+        /// <param name="parser">The <see cref="BinaryParser"/> instance used to parse the string.</param>
+        /// <param name="cchChar">The number of characters to parse. If set to -1, parses until a null terminator or end of data.</param>
+        /// <returns>A <see cref="BlockStringW"/> instance containing the parsed string.</returns>
+        public static BlockString ParseStringLineW(BinaryParser parser, int cchChar = -1)
+        {
+            var ret = new BlockStringW
+            {
+                parser = parser,
+                EnableJunk = false,
+                cchChar = cchChar,
+                LineMode = true
+            };
+            ret.EnsureParsed();
+            return ret;
+        }
+
         public BlockString ParseStringA(int cchChar = -1) => ParseStringA(parser, cchChar);
         /// <summary>
         /// Parses an ANSI (narrow) string from the binary parser and returns a <see cref="BlockStringA"/> instance.
@@ -166,6 +186,26 @@ namespace BlockParser
                 parser = parser,
                 EnableJunk = false,
                 cchChar = cchChar
+            };
+            ret.EnsureParsed();
+            return ret;
+        }
+
+        public BlockString ParseStringLineA(int cchChar = -1) => ParseStringLineA(parser, cchChar);
+        /// <summary>
+        /// Parses a single line from an ANSI (narrow) string from the binary parser and returns a <see cref="BlockStringA"/> instance.
+        /// </summary>
+        /// <param name="parser">The <see cref="BinaryParser"/> instance used to parse the string.</param>
+        /// <param name="cchChar">The number of characters to parse. If set to -1, parses until a null terminator or end of data.</param>
+        /// <returns>A <see cref="BlockStringW"/> instance containing the parsed string.</returns>
+        public static BlockString ParseStringLineA(BinaryParser parser, int cchChar = -1)
+        {
+            var ret = new BlockStringA
+            {
+                parser = parser,
+                EnableJunk = false,
+                cchChar = cchChar,
+                LineMode = true
             };
             ret.EnsureParsed();
             return ret;
