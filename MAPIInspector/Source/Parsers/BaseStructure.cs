@@ -1,7 +1,6 @@
 ﻿using BlockParser;
 using MapiInspector;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -246,7 +245,6 @@ namespace MAPIInspector.Parsers
             {
                 // If the data type is not simple type, we will loop each field, check the data type and then parse the value in different format
                 FieldInfo[] info = t.GetFields();
-                int bitLength = 0;
 
                 // The is only for FastTransfer stream parse, Polymorphic in PropValue and NamedPropInfo
                 if (obj is PropValue || obj is NamedPropInfo)
@@ -284,36 +282,11 @@ namespace MAPIInspector.Parsers
 
                             if (type.Name == "UInt64")
                             {
-                                if (info[i].GetCustomAttributesData().Count == 0)
-                                {
-                                    os = 8;
-                                }
-                                else
-                                {
-                                    object[] attributes = info[i].GetCustomAttributes(typeof(BytesAttribute), false);
-                                    os = (int)((BytesAttribute)attributes[0]).ByteLength;
-                                }
+                                os = 8;
                             }
                             else if (type.Name == "DateTime")
                             {
                                 os = 8;
-                            }
-                            else if (type.Name == "Byte" && info[i].GetCustomAttributesData().Count != 0 && info[i].GetCustomAttributes(typeof(BitAttribute), false) != null)
-                            {
-                                // Check if it is bit.
-                                BitAttribute attribute = (BitAttribute)info[i].GetCustomAttributes(typeof(BitAttribute), false)[0];
-
-                                if (bitLength % 8 == 0)
-                                {
-                                    os += 1;
-                                }
-                                else
-                                {
-                                    current -= 1;
-                                    os += 1;
-                                }
-
-                                bitLength += attribute.BitLength;
                             }
                             else if (type.Name == "String")
                             {
@@ -352,27 +325,6 @@ namespace MAPIInspector.Parsers
                         if (type.Name == "String")
                         {
                             os = ((string)info[i].GetValue(obj)).Length;
-                        }
-                        else if (info[i].GetCustomAttributesData().Count != 0 && info[i].GetCustomAttributes(typeof(BitAttribute), false) != null)
-                        {
-                            // Modify the bit OS for the NotificationFlagsT in MSOXCNOTIF
-                            BitAttribute attribute = (BitAttribute)info[i].GetCustomAttributes(typeof(BitAttribute), false)[0];
-
-                            if (bitLength % 8 != 0)
-                            {
-                                current -= 1;
-                            }
-
-                            if (attribute.BitLength % 8 == 0)
-                            {
-                                os += attribute.BitLength / 8;
-                            }
-                            else
-                            {
-                                os += (attribute.BitLength / 8) + 1;
-                            }
-
-                            bitLength += attribute.BitLength;
                         }
                         else
                         {
@@ -675,50 +627,6 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Read bits value from byte
-        /// </summary>
-        /// <param name="b">The byte.</param>
-        /// <param name="index">The bit index to read</param>
-        /// <param name="length">The bit length to read</param>
-        /// <returns>bits value</returns>
-        static public byte GetBits(byte b, int index, int length)
-        {
-            int bit = 0;
-            int tempBit = 0;
-
-            if ((index >= 8) || (length > 8))
-            {
-                throw new Exception("The range for index or length should be 0~7.");
-            }
-
-            for (int i = 0; i < length; i++)
-            {
-                tempBit = ((b & (1 << (7 - index - i))) > 0) ? 1 : 0;
-                bit = (bit << 1) | tempBit;
-            }
-
-            return (byte)bit;
-        }
-
-        /// <summary>
-        /// Convert an array T to array T?
-        /// </summary>
-        /// <typeparam name="T">The type used to convert</typeparam>
-        /// <param name="array">the special type of array value used to convert</param>
-        /// <returns>A special type null-able list</returns>
-        public T?[] ConvertArray<T>(T[] array) where T : struct
-        {
-            T?[] nullableArray = new T?[array.Length];
-
-            for (int i = 0; i < array.Length; i++)
-            {
-                nullableArray[i] = array[i];
-            }
-
-            return nullableArray;
-        }
-
-        /// <summary>
         /// Convert a value to PropertyDataType
         /// </summary>
         /// <param name="typeValue">The type value</param>
@@ -726,21 +634,6 @@ namespace MAPIInspector.Parsers
         public static PropertyDataType ConvertToPropType(ushort typeValue)
         {
             return (PropertyDataType)(typeValue & (ushort)~PropertyDataTypeFlag.MultivalueInstance);
-        }
-
-        /// <summary>
-        /// Read an Int16 value from stream
-        /// </summary>
-        /// <returns>An Int16 value</returns>
-        protected short ReadINT16()
-        {
-            int value;
-            int b1, b2;
-            b1 = this.ReadByte();
-            b2 = this.ReadByte();
-            value = (b2 << 8) | b1;
-
-            return (short)value;
         }
 
         /// <summary>
@@ -762,28 +655,6 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Read an long value from stream
-        /// </summary>
-        /// <returns>An long value</returns>
-        protected long ReadINT64()
-        {
-            long low = this.ReadINT32();
-            long high = this.ReadINT32();
-
-            // 0x100000000 is 2 raised to the 32th power plus 1
-            return (long)((high << 32) | low);
-        }
-
-        /// <summary>
-        /// Read an Boolean value from stream
-        /// </summary>
-        /// <returns>An Boolean value</returns>
-        protected bool ReadBoolean()
-        {
-            return this.ReadByte() != 0x00;
-        }
-
-        /// <summary>
         /// Read a byte value from stream
         /// </summary>
         /// <returns>A byte</returns>
@@ -797,22 +668,6 @@ namespace MAPIInspector.Parsers
             }
 
             return (byte)value;
-        }
-
-        /// <summary>
-        /// Read a GUID value from stream
-        /// </summary>
-        /// <returns>A GUID value</returns>
-        protected Guid ReadGuid()
-        {
-            Guid guid = new Guid(this.ReadBytes(16));
-
-            if (guid == null)
-            {
-                throw new Exception();
-            }
-
-            return guid;
         }
 
         /// <summary>
@@ -847,18 +702,6 @@ namespace MAPIInspector.Parsers
             value = (b4 << 24) | (b3 << 16) | (b2 << 8) | b1;
 
             return (uint)value;
-        }
-
-        /// <summary>
-        /// Read an uLong value from stream
-        /// </summary>
-        /// <returns>An uLong value</returns>
-        protected ulong ReadUlong()
-        {
-            long low = (uint)this.ReadUint();
-            long high = (uint)this.ReadUint();
-
-            return (ulong)(high << 32 | low);
         }
 
         /// <summary>
@@ -1045,48 +888,6 @@ namespace MAPIInspector.Parsers
                 this.Offset = offset;
                 this.IsAuxiliayPayload = false;
             }
-        }
-    }
-
-    /// <summary>
-    /// Custom attribute for bit length
-    /// </summary>
-    [AttributeUsage(AttributeTargets.All)]
-    public class BitAttribute : System.Attribute
-    {
-        /// <summary>
-        /// Specify the length in bit
-        /// </summary>
-        public readonly int BitLength;
-
-        /// <summary>
-        /// Initializes a new instance of the BitAttribute class
-        /// </summary>
-        /// <param name="bitLength">Specify the length in bit </param>
-        public BitAttribute(int bitLength)
-        {
-            this.BitLength = bitLength;
-        }
-    }
-
-    /// <summary>
-    /// Custom attribute for bytes length
-    /// </summary>
-    [AttributeUsage(AttributeTargets.All)]
-    public class BytesAttribute : System.Attribute
-    {
-        /// <summary>
-        /// Specify the length in byte
-        /// </summary>
-        public readonly uint ByteLength;
-
-        /// <summary>
-        /// Initializes a new instance of the BytesAttribute class
-        /// </summary>
-        /// <param name="byteLength">Specify the length in byte </param>
-        public BytesAttribute(uint byteLength)
-        {
-            this.ByteLength = byteLength;
         }
     }
 }

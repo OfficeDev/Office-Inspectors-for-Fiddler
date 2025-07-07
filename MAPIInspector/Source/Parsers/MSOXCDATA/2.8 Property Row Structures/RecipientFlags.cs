@@ -54,7 +54,6 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// If this flag is b'1', the SimpleDisplayName field is included.
         /// </summary>
-        [BitAttribute(1)]
         public BlockT<bool> I;
 
         /// <summary>
@@ -74,29 +73,29 @@ namespace MAPIInspector.Parsers
         {
             Byte0 = ParseT<byte>();
             int index = 0;
-            R = CreateBlock(1 == BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
+            R = CreateBlock(1 == MapiInspector.Utilities.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
             index = index + 1;
-            S = CreateBlock(1 == BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
+            S = CreateBlock(1 == MapiInspector.Utilities.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
             index = index + 1;
-            T = CreateBlock(1 == BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
+            T = CreateBlock(1 == MapiInspector.Utilities.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
             index = index + 1;
-            D = CreateBlock(1 == BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
+            D = CreateBlock(1 == MapiInspector.Utilities.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
             index = index + 1;
-            E = CreateBlock(1 == BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
+            E = CreateBlock(1 == MapiInspector.Utilities.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
             index = index + 1;
-            Type = CreateBlock((AddressTypeEnum)BaseStructure.GetBits(Byte0, index, 3), Byte0.Size, Byte0.Offset);
+            Type = CreateBlock((AddressTypeEnum)MapiInspector.Utilities.GetBits(Byte0, index, 3), Byte0.Size, Byte0.Offset);
 
             Byte1 = ParseT<byte>();
             index = 0;
-            O = CreateBlock(1 == BaseStructure.GetBits(Byte1, index, 1), Byte1.Size, Byte1.Offset);
+            O = CreateBlock(1 == MapiInspector.Utilities.GetBits(Byte1, index, 1), Byte1.Size, Byte1.Offset);
             index = index + 1;
-            Reserved = CreateBlock(BaseStructure.GetBits(Byte1, index, 4), Byte1.Size, Byte1.Offset);
+            Reserved = CreateBlock(MapiInspector.Utilities.GetBits(Byte1, index, 4), Byte1.Size, Byte1.Offset);
             index = index + 4;
-            I = CreateBlock(1 == BaseStructure.GetBits(Byte1, index, 1), Byte1.Size, Byte1.Offset);
+            I = CreateBlock(1 == MapiInspector.Utilities.GetBits(Byte1, index, 1), Byte1.Size, Byte1.Offset);
             index = index + 1;
-            U = CreateBlock(1 == BaseStructure.GetBits(Byte1, index, 1), Byte1.Size, Byte1.Offset);
+            U = CreateBlock(1 == MapiInspector.Utilities.GetBits(Byte1, index, 1), Byte1.Size, Byte1.Offset);
             index = index + 1;
-            N = CreateBlock(1 == BaseStructure.GetBits(Byte1, index, 1), Byte1.Size, Byte1.Offset);
+            N = CreateBlock(1 == MapiInspector.Utilities.GetBits(Byte1, index, 1), Byte1.Size, Byte1.Offset);
         }
 
         protected override void ParseBlocks()

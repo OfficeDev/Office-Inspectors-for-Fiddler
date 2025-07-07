@@ -47,15 +47,15 @@ namespace MAPIInspector.Parsers
         {
             Byte0 = ParseT<byte>();
             int index = 0;
-            Reservedbits0 = CreateBlock(BaseStructure.GetBits(Byte0, index, 4), Byte0.Size, Byte0.Offset);
+            Reservedbits0 = CreateBlock(MapiInspector.Utilities.GetBits(Byte0, index, 4), Byte0.Size, Byte0.Offset);
             index += 4;
-            TM = CreateBlock(BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
+            TM = CreateBlock(MapiInspector.Utilities.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
-            AT = CreateBlock(BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
+            AT = CreateBlock(MapiInspector.Utilities.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
-            NC = CreateBlock(BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
+            NC = CreateBlock(MapiInspector.Utilities.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
             index += 1;
-            PR = CreateBlock(BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
+            PR = CreateBlock(MapiInspector.Utilities.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
 
             Reservedbits1 = ParseBytes(3);
         }

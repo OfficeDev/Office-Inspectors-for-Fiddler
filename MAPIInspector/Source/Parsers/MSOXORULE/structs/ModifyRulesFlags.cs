@@ -1,4 +1,5 @@
 ﻿using BlockParser;
+using Fiddler;
 
 namespace MAPIInspector.Parsers
 {
@@ -27,9 +28,9 @@ namespace MAPIInspector.Parsers
         {
             Byte0 = ParseT<byte>();
             int index = 0;
-            X = CreateBlock(BaseStructure.GetBits(Byte0, index, 7), Byte0.Size, Byte0.Offset);
+            X = CreateBlock(MapiInspector.Utilities.GetBits(Byte0, index, 7), Byte0.Size, Byte0.Offset);
             index = index + 7;
-            R = CreateBlock(BaseStructure.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
+            R = CreateBlock(MapiInspector.Utilities.GetBits(Byte0, index, 1), Byte0.Size, Byte0.Offset);
         }
 
         protected override void ParseBlocks()

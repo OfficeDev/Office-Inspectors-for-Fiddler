@@ -231,5 +231,31 @@ namespace MapiInspector
                 return $"0x{Convert.ToUInt64(obj):X}";
             }
         }
+
+        /// <summary>
+        /// Read bits value from byte
+        /// </summary>
+        /// <param name="b">The byte.</param>
+        /// <param name="index">The bit index to read</param>
+        /// <param name="length">The bit length to read</param>
+        /// <returns>bits value</returns>
+        static public byte GetBits(byte b, int index, int length)
+        {
+            int bit = 0;
+            int tempBit = 0;
+
+            if ((index >= 8) || (length > 8))
+            {
+                throw new Exception("The range for index or length should be 0~7.");
+            }
+
+            for (int i = 0; i < length; i++)
+            {
+                tempBit = ((b & (1 << (7 - index - i))) > 0) ? 1 : 0;
+                bit = (bit << 1) | tempBit;
+            }
+
+            return (byte)bit;
+        }
     }
 }
