@@ -198,8 +198,6 @@
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\TaggedPropertyValue.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\TypedPropertyValue.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\TypedString.cs" />
-    <Compile Include="Parsers\MSOXCDATA\AnnotatedBytes.cs" />
-    <Compile Include="Parsers\MSOXCDATA\AnnotatedComment.cs" />
     <Compile Include="Parsers\MSOXCDATA\AnnotatedData.cs" />
     <Compile Include="Parsers\MSOXCDATA\BlockGuid.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\CountWideEnum.cs" />
