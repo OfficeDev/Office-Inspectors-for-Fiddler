@@ -13,7 +13,8 @@ namespace BlockParser
             if (size <= 0)
                 return;
 
-            var fixedLength = cchChar != -1;
+            // We don't want to skip a null because we stopped at the line ending
+            var fixedLength = cchChar != -1|| LineMode;
             var oldOffset = parser.Offset;
             var bytes = parser.ReadBytes(size);
             parser.Offset = oldOffset;
@@ -37,6 +38,7 @@ namespace BlockParser
 
                 if (LineMode)
                 {
+                    if (length == 0) return; // don't read nothing
                     // We want to read until the first line feed (LF) character, which is either '\n' or "\r\n"
                     // Our length should include the LF character(s), but the data should not include them
                     int lfIndexRN = data.IndexOf("\r\n");
@@ -49,13 +51,11 @@ namespace BlockParser
                     {
                         lfIndex = lfIndexRN;
                         lineEndingLength = 2;
-                        fixedLength = true; // We don't want to skip a null because we stopped at the line ending
                     }
                     else if (lfIndexN >= 0)
                     {
                         lfIndex = lfIndexN;
                         lineEndingLength = 1;
-                        fixedLength = true; // We don't want to skip a null because we stopped at the line ending
                     }
 
                     if (lfIndex >= 0)

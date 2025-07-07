@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -6,17 +6,17 @@ namespace MAPIInspector.Parsers
     /// A class indicates the GetSpecialTableRequest structure.
     /// 2.2.5.8 GetSpecialTable
     /// </summary>
-    public class GetSpecialTableRequest : BaseStructure
+    public class GetSpecialTableRequest : Block
     {
         /// <summary>
         /// A set of bit flags that specify options to the server.
         /// </summary>
-        public uint Flags;
+        public BlockT<uint> Flags;
 
         /// <summary>
         /// A Boolean value that specifies whether the State field is present.
         /// </summary>
-        public bool HasState;
+        public BlockT<bool> HasState;
 
         /// <summary>
         /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
@@ -26,17 +26,17 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A Boolean value that specifies whether the Version field is present.
         /// </summary>
-        public bool HasVersion;
+        public BlockT<bool> HasVersion;
 
         /// <summary>
         /// An unsigned integer that specifies the version number of the address book hierarchy table that the client has.
         /// </summary>
-        public uint Version;
+        public BlockT<uint> Version;
 
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -46,33 +46,27 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetSpecialTableRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing GetSpecialTableRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Flags = ReadUint();
-            HasState = ReadBoolean();
+            Flags = ParseT<uint>();
+            HasState = ParseAs<byte, bool>();
+            if (HasState) State = Parse<STAT>();
+            HasVersion = ParseAs<byte, bool>();
+            if (HasVersion) Version = ParseT<uint>();
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
+        }
 
-            if (HasState)
-            {
-                State = new STAT();
-                State.Parse(s);
-            }
-
-            HasVersion = ReadBoolean();
-
-            if (HasVersion)
-            {
-                Version = ReadUint();
-            }
-
-            AuxiliaryBufferSize = ReadUint();
-
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
+        protected override void ParseBlocks()
+        {
+            SetText("GetSpecialTableRequest");
+            AddChildBlockT(Flags, "Flags");
+            AddChildBlockT(HasState, "HasState");
+            AddChild(State, "State");
+            AddChildBlockT(HasVersion, "HasVersion");
+            AddChild(Version, "Version");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,42 +7,42 @@ namespace MAPIInspector.Parsers
     /// A class indicates the ResolveNamesResponse structure.
     /// 2.2.5.14 ResolveNames
     /// </summary>
-    public class ResolveNamesResponse : BaseStructure
+    public class ResolveNamesResponse : Block
     {
         /// <summary>
         /// A string array that informs the client as to the state of processing a request on the server.
         /// </summary>
-        public MAPIString[] MetaTags;
+        public BlockString[] MetaTags;
 
         /// <summary>
         /// A string array that specifies additional header information.
         /// </summary>
-        public MAPIString[] AdditionalHeaders;
+        public BlockString[] AdditionalHeaders;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the request.
         /// </summary>
-        public uint StatusCode;
+        public BlockT<uint> StatusCode;
 
         /// <summary>
         /// An unsigned integer that specifies the return status of the operation.
         /// </summary>
-        public uint ErrorCode;
+        public BlockT<ErrorCodes> ErrorCode;
 
         /// <summary>
         /// An unsigned integer that specifies the code page the server used to express string values of properties.
         /// </summary>
-        public uint CodePage;
+        public BlockT<uint> CodePage;
 
         /// <summary>
         /// A Boolean value that specifies whether the MinimalIdCount and MinimalIds fields are present.
         /// </summary>
-        public bool HasMinimalIds;
+        public BlockT<bool> HasMinimalIds;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures in the MinimalIds field.
         /// </summary>
-        public uint MinimalIdCount;
+        public BlockT<uint> MinimalIdCount;
 
         /// <summary>
         /// An array of MinimalEntryID structures, each of which specifies a Minimal Entry ID matching a name requested by the client.
@@ -52,7 +52,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A Boolean value that specifies whether the PropertyTags, RowCount, and RowData fields are present.
         /// </summary>
-        public bool HasRowsAndCols;
+        public BlockT<bool> HasRowsAndCols;
 
         /// <summary>
         /// A LargePropertyTagArray structure that specifies the properties returned for the rows in the RowData field.
@@ -62,7 +62,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the number of structures in the RowData field.
         /// </summary>
-        public uint RowCount;
+        public BlockT<uint> RowCount;
 
         /// <summary>
         /// An array of AddressBookPropertyRow structures (section 2.2.1.7), each of which specifies the row data requested.
@@ -72,7 +72,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -82,52 +82,41 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ResolveNamesResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing ResolveNamesResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            List<MAPIString> metaTags = new List<MAPIString>();
-            List<MAPIString> additionalHeaders = new List<MAPIString>();
-            ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
-            parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
+            ParseMAPIMethod.ParseAdditionalHeader(parser, out var metaTags, out var additionalHeaders);
             MetaTags = metaTags.ToArray();
             AdditionalHeaders = additionalHeaders.ToArray();
-            StatusCode = ReadUint();
+            StatusCode = ParseT<uint>();
 
             if (StatusCode == 0)
             {
-                ErrorCode = ReadUint();
-                CodePage = ReadUint();
-                HasMinimalIds = ReadBoolean();
+                ErrorCode = ParseT<ErrorCodes>();
+                CodePage = ParseT<uint>();
+                HasMinimalIds = ParseAs<byte, bool>();
 
                 if (HasMinimalIds)
                 {
-                    MinimalIdCount = ReadUint();
-                    List<MinimalEntryID> miniEIDList = new List<MinimalEntryID>();
-
+                    MinimalIdCount = ParseT<uint>();
+                    var miniEIDList = new List<MinimalEntryID>();
                     for (int i = 0; i < MinimalIdCount; i++)
                     {
-                        MinimalEntryID miniEID = new MinimalEntryID();
-                        miniEID.Parse(s);
-                        miniEIDList.Add(miniEID);
+                        miniEIDList.Add(Parse<MinimalEntryID>());
                     }
 
                     MinimalIds = miniEIDList.ToArray();
                 }
 
-                HasRowsAndCols = ReadBoolean();
-
+                HasRowsAndCols = ParseAs<byte, bool>();
                 if (HasRowsAndCols)
                 {
-                    PropertyTags = new LargePropertyTagArray();
-                    PropertyTags.Parse(s);
-                    RowCount = ReadUint();
-                    List<AddressBookPropertyRow> addressPRList = new List<AddressBookPropertyRow>();
-
+                    PropertyTags = Parse<LargePropertyTagArray>();
+                    RowCount = ParseT<uint>();
+                    var addressPRList = new List<AddressBookPropertyRow>();
                     for (int i = 0; i < RowCount; i++)
                     {
-                        AddressBookPropertyRow addressPR = new AddressBookPropertyRow(PropertyTags);
-                        addressPR.Parse(s);
+                        var addressPR = new AddressBookPropertyRow(PropertyTags);
+                        addressPR.Parse(parser);
                         addressPRList.Add(addressPR);
                     }
 
@@ -135,13 +124,27 @@ namespace MAPIInspector.Parsers
                 }
             }
 
-            AuxiliaryBufferSize = ReadUint();
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
+        }
 
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
+        protected override void ParseBlocks()
+        {
+            SetText("ResolveNamesResponse");
+            AddLabeledChildren(MetaTags, "MetaTags");
+            AddLabeledChildren(AdditionalHeaders, "AdditionalHeaders");
+            AddChildBlockT(StatusCode, "StatusCode");
+            if (ErrorCode != null) AddChild(ErrorCode, $"ErrorCode:{ErrorCode.Data.FormatErrorCode()}");
+            AddChildBlockT(CodePage, "CodePage");
+            AddChildBlockT(HasMinimalIds, "HasMinimalIds");
+            AddChildBlockT(MinimalIdCount, "MinimalIdCount");
+            AddLabeledChildren(MinimalIds, "MinimalIds");
+            AddChildBlockT(HasRowsAndCols, "HasRowsAndCols");
+            AddChild(PropertyTags, "PropertyTags");
+            AddChildBlockT(RowCount, "RowCount");
+            AddLabeledChildren(RowData, "RowData");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }

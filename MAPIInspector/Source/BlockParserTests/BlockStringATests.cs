@@ -95,6 +95,34 @@ namespace BlockParserTests
         }
 
         [TestMethod]
+        public void LineModeDoesNotReadNull()
+        {
+            var bytes = new byte[]
+            {
+                0x6C, 0x69, 0x0A, 0x0A, 0x00, 0xAA
+            };
+            var parser = new BinaryParser(bytes);
+            var block = Block.ParseStringLineA(parser); // Should read "li" and stop at null
+            Assert.AreEqual("li", block); // Should not include null
+            Assert.AreEqual(0, block.Offset);
+            Assert.AreEqual(2, block.Length); // Length is 2, not 3
+            Assert.AreEqual(3, block.Size); // Size is 2, not 3 (no null terminator)
+
+            var block2 = Block.ParseStringLineA(parser);
+            Assert.IsTrue(block2.Empty); // Should be empty because we stopped at null
+            Assert.IsTrue(block2.Parsed);
+            Assert.AreEqual(3, block2.Offset);
+            Assert.AreEqual(0, block2.Length); // Length 0 means we're done
+            Assert.AreEqual(1, block2.Size);
+
+            Assert.AreEqual(4, parser.Offset); // Should be at 4
+            Assert.AreEqual(2, parser.RemainingBytes); // Should have 2 bytes remaining
+
+            var tmpByte = Block.TestParse<byte>(parser); // Should read the next byte
+            Assert.AreEqual(0, tmpByte); // Should be 0, the null terminator
+        }
+
+        [TestMethod]
         public void MultipleLines_ParsesCorrectly()
         {
             var str = "line1\r\nline2\r\nline 3"; // Three lines
@@ -136,32 +164,38 @@ namespace BlockParserTests
                 // "line2\n"
                 0x6C, 0x69, 0x6E, 0x65, 0x32, 0x0A, // 6 bytes
                 // "line 3\0"
-                0x6C, 0x69, 0x6E, 0x65, 0x20, 0x33, 0x00, // 7 bytes
+                0x6C, 0x69, 0x6E, 0x65, 0x20, 0x33, 0x0A, // 7 bytes
+                0x0D, 0x0A, // 2 bytes
                 // trailing bytes
                 0x12, 0x34, 0x56, 0x78
             };
             var parser = new BinaryParser(bytes);
-            var block1 = Block.ParseStringLineA(parser);
-            var block2 = Block.ParseStringLineA(parser);
-            var block3 = Block.ParseStringLineA(parser);
 
+            var block1 = Block.ParseStringLineA(parser);
             Assert.AreEqual("line1", block1);
             Assert.AreEqual(0, block1.Offset);
             Assert.AreEqual(5, block1.Length);
             Assert.AreEqual(7, block1.Size);
 
+            var block2 = Block.ParseStringLineA(parser);
             Assert.AreEqual("line2", block2);
             Assert.AreEqual(7, block2.Offset);
             Assert.AreEqual(5, block2.Length);
             Assert.AreEqual(6, block2.Size);
 
+            var block3 = Block.ParseStringLineA(parser);
             Assert.AreEqual("line 3", block3);
             Assert.AreEqual(13, block3.Offset);
             Assert.AreEqual(6, block3.Length);
             Assert.AreEqual(7, block3.Size);
 
-            Assert.AreEqual(20, parser.Offset);
+            var block4 = Block.ParseStringLineA(parser);
+            Assert.AreEqual(20, block4.Offset);
+            Assert.AreEqual(0, block4.Length); // Length 0 means we're done
+            Assert.AreEqual(2, block4.Size);
+
             Assert.AreEqual(4, parser.RemainingBytes);
+
             var int1 = Block.ParseT<int>(parser);
 
             Assert.AreEqual(0x78563412, int1);

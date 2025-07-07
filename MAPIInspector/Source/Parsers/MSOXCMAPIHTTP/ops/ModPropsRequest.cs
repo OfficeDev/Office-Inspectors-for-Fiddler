@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -6,17 +6,17 @@ namespace MAPIInspector.Parsers
     /// A class indicates the ModPropsRequest structure.
     /// 2.2.5.11 ModProps
     /// </summary>
-    public class ModPropsRequest : BaseStructure
+    public class ModPropsRequest : Block
     {
         /// <summary>
         /// Reserved. The client MUST set this field to 0x00000000 and the server MUST ignore this field.
         /// </summary>
-        public uint Reserved;
+        public BlockT<uint> Reserved;
 
         /// <summary>
         /// A Boolean value that specifies whether the State field is present.
         /// </summary>
-        public bool HasState;
+        public BlockT<bool> HasState;
 
         /// <summary>
         /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
@@ -26,7 +26,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A Boolean value that specifies whether the PropertyTags field is present.
         /// </summary>
-        public bool HasPropertyTags;
+        public BlockT<bool> HasPropertyTags;
 
         /// <summary>
         /// A LargePropertyTagArray structure that specifies the properties to be removed.
@@ -36,7 +36,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A Boolean value that specifies whether the PropertyValues field is present.
         /// </summary>
-        public bool HasPropertyValues;
+        public BlockT<bool> HasPropertyValues;
 
         /// <summary>
         /// An AddressBookPropertyValueList structure that specifies the values of the properties to be modified.
@@ -46,7 +46,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -56,42 +56,31 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ModPropsRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing ModPropsRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Reserved = ReadUint();
-            HasState = ReadBoolean();
+            Reserved = ParseT<uint>();
+            HasState = ParseAs<byte, bool>();
+            if (HasState) State = Parse<STAT>();
+            HasPropertyTags = ParseAs<byte, bool>();
+            if (HasPropertyTags) PropertiesTags = Parse<LargePropertyTagArray>();
+            HasPropertyValues = ParseAs<byte, bool>();
+            if (HasPropertyValues) PropertyValues = Parse<AddressBookPropertyValueList>();
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
+        }
 
-            if (HasState)
-            {
-                State = new STAT();
-                State.Parse(s);
-            }
-
-            HasPropertyTags = ReadBoolean();
-
-            if (HasPropertyTags)
-            {
-                PropertiesTags = new LargePropertyTagArray();
-                PropertiesTags.Parse(s);
-            }
-
-            HasPropertyValues = ReadBoolean();
-
-            if (HasPropertyValues)
-            {
-                PropertyValues = new AddressBookPropertyValueList();
-                PropertyValues.Parse(s);
-            }
-
-            AuxiliaryBufferSize = ReadUint();
-
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
+        protected override void ParseBlocks()
+        {
+            SetText("ModPropsRequest");
+            AddChildBlockT(Reserved, "Reserved");
+            AddChildBlockT(HasState, "HasState");
+            AddChild(State, "State");
+            AddChildBlockT(HasPropertyTags, "HasPropertyTags");
+            AddChild(PropertiesTags, "PropertiesTags");
+            AddChildBlockT(HasPropertyValues, "HasPropertyValues");
+            AddChild(PropertyValues, "PropertyValues");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }

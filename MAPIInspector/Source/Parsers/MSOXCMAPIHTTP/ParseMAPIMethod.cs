@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BlockParser;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -54,12 +55,37 @@ namespace MAPIInspector.Parsers
         }
 
         /// <summary>
-        /// Override parse method.
+        /// ParseAdditionalHeader method
         /// </summary>
-        /// <param name="s">The stream to parse</param>
-        public override void Parse(Stream s)
+        /// <param name="parser">The stream to parse</param>
+        /// <param name="metaTags">MetaTags string</param>
+        /// <param name="additionalHeaders">AdditionalHeaders string</param>
+        public static void ParseAdditionalHeader(BinaryParser parser, out List<BlockString> metaTags, out List<BlockString> additionalHeaders)
         {
-            base.Parse(s);
+            BlockString str = null;
+            var tempmetaTags = new List<BlockString>();
+            var tempadditionalHeaders = new List<BlockString>();
+
+            while (!parser.Empty)
+            {
+                str = Block.ParseStringLineA(parser);
+                switch (str)
+                {
+                    case "PROCESSING":
+                    case "PENDING":
+                    case "DONE":
+                        tempmetaTags.Add(str);
+                        break;
+                    default:
+                        tempadditionalHeaders.Add(str);
+                        break;
+                }
+
+                if (str.Empty) break;
+            }
+
+            metaTags = tempmetaTags;
+            additionalHeaders = tempadditionalHeaders;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,17 +7,17 @@ namespace MAPIInspector.Parsers
     /// 2.2.5 Request Types for Address Book Server Endpoint
     /// 2.2.5.3 CompareMinIds
     /// </summary>
-    public class CompareMinIdsRequest : BaseStructure
+    public class CompareMinIdsRequest : Block
     {
         /// <summary>
         /// Reserved. The client MUST set this field to 0x00000000 and the server MUST ignore this field.
         /// </summary>
-        public uint Reserved;
+        public BlockT<uint> Reserved;
 
         /// <summary>
         /// A Boolean value that specifies whether the State field is present.
         /// </summary>
-        public byte HasState;
+        public BlockT<byte> HasState;
 
         /// <summary>
         /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
@@ -37,7 +37,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -47,38 +47,30 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">A stream of HTTP payload of session</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Reserved = ReadUint();
-            HasState = ReadByte();
+            Reserved = ParseT<uint>();
+            HasState = ParseT<byte>();
 
-            if (HasState != 0)
-            {
-                State = new STAT();
-                State.Parse(s);
-            }
-            else
-            {
-                State = null;
-            }
+            if (HasState != 0) State = Parse<STAT>();
 
-            MinimalId1 = new MinimalEntryID();
-            MinimalId1.Parse(s);
-            MinimalId2 = new MinimalEntryID();
-            MinimalId2.Parse(s);
-            AuxiliaryBufferSize = ReadUint();
+            MinimalId1 = Parse<MinimalEntryID>();
+            MinimalId2 = Parse<MinimalEntryID>();
+            AuxiliaryBufferSize = ParseT<uint>();
 
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
-            else
-            {
-                AuxiliaryBuffer = null;
-            }
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("CompareMinIdsRequest");
+            AddChildBlockT(Reserved, "Reserved");
+            AddChildBlockT(HasState, "HasState");
+            AddChild(State, "State");
+            AddChild(MinimalId1, "MinimalId1");
+            AddChild(MinimalId2, "MinimalId2");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }

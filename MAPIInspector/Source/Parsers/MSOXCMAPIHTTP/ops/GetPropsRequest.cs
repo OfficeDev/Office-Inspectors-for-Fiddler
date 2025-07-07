@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -6,17 +6,17 @@ namespace MAPIInspector.Parsers
     /// A class indicates the GetPropsRequest structure.
     /// 2.2.5.7 GetProps
     /// </summary>
-    public class GetPropsRequest : BaseStructure
+    public class GetPropsRequest : Block
     {
         /// <summary>
         /// A set of bit flags that specify options to the server.
         /// </summary>
-        public uint Flags;
+        public BlockT<uint> Flags;
 
         /// <summary>
         /// A Boolean value that specifies whether the State field is present.
         /// </summary>
-        public bool HasState;
+        public BlockT<bool> HasState;
 
         /// <summary>
         /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
@@ -26,7 +26,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A Boolean value that specifies whether the PropertyTags field is present
         /// </summary>
-        public bool HasPropertyTags;
+        public BlockT<bool> HasPropertyTags;
 
         /// <summary>
         /// A LargePropertyTagArray structure (section 2.2.1.8) that contains the property tags of the properties that the client is requesting.
@@ -36,7 +36,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -46,34 +46,27 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetPropsRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing GetPropsRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Flags = ReadUint();
-            HasState = ReadBoolean();
+            Flags = ParseT<uint>();
+            HasState = ParseAs<byte, bool>();
+            if (HasState) State = Parse<STAT>();
+            HasPropertyTags = ParseAs<byte, bool>();
+            PropertyTags = Parse<LargePropertyTagArray>();
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
+        }
 
-            if (HasState)
-            {
-                State = new STAT();
-                State.Parse(s);
-            }
-
-            HasPropertyTags = ReadBoolean();
-
-            if (HasPropertyTags)
-            {
-                PropertyTags = new LargePropertyTagArray();
-                PropertyTags.Parse(s);
-            }
-
-            AuxiliaryBufferSize = ReadUint();
-
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
+        protected override void ParseBlocks()
+        {
+            SetText("GetPropsRequest");
+            AddChildBlockT(Flags, "Flags");
+            AddChildBlockT(HasState, "HasState");
+            AddChild(State, "State");
+            AddChildBlockT(HasPropertyTags, "HasPropertyTags");
+            AddChild(PropertyTags, "PropertyTags");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }

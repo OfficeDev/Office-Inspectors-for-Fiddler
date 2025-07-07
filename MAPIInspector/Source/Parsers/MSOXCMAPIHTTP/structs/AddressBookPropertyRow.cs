@@ -48,45 +48,38 @@ namespace MAPIInspector.Parsers
         {
             Flags = ParseT<byte>();
             var result = new List<Block>();
-
-            if (largePropTagArray is LargePropertyTagArray)
+            foreach (var propTag in largePropTagArray.PropertyTags)
             {
-                foreach (var propTag in largePropTagArray.PropertyTags)
+                Block addrRowValue = null;
+                if (Flags == 0x00)
                 {
-                    Block addrRowValue = null;
-                    if (Flags == 0x00)
+                    if (propTag.PropertyType != PropertyDataType.PtypUnspecified)
                     {
-                        if (propTag.PropertyType != PropertyDataType.PtypUnspecified)
-                        {
-                            var propValue = new AddressBookPropertyValue(propTag.PropertyType, ptypMultiCountSize);
-                            propValue.Parse(parser);
-                            //propValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId.Data)}";
-                            addrRowValue = propValue;
-                        }
-                        else
-                        {
-                            //typePropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId.Data)}";
-                            addrRowValue = Parse<AddressBookTypedPropertyValue>();
-                        }
+                        var propValue = new AddressBookPropertyValue(propTag.PropertyType, ptypMultiCountSize);
+                        propValue.Parse(parser);
+                        addrRowValue = propValue;
                     }
-                    else if (Flags == 0x01)
+                    else
                     {
-                        if (propTag.PropertyType != PropertyDataType.PtypUnspecified)
-                        {
-                            var flagPropValue = new AddressBookFlaggedPropertyValue(propTag.PropertyType);
-                            flagPropValue.Parse(parser);
-                            //flagPropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId.Data)}";
-                            addrRowValue = flagPropValue;
-                        }
-                        else
-                        {
-                            //flagPropValue.PropertyTag = $"{propTag.PropertyType}:{Utilities.EnumToString(propTag.PropertyId.Data)}";
-                            addrRowValue = Parse<AddressBookFlaggedPropertyValueWithType>();
-                        }
+                        addrRowValue = Parse<AddressBookTypedPropertyValue>();
                     }
-
-                    result.Add(addrRowValue);
                 }
+                else if (Flags == 0x01)
+                {
+                    if (propTag.PropertyType != PropertyDataType.PtypUnspecified)
+                    {
+                        var flagPropValue = new AddressBookFlaggedPropertyValue(propTag.PropertyType);
+                        flagPropValue.Parse(parser);
+                        addrRowValue = flagPropValue;
+                    }
+                    else
+                    {
+                        addrRowValue = Parse<AddressBookFlaggedPropertyValueWithType>();
+                    }
+                }
+
+                addrRowValue.AddChild(propTag);
+                result.Add(addrRowValue);
             }
 
             ValueArray = result.ToArray();

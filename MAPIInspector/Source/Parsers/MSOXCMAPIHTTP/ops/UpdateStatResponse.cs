@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,32 +7,32 @@ namespace MAPIInspector.Parsers
     /// A class indicates the UpdateStatResponse structure.
     /// 2.2.5.17 UpdateStat
     /// </summary>
-    public class UpdateStatResponse : BaseStructure
+    public class UpdateStatResponse : Block
     {
         /// <summary>
         /// A string array that informs the client as to the state of processing a request on the server.
         /// </summary>
-        public MAPIString[] MetaTags;
+        public BlockString[] MetaTags;
 
         /// <summary>
         /// A string array that specifies additional header information.
         /// </summary>
-        public MAPIString[] AdditionalHeaders;
+        public BlockString[] AdditionalHeaders;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the request.
         /// </summary>
-        public uint StatusCode;
+        public BlockT<uint> StatusCode;
 
         /// <summary>
         /// An unsigned integer that specifies the return status of the operation.
         /// </summary>
-        public uint ErrorCode;
+        public BlockT<ErrorCodes> ErrorCode;
 
         /// <summary>
         /// A Boolean value that specifies whether the State field is present.
         /// </summary>
-        public bool HasState;
+        public BlockT<bool> HasState;
 
         /// <summary>
         /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
@@ -42,17 +42,17 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A Boolean value that specifies whether the Delta field is present.
         /// </summary>
-        public bool HasDelta;
+        public BlockT<bool> HasDelta;
 
         /// <summary>
         /// A signed integer that specifies the movement within the address book container that was specified in the State field of the request.
         /// </summary>
-        public int Delta;
+        public BlockT<int> Delta;
 
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -62,41 +62,43 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the UpdateStatResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing UpdateStatResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            List<MAPIString> metaTags = new List<MAPIString>();
-            List<MAPIString> additionalHeaders = new List<MAPIString>();
-            ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
-            parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
+            ParseMAPIMethod.ParseAdditionalHeader(parser, out var metaTags, out var additionalHeaders);
             MetaTags = metaTags.ToArray();
             AdditionalHeaders = additionalHeaders.ToArray();
-            StatusCode = ReadUint();
+            StatusCode = ParseT<uint>();
 
             if (StatusCode == 0)
             {
-                ErrorCode = ReadUint();
-                HasState = ReadBoolean();
+                ErrorCode = ParseT<ErrorCodes>();
+                HasState = ParseAs<byte, bool>();
                 if (HasState)
                 {
-                    State = new STAT();
-                    State.Parse(s);
-                    HasDelta = ReadBoolean();
-                    if (HasDelta)
-                    {
-                        Delta = ReadINT32();
-                    }
+                    State = Parse<STAT>();
+                    HasDelta = ParseAs<byte, bool>();
+                    if (HasDelta) Delta = ParseT<int>();
                 }
             }
 
-            AuxiliaryBufferSize = ReadUint();
-
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
         }
+
+        protected override void ParseBlocks()
+        {
+            SetText("UpdateStatResponse");
+            AddLabeledChildren(MetaTags, "MetaTags");
+            AddLabeledChildren(AdditionalHeaders, "AdditionalHeaders");
+            AddChildBlockT(StatusCode, "StatusCode");
+            if (ErrorCode != null) AddChild(ErrorCode, $"ErrorCode:{ErrorCode.Data.FormatErrorCode()}");
+            AddChildBlockT(HasState, "HasState");
+            AddChild(State, "State");
+            AddChildBlockT(HasDelta, "HasDelta");
+            AddChild(Delta, "Delta");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
+        }
+
     }
 }

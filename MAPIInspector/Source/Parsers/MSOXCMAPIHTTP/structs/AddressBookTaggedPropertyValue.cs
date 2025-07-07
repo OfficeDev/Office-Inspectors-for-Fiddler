@@ -38,8 +38,8 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("AddressBookTaggedPropertyValue");
-            AddChild(PropertyType, "PropertyType");
-            AddChild(PropertyId, "PropertyId");
+            AddChildBlockT(PropertyType, "PropertyType");
+            AddChildBlockT(PropertyId, "PropertyId");
             AddChild(PropertyValue, "PropertyValue");
         }
     }

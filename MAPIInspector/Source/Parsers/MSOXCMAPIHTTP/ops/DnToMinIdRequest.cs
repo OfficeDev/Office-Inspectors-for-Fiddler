@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
@@ -9,32 +8,32 @@ namespace MAPIInspector.Parsers
     /// 2.2.5 Request Types for Address Book Server Endpoint
     /// 2.2.5.4 DnToMinId
     /// </summary>
-    public class DnToMinIdRequest : BaseStructure
+    public class DnToMinIdRequest : Block
     {
         /// <summary>
         /// The reserved field
         /// </summary>
-        public uint Reserved;
+        public BlockT<uint> Reserved;
 
         /// <summary>
         /// A Boolean value that specifies whether the NameCount and NameValues fields are present.
         /// </summary>
-        public bool HasNames;
+        public BlockT<bool> HasNames;
 
         /// <summary>
         /// An unsigned integer that specifies the number of null-terminated Unicode strings in the NameValues field.
         /// </summary>
-        public uint? NameCount;
+        public BlockT<uint> NameCount;
 
         /// <summary>
         /// An array of null-terminated ASCII strings which are distinguished names (DNs) to be mapped to Minimal Entry IDs.
         /// </summary>
-        public MAPIString[] NameValues;
+        public BlockString[] NameValues;
 
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data returned from the server.
@@ -44,43 +43,35 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the DnToMinIdRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing DnToMinIdRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Reserved = ReadUint();
-            HasNames = ReadBoolean();
-            uint count = ReadUint();
-            List<MAPIString> nameValues = new List<MAPIString>();
-
-            if (count == 0)
+            Reserved = ParseT<uint>();
+            HasNames = ParseAs<byte, bool>();
+            if (HasNames)
             {
-                s.Position -= 4;
-            }
-            else
-            {
-                NameCount = count;
-
+                NameCount = ParseT<uint>();
+                var nameValues = new List<BlockString>();
                 for (int i = 0; i < NameCount; i++)
                 {
-                    MAPIString mapiString = new MAPIString(Encoding.ASCII);
-                    mapiString.Parse(s);
-                    nameValues.Add(mapiString);
+                    nameValues.Add(ParseStringA());
                 }
+
+                NameValues = nameValues.ToArray();
             }
 
-            NameValues = nameValues.ToArray();
-            AuxiliaryBufferSize = ReadUint();
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
+        }
 
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
-            else
-            {
-                AuxiliaryBuffer = null;
-            }
+        protected override void ParseBlocks()
+        {
+            SetText("DnToMinIdRequest");
+            AddChildBlockT(Reserved, "Reserved");
+            AddChildBlockT(HasNames, "HasNames");
+            AddChildBlockT(NameCount, "NameCount");
+            AddLabeledChildren(NameValues, "NameValues");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }

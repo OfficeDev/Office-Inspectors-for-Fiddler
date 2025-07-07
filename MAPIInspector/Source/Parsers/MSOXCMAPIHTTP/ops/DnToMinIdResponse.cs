@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
@@ -8,37 +8,37 @@ namespace MAPIInspector.Parsers
     /// 2.2.5 Request Types for Address Book Server Endpoint
     /// 2.2.5.4 DnToMinId
     /// </summary>
-    public class DnToMinIdResponse : BaseStructure
+    public class DnToMinIdResponse : Block
     {
         /// <summary>
         /// A string array that informs the client as to the state of processing a request on the server.
         /// </summary>
-        public MAPIString[] MetaTags;
+        public BlockString[] MetaTags;
 
         /// <summary>
         /// A string array that specifies additional header information.
         /// </summary>
-        public MAPIString[] AdditionalHeaders;
+        public BlockString[] AdditionalHeaders;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the request.
         /// </summary>
-        public uint StatusCode;
+        public BlockT<uint> StatusCode;
 
         /// <summary>
         /// An unsigned integer that specifies the return status of the operation.
         /// </summary>
-        public uint ErrorCode;
+        public BlockT<ErrorCodes> ErrorCode;
 
         /// <summary>
         /// A Boolean value that specifies whether the MinimalIdCount and MinimalIds fields are present.
         /// </summary>
-        public bool HasMinimalIds;
+        public BlockT<bool> HasMinimalIds;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures in the MinimalIds field.
         /// </summary>
-        public uint MinimalIdCount;
+        public BlockT<uint> MinimalIdCount;
 
         /// <summary>
         /// An array of MinimalEntryID structures ([MS-OXNSPI] section 2.2.9.1)
@@ -48,7 +48,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data returned from the server.
@@ -58,46 +58,44 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the DnToMinIdResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing DnToMinIdResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            List<MAPIString> metaTags = new List<MAPIString>();
-            List<MAPIString> additionalHeaders = new List<MAPIString>();
-            ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
-            parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
+            ParseMAPIMethod.ParseAdditionalHeader(parser, out var metaTags, out var additionalHeaders);
             MetaTags = metaTags.ToArray();
             AdditionalHeaders = additionalHeaders.ToArray();
-            StatusCode = ReadUint();
+            StatusCode = ParseT<uint>();
 
             if (StatusCode == 0)
             {
-                ErrorCode = ReadUint();
-                HasMinimalIds = ReadBoolean();
-                MinimalIdCount = ReadUint();
-                List<MinimalEntryID> lm = new List<MinimalEntryID>();
+                ErrorCode = ParseT<ErrorCodes>();
+                HasMinimalIds = ParseAs<byte, bool>();
+                MinimalIdCount = ParseT<uint>();
+                var lm = new List<MinimalEntryID>();
 
                 for (int i = 0; i < MinimalIdCount; i++)
                 {
-                    MinimalEntryID me = new MinimalEntryID();
-                    me.Parse(s);
-                    lm.Add(me);
+                    lm.Add(Parse<MinimalEntryID>());
                 }
 
                 MinimalIds = lm.ToArray();
             }
 
-            AuxiliaryBufferSize = ReadUint();
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
+        }
 
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
-            else
-            {
-                AuxiliaryBuffer = null;
-            }
+        protected override void ParseBlocks()
+        {
+            SetText("DnToMinIdResponse");
+            AddLabeledChildren(MetaTags, "MetaTags");
+            AddLabeledChildren(AdditionalHeaders, "AdditionalHeaders");
+            AddChildBlockT(StatusCode, "StatusCode");
+            if (ErrorCode != null) AddChild(ErrorCode, $"ErrorCode:{ErrorCode.Data.FormatErrorCode()}");
+            AddChildBlockT(HasMinimalIds, "HasMinimalIds");
+            AddChildBlockT(MinimalIdCount, "MinimalIdCount");
+            AddLabeledChildren(MinimalIds, "MinimalIds");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }

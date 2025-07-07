@@ -65,6 +65,10 @@
       <Project>{67F29406-30D1-4390-AE42-F08ACF9E32A7}</Project>
       <Name>BlockParser</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MAPIInspector.csproj">
+      <Project>{F6AD8210-981D-42D9-B8FA-0970FD41DBE5}</Project>
+      <Name>MAPIInspector</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

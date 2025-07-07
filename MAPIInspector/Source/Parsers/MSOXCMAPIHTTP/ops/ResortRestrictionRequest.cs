@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,17 +7,17 @@ namespace MAPIInspector.Parsers
     /// A class indicates the ResortRestrictionRequest structure.
     /// 2.2.5.15 ResortRestriction
     /// </summary>
-    public class ResortRestrictionRequest : BaseStructure
+    public class ResortRestrictionRequest : Block
     {
         /// <summary>
         /// Reserved. The client MUST set this field to 0x00000000 and the server MUST ignore this field.
         /// </summary>
-        public uint Reserved;
+        public BlockT<uint> Reserved;
 
         /// <summary>
         /// A Boolean value that specifies whether the State field is present.
         /// </summary>
-        public bool HasState;
+        public BlockT<bool> HasState;
 
         /// <summary>
         /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
@@ -27,12 +27,12 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A Boolean value that specifies whether the MinimalIdCount and MinimalIds fields are present.
         /// </summary>
-        public bool HasMinimalIds;
+        public BlockT<bool> HasMinimalIds;
 
         /// <summary>
         /// An unsigned integer that specifies the number of structures in the MinimalIds field.
         /// </summary>
-        public uint MinimalIdCount;
+        public BlockT<uint> MinimalIdCount;
 
         /// <summary>
         /// An array of MinimalEntryID structures that compose a restricted address book container.
@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -52,43 +52,40 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the ResortRestrictionRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing ResortRestrictionRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Reserved = ReadUint();
-            HasState = ReadBoolean();
-
-            if (HasState)
-            {
-                State = new STAT();
-                State.Parse(s);
-            }
-
-            HasMinimalIds = ReadBoolean();
+            Reserved = ParseT<uint>();
+            HasState = ParseAs<byte, bool>();
+            if (HasState) State = Parse<STAT>();
+            HasMinimalIds = ParseAs<byte, bool>();
 
             if (HasMinimalIds)
             {
-                MinimalIdCount = ReadUint();
-                List<MinimalEntryID> miniEIDList = new List<MinimalEntryID>();
-
+                MinimalIdCount = ParseT<uint>();
+                var miniEIDList = new List<MinimalEntryID>();
                 for (int i = 0; i < MinimalIdCount; i++)
                 {
-                    MinimalEntryID miniEID = new MinimalEntryID();
-                    miniEID.Parse(s);
-                    miniEIDList.Add(miniEID);
+                    miniEIDList.Add(Parse<MinimalEntryID>());
                 }
 
                 MinimalIds = miniEIDList.ToArray();
             }
 
-            AuxiliaryBufferSize = ReadUint();
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
+        }
 
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
+        protected override void ParseBlocks()
+        {
+            SetText("ResortRestrictionRequest");
+            AddChildBlockT(Reserved, "Reserved");
+            AddChildBlockT(HasState, "HasState");
+            AddChild(State, "State");
+            AddChildBlockT(HasMinimalIds, "HasMinimalIds");
+            AddChildBlockT(MinimalIdCount, "MinimalIdCount");
+            AddLabeledChildren(MinimalIds, "MinimalIds");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }

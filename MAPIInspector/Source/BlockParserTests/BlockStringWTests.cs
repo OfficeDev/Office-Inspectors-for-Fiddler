@@ -186,31 +186,39 @@ namespace BlockParserTests
                 // "line2\n"
                 0x6C, 0x00, 0x69, 0x00, 0x6E, 0x00, 0x65, 0x00, 0x32, 0x00, 0x0A, 0x00, // 12 bytes
                 // "line 3\0"
-                0x6C, 0x00, 0x69, 0x00, 0x6E, 0x00, 0x65, 0x00, 0x20, 0x00, 0x33, 0x00, 0x00, 0x00, // 14 bytes
+                0x6C, 0x00, 0x69, 0x00, 0x6E, 0x00, 0x65, 0x00, 0x20, 0x00, 0x33, 0x00, 0x0A, 0x00, // 14 bytes
+                0x0D, 0x00, 0x0A, 0x00,
                 // trailing bytes
                 0x12, 0x34, 0x56, 0x78
             };
             var parser = new BinaryParser(bytes);
             var block1 = Block.ParseStringLineW(parser);
-            var block2 = Block.ParseStringLineW(parser);
-            var block3 = Block.ParseStringLineW(parser);
-
             Assert.AreEqual("line1", block1);
             Assert.AreEqual(0, block1.Offset);
             Assert.AreEqual(5, block1.Length);
             Assert.AreEqual(14, block1.Size);
 
+            var block2 = Block.ParseStringLineW(parser);
             Assert.AreEqual("line2", block2);
             Assert.AreEqual(14, block2.Offset);
             Assert.AreEqual(5, block2.Length);
             Assert.AreEqual(12, block2.Size);
 
+            var block3 = Block.ParseStringLineW(parser);
             Assert.AreEqual("line 3", block3);
             Assert.AreEqual(26, block3.Offset);
             Assert.AreEqual(6, block3.Length);
             Assert.AreEqual(14, block3.Size);
 
-            Assert.AreEqual(40, parser.Offset);
+            var block4 = Block.ParseStringLineW(parser);
+            Assert.AreEqual("", block4);
+            Assert.AreEqual(40, block4.Offset);
+            Assert.AreEqual(0, block4.Length);
+            Assert.AreEqual(4, block4.Size);
+            Assert.IsTrue(block4.Empty);
+            Assert.IsTrue(block4.Parsed);
+
+            Assert.AreEqual(44, parser.Offset);
             Assert.AreEqual(4, parser.RemainingBytes);
             var int1 = Block.ParseT<int>(parser);
 

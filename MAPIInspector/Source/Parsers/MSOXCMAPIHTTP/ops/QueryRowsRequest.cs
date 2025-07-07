@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Windows.Forms.Design;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,17 +9,17 @@ namespace MAPIInspector.Parsers
     /// A class indicates the QueryRowsRequest structure.
     /// 2.2.5.12 QueryRows
     /// </summary>
-    public class QueryRowsRequest : BaseStructure
+    public class QueryRowsRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specify the authentication type for the connection.
         /// </summary>
-        public uint Flags;
+        public BlockT<uint> Flags;
 
         /// <summary>
         /// A Boolean value that specifies whether the State field is present.
         /// </summary>
-        public bool HasState;
+        public BlockT<bool> HasState;
 
         /// <summary>
         /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
@@ -27,7 +29,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the number of structures present in the ExplicitTable field.
         /// </summary>
-        public uint ExplicitTableCount;
+        public BlockT<uint> ExplicitTableCount;
 
         /// <summary>
         /// An array of MinimalEntryID structures that constitute the Explicit Table.
@@ -37,12 +39,12 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the number of rows the client is requesting.
         /// </summary>
-        public uint RowCount;
+        public BlockT<uint> RowCount;
 
         /// <summary>
         /// A Boolean value that specifies whether the Columns field is present.
         /// </summary>
-        public bool HasColumns;
+        public BlockT<bool> HasColumns;
 
         /// <summary>
         /// A LargePropertyTagArray structure that specifies the properties that the client requires for each row returned.
@@ -52,7 +54,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -62,46 +64,39 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the QueryRowsRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing QueryRowsRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Flags = ReadUint();
-            HasState = ReadBoolean();
-
-            if (HasState)
-            {
-                State = new STAT();
-                State.Parse(s);
-            }
-
-            ExplicitTableCount = ReadUint();
-            List<MinimalEntryID> miniEntryIDlist = new List<MinimalEntryID>();
-
+            Flags = ParseT<uint>();
+            HasState = ParseAs<byte, bool>();
+            if (HasState) State = Parse<STAT>();
+            ExplicitTableCount = ParseT<uint>();
+            var miniEntryIDlist = new List<MinimalEntryID>();
             for (int i = 0; i < ExplicitTableCount; i++)
             {
-                MinimalEntryID miniEntryID = new MinimalEntryID();
-                miniEntryID.Parse(s);
-                miniEntryIDlist.Add(miniEntryID);
+                miniEntryIDlist.Add(Parse<MinimalEntryID>());
             }
 
             ExplicitTable = miniEntryIDlist.ToArray();
-            RowCount = ReadUint();
-            HasColumns = ReadBoolean();
+            RowCount = ParseT<uint>();
+            HasColumns = ParseAs<byte, bool>();
+            if (HasColumns) Columns = Parse<LargePropertyTagArray>();
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
+        }
 
-            if (HasColumns)
-            {
-                Columns = new LargePropertyTagArray();
-                Columns.Parse(s);
-            }
-
-            AuxiliaryBufferSize = ReadUint();
-
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
+        protected override void ParseBlocks()
+        {
+            SetText("QueryRowsRequest");
+            AddChildBlockT(Flags, "Flags");
+            AddChildBlockT(HasState, "HasState");
+            AddChild(State, "State");
+            AddChildBlockT(ExplicitTableCount, "ExplicitTableCount");
+            AddLabeledChildren(ExplicitTable, "ExplicitTable");
+            AddChildBlockT(RowCount, "RowCount");
+            AddChildBlockT(HasColumns, "HasColumns");
+            AddChild(Columns, "Columns");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }

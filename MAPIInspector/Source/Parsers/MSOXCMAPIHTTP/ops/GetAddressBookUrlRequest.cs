@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Text;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,22 +6,22 @@ namespace MAPIInspector.Parsers
     /// A class indicates the GetAddressBookUrlRequest structure.
     /// 2.2.5.19 GetAddressBookUrl
     /// </summary>
-    public class GetAddressBookUrlRequest : BaseStructure
+    public class GetAddressBookUrlRequest : Block
     {
         /// <summary>
         /// An unsigned integer that specify the authentication type for the connection.
         /// </summary>
-        public uint Flags;
+        public BlockT<uint> Flags;
 
         /// <summary>
         /// A null-terminated Unicode string that specifies the distinguished name (DN) of the user's mailbox.
         /// </summary>
-        public MAPIString UserDn;
+        public BlockString UserDn;
 
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -32,21 +31,22 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the GetAddressBookUrlRequest structure.
         /// </summary>
-        /// <param name="s">A stream containing GetAddressBookUrlRequest structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
+            Flags = ParseT<uint>();
+            UserDn = ParseStringW();
+            AuxiliaryBufferSize = ParseT<uint>();
 
-            Flags = ReadUint();
-            UserDn = new MAPIString(Encoding.Unicode);
-            UserDn.Parse(s);
-            AuxiliaryBufferSize = ReadUint();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
+        }
 
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
+        protected override void ParseBlocks()
+        {
+            SetText("GetAddressBookUrlRequest");
+            AddChildBlockT(Flags, "Flags");
+            AddChildString(UserDn, "UserDn");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }

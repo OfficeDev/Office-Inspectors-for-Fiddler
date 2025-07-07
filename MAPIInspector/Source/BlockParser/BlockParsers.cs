@@ -159,6 +159,7 @@ namespace BlockParser
         /// <param name="parser">The <see cref="BinaryParser"/> instance used to parse the string.</param>
         /// <param name="cchChar">The number of characters to parse. If set to -1, parses until a null terminator or end of data.</param>
         /// <returns>A <see cref="BlockStringW"/> instance containing the parsed string.</returns>
+        /// <remarks> If the length of the returned string is 0, stop reading lines.</remarks>
         public static BlockString ParseStringLineW(BinaryParser parser, int cchChar = -1)
         {
             var ret = new BlockStringW
@@ -198,6 +199,7 @@ namespace BlockParser
         /// <param name="parser">The <see cref="BinaryParser"/> instance used to parse the string.</param>
         /// <param name="cchChar">The number of characters to parse. If set to -1, parses until a null terminator or end of data.</param>
         /// <returns>A <see cref="BlockStringW"/> instance containing the parsed string.</returns>
+        /// <remarks> If the length of the returned string is 0, stop reading lines.</remarks>
         public static BlockString ParseStringLineA(BinaryParser parser, int cchChar = -1)
         {
             var ret = new BlockStringA

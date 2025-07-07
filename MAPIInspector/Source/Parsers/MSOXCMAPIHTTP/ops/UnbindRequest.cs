@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,17 +7,17 @@ namespace MAPIInspector.Parsers
     /// 2.2.5 Request Types for Address Book Server Endpoint
     /// 2.2.5.2 Unbind
     /// </summary>
-    public class UnbindRequest : BaseStructure
+    public class UnbindRequest : Block
     {
         /// <summary>
         /// The reserved field
         /// </summary>
-        public uint Reserved;
+        public BlockT<uint> Reserved;
 
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -27,21 +27,19 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">A stream of HTTP payload of session</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            Reserved = ReadUint();
-            AuxiliaryBufferSize = ReadUint();
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
-            else
-            {
-                AuxiliaryBuffer = null;
-            }
+            Reserved = ParseT<uint>();
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("UnbindRequest");
+            AddChildBlockT(Reserved, "Reserved");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }

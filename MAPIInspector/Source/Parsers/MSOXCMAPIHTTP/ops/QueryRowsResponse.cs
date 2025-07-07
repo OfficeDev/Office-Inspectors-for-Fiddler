@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,32 +7,32 @@ namespace MAPIInspector.Parsers
     /// A class indicates the QueryRowsResponse structure.
     /// 2.2.5.12 QueryRows
     /// </summary>
-    public class QueryRowsResponse : BaseStructure
+    public class QueryRowsResponse : Block
     {
         /// <summary>
         /// A string array that informs the client as to the state of processing a request on the server.
         /// </summary>
-        public MAPIString[] MetaTags;
+        public BlockString[] MetaTags;
 
         /// <summary>
         /// A string array that specifies additional header information.
         /// </summary>
-        public MAPIString[] AdditionalHeaders;
+        public BlockString[] AdditionalHeaders;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the request.
         /// </summary>
-        public uint StatusCode;
+        public BlockT<uint> StatusCode;
 
         /// <summary>
         /// An unsigned integer that specifies the return status of the operation.
         /// </summary>
-        public uint ErrorCode;
+        public BlockT<ErrorCodes> ErrorCode;
 
         /// <summary>
         /// A Boolean value that specifies whether the State field is present.
         /// </summary>
-        public bool HasState;
+        public BlockT<bool> HasState;
 
         /// <summary>
         /// A STAT structure ([MS-OXNSPI] section 2.2.8) that specifies the state of a specific address book container.
@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A Boolean value that specifies whether the Columns, RowCount, and RowData fields are present.
         /// </summary>
-        public bool HasColsAndRows;
+        public BlockT<bool> HasColsAndRows;
 
         /// <summary>
         /// A LargePropertyTagArray structure that specifies the columns for the returned rows.
@@ -52,7 +52,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the number of structures in the RowData field.
         /// </summary>
-        public uint RowCount;
+        public BlockT<uint> RowCount;
 
         /// <summary>
         /// An array of AddressBookPropertyRow structures, each of which specifies the row data of the Explicit Table.
@@ -62,7 +62,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -72,42 +72,29 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the QueryRowsResponse structure.
         /// </summary>
-        /// <param name="s">A stream containing QueryRowsResponse structure.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-            List<MAPIString> metaTags = new List<MAPIString>();
-            List<MAPIString> additionalHeaders = new List<MAPIString>();
-            ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
-            parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
+            ParseMAPIMethod.ParseAdditionalHeader(parser, out var metaTags, out var additionalHeaders);
             MetaTags = metaTags.ToArray();
             AdditionalHeaders = additionalHeaders.ToArray();
-            StatusCode = ReadUint();
+            StatusCode = ParseT<uint>();
 
             if (StatusCode == 0)
             {
-                ErrorCode = ReadUint();
-                HasState = ReadBoolean();
-
-                if (HasState)
-                {
-                    State = new STAT();
-                    State.Parse(s);
-                }
-
-                HasColsAndRows = ReadBoolean();
+                ErrorCode = ParseT<ErrorCodes>();
+                HasState = ParseAs<byte, bool>();
+                if (HasState) State = Parse<STAT>();
+                HasColsAndRows = ParseAs<byte, bool>();
 
                 if (HasColsAndRows)
                 {
-                    Columns = new LargePropertyTagArray();
-                    Columns.Parse(s);
-                    RowCount = ReadUint();
-                    List<AddressBookPropertyRow> addressBookPRList = new List<AddressBookPropertyRow>();
-
+                    Columns = Parse<LargePropertyTagArray>();
+                    RowCount = ParseT<uint>();
+                    var addressBookPRList = new List<AddressBookPropertyRow>();
                     for (int i = 0; i < RowCount; i++)
                     {
-                        AddressBookPropertyRow addressBookPR = new AddressBookPropertyRow(Columns);
-                        addressBookPR.Parse(s);
+                        var addressBookPR = new AddressBookPropertyRow(Columns);
+                        addressBookPR.Parse(parser);
                         addressBookPRList.Add(addressBookPR);
                     }
 
@@ -115,13 +102,25 @@ namespace MAPIInspector.Parsers
                 }
             }
 
-            AuxiliaryBufferSize = ReadUint();
+            AuxiliaryBufferSize = ParseT<uint>();
+            if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
+        }
 
-            if (AuxiliaryBufferSize > 0)
-            {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
-            }
+        protected override void ParseBlocks()
+        {
+            SetText("QueryRowsResponse");
+            AddLabeledChildren(MetaTags, "MetaTags");
+            AddLabeledChildren(AdditionalHeaders, "AdditionalHeaders");
+            AddChildBlockT(StatusCode, "StatusCode");
+            if (ErrorCode != null) AddChild(ErrorCode, $"ErrorCode:{ErrorCode.Data.FormatErrorCode()}");
+            AddChildBlockT(HasState, "HasState");
+            AddChild(State, "State");
+            AddChildBlockT(HasColsAndRows, "HasColsAndRows");
+            AddChild(Columns, "Columns");
+            AddChildBlockT(RowCount, "RowCount");
+            AddLabeledChildren(RowData, "RowData");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }
