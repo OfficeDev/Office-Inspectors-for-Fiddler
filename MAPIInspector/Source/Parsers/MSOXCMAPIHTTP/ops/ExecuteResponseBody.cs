@@ -67,8 +67,6 @@ namespace MAPIInspector.Parsers
             List<MAPIString> additionalHeaders = new List<MAPIString>();
             ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
             parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
-            MetaTags = metaTags.ToArray();
-            AdditionalHeaders = additionalHeaders.ToArray();
             StatusCode = ReadUint();
 
             if (StatusCode == 0)

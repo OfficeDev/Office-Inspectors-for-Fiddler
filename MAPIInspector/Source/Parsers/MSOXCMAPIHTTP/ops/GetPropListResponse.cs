@@ -54,9 +54,7 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            ParseMAPIMethod.ParseAdditionalHeader(parser, out var metaTags, out var additionalHeaders);
-            MetaTags = metaTags.ToArray();
-            AdditionalHeaders = additionalHeaders.ToArray();
+            ParseMAPIMethod.ParseAdditionalHeader(parser, out MetaTags, out AdditionalHeaders);
             StatusCode = ParseT<uint>();
 
             if (StatusCode == 0)

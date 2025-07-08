@@ -60,7 +60,7 @@ namespace MAPIInspector.Parsers
         /// <param name="parser">The stream to parse</param>
         /// <param name="metaTags">MetaTags string</param>
         /// <param name="additionalHeaders">AdditionalHeaders string</param>
-        public static void ParseAdditionalHeader(BinaryParser parser, out List<BlockString> metaTags, out List<BlockString> additionalHeaders)
+        public static void ParseAdditionalHeader(BinaryParser parser, out BlockString[] metaTags, out BlockString[] additionalHeaders)
         {
             BlockString str = null;
             var tempmetaTags = new List<BlockString>();
@@ -84,8 +84,8 @@ namespace MAPIInspector.Parsers
                 if (str.Empty) break;
             }
 
-            metaTags = tempmetaTags;
-            additionalHeaders = tempadditionalHeaders;
+            metaTags = tempmetaTags.ToArray();
+            additionalHeaders = tempadditionalHeaders.ToArray();
         }
     }
 }
