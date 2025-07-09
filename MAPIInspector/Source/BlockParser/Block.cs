@@ -118,8 +118,12 @@ namespace BlockParser
                 }
                 catch (System.Exception e)
                 {
+                    var typeName = e.GetType().FullName;
+                    if (typeName == "MAPIInspector.Parsers.MissingInformationException") throw e;
+                    if (typeName == "MAPIInspector.Parsers.MissingPartialInformationException") throw e;
                     AddHeader($"Exception: {e.Message} at offset {Offset}");
                     AddHeader($"Stack Trace: {e.StackTrace}");
+                    AddHeader($"Exception Type: {e.GetType()}");
                 }
 
                 if (HasData && EnableJunk && parser.RemainingBytes > 0)
