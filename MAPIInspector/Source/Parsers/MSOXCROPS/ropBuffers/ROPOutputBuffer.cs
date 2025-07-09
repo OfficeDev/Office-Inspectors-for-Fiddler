@@ -43,7 +43,7 @@ namespace MAPIInspector.Parsers
             {
                 parsingSessionID = int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"]);
             }
-            while (parser.RemainingBytes > 0)
+            while (parser.RemainingBytes >= sizeof(uint))
             {
                 var serverObjectTable = ParseT<uint>();
 
