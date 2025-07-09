@@ -1,7 +1,6 @@
 ﻿using BlockParser;
 using Fiddler;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace MAPIInspector.Parsers
@@ -9,52 +8,49 @@ namespace MAPIInspector.Parsers
     /// <summary>
     /// A class indicates the ROP output buffer, which is sent by the server, includes an array of ROP response buffers.
     /// </summary>
-    public class ROPOutputBuffer : BaseStructure
+    public class ROPOutputBuffer : Block
     {
         /// <summary>
         /// An unsigned integer that specifies the size of both this field and the RopsList field.
         /// </summary>
-        public ushort RopSize;
+        public BlockT<ushort> RopSize;
 
         /// <summary>
         /// An array of ROP response buffers.
         /// </summary>
-        public object[] RopsList;
+        public Block[] RopsList;
 
         /// <summary>
         /// An array of 32-bit values. Each 32-bit value specifies a Server object handle that is referenced by a ROP buffer.
         /// </summary>
-        public uint[] ServerObjectHandleTable;
+        public BlockT<uint>[] ServerObjectHandleTable;
 
         /// <summary>
         /// Parse the ROPOutputBuffer structure.
         /// </summary>
-        /// <param name="s">A stream containing the ROPOutputBuffer structure</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
+            // Build tempServerObjectHandleTable first
             bool parseToCROPSResponseLayer = false;
-            RopSize = ReadUshort();
-            List<object> ropsList = new List<object>();
-            List<uint> serverObjectHandleTable = new List<uint>();
-            List<uint> tempServerObjectHandleTable = new List<uint>();
-            long currentPosition = s.Position;
-            s.Position += RopSize - 2;
+            RopSize = ParseT<ushort>();
+            var ropsList = new List<Block>();
+            var serverObjectHandleTable = new List<BlockT<uint>>();
+            var tempServerObjectHandleTable = new List<BlockT<uint>>();
+            int currentPosition = parser.Offset;
+            parser.Advance(RopSize - sizeof(RopIdType));
             int parsingSessionID = MapiInspector.MAPIParser.ParsingSession.id;
             if (MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
             {
                 parsingSessionID = int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"]);
             }
-            while (s.Position < s.Length)
+            while (parser.RemainingBytes > 0)
             {
-                uint serverObjectTable = ReadUint();
+                var serverObjectTable = ParseT<uint>();
 
                 if (MapiInspector.MAPIParser.TargetHandle.Count > 0)
                 {
                     MapiInspector.MAPIParser.IsLooperCall = true;
-                    Dictionary<ushort, Dictionary<int, uint>> item = new Dictionary<ushort, Dictionary<int, uint>>();
-                    item = MapiInspector.MAPIParser.TargetHandle.Peek();
+                    var item = MapiInspector.MAPIParser.TargetHandle.Peek();
 
                     if (item.First().Value.ContainsValue(serverObjectTable))
                     {
@@ -69,164 +65,167 @@ namespace MAPIInspector.Parsers
                 tempServerObjectHandleTable.Add(serverObjectTable);
             }
 
-            s.Position = currentPosition;
+            parser.Offset = currentPosition;
 
+            // Now we do regular parsing
             if (!MapiInspector.MAPIParser.IsLooperCall || parseToCROPSResponseLayer || MapiInspector.MAPIParser.NeedToParseCROPSLayer)
             {
                 // empty intermediate variables for ROPs need context information
-                DecodingContext.SetColumn_InputHandles_InResponse = new List<uint>();
+               DecodingContext.SetColumn_InputHandles_InResponse = new List<uint>();
 
-                if (RopSize > 2)
+                if (RopSize > sizeof(RopIdType))
                 {
                     do
                     {
-                        int currentByte = s.ReadByte();
-                        s.Position -= 1;
+                        BlockT<RopIdType> currentRop = TestParse<RopIdType>(parser);
 
-                        switch ((RopIdType)currentByte)
+                        switch (currentRop.Data)
                         {
                             // MS-OXCSTOR ROPs
                             case RopIdType.RopLogon:
-                                long currentPos_logon = s.Position;
-                                s.Position += 1;
-                                int tempOutputHandleIndex_logon = s.ReadByte();
-                                s.Position = currentPos_logon;
-                                if (!(DecodingContext.SessionLogonFlagsInLogonRop.Count > 0 && DecodingContext.SessionLogonFlagsInLogonRop.ContainsKey(parsingSessionID) && DecodingContext.SessionLogonFlagsInLogonRop[parsingSessionID].ContainsKey((uint)tempOutputHandleIndex_logon)))
+                                int currentPos_logon = parser.Offset;
+                                parser.Advance(sizeof(RopIdType));
+                                BlockT<uint> tempOutputHandleIndex_logon = ParseT<uint>();
+                                parser.Offset = currentPos_logon;
+                                if (!(DecodingContext.SessionLogonFlagsInLogonRop.Count > 0 &&
+                                    DecodingContext.SessionLogonFlagsInLogonRop.ContainsKey(parsingSessionID) &&
+                                    DecodingContext.SessionLogonFlagsInLogonRop[parsingSessionID].ContainsKey(tempOutputHandleIndex_logon)))
                                 {
-                                    throw new MissingInformationException("Missing LogonFlags information for RopLogon", (ushort)currentByte);
+                                    throw new MissingInformationException("Missing LogonFlags information for RopLogon", currentRop);
                                 }
                                 else
                                 {
-                                    if (((byte)DecodingContext.SessionLogonFlagsInLogonRop[parsingSessionID][(uint)tempOutputHandleIndex_logon] & 0x01) == (byte)LogonFlags.Private)
+                                    if (((byte)DecodingContext.SessionLogonFlagsInLogonRop[parsingSessionID][tempOutputHandleIndex_logon] & 0x01) == (byte)LogonFlags.Private)
                                     {
-                                        RopLogonResponse_PrivateMailboxes ropLogonResponse_PrivateMailboxes = new RopLogonResponse_PrivateMailboxes();
-                                        ropLogonResponse_PrivateMailboxes.Parse(s);
+                                        var ropLogonResponse_PrivateMailboxes = new RopLogonResponse_PrivateMailboxes();
+                                        ropLogonResponse_PrivateMailboxes.Parse(parser);
                                         ropsList.Add(ropLogonResponse_PrivateMailboxes);
                                         break;
                                     }
                                     else
                                     {
-                                        RopLogonResponse_PublicFolders ropLogonResponse_PublicFolders = new RopLogonResponse_PublicFolders();
-                                        ropLogonResponse_PublicFolders.Parse(s);
+                                        var ropLogonResponse_PublicFolders = new RopLogonResponse_PublicFolders();
+                                        ropLogonResponse_PublicFolders.Parse(parser);
                                         ropsList.Add(ropLogonResponse_PublicFolders);
                                         break;
                                     }
                                 }
 
                             case RopIdType.RopGetReceiveFolder:
-                                RopGetReceiveFolderResponse ropGetReceiveFolderResponse = new RopGetReceiveFolderResponse();
-                                ropGetReceiveFolderResponse.Parse(s);
+                                var ropGetReceiveFolderResponse = new RopGetReceiveFolderResponse();
+                                ropGetReceiveFolderResponse.Parse(parser);
                                 ropsList.Add(ropGetReceiveFolderResponse);
                                 break;
                             case RopIdType.RopSetReceiveFolder:
-                                RopSetReceiveFolderResponse ropSetReceiveFolderResponse = new RopSetReceiveFolderResponse();
-                                ropSetReceiveFolderResponse.Parse(s);
+                                var ropSetReceiveFolderResponse = new RopSetReceiveFolderResponse();
+                                ropSetReceiveFolderResponse.Parse(parser);
                                 ropsList.Add(ropSetReceiveFolderResponse);
                                 break;
                             case RopIdType.RopGetReceiveFolderTable:
-                                RopGetReceiveFolderTableResponse ropGetReceiveFolderTableResponse = new RopGetReceiveFolderTableResponse();
-                                ropGetReceiveFolderTableResponse.Parse(s);
+                                var ropGetReceiveFolderTableResponse = new RopGetReceiveFolderTableResponse();
+                                ropGetReceiveFolderTableResponse.Parse(parser);
                                 ropsList.Add(ropGetReceiveFolderTableResponse);
                                 break;
                             case RopIdType.RopGetStoreState:
-                                RopGetStoreStateResponse ropGetStoreStateResponse = new RopGetStoreStateResponse();
-                                ropGetStoreStateResponse.Parse(s);
+                                var ropGetStoreStateResponse = new RopGetStoreStateResponse();
+                                ropGetStoreStateResponse.Parse(parser);
                                 ropsList.Add(ropGetStoreStateResponse);
                                 break;
                             case RopIdType.RopGetOwningServers:
-                                RopGetOwningServersResponse ropGetOwningServersResponse = new RopGetOwningServersResponse();
-                                ropGetOwningServersResponse.Parse(s);
+                                var ropGetOwningServersResponse = new RopGetOwningServersResponse();
+                                ropGetOwningServersResponse.Parse(parser);
                                 ropsList.Add(ropGetOwningServersResponse);
                                 break;
                             case RopIdType.RopPublicFolderIsGhosted:
-                                RopPublicFolderIsGhostedResponse ropPublicFolderIsGhostedResponse = new RopPublicFolderIsGhostedResponse();
-                                ropPublicFolderIsGhostedResponse.Parse(s);
+                                var ropPublicFolderIsGhostedResponse = new RopPublicFolderIsGhostedResponse();
+                                ropPublicFolderIsGhostedResponse.Parse(parser);
                                 ropsList.Add(ropPublicFolderIsGhostedResponse);
                                 break;
                             case RopIdType.RopLongTermIdFromId:
-                                RopLongTermIdFromIdResponse ropLongTermIdFromIdResponse = new RopLongTermIdFromIdResponse();
-                                ropLongTermIdFromIdResponse.Parse(s);
+                                var ropLongTermIdFromIdResponse = new RopLongTermIdFromIdResponse();
+                                ropLongTermIdFromIdResponse.Parse(parser);
                                 ropsList.Add(ropLongTermIdFromIdResponse);
                                 break;
                             case RopIdType.RopIdFromLongTermId:
-                                RopIdFromLongTermIdResponse ropIdFromLongTermIdResponse = new RopIdFromLongTermIdResponse();
-                                ropIdFromLongTermIdResponse.Parse(s);
+                                var ropIdFromLongTermIdResponse = new RopIdFromLongTermIdResponse();
+                                ropIdFromLongTermIdResponse.Parse(parser);
                                 ropsList.Add(ropIdFromLongTermIdResponse);
                                 break;
                             case RopIdType.RopGetPerUserLongTermIds:
-                                RopGetPerUserLongTermIdsResponse ropGetPerUserLongTermIdsResponse = new RopGetPerUserLongTermIdsResponse();
-                                ropGetPerUserLongTermIdsResponse.Parse(s);
+                                var ropGetPerUserLongTermIdsResponse = new RopGetPerUserLongTermIdsResponse();
+                                ropGetPerUserLongTermIdsResponse.Parse(parser);
                                 ropsList.Add(ropGetPerUserLongTermIdsResponse);
                                 break;
                             case RopIdType.RopGetPerUserGuid:
-                                RopGetPerUserGuidResponse ropGetPerUserGuidResponse = new RopGetPerUserGuidResponse();
-                                ropGetPerUserGuidResponse.Parse(s);
+                                var ropGetPerUserGuidResponse = new RopGetPerUserGuidResponse();
+                                ropGetPerUserGuidResponse.Parse(parser);
                                 ropsList.Add(ropGetPerUserGuidResponse);
                                 break;
                             case RopIdType.RopReadPerUserInformation:
-                                RopReadPerUserInformationResponse ropReadPerUserInformationResponse = new RopReadPerUserInformationResponse();
-                                ropReadPerUserInformationResponse.Parse(s);
+                                var ropReadPerUserInformationResponse = new RopReadPerUserInformationResponse();
+                                ropReadPerUserInformationResponse.Parse(parser);
                                 ropsList.Add(ropReadPerUserInformationResponse);
                                 break;
                             case RopIdType.RopWritePerUserInformation:
-                                RopWritePerUserInformationResponse ropWritePerUserInformationResponse = new RopWritePerUserInformationResponse();
-                                ropWritePerUserInformationResponse.Parse(s);
+                                var ropWritePerUserInformationResponse = new RopWritePerUserInformationResponse();
+                                ropWritePerUserInformationResponse.Parse(parser);
                                 ropsList.Add(ropWritePerUserInformationResponse);
                                 break;
 
                             // MS-OXCROPS ROPs
                             case RopIdType.RopSubmitMessage:
-                                RopSubmitMessageResponse ropSubmitMessageResponse = new RopSubmitMessageResponse();
-                                ropSubmitMessageResponse.Parse(s);
+                                var ropSubmitMessageResponse = new RopSubmitMessageResponse();
+                                ropSubmitMessageResponse.Parse(parser);
                                 ropsList.Add(ropSubmitMessageResponse);
                                 break;
                             case RopIdType.RopAbortSubmit:
-                                RopAbortSubmitResponse ropAbortSubmitResponse = new RopAbortSubmitResponse();
-                                ropAbortSubmitResponse.Parse(s);
+                                var ropAbortSubmitResponse = new RopAbortSubmitResponse();
+                                ropAbortSubmitResponse.Parse(parser);
                                 ropsList.Add(ropAbortSubmitResponse);
                                 break;
                             case RopIdType.RopGetAddressTypes:
-                                RopGetAddressTypesResponse ropGetAddressTypesResponse = new RopGetAddressTypesResponse();
-                                ropGetAddressTypesResponse.Parse(s);
+                                var ropGetAddressTypesResponse = new RopGetAddressTypesResponse();
+                                ropGetAddressTypesResponse.Parse(parser);
                                 ropsList.Add(ropGetAddressTypesResponse);
                                 break;
                             case RopIdType.RopSetSpooler:
-                                RopSetSpoolerResponse ropSetSpoolerResponse = new RopSetSpoolerResponse();
-                                ropSetSpoolerResponse.Parse(s);
+                                var ropSetSpoolerResponse = new RopSetSpoolerResponse();
+                                ropSetSpoolerResponse.Parse(parser);
                                 ropsList.Add(ropSetSpoolerResponse);
                                 break;
                             case RopIdType.RopSpoolerLockMessage:
-                                RopSpoolerLockMessageResponse ropSpoolerLockMessageResponse = new RopSpoolerLockMessageResponse();
-                                ropSpoolerLockMessageResponse.Parse(s);
+                                var ropSpoolerLockMessageResponse = new RopSpoolerLockMessageResponse();
+                                ropSpoolerLockMessageResponse.Parse(parser);
                                 ropsList.Add(ropSpoolerLockMessageResponse);
                                 break;
                             case RopIdType.RopTransportSend:
-                                RopTransportSendResponse ropTransportSendResponse = new RopTransportSendResponse();
-                                ropTransportSendResponse.Parse(s);
+                                var ropTransportSendResponse = new RopTransportSendResponse();
+                                ropTransportSendResponse.Parse(parser);
                                 ropsList.Add(ropTransportSendResponse);
                                 break;
                             case RopIdType.RopTransportNewMail:
-                                RopTransportNewMailResponse ropTransportNewMailResponse = new RopTransportNewMailResponse();
-                                ropTransportNewMailResponse.Parse(s);
+                                var ropTransportNewMailResponse = new RopTransportNewMailResponse();
+                                ropTransportNewMailResponse.Parse(parser);
                                 ropsList.Add(ropTransportNewMailResponse);
                                 break;
                             case RopIdType.RopGetTransportFolder:
-                                RopGetTransportFolderResponse ropGetTransportFolderResponse = new RopGetTransportFolderResponse();
-                                ropGetTransportFolderResponse.Parse(s);
+                                var ropGetTransportFolderResponse = new RopGetTransportFolderResponse();
+                                ropGetTransportFolderResponse.Parse(parser);
                                 ropsList.Add(ropGetTransportFolderResponse);
                                 break;
                             case RopIdType.RopOptionsData:
-                                RopOptionsDataResponse ropOptionsDataResponse = new RopOptionsDataResponse();
-                                ropOptionsDataResponse.Parse(s);
+                                var ropOptionsDataResponse = new RopOptionsDataResponse();
+                                ropOptionsDataResponse.Parse(parser);
                                 ropsList.Add(ropOptionsDataResponse);
                                 break;
                             case RopIdType.RopBackoff:
-                                RopBackoffResponse ropBackoffResponse = new RopBackoffResponse();
-                                ropBackoffResponse.Parse(s);
+                                var ropBackoffResponse = new RopBackoffResponse();
+                                ropBackoffResponse.Parse(parser);
                                 ropsList.Add(ropBackoffResponse);
                                 break;
                             case RopIdType.RopBufferTooSmall:
-                                if (DecodingContext.SessionRequestRemainSize.Count > 0 && DecodingContext.SessionRequestRemainSize.ContainsKey(parsingSessionID))
+                                if (DecodingContext.SessionRequestRemainSize.Count > 0 &&
+                                    DecodingContext.SessionRequestRemainSize.ContainsKey(parsingSessionID))
                                 {
                                     uint requestBuffersSize = 0;
                                     int ropCountInResponse = ropsList.Count;
@@ -235,22 +234,23 @@ namespace MAPIInspector.Parsers
                                         requestBuffersSize = DecodingContext.SessionRequestRemainSize[parsingSessionID][ropCountInResponse];
                                     }
 
-                                    RopBufferTooSmallResponse ropBufferTooSmallResponse = new RopBufferTooSmallResponse(requestBuffersSize);
-                                    ropBufferTooSmallResponse.Parse(s);
+                                    var ropBufferTooSmallResponse = new RopBufferTooSmallResponse(requestBuffersSize);
+                                    ropBufferTooSmallResponse.Parse(parser);
                                     ropsList.Add(ropBufferTooSmallResponse);
                                     break;
                                 }
                                 else
                                 {
-                                    throw new MissingInformationException("Missing RequestBuffersSize information for RopBufferTooSmall", (ushort)currentByte);
+                                    throw new MissingInformationException("Missing RequestBuffersSize information for RopBufferTooSmall", currentRop);
                                 }
 
                             // MSOXCTABL ROPs
                             case RopIdType.RopSetColumns:
-                                RopSetColumnsResponse ropSetColumnsResponse = Block.Parse<RopSetColumnsResponse>(s);
+                                RopSetColumnsResponse ropSetColumnsResponse = Parse<RopSetColumnsResponse>();
                                 ropsList.Add(ropSetColumnsResponse);
 
-                                if (!(DecodingContext.SetColumn_InputHandles_InResponse.Count > 0 && DecodingContext.SetColumn_InputHandles_InResponse.Contains(tempServerObjectHandleTable[ropSetColumnsResponse.InputHandleIndex])))
+                                if (!(DecodingContext.SetColumn_InputHandles_InResponse.Count > 0 &&
+                                    DecodingContext.SetColumn_InputHandles_InResponse.Contains(tempServerObjectHandleTable[ropSetColumnsResponse.InputHandleIndex])))
                                 {
                                     DecodingContext.SetColumn_InputHandles_InResponse.Add(tempServerObjectHandleTable[ropSetColumnsResponse.InputHandleIndex]);
                                 }
@@ -258,250 +258,276 @@ namespace MAPIInspector.Parsers
                                 break;
 
                             case RopIdType.RopSortTable:
-                                RopSortTableResponse ropSortTableResponse = new RopSortTableResponse();
-                                ropSortTableResponse.Parse(s);
+                                var ropSortTableResponse = new RopSortTableResponse();
+                                ropSortTableResponse.Parse(parser);
                                 ropsList.Add(ropSortTableResponse);
                                 break;
 
                             case RopIdType.RopRestrict:
-                                RopRestrictResponse ropRestrictResponse = new RopRestrictResponse();
-                                ropRestrictResponse.Parse(s);
+                                var ropRestrictResponse = new RopRestrictResponse();
+                                ropRestrictResponse.Parse(parser);
                                 ropsList.Add(ropRestrictResponse);
                                 break;
 
                             case RopIdType.RopQueryRows:
-                                long currentPos = s.Position;
-                                s.Position += 1;
-                                int tempInputHandleIndex_QueryRow = s.ReadByte();
-                                uint returnValue_queryRow = ReadUint();
-                                s.Position = currentPos;
+                                int currentPos = parser.Offset;
+                                parser.Advance(sizeof(RopIdType));
+                                BlockT<byte> tempInputHandleIndex_QueryRow = ParseT<byte>();
+                                BlockT<ErrorCodes> returnValue_queryRow = ParseT<ErrorCodes>();
+                                parser.Offset = currentPos;
                                 string serverPath_QueryRow = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
                                 string processName_QueryROw = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
                                 string clientInfo_QueryROw = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
                                 uint objHandle_QueryROw = tempServerObjectHandleTable[tempInputHandleIndex_QueryRow];
-                                if (returnValue_queryRow == 0)
+                                if (returnValue_queryRow == ErrorCodes.Success)
                                 {
-                                    if (!(DecodingContext.RowRops_handlePropertyTags.ContainsKey(objHandle_QueryROw) && DecodingContext.RowRops_handlePropertyTags[objHandle_QueryROw].ContainsKey(parsingSessionID) && DecodingContext.RowRops_handlePropertyTags[objHandle_QueryROw][parsingSessionID].Item1 == serverPath_QueryRow
-                                     && DecodingContext.RowRops_handlePropertyTags[objHandle_QueryROw][parsingSessionID].Item2 == processName_QueryROw && DecodingContext.RowRops_handlePropertyTags[objHandle_QueryROw][parsingSessionID].Item3 == clientInfo_QueryROw))
+                                    if (!(DecodingContext.RowRops_handlePropertyTags.ContainsKey(objHandle_QueryROw) &&
+                                        DecodingContext.RowRops_handlePropertyTags[objHandle_QueryROw].ContainsKey(parsingSessionID) &&
+                                        DecodingContext.RowRops_handlePropertyTags[objHandle_QueryROw][parsingSessionID].Item1 == serverPath_QueryRow &&
+                                        DecodingContext.RowRops_handlePropertyTags[objHandle_QueryROw][parsingSessionID].Item2 == processName_QueryROw &&
+                                     DecodingContext.RowRops_handlePropertyTags[objHandle_QueryROw][parsingSessionID].Item3 == clientInfo_QueryROw))
                                     {
-                                        throw new MissingInformationException("Missing PropertyTags information for RopQueryRowsResponse", (ushort)RopIdType.RopQueryRows, new uint[] { (uint)tempInputHandleIndex_QueryRow, tempServerObjectHandleTable[tempInputHandleIndex_QueryRow] });
+                                        throw new MissingInformationException(
+                                            "Missing PropertyTags information for RopQueryRowsResponse",
+                                            RopIdType.RopQueryRows,
+                                            new uint[] {
+                                                (uint)tempInputHandleIndex_QueryRow,
+                                                tempServerObjectHandleTable[tempInputHandleIndex_QueryRow]
+                                            });
                                     }
 
-                                    RopQueryRowsResponse ropQueryRowsResponse = new RopQueryRowsResponse(DecodingContext.RowRops_handlePropertyTags[objHandle_QueryROw][parsingSessionID].Item4);
-                                    ropQueryRowsResponse.Parse(s);
+                                    var ropQueryRowsResponse = new RopQueryRowsResponse(DecodingContext.RowRops_handlePropertyTags[objHandle_QueryROw][parsingSessionID].Item4);
+                                    ropQueryRowsResponse.Parse(parser);
                                     ropsList.Add(ropQueryRowsResponse);
                                     break;
                                 }
                                 else
                                 {
-                                    RopQueryRowsResponse ropQueryRowsResponse = new RopQueryRowsResponse(null);
-                                    ropQueryRowsResponse.Parse(s);
+                                    var ropQueryRowsResponse = new RopQueryRowsResponse(null);
+                                    ropQueryRowsResponse.Parse(parser);
                                     ropsList.Add(ropQueryRowsResponse);
                                     break;
                                 }
 
                             case RopIdType.RopAbort:
-                                RopAbortResponse ropAbortResponse = new RopAbortResponse();
-                                ropAbortResponse.Parse(s);
+                                var ropAbortResponse = new RopAbortResponse();
+                                ropAbortResponse.Parse(parser);
                                 ropsList.Add(ropAbortResponse);
                                 break;
 
                             case RopIdType.RopGetStatus:
-                                RopGetStatusResponse ropGetStatusResponse = new RopGetStatusResponse();
-                                ropGetStatusResponse.Parse(s);
+                                var ropGetStatusResponse = new RopGetStatusResponse();
+                                ropGetStatusResponse.Parse(parser);
                                 ropsList.Add(ropGetStatusResponse);
                                 break;
 
                             case RopIdType.RopQueryPosition:
-                                RopQueryPositionResponse ropQueryPositionResponse = new RopQueryPositionResponse();
-                                ropQueryPositionResponse.Parse(s);
+                                var ropQueryPositionResponse = new RopQueryPositionResponse();
+                                ropQueryPositionResponse.Parse(parser);
                                 ropsList.Add(ropQueryPositionResponse);
                                 break;
 
                             case RopIdType.RopSeekRow:
-                                ropsList.Add(Block.Parse<RopSeekRowResponse>(s));
+                                ropsList.Add(Parse<RopSeekRowResponse>());
                                 break;
 
                             case RopIdType.RopSeekRowBookmark:
-                                RopSeekRowBookmarkResponse ropSeekRowBookmarkResponse = new RopSeekRowBookmarkResponse();
-                                ropSeekRowBookmarkResponse.Parse(s);
+                                var ropSeekRowBookmarkResponse = new RopSeekRowBookmarkResponse();
+                                ropSeekRowBookmarkResponse.Parse(parser);
                                 ropsList.Add(ropSeekRowBookmarkResponse);
                                 break;
 
                             case RopIdType.RopSeekRowFractional:
-                                RopSeekRowFractionalResponse ropSeekRowFractionalResponse = new RopSeekRowFractionalResponse();
-                                ropSeekRowFractionalResponse.Parse(s);
+                                var ropSeekRowFractionalResponse = new RopSeekRowFractionalResponse();
+                                ropSeekRowFractionalResponse.Parse(parser);
                                 ropsList.Add(ropSeekRowFractionalResponse);
                                 break;
 
                             case RopIdType.RopCreateBookmark:
-                                RopCreateBookmarkResponse ropCreateBookmarkResponse = new RopCreateBookmarkResponse();
-                                ropCreateBookmarkResponse.Parse(s);
+                                var ropCreateBookmarkResponse = new RopCreateBookmarkResponse();
+                                ropCreateBookmarkResponse.Parse(parser);
                                 ropsList.Add(ropCreateBookmarkResponse);
                                 break;
 
                             case RopIdType.RopQueryColumnsAll:
-                                RopQueryColumnsAllResponse ropQueryColumnsAllResponse = new RopQueryColumnsAllResponse();
-                                ropQueryColumnsAllResponse.Parse(s);
+                                var ropQueryColumnsAllResponse = new RopQueryColumnsAllResponse();
+                                ropQueryColumnsAllResponse.Parse(parser);
                                 ropsList.Add(ropQueryColumnsAllResponse);
                                 break;
 
                             case RopIdType.RopFindRow:
-                                long currentPos_findRow = s.Position;
-                                s.Position += 1;
-                                int tempInputHandleIndex_findRow = s.ReadByte();
-                                uint returnValue_findRow = ReadUint();
-                                s.Position = currentPos_findRow;
+                                int currentPos_findRow = parser.Offset;
+                                parser.Advance(sizeof(RopIdType));
+                                BlockT<byte> tempInputHandleIndex_findRow = ParseT<byte>();
+                                BlockT<ErrorCodes> returnValue_findRow = ParseT<ErrorCodes>();
+                                parser.Offset = currentPos_findRow;
                                 uint objHandle_FindRow = tempServerObjectHandleTable[tempInputHandleIndex_findRow];
                                 string serverPath_FindRow = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
                                 string processName_FindRow = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
                                 string clientInfo_FindRow = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
-                                if (returnValue_findRow == 0)
+                                if (returnValue_findRow == ErrorCodes.Success)
                                 {
-                                    if (!(DecodingContext.RowRops_handlePropertyTags.ContainsKey(objHandle_FindRow) && DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow].ContainsKey(parsingSessionID) && DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow][parsingSessionID].Item1 == serverPath_FindRow
-                                     && DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow][parsingSessionID].Item2 == processName_FindRow && DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow][parsingSessionID].Item3 == clientInfo_FindRow))
+                                    if (!(DecodingContext.RowRops_handlePropertyTags.ContainsKey(objHandle_FindRow) &&
+                                        DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow].ContainsKey(parsingSessionID) &&
+                                        DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow][parsingSessionID].Item1 == serverPath_FindRow &&
+                                        DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow][parsingSessionID].Item2 == processName_FindRow &&
+                                        DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow][parsingSessionID].Item3 == clientInfo_FindRow))
                                     {
-                                        throw new MissingInformationException("Missing PropertyTags information for RopFindRowsResponse", (ushort)RopIdType.RopFindRow, new uint[] { (uint)tempInputHandleIndex_findRow, objHandle_FindRow });
+                                        throw new MissingInformationException(
+                                            "Missing PropertyTags information for RopFindRowsResponse",
+                                            RopIdType.RopFindRow,
+                                            new uint[] {
+                                                (uint)tempInputHandleIndex_findRow,
+                                                objHandle_FindRow
+                                            });
                                     }
 
-                                    RopFindRowResponse ropFindRowResponse = new RopFindRowResponse(DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow][parsingSessionID].Item4);
-                                    ropFindRowResponse.Parse(s);
+                                    var ropFindRowResponse = new RopFindRowResponse(DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow][parsingSessionID].Item4);
+                                    ropFindRowResponse.Parse(parser);
                                     ropsList.Add(ropFindRowResponse);
                                     break;
                                 }
                                 else
                                 {
-                                    RopFindRowResponse ropFindRowResponse = new RopFindRowResponse(null);
-                                    ropFindRowResponse.Parse(s);
+                                    var ropFindRowResponse = new RopFindRowResponse(null);
+                                    ropFindRowResponse.Parse(parser);
                                     ropsList.Add(ropFindRowResponse);
                                     break;
                                 }
 
                             case RopIdType.RopFreeBookmark:
-                                RopFreeBookmarkResponse ropFreeBookmarkResponse = new RopFreeBookmarkResponse();
-                                ropFreeBookmarkResponse.Parse(s);
+                                var ropFreeBookmarkResponse = new RopFreeBookmarkResponse();
+                                ropFreeBookmarkResponse.Parse(parser);
                                 ropsList.Add(ropFreeBookmarkResponse);
                                 break;
 
                             case RopIdType.RopResetTable:
-                                RopResetTableResponse ropResetTableResponse = new RopResetTableResponse();
-                                ropResetTableResponse.Parse(s);
+                                var ropResetTableResponse = new RopResetTableResponse();
+                                ropResetTableResponse.Parse(parser);
                                 ropsList.Add(ropResetTableResponse);
                                 break;
 
                             case RopIdType.RopExpandRow:
-                                long currentPos_expandRow = s.Position;
-                                s.Position += 1;
-                                int tempInputHandleIndex_expandRow = s.ReadByte();
-                                uint returnValue_expandRow = ReadUint();
-                                s.Position = currentPos_expandRow;
+                                int currentPos_expandRow = parser.Offset;
+                                parser.Advance(sizeof(RopIdType));
+                                BlockT<byte> tempInputHandleIndex_expandRow = ParseT<byte>();
+                                BlockT<ErrorCodes> returnValue_expandRow = ParseT<ErrorCodes>();
+                                parser.Offset = currentPos_expandRow;
                                 uint objHandle_ExpandRow = tempServerObjectHandleTable[tempInputHandleIndex_expandRow];
                                 string serverPath_ExpandRow = MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath;
                                 string processName_ExpandRow = MapiInspector.MAPIParser.ParsingSession.LocalProcess;
                                 string clientInfo_ExpandRow = MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"];
-                                if (returnValue_expandRow == 0)
+                                if (returnValue_expandRow == ErrorCodes.Success)
                                 {
-                                    if (!(DecodingContext.RowRops_handlePropertyTags.ContainsKey(objHandle_ExpandRow) && DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow].ContainsKey(parsingSessionID) && DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow][parsingSessionID].Item1 == serverPath_ExpandRow
-                                    && DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow][parsingSessionID].Item2 == processName_ExpandRow && DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow][parsingSessionID].Item3 == clientInfo_ExpandRow))
+                                    if (!(DecodingContext.RowRops_handlePropertyTags.ContainsKey(objHandle_ExpandRow) &&
+                                        DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow].ContainsKey(parsingSessionID) &&
+                                        DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow][parsingSessionID].Item1 == serverPath_ExpandRow &&
+                                    DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow][parsingSessionID].Item2 == processName_ExpandRow &&
+                                    DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow][parsingSessionID].Item3 == clientInfo_ExpandRow))
                                     {
-                                        throw new MissingInformationException("Missing PropertyTags information for RopExpandRowsResponse", (ushort)RopIdType.RopExpandRow, new uint[] { (uint)tempInputHandleIndex_expandRow, objHandle_ExpandRow });
+                                        throw new MissingInformationException(
+                                            "Missing PropertyTags information for RopExpandRowsResponse",
+                                            RopIdType.RopExpandRow,
+                                            new uint[] {
+                                                (uint)tempInputHandleIndex_expandRow,
+                                                objHandle_ExpandRow
+                                            });
                                     }
 
-                                    RopExpandRowResponse ropFindRowResponse = new RopExpandRowResponse(DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow][parsingSessionID].Item4);
-                                    ropFindRowResponse.Parse(s);
+                                    var ropFindRowResponse = new RopExpandRowResponse(DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow][parsingSessionID].Item4);
+                                    ropFindRowResponse.Parse(parser);
                                     ropsList.Add(ropFindRowResponse);
                                     break;
                                 }
                                 else
                                 {
-                                    RopExpandRowResponse ropFindRowResponse = new RopExpandRowResponse(null);
-                                    ropFindRowResponse.Parse(s);
+                                    var ropFindRowResponse = new RopExpandRowResponse(null);
+                                    ropFindRowResponse.Parse(parser);
                                     ropsList.Add(ropFindRowResponse);
                                     break;
                                 }
 
                             case RopIdType.RopCollapseRow:
-                                RopCollapseRowResponse ropCollapseRowResponse = new RopCollapseRowResponse();
-                                ropCollapseRowResponse.Parse(s);
+                                var ropCollapseRowResponse = new RopCollapseRowResponse();
+                                ropCollapseRowResponse.Parse(parser);
                                 ropsList.Add(ropCollapseRowResponse);
                                 break;
 
                             case RopIdType.RopGetCollapseState:
-                                RopGetCollapseStateResponse ropGetCollapseStateResponse = new RopGetCollapseStateResponse();
-                                ropGetCollapseStateResponse.Parse(s);
+                                var ropGetCollapseStateResponse = new RopGetCollapseStateResponse();
+                                ropGetCollapseStateResponse.Parse(parser);
                                 ropsList.Add(ropGetCollapseStateResponse);
                                 break;
 
                             case RopIdType.RopSetCollapseState:
-                                RopSetCollapseStateResponse ropSetCollapseStateResponse = new RopSetCollapseStateResponse();
-                                ropSetCollapseStateResponse.Parse(s);
+                                var ropSetCollapseStateResponse = new RopSetCollapseStateResponse();
+                                ropSetCollapseStateResponse.Parse(parser);
                                 ropsList.Add(ropSetCollapseStateResponse);
                                 break;
 
                             // MSOXORULE ROPs
                             case RopIdType.RopModifyRules:
-                                RopModifyRulesResponse ropModifyRulesResponse = new RopModifyRulesResponse();
-                                ropModifyRulesResponse.Parse(s);
+                                var ropModifyRulesResponse = new RopModifyRulesResponse();
+                                ropModifyRulesResponse.Parse(parser);
                                 ropsList.Add(ropModifyRulesResponse);
                                 break;
 
                             case RopIdType.RopGetRulesTable:
-                                RopGetRulesTableResponse ropGetRulesTableResponse = new RopGetRulesTableResponse();
-                                ropGetRulesTableResponse.Parse(s);
+                                var ropGetRulesTableResponse = new RopGetRulesTableResponse();
+                                ropGetRulesTableResponse.Parse(parser);
                                 ropsList.Add(ropGetRulesTableResponse);
                                 break;
 
                             case RopIdType.RopUpdateDeferredActionMessages:
-                                RopUpdateDeferredActionMessagesResponse ropUpdateDeferredActionMessagesResponse = new RopUpdateDeferredActionMessagesResponse();
-                                ropUpdateDeferredActionMessagesResponse.Parse(s);
+                                var ropUpdateDeferredActionMessagesResponse = new RopUpdateDeferredActionMessagesResponse();
+                                ropUpdateDeferredActionMessagesResponse.Parse(parser);
                                 ropsList.Add(ropUpdateDeferredActionMessagesResponse);
                                 break;
 
                             // MS-OXCFXICS ROPs
                             case RopIdType.RopFastTransferSourceCopyProperties:
-                                RopFastTransferSourceCopyPropertiesResponse ropFastTransferSourceCopyPropertiesResponse = new RopFastTransferSourceCopyPropertiesResponse();
-                                ropFastTransferSourceCopyPropertiesResponse.Parse(s);
+                                var ropFastTransferSourceCopyPropertiesResponse = new RopFastTransferSourceCopyPropertiesResponse();
+                                ropFastTransferSourceCopyPropertiesResponse.Parse(parser);
                                 ropsList.Add(ropFastTransferSourceCopyPropertiesResponse);
                                 break;
                             case RopIdType.RopFastTransferSourceCopyTo:
-                                RopFastTransferSourceCopyToResponse ropFastTransferSourceCopyToResponse = new RopFastTransferSourceCopyToResponse();
-                                ropFastTransferSourceCopyToResponse.Parse(s);
+                                var ropFastTransferSourceCopyToResponse = new RopFastTransferSourceCopyToResponse();
+                                ropFastTransferSourceCopyToResponse.Parse(parser);
                                 ropsList.Add(ropFastTransferSourceCopyToResponse);
                                 break;
                             case RopIdType.RopFastTransferSourceCopyMessages:
-                                RopFastTransferSourceCopyMessagesResponse ropFastTransferSourceCopyMessagesResponse = new RopFastTransferSourceCopyMessagesResponse();
-                                ropFastTransferSourceCopyMessagesResponse.Parse(s);
+                                var ropFastTransferSourceCopyMessagesResponse = new RopFastTransferSourceCopyMessagesResponse();
+                                ropFastTransferSourceCopyMessagesResponse.Parse(parser);
                                 ropsList.Add(ropFastTransferSourceCopyMessagesResponse);
                                 break;
                             case RopIdType.RopFastTransferSourceCopyFolder:
-                                RopFastTransferSourceCopyFolderResponse ropFastTransferSourceCopyFolderResponse = new RopFastTransferSourceCopyFolderResponse();
-                                ropFastTransferSourceCopyFolderResponse.Parse(s);
+                                var ropFastTransferSourceCopyFolderResponse = new RopFastTransferSourceCopyFolderResponse();
+                                ropFastTransferSourceCopyFolderResponse.Parse(parser);
                                 ropsList.Add(ropFastTransferSourceCopyFolderResponse);
                                 break;
                             case RopIdType.RopFastTransferSourceGetBuffer:
-                                long currentPos_getBuffer = s.Position;
-                                s.Position += 1;
-                                int tempInputHandleIndex_getBuffer = s.ReadByte();
-                                uint returnValue = ReadUint();
-                                ushort status = ReadUshort();
-                                s.Position = currentPos_getBuffer;
+                                int currentPos_getBuffer = parser.Offset;
+                                parser.Advance(sizeof(RopIdType));
+                                BlockT<byte> tempInputHandleIndex_getBuffer = ParseT<byte>();
+                                BlockT<ErrorCodes> returnValue = ParseT<ErrorCodes>();
+                                parser.Offset = currentPos_getBuffer;
                                 int getParsingSessionID = parsingSessionID;
                                 Session getParsingSession = MapiInspector.MAPIParser.ParsingSession;
                                 uint ropGetbufferHandle = tempServerObjectHandleTable[tempInputHandleIndex_getBuffer];
                                 var partialBeforeAndAfterInformation = new PartialContextInformation[2];
-                                if (returnValue == 0)
+                                if (returnValue == ErrorCodes.Success)
                                 {
-                                    if (!DecodingContext.PartialInformationReady.ContainsKey((int)getParsingSessionID))
+                                    if (!DecodingContext.PartialInformationReady.ContainsKey(getParsingSessionID))
                                     {
-                                        throw new MissingPartialInformationException((RopIdType)currentByte, ropGetbufferHandle);
+                                        throw new MissingPartialInformationException(currentRop, ropGetbufferHandle);
                                     }
                                 }
 
-                                RopFastTransferSourceGetBufferResponse ropFastTransferSourceGetBufferResponse = new RopFastTransferSourceGetBufferResponse();
+                                var ropFastTransferSourceGetBufferResponse = new RopFastTransferSourceGetBufferResponse();
                                 Partial.IsGet = true;
-                                ropFastTransferSourceGetBufferResponse.Parse(s);
+                                ropFastTransferSourceGetBufferResponse.Parse(parser);
                                 ropsList.Add(ropFastTransferSourceGetBufferResponse);
-                                var getBufferPartialInformaiton = new PartialContextInformation(
+                                var getBufferPartialInformation = new PartialContextInformation(
                                     Partial.PartialGetType,
                                     Partial.PartialGetId,
                                     Partial.PartialGetRemainSize,
@@ -509,7 +535,7 @@ namespace MAPIInspector.Parsers
                                     true,
                                     getParsingSession,
                                     MapiInspector.MAPIParser.OutputPayLoadCompressedXOR);
-                                SortedDictionary<int, PartialContextInformation> sessionGetContextInfor = new SortedDictionary<int, PartialContextInformation>();
+                                var sessionGetContextInfor = new SortedDictionary<int, PartialContextInformation>();
 
                                 if (Partial.HandleWithSessionGetContextInformation.ContainsKey(ropGetbufferHandle))
                                 {
@@ -519,11 +545,11 @@ namespace MAPIInspector.Parsers
 
                                 if (sessionGetContextInfor.ContainsKey(getParsingSessionID))
                                 {
-                                    sessionGetContextInfor[getParsingSessionID] = getBufferPartialInformaiton;
+                                    sessionGetContextInfor[getParsingSessionID] = getBufferPartialInformation;
                                 }
                                 else
                                 {
-                                    sessionGetContextInfor.Add(getParsingSessionID, getBufferPartialInformaiton);
+                                    sessionGetContextInfor.Add(getParsingSessionID, getBufferPartialInformation);
                                 }
 
                                 Partial.HandleWithSessionGetContextInformation.Add(ropGetbufferHandle, sessionGetContextInfor);
@@ -531,465 +557,467 @@ namespace MAPIInspector.Parsers
                                 break;
 
                             case RopIdType.RopTellVersion:
-                                RopTellVersionResponse ropTellVersionResponse = new RopTellVersionResponse();
-                                ropTellVersionResponse.Parse(s);
+                                var ropTellVersionResponse = new RopTellVersionResponse();
+                                ropTellVersionResponse.Parse(parser);
                                 ropsList.Add(ropTellVersionResponse);
                                 break;
                             case RopIdType.RopSynchronizationGetTransferState:
-                                RopSynchronizationGetTransferStateResponse ropSynchronizationGetTransferStateResponse = new RopSynchronizationGetTransferStateResponse();
-                                ropSynchronizationGetTransferStateResponse.Parse(s);
+                                var ropSynchronizationGetTransferStateResponse = new RopSynchronizationGetTransferStateResponse();
+                                ropSynchronizationGetTransferStateResponse.Parse(parser);
                                 ropsList.Add(ropSynchronizationGetTransferStateResponse);
                                 break;
                             case RopIdType.RopFastTransferDestinationConfigure:
-                                RopFastTransferDestinationConfigureResponse ropFastTransferDestinationConfigureResponse = new RopFastTransferDestinationConfigureResponse();
-                                ropFastTransferDestinationConfigureResponse.Parse(s);
+                                var ropFastTransferDestinationConfigureResponse = new RopFastTransferDestinationConfigureResponse();
+                                ropFastTransferDestinationConfigureResponse.Parse(parser);
                                 ropsList.Add(ropFastTransferDestinationConfigureResponse);
                                 break;
                             case RopIdType.RopFastTransferDestinationPutBuffer:
-                                RopFastTransferDestinationPutBufferResponse ropFastTransferDestinationPutBufferResponse = new RopFastTransferDestinationPutBufferResponse();
-                                ropFastTransferDestinationPutBufferResponse.Parse(s);
+                                var ropFastTransferDestinationPutBufferResponse = new RopFastTransferDestinationPutBufferResponse();
+                                ropFastTransferDestinationPutBufferResponse.Parse(parser);
                                 ropsList.Add(ropFastTransferDestinationPutBufferResponse);
                                 break;
                             case RopIdType.RopFastTransferDestinationPutBufferExtended:
-                                RopFastTransferDestinationPutBufferExtendedResponse ropFastTransferDestinationPutBufferExtendedResponse = new RopFastTransferDestinationPutBufferExtendedResponse();
-                                ropFastTransferDestinationPutBufferExtendedResponse.Parse(s);
+                                var ropFastTransferDestinationPutBufferExtendedResponse = new RopFastTransferDestinationPutBufferExtendedResponse();
+                                ropFastTransferDestinationPutBufferExtendedResponse.Parse(parser);
                                 ropsList.Add(ropFastTransferDestinationPutBufferExtendedResponse);
                                 break;
                             case RopIdType.RopSynchronizationConfigure:
-                                RopSynchronizationConfigureResponse ropSynchronizationConfigureResponse = new RopSynchronizationConfigureResponse();
-                                ropSynchronizationConfigureResponse.Parse(s);
+                                var ropSynchronizationConfigureResponse = new RopSynchronizationConfigureResponse();
+                                ropSynchronizationConfigureResponse.Parse(parser);
                                 ropsList.Add(ropSynchronizationConfigureResponse);
                                 break;
                             case RopIdType.RopSynchronizationUploadStateStreamBegin:
-                                RopSynchronizationUploadStateStreamBeginResponse ropSynchronizationUploadStateStreamBeginResponse = new RopSynchronizationUploadStateStreamBeginResponse();
-                                ropSynchronizationUploadStateStreamBeginResponse.Parse(s);
+                                var ropSynchronizationUploadStateStreamBeginResponse = new RopSynchronizationUploadStateStreamBeginResponse();
+                                ropSynchronizationUploadStateStreamBeginResponse.Parse(parser);
                                 ropsList.Add(ropSynchronizationUploadStateStreamBeginResponse);
                                 break;
                             case RopIdType.RopSynchronizationUploadStateStreamContinue:
-                                RopSynchronizationUploadStateStreamContinueResponse ropSynchronizationUploadStateStreamContinueResponse = new RopSynchronizationUploadStateStreamContinueResponse();
-                                ropSynchronizationUploadStateStreamContinueResponse.Parse(s);
+                                var ropSynchronizationUploadStateStreamContinueResponse = new RopSynchronizationUploadStateStreamContinueResponse();
+                                ropSynchronizationUploadStateStreamContinueResponse.Parse(parser);
                                 ropsList.Add(ropSynchronizationUploadStateStreamContinueResponse);
                                 break;
                             case RopIdType.RopSynchronizationUploadStateStreamEnd:
-                                RopSynchronizationUploadStateStreamEndResponse ropSynchronizationUploadStateStreamEndResponse = new RopSynchronizationUploadStateStreamEndResponse();
-                                ropSynchronizationUploadStateStreamEndResponse.Parse(s);
+                                var ropSynchronizationUploadStateStreamEndResponse = new RopSynchronizationUploadStateStreamEndResponse();
+                                ropSynchronizationUploadStateStreamEndResponse.Parse(parser);
                                 ropsList.Add(ropSynchronizationUploadStateStreamEndResponse);
                                 break;
                             case RopIdType.RopSynchronizationOpenCollector:
-                                RopSynchronizationOpenCollectorResponse ropSynchronizationOpenCollectorResponse = new RopSynchronizationOpenCollectorResponse();
-                                ropSynchronizationOpenCollectorResponse.Parse(s);
+                                var ropSynchronizationOpenCollectorResponse = new RopSynchronizationOpenCollectorResponse();
+                                ropSynchronizationOpenCollectorResponse.Parse(parser);
                                 ropsList.Add(ropSynchronizationOpenCollectorResponse);
                                 break;
                             case RopIdType.RopSynchronizationImportMessageChange:
-                                RopSynchronizationImportMessageChangeResponse ropSynchronizationImportMessageChangeResponse = new RopSynchronizationImportMessageChangeResponse();
-                                ropSynchronizationImportMessageChangeResponse.Parse(s);
+                                var ropSynchronizationImportMessageChangeResponse = new RopSynchronizationImportMessageChangeResponse();
+                                ropSynchronizationImportMessageChangeResponse.Parse(parser);
                                 ropsList.Add(ropSynchronizationImportMessageChangeResponse);
                                 break;
                             case RopIdType.RopSynchronizationImportHierarchyChange:
-                                RopSynchronizationImportHierarchyChangeResponse ropSynchronizationImportHierarchyChangeResponse = new RopSynchronizationImportHierarchyChangeResponse();
-                                ropSynchronizationImportHierarchyChangeResponse.Parse(s);
+                                var ropSynchronizationImportHierarchyChangeResponse = new RopSynchronizationImportHierarchyChangeResponse();
+                                ropSynchronizationImportHierarchyChangeResponse.Parse(parser);
                                 ropsList.Add(ropSynchronizationImportHierarchyChangeResponse);
                                 break;
                             case RopIdType.RopSynchronizationImportMessageMove:
-                                RopSynchronizationImportMessageMoveResponse ropSynchronizationImportMessageMoveResponse = new RopSynchronizationImportMessageMoveResponse();
-                                ropSynchronizationImportMessageMoveResponse.Parse(s);
+                                var ropSynchronizationImportMessageMoveResponse = new RopSynchronizationImportMessageMoveResponse();
+                                ropSynchronizationImportMessageMoveResponse.Parse(parser);
                                 ropsList.Add(ropSynchronizationImportMessageMoveResponse);
                                 break;
                             case RopIdType.RopSynchronizationImportDeletes:
-                                RopSynchronizationImportDeletesResponse ropSynchronizationImportDeletesResponse = new RopSynchronizationImportDeletesResponse();
-                                ropSynchronizationImportDeletesResponse.Parse(s);
+                                var ropSynchronizationImportDeletesResponse = new RopSynchronizationImportDeletesResponse();
+                                ropSynchronizationImportDeletesResponse.Parse(parser);
                                 ropsList.Add(ropSynchronizationImportDeletesResponse);
                                 break;
                             case RopIdType.RopSynchronizationImportReadStateChanges:
-                                RopSynchronizationImportReadStateChangesResponse ropSynchronizationImportReadStateChangesResponse = new RopSynchronizationImportReadStateChangesResponse();
-                                ropSynchronizationImportReadStateChangesResponse.Parse(s);
+                                var ropSynchronizationImportReadStateChangesResponse = new RopSynchronizationImportReadStateChangesResponse();
+                                ropSynchronizationImportReadStateChangesResponse.Parse(parser);
                                 ropsList.Add(ropSynchronizationImportReadStateChangesResponse);
                                 break;
                             case RopIdType.RopGetLocalReplicaIds:
-                                RopGetLocalReplicaIdsResponse ropGetLocalReplicaIdsResponse = new RopGetLocalReplicaIdsResponse();
-                                ropGetLocalReplicaIdsResponse.Parse(s);
+                                var ropGetLocalReplicaIdsResponse = new RopGetLocalReplicaIdsResponse();
+                                ropGetLocalReplicaIdsResponse.Parse(parser);
                                 ropsList.Add(ropGetLocalReplicaIdsResponse);
                                 break;
                             case RopIdType.RopSetLocalReplicaMidsetDeleted:
-                                RopSetLocalReplicaMidsetDeletedResponse ropSetLocalReplicaMidsetDeletedResponse = new RopSetLocalReplicaMidsetDeletedResponse();
-                                ropSetLocalReplicaMidsetDeletedResponse.Parse(s);
+                                var ropSetLocalReplicaMidsetDeletedResponse = new RopSetLocalReplicaMidsetDeletedResponse();
+                                ropSetLocalReplicaMidsetDeletedResponse.Parse(parser);
                                 ropsList.Add(ropSetLocalReplicaMidsetDeletedResponse);
                                 break;
 
                             // MS-OXCPRPT ROPs
                             case RopIdType.RopGetPropertiesSpecific:
-                                long currentPos_getPropertiesSpec = s.Position;
-                                s.Position += 1;
-                                int tempInputHandleIndex_getPropertiesSpec = s.ReadByte();
-                                s.Position = currentPos_getPropertiesSpec;
-                                if (!(DecodingContext.GetPropertiesSpec_propertyTags.Count > 0 && DecodingContext.GetPropertiesSpec_propertyTags.ContainsKey(parsingSessionID) && DecodingContext.GetPropertiesSpec_propertyTags[parsingSessionID].ContainsKey((uint)tempInputHandleIndex_getPropertiesSpec)
-                                    && DecodingContext.GetPropertiesSpec_propertyTags[parsingSessionID][(uint)tempInputHandleIndex_getPropertiesSpec].Count != 0))
+                                int currentPos_getPropertiesSpec = parser.Offset;
+                                parser.Advance(sizeof(RopIdType));
+                                BlockT<byte> tempInputHandleIndex_getPropertiesSpec = ParseT<byte>();
+                                parser.Offset = currentPos_getPropertiesSpec;
+                                if (!(DecodingContext.GetPropertiesSpec_propertyTags.Count > 0 &&
+                                    DecodingContext.GetPropertiesSpec_propertyTags.ContainsKey(parsingSessionID) &&
+                                    DecodingContext.GetPropertiesSpec_propertyTags[parsingSessionID].ContainsKey((uint)tempInputHandleIndex_getPropertiesSpec) &&
+                                    DecodingContext.GetPropertiesSpec_propertyTags[parsingSessionID][(uint)tempInputHandleIndex_getPropertiesSpec].Count != 0))
                                 {
-                                    throw new MissingInformationException("Missing PropertyTags information for RopGetPropertiesSpecific", (ushort)currentByte);
+                                    throw new MissingInformationException("Missing PropertyTags information for RopGetPropertiesSpecific", currentRop);
                                 }
 
-                                RopGetPropertiesSpecificResponse ropGetPropertiesSpecificResponse = new RopGetPropertiesSpecificResponse();
-                                ropGetPropertiesSpecificResponse.Parse(s);
+                                var ropGetPropertiesSpecificResponse = new RopGetPropertiesSpecificResponse();
+                                ropGetPropertiesSpecificResponse.Parse(parser);
                                 ropsList.Add(ropGetPropertiesSpecificResponse);
                                 break;
 
                             case RopIdType.RopGetPropertiesAll:
-                                RopGetPropertiesAllResponse ropGetPropertiesAllResponse = new RopGetPropertiesAllResponse();
-                                ropGetPropertiesAllResponse.Parse(s);
+                                var ropGetPropertiesAllResponse = new RopGetPropertiesAllResponse();
+                                ropGetPropertiesAllResponse.Parse(parser);
                                 ropsList.Add(ropGetPropertiesAllResponse);
                                 break;
                             case RopIdType.RopGetPropertiesList:
-                                RopGetPropertiesListResponse ropGetPropertiesListResponse = new RopGetPropertiesListResponse();
-                                ropGetPropertiesListResponse.Parse(s);
+                                var ropGetPropertiesListResponse = new RopGetPropertiesListResponse();
+                                ropGetPropertiesListResponse.Parse(parser);
                                 ropsList.Add(ropGetPropertiesListResponse);
                                 break;
                             case RopIdType.RopSetProperties:
-                                RopSetPropertiesResponse ropSetPropertiesResponse = new RopSetPropertiesResponse();
-                                ropSetPropertiesResponse.Parse(s);
+                                var ropSetPropertiesResponse = new RopSetPropertiesResponse();
+                                ropSetPropertiesResponse.Parse(parser);
                                 ropsList.Add(ropSetPropertiesResponse);
                                 break;
                             case RopIdType.RopSetPropertiesNoReplicate:
-                                RopSetPropertiesNoReplicateResponse ropSetPropertiesNoReplicateResponse = new RopSetPropertiesNoReplicateResponse();
-                                ropSetPropertiesNoReplicateResponse.Parse(s);
+                                var ropSetPropertiesNoReplicateResponse = new RopSetPropertiesNoReplicateResponse();
+                                ropSetPropertiesNoReplicateResponse.Parse(parser);
                                 ropsList.Add(ropSetPropertiesNoReplicateResponse);
                                 break;
                             case RopIdType.RopDeleteProperties:
-                                RopDeletePropertiesResponse ropDeletePropertiesResponse = new RopDeletePropertiesResponse();
-                                ropDeletePropertiesResponse.Parse(s);
+                                var ropDeletePropertiesResponse = new RopDeletePropertiesResponse();
+                                ropDeletePropertiesResponse.Parse(parser);
                                 ropsList.Add(ropDeletePropertiesResponse);
                                 break;
                             case RopIdType.RopDeletePropertiesNoReplicate:
-                                RopDeletePropertiesNoReplicateResponse ropDeletePropertiesNoReplicateResponse = new RopDeletePropertiesNoReplicateResponse();
-                                ropDeletePropertiesNoReplicateResponse.Parse(s);
+                                var ropDeletePropertiesNoReplicateResponse = new RopDeletePropertiesNoReplicateResponse();
+                                ropDeletePropertiesNoReplicateResponse.Parse(parser);
                                 ropsList.Add(ropDeletePropertiesNoReplicateResponse);
                                 break;
                             case RopIdType.RopQueryNamedProperties:
-                                RopQueryNamedPropertiesResponse ropQueryNamedPropertiesResponse = new RopQueryNamedPropertiesResponse();
-                                ropQueryNamedPropertiesResponse.Parse(s);
+                                var ropQueryNamedPropertiesResponse = new RopQueryNamedPropertiesResponse();
+                                ropQueryNamedPropertiesResponse.Parse(parser);
                                 ropsList.Add(ropQueryNamedPropertiesResponse);
                                 break;
                             case RopIdType.RopCopyProperties:
-                                RopCopyPropertiesResponse ropCopyPropertiesResponse = new RopCopyPropertiesResponse();
-                                ropCopyPropertiesResponse.Parse(s);
+                                var ropCopyPropertiesResponse = new RopCopyPropertiesResponse();
+                                ropCopyPropertiesResponse.Parse(parser);
                                 ropsList.Add(ropCopyPropertiesResponse);
                                 break;
                             case RopIdType.RopCopyTo:
-                                RopCopyToResponse ropCopyToResponse = new RopCopyToResponse();
-                                ropCopyToResponse.Parse(s);
+                                var ropCopyToResponse = new RopCopyToResponse();
+                                ropCopyToResponse.Parse(parser);
                                 ropsList.Add(ropCopyToResponse);
                                 break;
                             case RopIdType.RopGetPropertyIdsFromNames:
-                                RopGetPropertyIdsFromNamesResponse ropGetPropertyIdsFromNamesResponse = new RopGetPropertyIdsFromNamesResponse();
-                                ropGetPropertyIdsFromNamesResponse.Parse(s);
+                                var ropGetPropertyIdsFromNamesResponse = new RopGetPropertyIdsFromNamesResponse();
+                                ropGetPropertyIdsFromNamesResponse.Parse(parser);
                                 ropsList.Add(ropGetPropertyIdsFromNamesResponse);
                                 break;
                             case RopIdType.RopGetNamesFromPropertyIds:
-                                RopGetNamesFromPropertyIdsResponse ropGetNamesFromPropertyIdsResponse = new RopGetNamesFromPropertyIdsResponse();
-                                ropGetNamesFromPropertyIdsResponse.Parse(s);
+                                var ropGetNamesFromPropertyIdsResponse = new RopGetNamesFromPropertyIdsResponse();
+                                ropGetNamesFromPropertyIdsResponse.Parse(parser);
                                 ropsList.Add(ropGetNamesFromPropertyIdsResponse);
                                 break;
                             case RopIdType.RopOpenStream:
-                                RopOpenStreamResponse ropOpenStreamResponse = new RopOpenStreamResponse();
-                                ropOpenStreamResponse.Parse(s);
+                                var ropOpenStreamResponse = new RopOpenStreamResponse();
+                                ropOpenStreamResponse.Parse(parser);
                                 ropsList.Add(ropOpenStreamResponse);
                                 break;
                             case RopIdType.RopReadStream:
-                                RopReadStreamResponse ropReadStreamResponse = new RopReadStreamResponse();
-                                ropReadStreamResponse.Parse(s);
+                                var ropReadStreamResponse = new RopReadStreamResponse();
+                                ropReadStreamResponse.Parse(parser);
                                 ropsList.Add(ropReadStreamResponse);
                                 break;
                             case RopIdType.RopWriteStream:
-                                RopWriteStreamResponse ropWriteStreamResponse = new RopWriteStreamResponse();
-                                ropWriteStreamResponse.Parse(s);
+                                var ropWriteStreamResponse = new RopWriteStreamResponse();
+                                ropWriteStreamResponse.Parse(parser);
                                 ropsList.Add(ropWriteStreamResponse);
                                 break;
                             case RopIdType.RopWriteStreamExtended:
-                                RopWriteStreamExtendedResponse ropWriteStreamExtendedResponse = new RopWriteStreamExtendedResponse();
-                                ropWriteStreamExtendedResponse.Parse(s);
+                                var ropWriteStreamExtendedResponse = new RopWriteStreamExtendedResponse();
+                                ropWriteStreamExtendedResponse.Parse(parser);
                                 ropsList.Add(ropWriteStreamExtendedResponse);
                                 break;
                             case RopIdType.RopCommitStream:
-                                RopCommitStreamResponse ropCommitStreamResponse = new RopCommitStreamResponse();
-                                ropCommitStreamResponse.Parse(s);
+                                var ropCommitStreamResponse = new RopCommitStreamResponse();
+                                ropCommitStreamResponse.Parse(parser);
                                 ropsList.Add(ropCommitStreamResponse);
                                 break;
                             case RopIdType.RopGetStreamSize:
-                                RopGetStreamSizeResponse ropGetStreamSizeResponse = new RopGetStreamSizeResponse();
-                                ropGetStreamSizeResponse.Parse(s);
+                                var ropGetStreamSizeResponse = new RopGetStreamSizeResponse();
+                                ropGetStreamSizeResponse.Parse(parser);
                                 ropsList.Add(ropGetStreamSizeResponse);
                                 break;
                             case RopIdType.RopSetStreamSize:
-                                RopSetStreamSizeResponse ropSetStreamSizeResponse = new RopSetStreamSizeResponse();
-                                ropSetStreamSizeResponse.Parse(s);
+                                var ropSetStreamSizeResponse = new RopSetStreamSizeResponse();
+                                ropSetStreamSizeResponse.Parse(parser);
                                 ropsList.Add(ropSetStreamSizeResponse);
                                 break;
                             case RopIdType.RopSeekStream:
-                                RopSeekStreamResponse ropSeekStreamResponse = new RopSeekStreamResponse();
-                                ropSeekStreamResponse.Parse(s);
+                                var ropSeekStreamResponse = new RopSeekStreamResponse();
+                                ropSeekStreamResponse.Parse(parser);
                                 ropsList.Add(ropSeekStreamResponse);
                                 break;
                             case RopIdType.RopCopyToStream:
-                                RopCopyToStreamResponse ropCopyToStreamResponse = new RopCopyToStreamResponse();
-                                ropCopyToStreamResponse.Parse(s);
+                                var ropCopyToStreamResponse = new RopCopyToStreamResponse();
+                                ropCopyToStreamResponse.Parse(parser);
                                 ropsList.Add(ropCopyToStreamResponse);
                                 break;
                             case RopIdType.RopProgress:
-                                RopProgressResponse ropProgressResponse = new RopProgressResponse();
-                                ropProgressResponse.Parse(s);
+                                var ropProgressResponse = new RopProgressResponse();
+                                ropProgressResponse.Parse(parser);
                                 ropsList.Add(ropProgressResponse);
                                 break;
                             case RopIdType.RopLockRegionStream:
-                                RopLockRegionStreamResponse ropLockRegionStreamResponse = new RopLockRegionStreamResponse();
-                                ropLockRegionStreamResponse.Parse(s);
+                                var ropLockRegionStreamResponse = new RopLockRegionStreamResponse();
+                                ropLockRegionStreamResponse.Parse(parser);
                                 ropsList.Add(ropLockRegionStreamResponse);
                                 break;
                             case RopIdType.RopUnlockRegionStream:
-                                RopUnlockRegionStreamResponse ropUnlockRegionStreamResponse = new RopUnlockRegionStreamResponse();
-                                ropUnlockRegionStreamResponse.Parse(s);
+                                var ropUnlockRegionStreamResponse = new RopUnlockRegionStreamResponse();
+                                ropUnlockRegionStreamResponse.Parse(parser);
                                 ropsList.Add(ropUnlockRegionStreamResponse);
                                 break;
                             case RopIdType.RopWriteAndCommitStream:
-                                RopWriteAndCommitStreamResponse ropWriteAndCommitStreamResponse = new RopWriteAndCommitStreamResponse();
-                                ropWriteAndCommitStreamResponse.Parse(s);
+                                var ropWriteAndCommitStreamResponse = new RopWriteAndCommitStreamResponse();
+                                ropWriteAndCommitStreamResponse.Parse(parser);
                                 ropsList.Add(ropWriteAndCommitStreamResponse);
                                 break;
                             case RopIdType.RopCloneStream:
-                                RopCloneStreamResponse ropCloneStreamResponse = new RopCloneStreamResponse();
-                                ropCloneStreamResponse.Parse(s);
+                                var ropCloneStreamResponse = new RopCloneStreamResponse();
+                                ropCloneStreamResponse.Parse(parser);
                                 ropsList.Add(ropCloneStreamResponse);
                                 break;
 
                             // MSOXCFOLD ROPs
                             case RopIdType.RopOpenFolder:
-                                RopOpenFolderResponse ropOpenFolderResponse = new RopOpenFolderResponse();
-                                ropOpenFolderResponse.Parse(s);
+                                var ropOpenFolderResponse = new RopOpenFolderResponse();
+                                ropOpenFolderResponse.Parse(parser);
                                 ropsList.Add(ropOpenFolderResponse);
                                 break;
 
                             case RopIdType.RopCreateFolder:
-                                RopCreateFolderResponse ropCreateFolderResponse = new RopCreateFolderResponse();
-                                ropCreateFolderResponse.Parse(s);
+                                var ropCreateFolderResponse = new RopCreateFolderResponse();
+                                ropCreateFolderResponse.Parse(parser);
                                 ropsList.Add(ropCreateFolderResponse);
                                 break;
 
                             case RopIdType.RopDeleteFolder:
-                                RopDeleteFolderResponse ropDeleteFolderResponse = new RopDeleteFolderResponse();
-                                ropDeleteFolderResponse.Parse(s);
+                                var ropDeleteFolderResponse = new RopDeleteFolderResponse();
+                                ropDeleteFolderResponse.Parse(parser);
                                 ropsList.Add(ropDeleteFolderResponse);
                                 break;
 
                             case RopIdType.RopSetSearchCriteria:
-                                RopSetSearchCriteriaResponse ropSetSearchCriteriaResponse = new RopSetSearchCriteriaResponse();
-                                ropSetSearchCriteriaResponse.Parse(s);
+                                var ropSetSearchCriteriaResponse = new RopSetSearchCriteriaResponse();
+                                ropSetSearchCriteriaResponse.Parse(parser);
                                 ropsList.Add(ropSetSearchCriteriaResponse);
                                 break;
 
                             case RopIdType.RopGetSearchCriteria:
-                                RopGetSearchCriteriaResponse ropGetSearchCriteriaResponse = new RopGetSearchCriteriaResponse();
-                                ropGetSearchCriteriaResponse.Parse(s);
+                                var ropGetSearchCriteriaResponse = new RopGetSearchCriteriaResponse();
+                                ropGetSearchCriteriaResponse.Parse(parser);
                                 ropsList.Add(ropGetSearchCriteriaResponse);
                                 break;
 
                             case RopIdType.RopMoveCopyMessages:
-                                RopMoveCopyMessagesResponse ropMoveCopyMessagesResponse = new RopMoveCopyMessagesResponse();
-                                ropMoveCopyMessagesResponse.Parse(s);
+                                var ropMoveCopyMessagesResponse = new RopMoveCopyMessagesResponse();
+                                ropMoveCopyMessagesResponse.Parse(parser);
                                 ropsList.Add(ropMoveCopyMessagesResponse);
                                 break;
 
                             case RopIdType.RopMoveFolder:
-                                RopMoveFolderResponse ropMoveFolderResponse = new RopMoveFolderResponse();
-                                ropMoveFolderResponse.Parse(s);
+                                var ropMoveFolderResponse = new RopMoveFolderResponse();
+                                ropMoveFolderResponse.Parse(parser);
                                 ropsList.Add(ropMoveFolderResponse);
                                 break;
 
                             case RopIdType.RopCopyFolder:
-                                RopCopyFolderResponse ropCopyFolderResponse = new RopCopyFolderResponse();
-                                ropCopyFolderResponse.Parse(s);
+                                var ropCopyFolderResponse = new RopCopyFolderResponse();
+                                ropCopyFolderResponse.Parse(parser);
                                 ropsList.Add(ropCopyFolderResponse);
                                 break;
 
                             case RopIdType.RopEmptyFolder:
-                                RopEmptyFolderResponse ropEmptyFolderResponse = new RopEmptyFolderResponse();
-                                ropEmptyFolderResponse.Parse(s);
+                                var ropEmptyFolderResponse = new RopEmptyFolderResponse();
+                                ropEmptyFolderResponse.Parse(parser);
                                 ropsList.Add(ropEmptyFolderResponse);
                                 break;
 
                             case RopIdType.RopHardDeleteMessagesAndSubfolders:
-                                RopHardDeleteMessagesAndSubfoldersResponse ropHardDeleteMessagesAndSubfoldersResponse = new RopHardDeleteMessagesAndSubfoldersResponse();
-                                ropHardDeleteMessagesAndSubfoldersResponse.Parse(s);
+                                var ropHardDeleteMessagesAndSubfoldersResponse = new RopHardDeleteMessagesAndSubfoldersResponse();
+                                ropHardDeleteMessagesAndSubfoldersResponse.Parse(parser);
                                 ropsList.Add(ropHardDeleteMessagesAndSubfoldersResponse);
                                 break;
 
                             case RopIdType.RopDeleteMessages:
-                                RopDeleteMessagesResponse ropDeleteMessagesResponse = new RopDeleteMessagesResponse();
-                                ropDeleteMessagesResponse.Parse(s);
+                                var ropDeleteMessagesResponse = new RopDeleteMessagesResponse();
+                                ropDeleteMessagesResponse.Parse(parser);
                                 ropsList.Add(ropDeleteMessagesResponse);
                                 break;
 
                             case RopIdType.RopHardDeleteMessages:
-                                RopHardDeleteMessagesResponse ropHardDeleteMessagesResponse = new RopHardDeleteMessagesResponse();
-                                ropHardDeleteMessagesResponse.Parse(s);
+                                var ropHardDeleteMessagesResponse = new RopHardDeleteMessagesResponse();
+                                ropHardDeleteMessagesResponse.Parse(parser);
                                 ropsList.Add(ropHardDeleteMessagesResponse);
                                 break;
 
                             case RopIdType.RopGetHierarchyTable:
-                                RopGetHierarchyTableResponse ropGetHierarchyTableResponse = new RopGetHierarchyTableResponse();
-                                ropGetHierarchyTableResponse.Parse(s);
+                                var ropGetHierarchyTableResponse = new RopGetHierarchyTableResponse();
+                                ropGetHierarchyTableResponse.Parse(parser);
                                 ropsList.Add(ropGetHierarchyTableResponse);
                                 break;
 
                             case RopIdType.RopGetContentsTable:
-                                RopGetContentsTableResponse ropGetContentsTableResponse = new RopGetContentsTableResponse();
-                                ropGetContentsTableResponse.Parse(s);
+                                var ropGetContentsTableResponse = new RopGetContentsTableResponse();
+                                ropGetContentsTableResponse.Parse(parser);
                                 ropsList.Add(ropGetContentsTableResponse);
                                 break;
 
                             // MS-OXCMSG ROPs
                             case RopIdType.RopOpenMessage:
-                                RopOpenMessageResponse ropOpenMessageResponse = new RopOpenMessageResponse();
-                                ropOpenMessageResponse.Parse(s);
+                                var ropOpenMessageResponse = new RopOpenMessageResponse();
+                                ropOpenMessageResponse.Parse(parser);
                                 ropsList.Add(ropOpenMessageResponse);
                                 break;
 
                             case RopIdType.RopCreateMessage:
-                                RopCreateMessageResponse ropCreateMessageResponse = new RopCreateMessageResponse();
-                                ropCreateMessageResponse.Parse(s);
+                                var ropCreateMessageResponse = new RopCreateMessageResponse();
+                                ropCreateMessageResponse.Parse(parser);
                                 ropsList.Add(ropCreateMessageResponse);
                                 break;
 
                             case RopIdType.RopSaveChangesMessage:
-                                RopSaveChangesMessageResponse ropSaveChangesMessageResponse = new RopSaveChangesMessageResponse();
-                                ropSaveChangesMessageResponse.Parse(s);
+                                var ropSaveChangesMessageResponse = new RopSaveChangesMessageResponse();
+                                ropSaveChangesMessageResponse.Parse(parser);
                                 ropsList.Add(ropSaveChangesMessageResponse);
                                 break;
 
                             case RopIdType.RopRemoveAllRecipients:
-                                RopRemoveAllRecipientsResponse ropRemoveAllRecipientsResponse = new RopRemoveAllRecipientsResponse();
-                                ropRemoveAllRecipientsResponse.Parse(s);
+                                var ropRemoveAllRecipientsResponse = new RopRemoveAllRecipientsResponse();
+                                ropRemoveAllRecipientsResponse.Parse(parser);
                                 ropsList.Add(ropRemoveAllRecipientsResponse);
                                 break;
 
                             case RopIdType.RopModifyRecipients:
-                                RopModifyRecipientsResponse ropModifyRecipientsResponse = new RopModifyRecipientsResponse();
-                                ropModifyRecipientsResponse.Parse(s);
+                                var ropModifyRecipientsResponse = new RopModifyRecipientsResponse();
+                                ropModifyRecipientsResponse.Parse(parser);
                                 ropsList.Add(ropModifyRecipientsResponse);
                                 break;
 
                             case RopIdType.RopReadRecipients:
-                                RopReadRecipientsResponse ropReadRecipientsResponse = new RopReadRecipientsResponse();
-                                ropReadRecipientsResponse.Parse(s);
+                                var ropReadRecipientsResponse = new RopReadRecipientsResponse();
+                                ropReadRecipientsResponse.Parse(parser);
                                 ropsList.Add(ropReadRecipientsResponse);
                                 break;
 
                             case RopIdType.RopReloadCachedInformation:
-                                RopReloadCachedInformationResponse ropReloadCachedInformationResponse = new RopReloadCachedInformationResponse();
-                                ropReloadCachedInformationResponse.Parse(s);
+                                var ropReloadCachedInformationResponse = new RopReloadCachedInformationResponse();
+                                ropReloadCachedInformationResponse.Parse(parser);
                                 ropsList.Add(ropReloadCachedInformationResponse);
                                 break;
                             case RopIdType.RopSetMessageStatus:
-                                RopSetMessageStatusResponse ropSetMessageStatusResponse = new RopSetMessageStatusResponse();
-                                ropSetMessageStatusResponse.Parse(s);
+                                var ropSetMessageStatusResponse = new RopSetMessageStatusResponse();
+                                ropSetMessageStatusResponse.Parse(parser);
                                 ropsList.Add(ropSetMessageStatusResponse);
                                 break;
 
                             case RopIdType.RopGetMessageStatus:
-                                RopGetMessageStatusResponse ropGetMessageStatusResponse = new RopGetMessageStatusResponse();
-                                ropGetMessageStatusResponse.Parse(s);
+                                var ropGetMessageStatusResponse = new RopGetMessageStatusResponse();
+                                ropGetMessageStatusResponse.Parse(parser);
                                 ropsList.Add(ropGetMessageStatusResponse);
                                 break;
 
                             case RopIdType.RopSetReadFlags:
-                                RopSetReadFlagsResponse ropSetReadFlagsResponse = new RopSetReadFlagsResponse();
-                                ropSetReadFlagsResponse.Parse(s);
+                                var ropSetReadFlagsResponse = new RopSetReadFlagsResponse();
+                                ropSetReadFlagsResponse.Parse(parser);
                                 ropsList.Add(ropSetReadFlagsResponse);
                                 break;
                             case RopIdType.RopSetMessageReadFlag:
-                                RopSetMessageReadFlagResponse ropSetMessageReadFlagResponse = new RopSetMessageReadFlagResponse();
-                                ropSetMessageReadFlagResponse.Parse(s);
+                                var ropSetMessageReadFlagResponse = new RopSetMessageReadFlagResponse();
+                                ropSetMessageReadFlagResponse.Parse(parser);
                                 ropsList.Add(ropSetMessageReadFlagResponse);
                                 break;
 
                             case RopIdType.RopOpenAttachment:
-                                RopOpenAttachmentResponse ropOpenAttachmentResponse = new RopOpenAttachmentResponse();
-                                ropOpenAttachmentResponse.Parse(s);
+                                var ropOpenAttachmentResponse = new RopOpenAttachmentResponse();
+                                ropOpenAttachmentResponse.Parse(parser);
                                 ropsList.Add(ropOpenAttachmentResponse);
                                 break;
 
                             case RopIdType.RopCreateAttachment:
-                                RopCreateAttachmentResponse ropCreateAttachmentResponse = new RopCreateAttachmentResponse();
-                                ropCreateAttachmentResponse.Parse(s);
+                                var ropCreateAttachmentResponse = new RopCreateAttachmentResponse();
+                                ropCreateAttachmentResponse.Parse(parser);
                                 ropsList.Add(ropCreateAttachmentResponse);
                                 break;
 
                             case RopIdType.RopDeleteAttachment:
-                                RopDeleteAttachmentResponse ropDeleteAttachmentResponse = new RopDeleteAttachmentResponse();
-                                ropDeleteAttachmentResponse.Parse(s);
+                                var ropDeleteAttachmentResponse = new RopDeleteAttachmentResponse();
+                                ropDeleteAttachmentResponse.Parse(parser);
                                 ropsList.Add(ropDeleteAttachmentResponse);
                                 break;
 
                             case RopIdType.RopSaveChangesAttachment:
-                                RopSaveChangesAttachmentResponse ropSaveChangesAttachmentResponse = new RopSaveChangesAttachmentResponse();
-                                ropSaveChangesAttachmentResponse.Parse(s);
+                                var ropSaveChangesAttachmentResponse = new RopSaveChangesAttachmentResponse();
+                                ropSaveChangesAttachmentResponse.Parse(parser);
                                 ropsList.Add(ropSaveChangesAttachmentResponse);
                                 break;
 
                             case RopIdType.RopOpenEmbeddedMessage:
-                                RopOpenEmbeddedMessageResponse ropOpenEmbeddedMessageResponse = new RopOpenEmbeddedMessageResponse();
-                                ropOpenEmbeddedMessageResponse.Parse(s);
+                                var ropOpenEmbeddedMessageResponse = new RopOpenEmbeddedMessageResponse();
+                                ropOpenEmbeddedMessageResponse.Parse(parser);
                                 ropsList.Add(ropOpenEmbeddedMessageResponse);
                                 break;
 
                             case RopIdType.RopGetAttachmentTable:
-                                RopGetAttachmentTableResponse ropGetAttachmentTableResponse = new RopGetAttachmentTableResponse();
-                                ropGetAttachmentTableResponse.Parse(s);
+                                var ropGetAttachmentTableResponse = new RopGetAttachmentTableResponse();
+                                ropGetAttachmentTableResponse.Parse(parser);
                                 ropsList.Add(ropGetAttachmentTableResponse);
                                 break;
 
                             case RopIdType.RopGetValidAttachments:
-                                RopGetValidAttachmentsResponse ropGetValidAttachmentsResponse = new RopGetValidAttachmentsResponse();
-                                ropGetValidAttachmentsResponse.Parse(s);
+                                var ropGetValidAttachmentsResponse = new RopGetValidAttachmentsResponse();
+                                ropGetValidAttachmentsResponse.Parse(parser);
                                 ropsList.Add(ropGetValidAttachmentsResponse);
                                 break;
 
                             // MSOXCNOTIF ROPs
                             case RopIdType.RopRegisterNotification:
-                                RopRegisterNotificationResponse ropRegisterNotificationResponse = new RopRegisterNotificationResponse();
-                                ropRegisterNotificationResponse.Parse(s);
+                                var ropRegisterNotificationResponse = new RopRegisterNotificationResponse();
+                                ropRegisterNotificationResponse.Parse(parser);
                                 ropsList.Add(ropRegisterNotificationResponse);
                                 break;
 
                             case RopIdType.RopPending:
-                                RopPendingResponse ropPendingResponse = new RopPendingResponse();
-                                ropPendingResponse.Parse(s);
+                                var ropPendingResponse = new RopPendingResponse();
+                                ropPendingResponse.Parse(parser);
                                 ropsList.Add(ropPendingResponse);
                                 break;
 
                             case RopIdType.RopNotify:
-                                RopNotifyResponse ropNotifyResponse = new RopNotifyResponse();
-                                ropNotifyResponse.Parse(s);
+                                var ropNotifyResponse = new RopNotifyResponse();
+                                ropNotifyResponse.Parse(parser);
                                 ropsList.Add(ropNotifyResponse);
                                 break;
 
                             // MS-OXCPERM ROPs
                             case RopIdType.RopGetPermissionsTable:
-                                RopGetPermissionsTableResponse ropGetPermissionsTableResponse = new RopGetPermissionsTableResponse();
-                                ropGetPermissionsTableResponse.Parse(s);
+                                var ropGetPermissionsTableResponse = new RopGetPermissionsTableResponse();
+                                ropGetPermissionsTableResponse.Parse(parser);
                                 ropsList.Add(ropGetPermissionsTableResponse);
                                 break;
 
                             case RopIdType.RopModifyPermissions:
-                                RopModifyPermissionsResponse ropModifyPermissionsResponse = new RopModifyPermissionsResponse();
-                                ropModifyPermissionsResponse.Parse(s);
+                                var ropModifyPermissionsResponse = new RopModifyPermissionsResponse();
+                                ropModifyPermissionsResponse.Parse(parser);
                                 ropsList.Add(ropModifyPermissionsResponse);
                                 break;
 
                             default:
-                                object ropsBytes = ReadBytes(RopSize - (int)s.Position);
+                                BlockBytes ropsBytes = ParseBytes(RopSize - parser.Offset);
                                 ropsList.Add(ropsBytes);
                                 break;
                         }
                     }
-                    while (s.Position < RopSize);
+                    while (parser.Offset < RopSize);
                 }
                 else
                 {
@@ -998,7 +1026,7 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                byte[] ropListBytes = ReadBytes(RopSize - 2);
+                ropsList.Add(ParseBytes(RopSize - sizeof(RopIdType)));
             }
 
             RopsList = ropsList.ToArray();
@@ -1015,13 +1043,20 @@ namespace MAPIInspector.Parsers
                 }
             }
 
-            while (s.Position + sizeof(uint) <= s.Length)
+            while (parser.RemainingBytes >= sizeof(uint))
             {
-                uint serverObjectHandle = ReadUint();
-                serverObjectHandleTable.Add(serverObjectHandle);
+                serverObjectHandleTable.Add(ParseT<uint>());
             }
 
             ServerObjectHandleTable = serverObjectHandleTable.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ROPOutputBuffer");
+            AddChildBlockT(RopSize, "RopSize");
+            AddLabeledChildren(RopsList, "RopsList");
+            AddLabeledChildren(ServerObjectHandleTable, "ServerObjectHandleTable");
         }
     }
 }

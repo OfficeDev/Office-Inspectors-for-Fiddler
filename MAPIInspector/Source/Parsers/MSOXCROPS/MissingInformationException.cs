@@ -15,7 +15,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// The ROP ID needs context information
         /// </summary>
-        public ushort RopID;
+        public RopIdType RopID;
 
         /// <summary>
         /// The source ROP parameters to pass
@@ -28,7 +28,7 @@ namespace MAPIInspector.Parsers
         /// <param name="message">Exception error messge</param>
         /// <param name="ropID">ROP id</param>
         /// <param name="parameter">parameters for this missing information exception</param>
-        public MissingInformationException(string message, ushort ropID, uint[] parameter = null)
+        public MissingInformationException(string message, RopIdType ropID, uint[] parameter = null)
         {
             ErrorMessage = message;
             RopID = ropID;

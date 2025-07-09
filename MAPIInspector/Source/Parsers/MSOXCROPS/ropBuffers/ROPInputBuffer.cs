@@ -20,6 +20,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An array of ROP request buffers.
         /// </summary>
+        /// </summary
         public object[] RopsList;
 
         /// <summary>
@@ -36,10 +37,10 @@ namespace MAPIInspector.Parsers
             base.Parse(s);
             bool parseToCROPSRequestLayer = false;
             RopSize = ReadUshort();
-            List<object> ropsList = new List<object>();
-            List<uint> serverObjectHandleTable = new List<uint>();
-            List<uint> ropRemainSize = new List<uint>();
-            List<uint> tempServerObjectHandleTable = new List<uint>();
+            var ropsList = new List<object>();
+            var serverObjectHandleTable = new List<uint>();
+            var ropRemainSize = new List<uint>();
+            var tempServerObjectHandleTable = new List<uint>();
             int parsingSessionID = MapiInspector.MAPIParser.ParsingSession.id;
             if (MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
             {
@@ -55,8 +56,7 @@ namespace MAPIInspector.Parsers
                 if (MapiInspector.MAPIParser.TargetHandle.Count > 0)
                 {
                     MapiInspector.MAPIParser.IsLooperCall = true;
-                    Dictionary<ushort, Dictionary<int, uint>> item = new Dictionary<ushort, Dictionary<int, uint>>();
-                    item = MapiInspector.MAPIParser.TargetHandle.Peek();
+                    var item = MapiInspector.MAPIParser.TargetHandle.Peek();
 
                     if (item.First().Value.ContainsValue(serverObjectTable))
                     {
@@ -85,10 +85,10 @@ namespace MAPIInspector.Parsers
 
                     do
                     {
-                        int currentByte = s.ReadByte();
+                        RopIdType currentByte = (RopIdType)s.ReadByte();
                         s.Position -= 1;
 
-                        switch ((RopIdType)currentByte)
+                        switch (currentByte)
                         {
                             // MS-OXCSTOR ROPs
                             case RopIdType.RopLogon:
@@ -212,7 +212,12 @@ namespace MAPIInspector.Parsers
                                 if (!(DecodingContext.SessionLogonFlagMapLogId.Count > 0 && DecodingContext.SessionLogonFlagMapLogId.ContainsKey(parsingSessionID)
                                       && DecodingContext.SessionLogonFlagMapLogId[parsingSessionID].ContainsKey(logonId)))
                                 {
-                                    throw new MissingInformationException("Missing LogonFlags information for RopWritePerUserInformation", (ushort)currentByte, new uint[] { logonId });
+                                    throw new MissingInformationException(
+                                        "Missing LogonFlags information for RopWritePerUserInformation",
+                                        currentByte,
+                                        new uint[] {
+                                            logonId
+                                        });
                                 }
 
                                 RopWritePerUserInformationRequest ropWritePerUserInformationRequest = new RopWritePerUserInformationRequest();
@@ -314,9 +319,9 @@ namespace MAPIInspector.Parsers
                                 {
                                     if (MapiInspector.MAPIParser.TargetHandle.Count > 0)
                                     {
-                                        Dictionary<ushort, Dictionary<int, uint>> target = MapiInspector.MAPIParser.TargetHandle.Peek();
+                                        var target = MapiInspector.MAPIParser.TargetHandle.Peek();
 
-                                        if ((RopIdType)target.First().Key == RopIdType.RopQueryRows || (RopIdType)target.First().Key == RopIdType.RopFindRow || (RopIdType)target.First().Key == RopIdType.RopExpandRow)
+                                        if (target.First().Key == RopIdType.RopQueryRows || target.First().Key == RopIdType.RopFindRow || target.First().Key == RopIdType.RopExpandRow)
                                         {
                                             // When the object handle is not equal to 0xFFFFFFFF, add objectHandle and Property Tags to the dictionary.
                                             Dictionary<int, Tuple<string, string, string, PropertyTag[]>> sessionTuples = new Dictionary<int, Tuple<string, string, string, PropertyTag[]>>();
@@ -338,7 +343,7 @@ namespace MAPIInspector.Parsers
                                             DecodingContext.RowRops_handlePropertyTags.Add(handle_SetColumns, sessionTuples);
                                         }
 
-                                        if ((RopIdType)target.First().Key == RopIdType.RopNotify)
+                                        if (target.First().Key == RopIdType.RopNotify)
                                         {
                                             Dictionary<int, Tuple<string, string, string, PropertyTag[], string>> sessionTuples = new Dictionary<int, Tuple<string, string, string, PropertyTag[], string>>();
                                             Tuple<string, string, string, PropertyTag[], string> tuples;
@@ -378,12 +383,12 @@ namespace MAPIInspector.Parsers
 
                                         if (MapiInspector.MAPIParser.TargetHandle.Count > 0)
                                         {
-                                            Dictionary<ushort, Dictionary<int, uint>> target = MapiInspector.MAPIParser.TargetHandle.Peek();
+                                            var target = MapiInspector.MAPIParser.TargetHandle.Peek();
 
-                                            if ((RopIdType)target.First().Key == RopIdType.RopQueryRows || (RopIdType)target.First().Key == RopIdType.RopFindRow || (RopIdType)target.First().Key == RopIdType.RopExpandRow)
+                                            if (target.First().Key == RopIdType.RopQueryRows || target.First().Key == RopIdType.RopFindRow || target.First().Key == RopIdType.RopExpandRow)
                                             {
                                                 // This is for Row related rops
-                                                Dictionary<int, Tuple<string, string, string, PropertyTag[]>> sessionTuples = new Dictionary<int, Tuple<string, string, string, PropertyTag[]>>();
+                                                var sessionTuples = new Dictionary<int, Tuple<string, string, string, PropertyTag[]>>();
                                                 Tuple<string, string, string, PropertyTag[]> tuples;
 
                                                 if (DecodingContext.RowRops_handlePropertyTags.ContainsKey(outputHandle))
@@ -442,12 +447,12 @@ namespace MAPIInspector.Parsers
 
                                     if (MapiInspector.MAPIParser.TargetHandle.Count > 0)
                                     {
-                                        Dictionary<ushort, Dictionary<int, uint>> target = MapiInspector.MAPIParser.TargetHandle.Peek();
+                                        var target = MapiInspector.MAPIParser.TargetHandle.Peek();
 
-                                        if ((RopIdType)target.First().Key == RopIdType.RopQueryRows || (RopIdType)target.First().Key == RopIdType.RopFindRow || (RopIdType)target.First().Key == RopIdType.RopExpandRow)
+                                        if (target.First().Key == RopIdType.RopQueryRows || target.First().Key == RopIdType.RopFindRow || target.First().Key == RopIdType.RopExpandRow)
                                         {
                                             // This is for Row related rops
-                                            Dictionary<int, Tuple<string, string, string, PropertyTag[]>> sessionTuples = new Dictionary<int, Tuple<string, string, string, PropertyTag[]>>();
+                                            var sessionTuples = new Dictionary<int, Tuple<string, string, string, PropertyTag[]>>();
                                             Tuple<string, string, string, PropertyTag[]> tuples;
 
                                             if (DecodingContext.RowRops_handlePropertyTags.ContainsKey(outputHandle))
@@ -662,9 +667,9 @@ namespace MAPIInspector.Parsers
 
                                 if (tempServerObjectHandleTable[tempInputHandleIndex_putBuffer] != 0xffffffff)
                                 {
-                                    if (!DecodingContext.PartialInformationReady.ContainsKey((int)destinationParsingSessionID))
+                                    if (!DecodingContext.PartialInformationReady.ContainsKey(destinationParsingSessionID))
                                     {
-                                        throw new MissingPartialInformationException((RopIdType)currentByte, ropPutbufferHandle);
+                                        throw new MissingPartialInformationException(currentByte, ropPutbufferHandle);
                                     }
                                 }
                                 else
@@ -719,9 +724,9 @@ namespace MAPIInspector.Parsers
 
                                 if (tempServerObjectHandleTable[tempInputHandleIndex_putBufferExtended] != 0xffffffff)
                                 {
-                                    if (!DecodingContext.PartialInformationReady.ContainsKey((int)aimsParsingSessionID))
+                                    if (!DecodingContext.PartialInformationReady.ContainsKey(aimsParsingSessionID))
                                     {
-                                        throw new MissingPartialInformationException((RopIdType)currentByte, ropPutExtendbufferHandle);
+                                        throw new MissingPartialInformationException(currentByte, ropPutExtendbufferHandle);
                                     }
                                 }
                                 else
@@ -1177,7 +1182,11 @@ namespace MAPIInspector.Parsers
                                 if (!(DecodingContext.SessionLogonFlagMapLogId.Count > 0 && DecodingContext.SessionLogonFlagMapLogId.ContainsKey(parsingSessionID)
                                     && DecodingContext.SessionLogonFlagMapLogId[parsingSessionID].ContainsKey(logId)))
                                 {
-                                    throw new MissingInformationException("Missing LogonFlags information for RopSetMessageReadFlag", (ushort)currentByte, new uint[] { logId });
+                                    throw new MissingInformationException("Missing LogonFlags information for RopSetMessageReadFlag",
+                                        currentByte,
+                                        new uint[] {
+                                            logId }
+                                        );
                                 }
 
                                 RopSetMessageReadFlagRequest ropSetMessageReadFlagRequest = new RopSetMessageReadFlagRequest();
@@ -1253,7 +1262,7 @@ namespace MAPIInspector.Parsers
                                 break;
                         }
 
-                        if ((RopIdType)currentByte != RopIdType.RopRelease)
+                        if (currentByte != RopIdType.RopRelease)
                         {
                             ropRemainSize.Add(RopSize - (uint)s.Position);
                         }

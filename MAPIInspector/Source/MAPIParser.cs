@@ -28,7 +28,7 @@ namespace MapiInspector
         /// <summary>
         /// The targetHandle is used to record the session id and its object handle before a loop parsing for context session
         /// </summary>
-        public static Stack<Dictionary<ushort, Dictionary<int, uint>>> TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
+        public static Stack<Dictionary<RopIdType, Dictionary<int, uint>>> TargetHandle = new Stack<Dictionary<RopIdType, Dictionary<int, uint>>>();
 
         /// <summary>
         /// The ContextInformationCollection is used to record current session for all of the context information results.
@@ -298,7 +298,7 @@ namespace MapiInspector
         /// <param name="obj">The target object containing the context information</param>
         /// <param name="bytes">The target byte array provided to HexView</param>
         /// <param name="parameters">The missing context information ROP related parameters</param>
-        public static void SafeHandleContextInformation(ushort sourceRopID, out object obj, out byte[] bytes, uint[] parameters = null)
+        public static void SafeHandleContextInformation(RopIdType sourceRopID, out object obj, out byte[] bytes, uint[] parameters = null)
         {
             if (inSafeHandleContextInformation)
             {
@@ -330,7 +330,7 @@ namespace MapiInspector
         /// <param name="obj">The target object containing the context information</param>
         /// <param name="bytes">The target byte array provided to HexView</param>
         /// <param name="parameters">The missing context information ROP related parameters</param>
-        public static void HandleContextInformation(ushort sourceRopID, out object obj, out byte[] bytes, uint[] parameters = null)
+        public static void HandleContextInformation(RopIdType sourceRopID, out object obj, out byte[] bytes, uint[] parameters = null)
         {
             byte[] bytesForHexView;
             object mapiRequest = new object();
@@ -343,13 +343,13 @@ namespace MapiInspector
             {
                 thisSessionID = int.Parse(thisSession["VirtualID"]);
             }
-            if ((RopIdType)sourceRopID == RopIdType.RopLogon)
+            if (sourceRopID == RopIdType.RopLogon)
             {
                 ParseRequestMessage(thisSession, out bytesForHexView, true);
                 obj = ParseResponseMessage(thisSession, out bytesForHexView, true);
                 bytes = bytesForHexView;
             }
-            else if ((RopIdType)sourceRopID == RopIdType.RopSetMessageReadFlag)
+            else if (sourceRopID == RopIdType.RopSetMessageReadFlag)
             {
                 string serverurl = thisSession.RequestHeaders.RequestPath;
                 string processName = thisSession.LocalProcess;
@@ -359,8 +359,8 @@ namespace MapiInspector
                     parameters.Length > 0)
                 {
                     // parsing the previous sessions until DecodingContext.LogonFlagMapLogId contains the LogOn Id in this RopSetMessageReadFlag ROP.
-                    Dictionary<int, uint> dic = new Dictionary<int, uint>();
-                    Dictionary<ushort, Dictionary<int, uint>> targetDic = new Dictionary<ushort, Dictionary<int, uint>>();
+                    var dic = new Dictionary<int, uint>();
+                    var targetDic = new Dictionary<RopIdType, Dictionary<int, uint>>();
                     dic.Add(thisSessionID, parameters[0]);
                     targetDic.Add(sourceRopID, dic);
                     TargetHandle.Push(targetDic);
@@ -396,13 +396,13 @@ namespace MapiInspector
                     }
                     else
                     {
-                        result = string.Format("{0} cannot be parsed successfully due to missing the LogOn information for handle {1}, check whether the trace is complete.", (RopIdType)sourceRopID, parameters[0]);
+                        result = string.Format("{0} cannot be parsed successfully due to missing the LogOn information for handle {1}, check whether the trace is complete.", sourceRopID, parameters[0]);
                     }
 
                     if (TargetHandle.Count == 1)
                     {
                         ContextInformation information = new ContextInformation();
-                        information.RopID = (RopIdType)sourceRopID;
+                        information.RopID = sourceRopID;
                         information.Handle = parameters[0];
                         information.RelatedInformation = result;
                         ContextInformationCollection.Add(information);
@@ -436,17 +436,17 @@ namespace MapiInspector
                 }
                 else
                 {
-                    obj = string.Format("{0} cannot be parsed successfully due to missing the LogOn information for handle {1}, check whether the trace is complete.", (RopIdType)sourceRopID, parameters[0]);
+                    obj = string.Format("{0} cannot be parsed successfully due to missing the LogOn information for handle {1}, check whether the trace is complete.", sourceRopID, parameters[0]);
                     bytes = new byte[0];
                 }
             }
-            else if ((RopIdType)sourceRopID == RopIdType.RopGetPropertiesSpecific)
+            else if (sourceRopID == RopIdType.RopGetPropertiesSpecific)
             {
                 ParseRequestMessage(thisSession, out bytesForHexView, true);
                 obj = ParseResponseMessage(thisSession, out bytesForHexView, true);
                 bytes = bytesForHexView;
             }
-            else if ((RopIdType)sourceRopID == RopIdType.RopWritePerUserInformation)
+            else if (sourceRopID == RopIdType.RopWritePerUserInformation)
             {
                 Session currentSession = AllSessions[Convert.ToInt32(thisSession["Number"]) - 1];
                 string serverurl = thisSession.RequestHeaders.RequestPath;
@@ -456,8 +456,8 @@ namespace MapiInspector
                 if (parameters != null &&
                     parameters.Length > 0)
                 {
-                    Dictionary<int, uint> dic = new Dictionary<int, uint>();
-                    Dictionary<ushort, Dictionary<int, uint>> targetDic = new Dictionary<ushort, Dictionary<int, uint>>();
+                    var dic = new Dictionary<int, uint>();
+                    var targetDic = new Dictionary<RopIdType, Dictionary<int, uint>>();
                     dic.Add(thisSessionID, parameters[0]);
                     targetDic.Add(sourceRopID, dic);
 
@@ -498,13 +498,13 @@ namespace MapiInspector
                     }
                     else
                     {
-                        result = string.Format("{0} cannot be parsed successfully due to missing the LogOn information for handle {1}, check whether the trace is complete.", (RopIdType)sourceRopID, parameters[0]);
+                        result = string.Format("{0} cannot be parsed successfully due to missing the LogOn information for handle {1}, check whether the trace is complete.", sourceRopID, parameters[0]);
                     }
 
                     if (TargetHandle.Count == 1)
                     {
                         ContextInformation information = new ContextInformation();
-                        information.RopID = (RopIdType)sourceRopID;
+                        information.RopID = sourceRopID;
                         information.Handle = parameters[0];
                         information.RelatedInformation = result;
                         ContextInformationCollection.Add(information);
@@ -538,11 +538,11 @@ namespace MapiInspector
                 }
                 else
                 {
-                    obj = string.Format("{0} cannot be parsed successfully due to missing the LogOn information for handle {1}, check whether the trace is complete.", (RopIdType)sourceRopID, parameters[0]);
+                    obj = string.Format("{0} cannot be parsed successfully due to missing the LogOn information for handle {1}, check whether the trace is complete.", sourceRopID, parameters[0]);
                     bytes = new byte[0];
                 }
             }
-            else if ((RopIdType)sourceRopID == RopIdType.RopQueryRows || (RopIdType)sourceRopID == RopIdType.RopFindRow || (RopIdType)sourceRopID == RopIdType.RopExpandRow)
+            else if (sourceRopID == RopIdType.RopQueryRows || sourceRopID == RopIdType.RopFindRow || sourceRopID == RopIdType.RopExpandRow)
             {
                 Session currentSession = thisSession;
                 int currentSessionID = currentSession.id;
@@ -550,8 +550,8 @@ namespace MapiInspector
                 {
                     currentSessionID = int.Parse(currentSession["VirtualID"]);
                 }
-                Dictionary<int, uint> dic_QueryRows = new Dictionary<int, uint>();
-                Dictionary<ushort, Dictionary<int, uint>> targetDic = new Dictionary<ushort, Dictionary<int, uint>>();
+                var dic_QueryRows = new Dictionary<int, uint>();
+                var targetDic = new Dictionary<RopIdType, Dictionary<int, uint>>();
                 dic_QueryRows.Add(thisSessionID, parameters[1]);
                 targetDic.Add(sourceRopID, dic_QueryRows);
                 TargetHandle.Push(targetDic);
@@ -636,14 +636,14 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                     }
                     else
                     {
-                        result = string.Format("{0} cannot be parsed successfully due to missing the PropertyTags for handle {1}, check whether the trace is complete.", (RopIdType)sourceRopID, parameters[1]);
+                        result = string.Format("{0} cannot be parsed successfully due to missing the PropertyTags for handle {1}, check whether the trace is complete.", sourceRopID, parameters[1]);
                     }
                 }
 
                 if (TargetHandle.Count == 1)
                 {
                     ContextInformation information = new ContextInformation();
-                    information.RopID = (RopIdType)sourceRopID;
+                    information.RopID = sourceRopID;
                     information.Handle = parameters[1];
                     information.RelatedInformation = result;
                     ContextInformationCollection.Add(information);
@@ -676,11 +676,11 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                 }
                 else
                 {
-                    obj = string.Format("{0} cannot be parsed successfully due to missing the PropertyTags for handle {1}, check whether the trace is complete.", (RopIdType)sourceRopID, parameters[1]);
+                    obj = string.Format("{0} cannot be parsed successfully due to missing the PropertyTags for handle {1}, check whether the trace is complete.", sourceRopID, parameters[1]);
                     bytes = new byte[0];
                 }
             }
-            else if ((RopIdType)sourceRopID == RopIdType.RopNotify)
+            else if (sourceRopID == RopIdType.RopNotify)
             {
                 Session currentSession = thisSession;
                 int currentSessionID = currentSession.id;
@@ -689,8 +689,8 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                     currentSessionID = int.Parse(currentSession["VirtualID"]);
                 }
                 uint targetSessionID = 0;
-                Dictionary<int, uint> dic_Notify = new Dictionary<int, uint>();
-                Dictionary<ushort, Dictionary<int, uint>> targetDic = new Dictionary<ushort, Dictionary<int, uint>>();
+                var dic_Notify = new Dictionary<int, uint>();
+                var targetDic = new Dictionary<RopIdType, Dictionary<int, uint>>();
                 dic_Notify.Add(thisSessionID, parameters[1]);
                 targetDic.Add(sourceRopID, dic_Notify);
                 TargetHandle.Push(targetDic);
@@ -888,7 +888,7 @@ sessionID >= currentSessionID)
                 if (TargetHandle.Count == 1)
                 {
                     ContextInformation information = new ContextInformation();
-                    information.RopID = (RopIdType)sourceRopID;
+                    information.RopID = sourceRopID;
                     information.Handle = parameters[1];
                     information.RelatedInformation = result;
                     ContextInformationCollection.Add(information);
@@ -925,7 +925,7 @@ sessionID >= currentSessionID)
                     bytes = new byte[0];
                 }
             }
-            else if ((RopIdType)sourceRopID == RopIdType.RopBufferTooSmall)
+            else if (sourceRopID == RopIdType.RopBufferTooSmall)
             {
                 if (DecodingContext.SessionRequestRemainSize.Count > 0 &&
                     DecodingContext.SessionRequestRemainSize.ContainsKey(thisSessionID))
@@ -1873,7 +1873,7 @@ sessionID >= currentSessionID)
                     {
                         DecodingContext.Notify_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[], string>>>();
                         DecodingContext.RowRops_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[]>>>();
-                        TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
+                        TargetHandle = new Stack<Dictionary<RopIdType, Dictionary<int, uint>>>();
                         ContextInformationCollection = new List<ContextInformation>();
                         IsLooperCall = true;
                     }

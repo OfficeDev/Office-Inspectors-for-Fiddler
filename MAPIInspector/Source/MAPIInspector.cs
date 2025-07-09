@@ -344,7 +344,7 @@ namespace MapiInspector
             byte[] bytesForHexView;
             object parserResult;
             IsLooperCall = false;
-            TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
+            TargetHandle = new Stack<Dictionary<RopIdType, Dictionary<int, uint>>>();
             ContextInformationCollection = new List<ContextInformation>();
             Partial.ResetPartialParameters();
 
@@ -395,7 +395,7 @@ namespace MapiInspector
                 {
                     DecodingContext.Notify_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[], string>>>();
                     DecodingContext.RowRops_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[]>>>();
-                    TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
+                    TargetHandle = new Stack<Dictionary<RopIdType, Dictionary<int, uint>>>();
                     ContextInformationCollection = new List<ContextInformation>();
                     IsLooperCall = true;
                 }
@@ -460,7 +460,7 @@ namespace MapiInspector
                     {
                         DecodingContext.Notify_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[], string>>>();
                         DecodingContext.RowRops_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[]>>>();
-                        TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
+                        TargetHandle = new Stack<Dictionary<RopIdType, Dictionary<int, uint>>>();
                         ContextInformationCollection = new List<ContextInformation>();
                         IsLooperCall = true;
                     }
