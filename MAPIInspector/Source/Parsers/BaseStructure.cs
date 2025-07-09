@@ -184,12 +184,19 @@ namespace MAPIInspector.Parsers
             }
             if (DebugNodes)
             {
-                var debugNode = new TreeNode($"Block: {typeName} at {blockOffset} with size {block.Size} bytes")
+                var x = IsCompressedXOR ? " X" : "";
+                var debugNode = new TreeNode($"Block: {typeName} at {blockOffset} with size {block.Size} bytes{x} {compressBufferindex}")
                 {
                     BackColor = backColor,
                     Tag = "ignore"
                 };
                 node.Nodes.Add(debugNode);
+            }
+
+            if (block is RPC_HEADER_EXT header)
+            {
+                IsCompressedXOR = header.Flags.Data.HasFlag(RpcHeaderFlags.XorMagic) ||
+                    header.Flags.Data.HasFlag(RpcHeaderFlags.Compressed);
             }
 
             foreach (var child in block.Children)
