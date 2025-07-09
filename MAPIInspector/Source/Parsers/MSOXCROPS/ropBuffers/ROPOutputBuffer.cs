@@ -37,12 +37,13 @@ namespace MAPIInspector.Parsers
             var serverObjectHandleTable = new List<BlockT<uint>>();
             var tempServerObjectHandleTable = new List<BlockT<uint>>();
             int currentPosition = parser.Offset;
-            parser.Advance(RopSize - sizeof(RopIdType));
+            parser.Advance(RopSize - sizeof(ushort));
             int parsingSessionID = MapiInspector.MAPIParser.ParsingSession.id;
             if (MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
             {
                 parsingSessionID = int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"]);
             }
+
             while (parser.RemainingBytes >= sizeof(uint))
             {
                 var serverObjectTable = ParseT<uint>();
@@ -73,7 +74,7 @@ namespace MAPIInspector.Parsers
                 // empty intermediate variables for ROPs need context information
                DecodingContext.SetColumn_InputHandles_InResponse = new List<uint>();
 
-                if (RopSize > sizeof(RopIdType))
+                if (RopSize > sizeof(ushort))
                 {
                     do
                     {
