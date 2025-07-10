@@ -5,6 +5,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 3.1.4.1.1.1 Extended Buffer Format
+    /// 3.1.4.2.1.1 Extended Buffer Format
     /// The auxiliary blocks sent from the server to the client in the rgbAuxOut parameter auxiliary buffer on the EcDoConnectEx method. It is defined in section 3.1.4.1.1.1 of MS-OXCRPC.
     /// </summary>
     public class ExtendedBuffer : Block

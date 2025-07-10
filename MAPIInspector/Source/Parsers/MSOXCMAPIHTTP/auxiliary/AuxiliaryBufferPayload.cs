@@ -3,6 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// 3.1.4.2.2 Auxiliary Buffer
+    /// 3.1.4.1.2 Auxiliary Buffer
     /// A class indicates the payload data contains auxiliary information. It is defined in section 3.1.4.1.2 of MS-OXCRPC.
     /// </summary>
     public class AuxiliaryBufferPayload : Block
