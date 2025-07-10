@@ -28,6 +28,7 @@ namespace MAPIInspector.Parsers
 
             if (RPCHEADEREXT._Size > 0)
             {
+                var payloadOffset = parser.Offset; // remember the offset for the payload
                 var payloadBlock = ParseBytes((int)RPCHEADEREXT._Size);
                 var payloadBytes = payloadBlock.Data;
                 bool isCompressedXOR = false;
@@ -55,6 +56,7 @@ namespace MAPIInspector.Parsers
                 for (int length = 0; length < RPCHEADEREXT._Size;)
                 {
                     var buffer = Parse<AuxiliaryBufferPayload>(newParser);
+                    buffer.ShiftOffset(payloadOffset); // shift the offset to the original position
                     payload.Add(buffer);
                     length += buffer.AUXHEADER._Size;
                 }

@@ -186,7 +186,7 @@ namespace MAPIInspector.Parsers
                 }
 
                 var x = IsCompressedXOR ? " X" : "";
-                var debugNode = new TreeNode($"Block: {typeName} at {blockRootOffset:X}+{block.Offset:X}={blockOffset} with size {block.Size} bytes{x} {compressBufferindex}")
+                var debugNode = new TreeNode($"Block: {typeName} at {blockRootOffset:X}+{block.Offset:X}={blockOffset:X} with size {block.Size} bytes{x} {compressBufferindex}")
                 {
                     BackColor = backColor,
                     Tag = "ignore"
