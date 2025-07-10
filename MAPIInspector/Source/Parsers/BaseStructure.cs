@@ -165,27 +165,28 @@ namespace MAPIInspector.Parsers
                 Tag = position
             };
 
-            var type = block.GetType();
-            var typeName = type.Name;
-            var args = type.GetGenericArguments();
-            if (args.Length > 0)
-            {
-                typeName += $"({args[0].FullName})";
-            }
-
-            System.Drawing.Color backColor;
-            if (string.IsNullOrEmpty(text))
-            {
-                backColor = System.Drawing.Color.Tomato;
-            }
-            else
-            {
-                backColor = System.Drawing.Color.SkyBlue;
-            }
             if (DebugNodes)
             {
+                System.Drawing.Color backColor;
+                if (string.IsNullOrEmpty(text))
+                {
+                    backColor = System.Drawing.Color.Tomato;
+                }
+                else
+                {
+                    backColor = System.Drawing.Color.SkyBlue;
+                }
+
+                var type = block.GetType();
+                var typeName = type.Name;
+                var args = type.GetGenericArguments();
+                if (args.Length > 0)
+                {
+                    typeName += $"({args[0].FullName})";
+                }
+
                 var x = IsCompressedXOR ? " X" : "";
-                var debugNode = new TreeNode($"Block: {typeName} at {blockOffset} with size {block.Size} bytes{x} {compressBufferindex}")
+                var debugNode = new TreeNode($"Block: {typeName} at {blockRootOffset:X}+{block.Offset:X}={blockOffset} with size {block.Size} bytes{x} {compressBufferindex}")
                 {
                     BackColor = backColor,
                     Tag = "ignore"
