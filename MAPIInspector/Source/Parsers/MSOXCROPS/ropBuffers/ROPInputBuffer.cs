@@ -736,7 +736,7 @@ namespace MAPIInspector.Parsers
                             // MS-OXCPRPT ROPs
                             case RopIdType.RopGetPropertiesSpecific:
                                 var ropGetPropertiesSpecificRequest = Parse<RopGetPropertiesSpecificRequest>();
-                                ropsList.Add(Parse<RopGetPropertiesSpecificRequest>());
+                                ropsList.Add(ropGetPropertiesSpecificRequest);
 
                                 if (propertyTagsForGetPropertiesSpec.ContainsKey(ropGetPropertiesSpecificRequest.InputHandleIndex))
                                 {

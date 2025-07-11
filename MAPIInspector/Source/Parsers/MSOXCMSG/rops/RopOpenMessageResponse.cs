@@ -4,7 +4,8 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.3.1 RopOpenMessage
+    /// 2.2.6.1.2 RopOpenMessage ROP Success Response Buffer
+    /// 2.2.6.1.3 RopOpenMessage ROP Failure Response Buffer
     /// A class indicates the RopOpenMessage ROP response Buffer.
     /// </summary>
     public class RopOpenMessageResponse : Block

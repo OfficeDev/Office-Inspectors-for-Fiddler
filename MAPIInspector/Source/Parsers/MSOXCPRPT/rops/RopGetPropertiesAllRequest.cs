@@ -31,7 +31,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A Boolean that specifies whether to return string properties in multibyte Unicode.
         /// </summary>
-        public BlockT<ushort> WantUnicode;
+        public BlockT<bool> WantUnicode;
 
         /// <summary>
         /// Parse the RopGetPropertiesAllRequest structure.
@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
             LogonId = ParseT<byte>();
             InputHandleIndex = ParseT<byte>();
             PropertySizeLimit = ParseT<ushort>();
-            WantUnicode = ParseT<ushort>();
+            WantUnicode = ParseAs<ushort, bool>();
         }
 
         protected override void ParseBlocks()

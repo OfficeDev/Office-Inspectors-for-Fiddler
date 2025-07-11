@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.2 RopGetPropertiesSpecific
+    /// 2.2.8.3.1 RopGetPropertiesSpecific ROP Request Buffer
     /// A class indicates the RopGetPropertiesSpecific ROP Request Buffer.
     /// </summary>
     public class RopGetPropertiesSpecificRequest : Block
@@ -32,7 +32,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A Boolean that specifies whether to return string properties in multibyte Unicode.
         /// </summary>
-        public BlockT<ushort> WantUnicode;
+        public BlockT<bool> WantUnicode;
 
         /// <summary>
         /// An unsigned integer that specifies the number of tags present in the PropertyTags field.
@@ -53,7 +53,7 @@ namespace MAPIInspector.Parsers
             LogonId = ParseT<byte>();
             InputHandleIndex = ParseT<byte>();
             PropertySizeLimit = ParseT<ushort>();
-            WantUnicode = ParseT<ushort>();
+            WantUnicode = ParseAs<ushort, bool>();
             PropertyTagCount = ParseT<ushort>();
             List<PropertyTag> tmpPropertyTags = new List<PropertyTag>();
 

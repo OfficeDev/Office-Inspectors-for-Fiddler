@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
+using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The ExtendedBuffer_Input class
     /// </summary>
-    public class ExtendedBuffer_Input : BaseStructure
+    public class ExtendedBuffer_Input : Block
     {
         /// <summary>
         /// The RPC_HEADER_EXT structure provides information about the payload.
@@ -16,7 +16,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A structure of bytes that constitute the ROP request payload.
         /// </summary>
-        public object Payload;
+        public Block Payload;
 
         /// <summary>
         /// Buffer index in one session
@@ -35,17 +35,15 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the rgbInputBuffer.
         /// </summary>
-        /// <param name="s">A stream containing the rgbInputBuffer.</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
-            RPCHEADEREXT = new RPC_HEADER_EXT();
-            RPCHEADEREXT.Parse(s);
+            RPCHEADEREXT = Parse<RPC_HEADER_EXT>();
 
             if (RPCHEADEREXT._Size > 0)
             {
-                byte[] payloadBytes = ReadBytes((int)RPCHEADEREXT._Size);
+                var payloadOffset = parser.Offset; // remember the offset for the payload
+                var payloadBlock = ParseBytes(RPCHEADEREXT._Size);
+                var payloadBytes = payloadBlock.Data;
                 bool isCompressedXOR = false;
 
                 if (RPCHEADEREXT.Flags.Data.HasFlag(RpcHeaderFlags.XorMagic))
@@ -93,21 +91,26 @@ namespace MAPIInspector.Parsers
                     }
                 }
 
-                Stream stream = new MemoryStream(payloadBytes);
+                var newParser = new BinaryParser(payloadBytes);
 
                 if (MapiInspector.MAPIParser.IsOnlyGetServerHandle)
                 {
-                    ROPInputBuffer_WithoutCROPS inputBufferWithoutCROPS = new ROPInputBuffer_WithoutCROPS();
-                    inputBufferWithoutCROPS.Parse(stream);
-                    Payload = inputBufferWithoutCROPS;
+                    Payload = Parse<ROPInputBuffer_WithoutCROPS>(newParser);
                 }
                 else
                 {
-                    ROPInputBuffer inputBuffer = new ROPInputBuffer();
-                    inputBuffer.Parse(stream);
-                    Payload = inputBuffer;
+                    Payload = Parse<ROPInputBuffer>(newParser);
                 }
+
+                Payload.ShiftOffset(payloadOffset); // shift the offset to the original position
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ExtendedBuffer_Input");
+            AddChild(RPCHEADEREXT, "RPCHEADEREXT");
+            AddChild(Payload, "Payload");
         }
     }
 }
