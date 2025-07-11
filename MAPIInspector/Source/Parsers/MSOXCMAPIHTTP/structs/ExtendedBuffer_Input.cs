@@ -95,7 +95,7 @@ namespace MAPIInspector.Parsers
 
                 if (MapiInspector.MAPIParser.IsOnlyGetServerHandle)
                 {
-                    Payload = Parse<ROPInputBuffer_WithoutCROPS>(newParser);
+                    Payload = Parse<ROPBufferServerObjectTable>(newParser);
                 }
                 else
                 {

@@ -68,6 +68,25 @@ namespace BlockParser
             return ret;
         }
 
+        public T ReadT<T>() where T : struct => ReadT<T>(parser);
+        /// <summary>
+        /// Parses binary data using the specified parser and returns a <see cref="T"/> instance containing the
+        /// parsed data.
+        /// </summary>
+        /// <typeparam name="T">The type of the data to parse. Must be a value type (<see langword="struct"/>).</typeparam>
+        /// <param name="parser">The <see cref="BinaryParser"/> instance used to parse the binary data.</param>
+        /// <returns>A T instance containing the parsed data.</returns>
+        public static T ReadT<T>(BinaryParser parser) where T : struct
+        {
+            Type type = typeof(T);
+            if (type.IsEnum)
+                type = Enum.GetUnderlyingType(type);
+            int size = System.Runtime.InteropServices.Marshal.SizeOf(type);
+            if (!parser.CheckSize(size)) return default;
+
+            return BlockT<T>.ReadStruct<T>(parser);
+        }
+
         public BlockT<T> ParseAs<U, T>() where U : struct where T : struct => ParseAs<U, T>(parser);
         /// <summary>
         /// Parses binary data of type <typeparamref name="U"/> from the provided <see cref="BinaryParser"/> and converts it into

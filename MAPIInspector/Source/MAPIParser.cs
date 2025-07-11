@@ -144,7 +144,7 @@ namespace MapiInspector
 
                 for (int i = 0; i < rgbOutputBufferCount; i++)
                 {
-                    handle_InResponse = ((mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[i].Payload as ROPOutputBuffer_WithoutCROPS).ServerObjectHandleTable[outputHandleIndex];
+                    handle_InResponse = ((mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[i].Payload as ROPBufferServerObjectTable).ServerObjectHandleTable[outputHandleIndex];
                 }
             }
 
@@ -743,7 +743,7 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                                     (resResult as ExecuteResponseBody).RopBuffer != null &&
                                     (resResult as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
                                 {
-                                    List<uint> tableHandles = ((ROPOutputBuffer_WithoutCROPS)(resResult as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList();
+                                    List<uint> tableHandles = ((ROPBufferServerObjectTable)(resResult as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList();
 
                                     if (tableHandles.Contains(parameters[1]) &&
                                         currentServerPath == serverurl &&
@@ -1063,7 +1063,7 @@ sessionID >= currentSessionID)
                                     (mapiRequest as ExecuteRequestBody).RopBuffer.Buffers.Count() != 0)
                                 {
                                     handlePutDic.Add(parsingSessionID,
-                                        ((ROPInputBuffer_WithoutCROPS)(mapiRequest as ExecuteRequestBody).RopBuffer.Buffers[0].Payload).ServerObjectHandleTableList);
+                                        ((ROPBufferServerObjectTable)(mapiRequest as ExecuteRequestBody).RopBuffer.Buffers[0].Payload).ServerObjectHandleTable);
                                 }
                             }
                         }
@@ -1132,7 +1132,7 @@ sessionID >= currentSessionID)
                                     if ((mapiResponse as ExecuteResponseBody).RopBuffer != null &&
                                         (mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
                                     {
-                                        handleGetDic.Add(parsingSessionID, ((ROPOutputBuffer_WithoutCROPS)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList());
+                                        handleGetDic.Add(parsingSessionID, ((ROPBufferServerObjectTable)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList());
                                     }
                                 }
                             }
@@ -1182,7 +1182,7 @@ sessionID >= currentSessionID)
                                     if ((mapiResponse as ExecuteResponseBody).RopBuffer != null &&
                                         (mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
                                     {
-                                        handleGetDic.Add(parsingSessionID, ((ROPOutputBuffer_WithoutCROPS)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList());
+                                        handleGetDic.Add(parsingSessionID, ((ROPBufferServerObjectTable)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList());
                                     }
                                 }
                             }

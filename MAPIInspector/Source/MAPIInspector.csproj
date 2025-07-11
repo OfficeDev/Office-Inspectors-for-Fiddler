@@ -602,9 +602,8 @@
     <Compile Include="Parsers\MSOXCROPS\DecodingContext.cs" />
     <Compile Include="Parsers\MSOXCROPS\ContextInformation.cs" />
     <Compile Include="Parsers\MSOXCROPS\enums\RopIdType.cs" />
-    <Compile Include="Parsers\MSOXCROPS\ropBuffers\ROPInputBuffer_WithoutCROPS.cs" />
     <Compile Include="Parsers\MSOXCROPS\ropBuffers\ROPOutputBuffer.cs" />
-    <Compile Include="Parsers\MSOXCROPS\ropBuffers\ROPOutputBuffer_WithoutCROPS.cs" />
+    <Compile Include="Parsers\MSOXCROPS\ropBuffers\ROPBufferServerObjectTable.cs" />
     <Compile Include="Parsers\MSOXCROPS\rops\RopAbortSubmitRequest.cs" />
     <Compile Include="Parsers\MSOXCROPS\rops\RopAbortSubmitResponse.cs" />
     <Compile Include="Parsers\MSOXCROPS\rops\RopBackoffResponse.cs" />

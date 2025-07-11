@@ -99,7 +99,7 @@ namespace MAPIInspector.Parsers
 
                 if (MapiInspector.MAPIParser.IsOnlyGetServerHandle)
                 {
-                    ROPOutputBuffer_WithoutCROPS outputBufferWithoutCROPS = new ROPOutputBuffer_WithoutCROPS();
+                    var outputBufferWithoutCROPS = new ROPBufferServerObjectTable();
                     outputBufferWithoutCROPS.Parse(stream);
                     Payload = outputBufferWithoutCROPS;
                 }
