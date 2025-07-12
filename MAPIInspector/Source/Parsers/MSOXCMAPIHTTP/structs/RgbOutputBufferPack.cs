@@ -44,7 +44,7 @@ namespace MAPIInspector.Parsers
 
             while (s.Position - startPosition < RopBufferSize)
             {
-                RgbOutputBuffer buffer = new RgbOutputBuffer(index);
+                var buffer = new RgbOutputBuffer(index);
                 try
                 {
                     buffer.Parse(s);
@@ -53,7 +53,7 @@ namespace MAPIInspector.Parsers
                 catch (MissingPartialInformationException) { throw; }
                 catch (Exception e)
                 {
-                    buffer.Payload = e.ToString();
+                    buffer.AddHeader($"{e.ToString()}");
                 }
 
                 rgbOutputBufferList.Add(buffer);

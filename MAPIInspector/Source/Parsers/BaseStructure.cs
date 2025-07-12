@@ -200,9 +200,45 @@ namespace MAPIInspector.Parsers
                     header.Flags.Data.HasFlag(RpcHeaderFlags.Compressed);
             }
 
+            if (block.Text == "RgbOutputBuffers" || block.Text == "buffers")
+            {
+                compressBufferindex = 0;
+            }
+
             foreach (var child in block.Children)
             {
-                node.Nodes.Add(AddBlock(child, blockRootOffset));
+                var childIsPayload = child is RgbOutputBuffer || child is ExtendedBuffer_Input;
+                // If the item in array is complex type, loop call the function to add it to tree.
+                // compressBufferindex is used to recored the rgbOutputBuffer or ExtendedBuffer_Input number here
+                if (childIsPayload)
+                {
+                    compressBufferindex += 1;
+                }
+
+                // If the field name is Payload and its compressed, recalculating the offset and length, else directly loop call this function
+                if (child.Text == "Payload" && IsCompressedXOR)
+                {
+                    var rpcHeader = (block as RgbOutputBuffer)?.RPCHEADEREXT ??
+                        (block as ExtendedBuffer_Input)?.RPCHEADEREXT;
+                    node.Nodes.Add(AddBlock(child, blockRootOffset));
+                    if (node.Tag is Position nodePosition && nodePosition != null)
+                    {
+                        nodePosition.Offset = rpcHeader._Size;
+                        node.Tag = nodePosition;
+                    }
+                    node.Text = "Payload(CompressedOrObfuscated)";
+                    node = TreeNodeForCompressed(node, blockRootOffset + (int)rpcHeader.Size, compressBufferindex - 1);
+                }
+                else
+                {
+                    if (child.Text == "Payload")
+                    {
+                        // minus the Payload is not in compressed
+                        compressBufferindex -= 1;
+                    }
+
+                    node.Nodes.Add(AddBlock(child, blockRootOffset));
+                }
             }
 
             return node;
