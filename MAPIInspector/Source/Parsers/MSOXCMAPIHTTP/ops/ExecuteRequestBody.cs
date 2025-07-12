@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -7,17 +7,17 @@ namespace MAPIInspector.Parsers
     /// 2.2.4 Request Types for Mailbox Server Endpoint
     /// 2.2.4.2.1 Execute Request Type Request Body
     /// </summary>
-    public class ExecuteRequestBody : BaseStructure
+    public class ExecuteRequestBody : Block
     {
         /// <summary>
         /// An unsigned integer that specify to the server how to build the ROP responses in the RopBuffer field of the Execute request type success response body.
         /// </summary>
-        public uint Flags;
+        public BlockT<uint> Flags;
 
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the RopBuffer field.
         /// </summary>
-        public uint RopBufferSize;
+        public BlockT<uint> RopBufferSize;
 
         /// <summary>
         /// An structure of bytes that constitute the ROP request payload.
@@ -27,12 +27,12 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the maximum size for the RopBuffer field of the Execute request type success response body.
         /// </summary>
-        public uint MaxRopOut;
+        public BlockT<uint> MaxRopOut;
 
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data sent from the client.
@@ -42,27 +42,30 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">A stream of HTTP payload of session</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
-            Flags = ReadUint();
-            RopBufferSize = ReadUint();
+            Flags = ParseT<uint>();
+            RopBufferSize = ParseT<uint>();
             RopBuffer = new RgbInputBuffer(RopBufferSize);
-            RopBuffer.Parse(s);
-            MaxRopOut = ReadUint();
-            AuxiliaryBufferSize = ReadUint();
+            RopBuffer.Parse(parser);
+            MaxRopOut = ParseT<uint>();
+            AuxiliaryBufferSize = ParseT<uint>();
 
             if (AuxiliaryBufferSize > 0)
             {
-                AuxiliaryBuffer = new ExtendedBuffer();
-                AuxiliaryBuffer.Parse(s);
+                AuxiliaryBuffer = Parse<ExtendedBuffer>();
             }
-            else
-            {
-                AuxiliaryBuffer = null;
-            }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ExecuteRequestBody");
+            AddChildBlockT(Flags, "Flags");
+            AddChildBlockT(RopBufferSize, "RopBufferSize");
+            AddChild(RopBuffer, "RopBuffer");
+            AddChildBlockT(MaxRopOut, "MaxRopOut");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }

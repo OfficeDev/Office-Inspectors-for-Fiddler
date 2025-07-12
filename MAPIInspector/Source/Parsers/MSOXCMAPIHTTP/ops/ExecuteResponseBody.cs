@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
@@ -9,37 +8,37 @@ namespace MAPIInspector.Parsers
     /// 2.2.4.2.2 Execute Request Type Success Response Body
     /// 2.2.4.2.3 Execute Request Type Failure Response Body
     /// </summary>
-    public class ExecuteResponseBody : BaseStructure
+    public class ExecuteResponseBody : Block
     {
         /// <summary>
         /// A string array that informs the client as to the state of processing a request on the server
         /// </summary>
-        public MAPIString[] MetaTags;
+        public BlockString[] MetaTags;
 
         /// <summary>
         /// A string array that specifies additional header information.
         /// </summary>
-        public MAPIString[] AdditionalHeaders;
+        public BlockString[] AdditionalHeaders;
 
         /// <summary>
         /// An unsigned integer that specifies the status of the request.
         /// </summary>
-        public uint StatusCode;
+        public BlockT<uint> StatusCode;
 
         /// <summary>
         /// An unsigned integer that specifies the return status of the operation.
         /// </summary>
-        public uint ErrorCode;
+        public BlockT<ErrorCodes> ErrorCode;
 
         /// <summary>
         /// The reserved flag. The server MUST set this field to 0x00000000 and the client MUST ignore this field.
         /// </summary>
-        public uint Flags;
+        public BlockT<uint> Flags;
 
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the RopBuffer field.
         /// </summary>
-        public uint RopBufferSize;
+        public BlockT<uint> RopBufferSize;
 
         /// <summary>
         /// A structure of bytes that constitute the ROP responses payload.
@@ -49,7 +48,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
         /// </summary>
-        public uint AuxiliaryBufferSize;
+        public BlockT<uint> AuxiliaryBufferSize;
 
         /// <summary>
         /// An array of bytes that constitute the auxiliary payload data returned from the server.
@@ -59,42 +58,43 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Parse the HTTP payload of session.
         /// </summary>
-        /// <param name="s">A stream of HTTP payload of session</param>
-        public override void Parse(Stream s)
+        protected override void Parse()
         {
-            base.Parse(s);
-
-            List<MAPIString> metaTags = new List<MAPIString>();
-            List<MAPIString> additionalHeaders = new List<MAPIString>();
-            ParseMAPIMethod parseMAPIMethod = new ParseMAPIMethod();
-            parseMAPIMethod.ParseAddtionlHeader(s, out metaTags, out additionalHeaders);
-            MetaTags = metaTags.ToArray();
-            AdditionalHeaders = additionalHeaders.ToArray();
-            StatusCode = ReadUint();
+            ParseMAPIMethod.ParseAdditionalHeader(parser, out MetaTags, out AdditionalHeaders);
+            StatusCode = ParseT<uint>();
 
             if (StatusCode == 0)
             {
-                ErrorCode = ReadUint();
-                Flags = ReadUint();
-                RopBufferSize = ReadUint();
+                ErrorCode = ParseT<ErrorCodes>();
+                Flags = ParseT<uint>();
+                RopBufferSize = ParseT<uint>();
                 RopBuffer = new RgbOutputBufferPack(RopBufferSize);
-                RopBuffer.Parse(s);
+                RopBuffer.Parse(parser);
             }
 
-            if (RemainingBytes() >= 4)
+            if (parser.RemainingBytes >= sizeof(uint))
             {
-                AuxiliaryBufferSize = ReadUint();
+                AuxiliaryBufferSize = ParseT<uint>();
 
                 if (AuxiliaryBufferSize > 0)
                 {
-                    AuxiliaryBuffer = new ExtendedBuffer();
-                    AuxiliaryBuffer.Parse(s);
-                }
-                else
-                {
-                    AuxiliaryBuffer = null;
+                    AuxiliaryBuffer = Parse<ExtendedBuffer>();
                 }
             }
+        }
+
+        protected override void ParseBlocks()
+        {
+            SetText("ExecuteResponseBody");
+            AddLabeledChildren(MetaTags, "MetaTags");
+            AddLabeledChildren(AdditionalHeaders, "AdditionalHeaders");
+            AddChildBlockT(StatusCode, "StatusCode");
+            if (ErrorCode != null) AddChild(ErrorCode, $"ErrorCode:{ErrorCode.Data.FormatErrorCode()}");
+            AddChildBlockT(Flags, "Flags");
+            AddChildBlockT(RopBufferSize, "RopBufferSize");
+            AddChild(RopBuffer, "RopBuffer");
+            AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
+            AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }
     }
 }
