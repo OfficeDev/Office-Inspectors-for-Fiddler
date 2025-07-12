@@ -743,7 +743,7 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                                     (resResult as ExecuteResponseBody).RopBuffer != null &&
                                     (resResult as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
                                 {
-                                    List<uint> tableHandles = ((ROPBufferServerObjectTable)(resResult as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList();
+                                    var tableHandles = ((ROPBufferServerObjectTable)(resResult as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable;
 
                                     if (tableHandles.Contains(parameters[1]) &&
                                         currentServerPath == serverurl &&
@@ -1132,7 +1132,7 @@ sessionID >= currentSessionID)
                                     if ((mapiResponse as ExecuteResponseBody).RopBuffer != null &&
                                         (mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
                                     {
-                                        handleGetDic.Add(parsingSessionID, ((ROPBufferServerObjectTable)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList());
+                                        handleGetDic.Add(parsingSessionID, ((ROPBufferServerObjectTable)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable);
                                     }
                                 }
                             }
@@ -1182,7 +1182,7 @@ sessionID >= currentSessionID)
                                     if ((mapiResponse as ExecuteResponseBody).RopBuffer != null &&
                                         (mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
                                     {
-                                        handleGetDic.Add(parsingSessionID, ((ROPBufferServerObjectTable)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList());
+                                        handleGetDic.Add(parsingSessionID, ((ROPBufferServerObjectTable)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable);
                                     }
                                 }
                             }

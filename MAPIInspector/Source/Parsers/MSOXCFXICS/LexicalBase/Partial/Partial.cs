@@ -299,7 +299,7 @@ namespace MAPIInspector.Parsers
                                         (mapiResponse as ExecuteResponseBody).RopBuffer != null &&
                                         (mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
                                     {
-                                        tableHandles = ((ROPBufferServerObjectTable)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList();
+                                        tableHandles = ((ROPBufferServerObjectTable)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable;
                                     }
                                 }
                                 finally
@@ -547,7 +547,7 @@ namespace MAPIInspector.Parsers
                                         (mapiResponse as ExecuteResponseBody).RopBuffer != null &&
                                         (mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Count() != 0)
                                     {
-                                        tableHandles = ((ROPBufferServerObjectTable)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable.ToList();
+                                        tableHandles = ((ROPBufferServerObjectTable)(mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[0].Payload).ServerObjectHandleTable;
                                     }
                                 }
                                 finally
