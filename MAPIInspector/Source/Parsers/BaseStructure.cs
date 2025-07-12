@@ -220,14 +220,15 @@ namespace MAPIInspector.Parsers
                 {
                     var rpcHeader = (block as RgbOutputBuffer)?.RPCHEADEREXT ??
                         (block as ExtendedBuffer_Input)?.RPCHEADEREXT;
-                    node.Nodes.Add(AddBlock(child, blockRootOffset));
-                    if (node.Tag is Position nodePosition && nodePosition != null)
+                    var childNode = AddBlock(child, blockRootOffset);
+                    node.Nodes.Add(childNode);
+                    if (childNode.Tag is Position nodePosition && nodePosition != null)
                     {
                         nodePosition.Offset = rpcHeader._Size;
-                        node.Tag = nodePosition;
+                        childNode.Tag = nodePosition;
                     }
-                    node.Text = "Payload(CompressedOrObfuscated)";
-                    node = TreeNodeForCompressed(node, blockRootOffset + (int)rpcHeader.Size, compressBufferindex - 1);
+                    childNode.Text = "Payload(CompressedOrObfuscated)";
+                    TreeNodeForCompressed(childNode, blockRootOffset + (int)rpcHeader.Size, compressBufferindex - 1);
                 }
                 else
                 {
