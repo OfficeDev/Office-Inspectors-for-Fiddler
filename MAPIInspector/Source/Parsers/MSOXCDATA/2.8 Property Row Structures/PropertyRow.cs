@@ -66,7 +66,7 @@ namespace MAPIInspector.Parsers
                 foreach (var tempPropTag in propTags)
                 {
                     Block rowPropValue = null;
-                    tempPropTag.PropertyType.Data = (PropertyDataType)((ushort)tempPropTag.PropertyType.Data & ~(ushort)PropertyDataTypeFlag.MultivalueInstance);
+                    tempPropTag.PropertyType.Data &= ~PropertyDataType.MultivalueInstance;
 
                     if (Flag == 0x00)
                     {

@@ -122,7 +122,6 @@
     <Compile Include="Parsers\MSOXCDATA\2.6 Property Name Structures\KindEnum.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.13 Table Sorting Structures\OrderType.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PropertyDataType.cs" />
-    <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PropertyDataTypeFlag.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.4 Error Codes\PropertyErrorCodes.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.12 Restrictions\RelOpType.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.12 Restrictions\RestrictTypeEnum.cs" />

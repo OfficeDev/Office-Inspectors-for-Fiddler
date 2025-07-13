@@ -1,10 +1,24 @@
-﻿namespace MAPIInspector.Parsers
+﻿using System;
+
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Section 2.11.1   Property Data Types
+    /// Section 2.11.1.3   Multi-value Property Value Instances
     /// </summary>
+    [Flags]
     public enum PropertyDataType : ushort
     {
+        /// <summary>
+        /// PtypUnspecified type
+        /// </summary>
+        PtypUnspecified = 0x0000,
+
+        /// <summary>
+        /// PtypNull type
+        /// </summary>
+        PtypNull = 0x0001,
+
         /// <summary>
         /// PtypInteger16 type
         /// </summary>
@@ -44,6 +58,11 @@
         /// PtypBoolean type
         /// </summary>
         PtypBoolean = 0x000B,
+
+        /// <summary>
+        /// IN FUTURE: How to distinguish PtypObject from PtypEmbeddedTable since they share the same value
+        /// </summary>
+        PtypObject_Or_PtypEmbeddedTable = 0x000D,
 
         /// <summary>
         /// PtypInteger64 type
@@ -91,78 +110,73 @@
         PtypBinary = 0x0102,
 
         /// <summary>
+        /// MultiValue flag
+        /// </summary>
+        MultiValue = 0x1000,
+
+        /// <summary>
+        /// MultivalueInstance flag
+        /// </summary>
+        MultivalueInstance = 0x2000,
+
+        /// <summary>
         /// PtypMultipleInteger16 type
         /// </summary>
-        PtypMultipleInteger16 = 0x1002,
+        PtypMultipleInteger16 = PtypInteger16 | MultiValue,
 
         /// <summary>
         /// PtypMultipleInteger32 type
         /// </summary>
-        PtypMultipleInteger32 = 0x1003,
+        PtypMultipleInteger32 = PtypInteger32 | MultiValue,
 
         /// <summary>
         /// PtypMultipleFloating32 type
         /// </summary>
-        PtypMultipleFloating32 = 0x1004,
+        PtypMultipleFloating32 = PtypFloating32 | MultiValue,
 
         /// <summary>
         /// PtypMultipleFloating64 type
         /// </summary>
-        PtypMultipleFloating64 = 0x1005,
+        PtypMultipleFloating64 = PtypFloating64 | MultiValue,
 
         /// <summary>
         /// PtypMultipleCurrency type
         /// </summary>
-        PtypMultipleCurrency = 0x1006,
+        PtypMultipleCurrency = PtypCurrency | MultiValue,
 
         /// <summary>
         /// PtypMultipleFloatingTime type
         /// </summary>
-        PtypMultipleFloatingTime = 0x1007,
+        PtypMultipleFloatingTime = PtypFloatingTime | MultiValue,
 
         /// <summary>
         /// PtypMultipleInteger64 type
         /// </summary>
-        PtypMultipleInteger64 = 0x1014,
+        PtypMultipleInteger64 = PtypInteger64 | MultiValue,
 
         /// <summary>
         /// PtypMultipleString type
         /// </summary>
-        PtypMultipleString = 0x101F,
+        PtypMultipleString = PtypString | MultiValue,
 
         /// <summary>
         /// PtypMultipleString8 type
         /// </summary>
-        PtypMultipleString8 = 0x101E,
+        PtypMultipleString8 = PtypString8 | MultiValue,
 
         /// <summary>
         /// PtypMultipleTime type
         /// </summary>
-        PtypMultipleTime = 0x1040,
+        PtypMultipleTime = PtypTime | MultiValue,
 
         /// <summary>
         /// PtypMultipleGuid type
         /// </summary>
-        PtypMultipleGuid = 0x1048,
+        PtypMultipleGuid = PtypGuid | MultiValue,
 
         /// <summary>
         /// PtypMultipleBinary type
         /// </summary>
-        PtypMultipleBinary = 0x1102,
-
-        /// <summary>
-        /// PtypUnspecified type
-        /// </summary>
-        PtypUnspecified = 0x0000,
-
-        /// <summary>
-        /// PtypNull type
-        /// </summary>
-        PtypNull = 0x0001,
-
-        /// <summary>
-        /// IN FUTURE: How to distinguish PtypObject from PtypEmbeddedTable since they share the same value
-        /// </summary>
-        PtypObject_Or_PtypEmbeddedTable = 0x000D,
+        PtypMultipleBinary = PtypBinary | MultiValue
     }
 }
