@@ -9,8 +9,7 @@ namespace MAPIInspector.Parsers
     public class PtypString8 : Block
     {
         // When used, this is a count of bytes. BlockStringA accepts a count of characters, which should be the same
-        private Block _count;
-        public int Count = -1;
+        public BlockT<int> Count;
 
         /// <summary>
         /// A string of multibyte characters in externally specified encoding with terminating null character (single 0 byte).
@@ -25,7 +24,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Initializes a new instance of the PtypString8 class
         /// </summary>
-        public PtypString8() => countWide = 0; // Default to no count
+        public PtypString8() { }
 
         /// <summary>
         /// Initializes a new instance of the PtypString8 class
@@ -37,7 +36,7 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the PtypString8 class
         /// </summary>
         /// <param name="count">The count of bytes to be read.</param>
-        public PtypString8(int count) => Count = count;
+        public PtypString8(int count) => Count = CreateBlock(count, 0, 0);
 
         /// Parse the PtypString8 structure.
         /// </summary>
@@ -48,33 +47,24 @@ namespace MAPIInspector.Parsers
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
-                    _count = ParseT<ushort>();
-                    Count = (_count as BlockT<ushort>);
+                    Count = ParseAs<ushort, int>();
+                    Value = ParseStringA(Count);
                     break;
                 case CountWideEnum.fourBytes:
-                    _count = ParseT<int>();
-                    Count = (_count as BlockT<int>);
+                    Count = ParseT<int>();
+                    Value = ParseStringA(Count);
                     break;
                 default:
+                    Value = ParseStringA(-1);
                     break;
             }
-
-            // If Count is -1, we don't know the size, so we parse until the null terminator.
-            // If Count is >= 0, we parse that many bytes, which is the same as the number of characters.
-            Value = ParseStringA(Count == -1 ? Count : Count);
         }
 
         protected override void ParseBlocks()
         {
             Text = $"\"{Value.Text}\"";
-            if (_count != null)
-            {
-                AddChild(_count, $"Count:{Count} = 0x{Count:X}");
-            }
-            else
-            {
-                AddHeader($"cch:{Value.Data.Length} = 0x{Value.Data.Length:X}");
-            }
+            AddChild(Count, $"Count:{Count.Data} = 0x{Count.Data:X}");
+            AddHeader($"cch:{Value.Data.Length} = 0x{Value.Data.Length:X}");
         }
     }
 }

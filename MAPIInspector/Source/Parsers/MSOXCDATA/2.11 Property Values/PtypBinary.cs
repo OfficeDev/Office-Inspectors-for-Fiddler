@@ -11,8 +11,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// COUNT values are typically used to specify the size of an associated field.
         /// </summary>
-        private Block _count;
-        public uint Count;
+        public BlockT<uint> Count;
 
         /// <summary>
         /// The binary value.
@@ -41,21 +40,20 @@ namespace MAPIInspector.Parsers
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
-                    _count = ParseT<ushort>();
-                    Count = (_count as BlockT<ushort>);
+                    Count= ParseAs<ushort,uint>();
                     break;
                 default:
                 case CountWideEnum.fourBytes:
-                    _count = ParseT<uint>();
-                    Count = (_count as BlockT<uint>);
+                    Count = ParseT<uint>();
                     break;
             }
-            Value = ParseBytes((int)Count);
+
+            Value = ParseBytes(Count);
         }
 
         protected override void ParseBlocks()
         {
-            AddChild(_count, $"Count:{Count}");
+            AddChild(Count, $"Count:{Count}");
             AddChildBytes(Value, "Value");
         }
     }

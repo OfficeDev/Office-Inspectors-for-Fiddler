@@ -9,8 +9,7 @@ namespace MAPIInspector.Parsers
     public class PtypString : Block
     {
         // When used, this is a count of bytes. BlockStringW accepts a count of characters, so we need to convert it.
-        private Block _count;
-        public int Count = -1;
+        public BlockT<int> Count;
 
         /// <summary>
         /// A string of Unicode characters in UTF-16LE format encoding with terminating null character (0x0000).
@@ -37,7 +36,7 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the PtypString class
         /// </summary>
         /// <param name="count">The count of bytes to be read.</param>
-        public PtypString(int count) => Count = count;
+        public PtypString(int count) => Count = CreateBlock(count, 0, 0);
 
         /// <summary>
         /// Parse the PtypString structure.
@@ -49,33 +48,24 @@ namespace MAPIInspector.Parsers
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
-                    _count = ParseT<ushort>();
-                    Count = (_count as BlockT<ushort>);
+                    Count = ParseAs<ushort, int>();
+                    Value = ParseStringW(Count);
                     break;
                 case CountWideEnum.fourBytes:
-                    _count = ParseT<int>();
-                    Count = (_count as BlockT<int>);
+                    Count = ParseT<int>();
+                    Value = ParseStringW(Count);
                     break;
                 default:
+                    Value = ParseStringW(-1);
                     break;
             }
-
-            // If Count is -1, we don't know the size, so we parse until the null terminator.
-            // If Count is >= 0, we parse that many bytes, so we divide by 2 to get the number of characters.
-            Value = ParseStringW(Count == -1 ? Count : Count / 2);
         }
 
         protected override void ParseBlocks()
         {
             Text = $"\"{Value.Text}\"";
-            if (_count != null)
-            {
-                AddChild(_count, $"Count:{Count} = 0x{Count:X}");
-            }
-            else
-            {
-                AddHeader($"cch:{Value.Data.Length} = 0x{Value.Data.Length:X}");
-            }
+            AddChild(Count, $"Count:{Count.Data} = 0x{Count.Data:X}");
+            AddHeader($"cch:{Value.Data.Length} = 0x{Value.Data.Length:X}");
         }
     }
 }
