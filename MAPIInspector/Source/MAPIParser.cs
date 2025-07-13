@@ -161,9 +161,9 @@ namespace MapiInspector
         /// <param name="direction">The direction of the traffic.</param>
         /// <param name="bytes">The bytes provided for MAPI view layer.</param>
         /// <returns>The object parsed result</returns>
-        public static object ParseHTTPExecuteResponsePayload(HTTPHeaders headers, Session currentSession, byte[] bytesFromHTTP, TrafficDirection direction, out byte[] bytes)
+        public static Block ParseHTTPExecuteResponsePayload(HTTPHeaders headers, Session currentSession, byte[] bytesFromHTTP, TrafficDirection direction, out byte[] bytes)
         {
-            object objectOut = null;
+            Block objectOut = null;
             byte[] emptyByte = new byte[0];
             bytes = emptyByte;
             string requestType = string.Empty;
@@ -233,7 +233,7 @@ namespace MapiInspector
             }
             catch (Exception ex)
             {
-                objectOut = ex.ToString();
+                objectOut = Block.Create(ex.ToString());
                 return objectOut;
             }
         }
