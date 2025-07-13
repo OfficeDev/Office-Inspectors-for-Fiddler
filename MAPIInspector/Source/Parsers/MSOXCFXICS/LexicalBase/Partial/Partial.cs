@@ -308,7 +308,7 @@ namespace MAPIInspector.Parsers
                                 }
                             }
 
-                            if (tableHandles.Contains(parameters))
+                            if (tableHandles != null && tableHandles.Contains(parameters))
                             {
                                 MapiInspector.MAPIParser.ParseResponseMessage(currentSession, out bytesForHexView, true);
                             }

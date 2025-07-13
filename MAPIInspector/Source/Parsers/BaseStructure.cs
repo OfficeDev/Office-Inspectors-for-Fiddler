@@ -228,7 +228,7 @@ namespace MAPIInspector.Parsers
                         childNode.Tag = nodePosition;
                     }
                     childNode.Text = "Payload(CompressedOrObfuscated)";
-                    TreeNodeForCompressed(childNode, blockRootOffset + (int)rpcHeader.Size, compressBufferindex - 1);
+                    TreeNodeForCompressed(childNode, blockOffset + (int)rpcHeader.Size, compressBufferindex - 1);
                 }
                 else
                 {
@@ -264,20 +264,6 @@ namespace MAPIInspector.Parsers
             Type t = obj.GetType();
             int current = startIndex;
             TreeNode res = new TreeNode(t.Name);
-
-            if (obj is AnnotatedData ad)
-            {
-                offset = ad.Size;
-                res.Text = ad.ToString();
-                foreach (var parsedValue in ad.parsedValues)
-                {
-                    var alternateParsingNode = new TreeNode($"{parsedValue.Key}:{parsedValue.Value}");
-                    alternateParsingNode.Tag = new Position(current, offset);
-                    res.Nodes.Add(alternateParsingNode);
-                }
-
-                return res;
-            }
 
             // Check whether the data type is simple type
             if (Enum.IsDefined(typeof(DataType), t.Name))
@@ -601,12 +587,15 @@ namespace MAPIInspector.Parsers
         /// <returns>The tree node with BufferIndex and IsCompressedXOR properties </returns>
         public static TreeNode TreeNodeForCompressed(TreeNode node, int current, int compressBufferindex, bool isAux = false)
         {
-            foreach (TreeNode n in node.Nodes)
+            foreach (TreeNode nd in node.Nodes)
             {
-                TreeNode nd = n;
-
                 if (nd.Tag is Position pos)
                 {
+                    nd.Nodes.Insert(0, new TreeNode($"Compressed: SI: {pos.StartIndex:X} SI`:{pos.StartIndex-current:X} C:{current:X} BI:{compressBufferindex:X}")
+                    {
+                        BackColor = System.Drawing.Color.AliceBlue
+                    });
+
                     pos.IsCompressedXOR = true;
                     pos.StartIndex -= current;
                     pos.BufferIndex = compressBufferindex;

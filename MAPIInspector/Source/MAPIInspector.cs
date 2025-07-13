@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Be.Windows.Forms;
+using BlockParser;
 using Fiddler;
 using global::MAPIInspector.Parsers;
 using static MapiInspector.MAPIParser;
@@ -305,8 +306,11 @@ namespace MapiInspector
                 TreeNode topNode = BaseStructure.AddNodesForTree("DisplayObjectRoot", obj, 0, out result);
                 this.MAPIViewControl.Nodes.Add(topNode);
                 topNode.ExpandAll();
-                this.MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesForHexview);
-                this.MAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
+                if (bytesForHexview != null)
+                {
+                    this.MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesForHexview);
+                    this.MAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
+                }
                 if (this.MAPIViewControl.Nodes.Count != 0)
                 {
                     this.MAPIViewControl.Nodes[0].EnsureVisible();
@@ -389,7 +393,8 @@ namespace MapiInspector
                 }
                 catch (Exception e)
                 {
-                    parserResult = e.ToString();
+                    var exception = Block.Create(e.ToString());
+                    this.DisplayObject(exception, null);
                 }
                 finally
                 {
