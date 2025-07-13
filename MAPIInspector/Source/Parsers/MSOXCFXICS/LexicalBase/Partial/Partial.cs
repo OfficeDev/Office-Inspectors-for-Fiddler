@@ -183,10 +183,10 @@ namespace MAPIInspector.Parsers
         /// <param name="parameters">The handle information</param>
         /// <param name="bytes">The output bytes returned</param>
         /// <returns>The parsed result for current session</returns>
-        public static object FindPartialInformation(RopIdType ropID, uint parameters, out byte[] bytes)
+        public static Block FindPartialInformation(RopIdType ropID, uint parameters, out byte[] bytes)
         {
             byte[] bytesForHexView = new byte[0];
-            object obj = new object();
+            Block obj = null;
             bytes = bytesForHexView;
             Session thisSession = MapiInspector.MAPIParser.ParsingSession;
             int thisSessionID = thisSession.id;

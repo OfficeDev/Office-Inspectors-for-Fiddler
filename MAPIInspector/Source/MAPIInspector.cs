@@ -292,7 +292,7 @@ namespace MapiInspector
         /// </summary>
         /// <param name="obj">The object to display</param>
         /// <param name="bytesForHexview">The byte array provided for HexView</param>
-        public void DisplayObject(object obj, byte[] bytesForHexview)
+        public void DisplayObject(Block obj, byte[] bytesForHexview)
         {
             if (obj == null)
             {
@@ -346,7 +346,7 @@ namespace MapiInspector
         {
             this.Clear();
             byte[] bytesForHexView;
-            object parserResult;
+            Block parserResult;
             IsLooperCall = false;
             TargetHandle = new Stack<Dictionary<RopIdType, Dictionary<int, uint>>>();
             ContextInformationCollection = new List<ContextInformation>();

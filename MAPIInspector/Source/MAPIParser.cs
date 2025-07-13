@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using BlockParser;
 using Fiddler;
 using MAPIInspector;
 using MAPIInspector.Parsers;
@@ -58,12 +59,12 @@ namespace MapiInspector
         /// <summary>
         /// The requestDic is used to save the session id and its parsed execute request.
         /// </summary>
-        internal static Dictionary<int, object> requestDic = new Dictionary<int, object>();
+        internal static Dictionary<int, Block> requestDic = new Dictionary<int, Block>();
 
         /// <summary>
         /// The responseDic is used to save the session id and its parsed execute response.
         /// </summary>
-        internal static Dictionary<int, object> responseDic = new Dictionary<int, object>();
+        internal static Dictionary<int, Block> responseDic = new Dictionary<int, Block>();
 
         /// <summary>
         /// The handleGetDic is used to save the session id and its response handle for RopGetBuffer.
@@ -298,7 +299,7 @@ namespace MapiInspector
         /// <param name="obj">The target object containing the context information</param>
         /// <param name="bytes">The target byte array provided to HexView</param>
         /// <param name="parameters">The missing context information ROP related parameters</param>
-        public static void SafeHandleContextInformation(RopIdType sourceRopID, out object obj, out byte[] bytes, uint[] parameters = null)
+        public static void SafeHandleContextInformation(RopIdType sourceRopID, out Block obj, out byte[] bytes, uint[] parameters = null)
         {
             if (inSafeHandleContextInformation)
             {
@@ -330,7 +331,7 @@ namespace MapiInspector
         /// <param name="obj">The target object containing the context information</param>
         /// <param name="bytes">The target byte array provided to HexView</param>
         /// <param name="parameters">The missing context information ROP related parameters</param>
-        public static void HandleContextInformation(RopIdType sourceRopID, out object obj, out byte[] bytes, uint[] parameters = null)
+        public static void HandleContextInformation(RopIdType sourceRopID, out Block obj, out byte[] bytes, uint[] parameters = null)
         {
             byte[] bytesForHexView;
             object mapiRequest = new object();
@@ -409,7 +410,7 @@ namespace MapiInspector
 
                         if (!OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
                         {
-                            obj = savedResult;
+                            obj = Block.Create(savedResult);
                             bytes = new byte[0];
                             return;
                         }
@@ -436,7 +437,7 @@ namespace MapiInspector
                 }
                 else
                 {
-                    obj = string.Format("{0} cannot be parsed successfully due to missing the LogOn information for handle {1}, check whether the trace is complete.", sourceRopID, parameters[0]);
+                    obj = Block.Create($"{sourceRopID} cannot be parsed successfully due to missing the LogOn information for handle {parameters[0]}, check whether the trace is complete.");
                     bytes = new byte[0];
                 }
             }
@@ -511,7 +512,7 @@ namespace MapiInspector
 
                         if (!OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
                         {
-                            obj = savedResult;
+                            obj = Block.Create(savedResult);
                             bytes = new byte[0];
                             return;
                         }
@@ -538,7 +539,7 @@ namespace MapiInspector
                 }
                 else
                 {
-                    obj = string.Format("{0} cannot be parsed successfully due to missing the LogOn information for handle {1}, check whether the trace is complete.", sourceRopID, parameters[0]);
+                    obj = Block.Create($"{sourceRopID} cannot be parsed successfully due to missing the LogOn information for handle {parameters[0]}, check whether the trace is complete.");
                     bytes = new byte[0];
                 }
             }
@@ -650,7 +651,7 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
 
                     if (!OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
                     {
-                        obj = savedResult;
+                        obj = Block.Create(savedResult);
                         bytes = new byte[0];
                         return;
                     }
@@ -676,7 +677,7 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                 }
                 else
                 {
-                    obj = string.Format("{0} cannot be parsed successfully due to missing the PropertyTags for handle {1}, check whether the trace is complete.", sourceRopID, parameters[1]);
+                    obj = Block.Create($"{sourceRopID} cannot be parsed successfully due to missing the PropertyTags for handle {parameters[1]}, check whether the trace is complete.");
                     bytes = new byte[0];
                 }
             }
@@ -895,7 +896,7 @@ sessionID >= currentSessionID)
 
                     if (!OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
                     {
-                        obj = savedResult;
+                        obj = Block.Create(savedResult);
                         bytes = new byte[0];
                         return;
                     }
@@ -921,7 +922,7 @@ sessionID >= currentSessionID)
                 }
                 else
                 {
-                    obj = string.Format("RopNotify cannot be parsed successfully due to missing the PropertyTags for handle {0}, check whether the trace is complete.", parameters[1]);
+                    obj = Block.Create($"RopNotify cannot be parsed successfully due to missing the PropertyTags for handle {parameters[1]}, check whether the trace is complete.");
                     bytes = new byte[0];
                 }
             }
@@ -1026,9 +1027,9 @@ sessionID >= currentSessionID)
         /// <param name="hexViewBytes">Byte array for display in RopHexView</param>
         /// <param name="isLooper">A boolean value indicates if this session is in a loop for parsing context sessions</param>
         /// <returns>MAPI request object</returns>
-        public static object ParseRequestMessage(Session parsingSession, out byte[] hexViewBytes, bool isLooper = false)
+        public static Block ParseRequestMessage(Session parsingSession, out byte[] hexViewBytes, bool isLooper = false)
         {
-            object mapiRequest = null;
+            Block mapiRequest = null;
             hexViewBytes = new byte[0];
 
             if (IsMapihttpSession(parsingSession, TrafficDirection.In))
@@ -1095,9 +1096,9 @@ sessionID >= currentSessionID)
         /// <param name="hexViewBytes">Byte array for display in RopHexView</param>
         /// <param name="isLooper">A boolean value indicates if this session is in a loop for parsing context sessions</param>
         /// <returns>MAPI response object</returns>
-        public static object ParseResponseMessage(Session currentSession, out byte[] hexViewBytes, bool isLooper = false)
+        public static Block ParseResponseMessage(Session currentSession, out byte[] hexViewBytes, bool isLooper = false)
         {
-            object mapiResponse = null;
+            Block mapiResponse = null;
             hexViewBytes = new byte[0];
             if (!IsFromFiddlerCore(currentSession))
             {
@@ -1218,9 +1219,9 @@ sessionID >= currentSessionID)
         /// <param name="direction">The direction of the traffic.</param>
         /// <param name="bytes">The bytes provided for MAPI view layer.</param>
         /// <returns>The object parsed result</returns>
-        public static object ParseHTTPPayload(HTTPHeaders headers, Session currentSession, byte[] bytesFromHTTP, TrafficDirection direction, out byte[] bytes)
+        public static Block ParseHTTPPayload(HTTPHeaders headers, Session currentSession, byte[] bytesFromHTTP, TrafficDirection direction, out byte[] bytes)
         {
-            object objectOut = null;
+            Block objectOut = null;
             byte[] emptyByte = new byte[0];
             bytes = emptyByte;
             string requestType = string.Empty;
@@ -1229,36 +1230,36 @@ sessionID >= currentSessionID)
             {
                 if (bytesFromHTTP == null || bytesFromHTTP.Length == 0)
                 {
-                    return "Payload length from HTTP layer is 0";
+                    return Block.Create("Payload length from HTTP layer is 0");
                 }
                 else if (headers == null || !headers.Exists("X-RequestType"))
                 {
-                    return "X-RequestType header does not exist.";
+                    return Block.Create("X-RequestType header does not exist.");
                 }
 
                 requestType = headers["X-RequestType"];
 
                 if (requestType == null)
                 {
-                    return "Request type is null";
+                    return Block.Create("Request type is null");
                 }
             }
             else
             {
                 if (bytesFromHTTP == null || bytesFromHTTP.Length == 0)
                 {
-                    return "Payload length from HTTP layer is 0";
+                    return Block.Create("Payload length from HTTP layer is 0");
                 }
                 else if (headers == null || !currentSession.RequestHeaders.Exists("X-RequestType"))
                 {
-                    return "X-RequestType header does not exist.";
+                    return Block.Create("X-RequestType header does not exist.");
                 }
 
                 requestType = currentSession.RequestHeaders["X-RequestType"];
 
                 if (requestType == null)
                 {
-                    return "Request type is null";
+                    return Block.Create("Request type is null");
                 }
             }
 
@@ -1479,7 +1480,7 @@ sessionID >= currentSessionID)
 
                         default:
                             {
-                                objectOut = "Unavailable Request Type";
+                                objectOut = Block.Create("Unavailable Request Type");
                                 break;
                             }
                     }
@@ -1678,7 +1679,7 @@ sessionID >= currentSessionID)
 
                         default:
                             {
-                                objectOut = "Unavailable Response Type";
+                                objectOut = Block.Create("Unavailable Response Type");
                                 break;
                             }
                     }
@@ -1703,7 +1704,7 @@ sessionID >= currentSessionID)
             }
             catch (Exception ex)
             {
-                objectOut = ex.ToString();
+                objectOut = Block.Create(ex.ToString());
                 return objectOut;
             }
         }
@@ -1713,8 +1714,8 @@ sessionID >= currentSessionID)
         /// </summary>
         public static void ResetHandleInformation()
         {
-            requestDic = new Dictionary<int, object>();
-            responseDic = new Dictionary<int, object>();
+            requestDic = new Dictionary<int, Block>();
+            responseDic = new Dictionary<int, Block>();
             handleGetDic = new Dictionary<int, List<uint>>();
             handlePutDic = new Dictionary<int, List<uint>>();
         }
