@@ -209,7 +209,7 @@ namespace MAPIInspector.Parsers
             {
                 var childIsPayload = child is RgbOutputBuffer || child is ExtendedBuffer_Input;
                 // If the item in array is complex type, loop call the function to add it to tree.
-                // compressBufferindex is used to recored the rgbOutputBuffer or ExtendedBuffer_Input number here
+                // compressBufferindex is used to record the rgbOutputBuffer or ExtendedBuffer_Input number here
                 if (childIsPayload)
                 {
                     compressBufferindex += 1;
