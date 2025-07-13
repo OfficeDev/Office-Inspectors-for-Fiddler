@@ -226,9 +226,7 @@ namespace MapiInspector
                 if (direction == TrafficDirection.Out &&
                     requestType == "Execute")
                 {
-                    ExecuteResponseBody executeResponse = new ExecuteResponseBody();
-                    executeResponse.Parse(stream);
-                    objectOut = executeResponse;
+                    objectOut = Block.Parse<ExecuteResponseBody>(stream);
                 }
 
                 return objectOut;
@@ -1296,185 +1294,139 @@ sessionID >= currentSessionID)
                     {
                         case "Connect":
                             {
-                                ConnectRequestBody connectRequest = new ConnectRequestBody();
-                                connectRequest.Parse(stream);
-                                objectOut = connectRequest;
+                                objectOut = Block.Parse<ConnectRequestBody>(stream);
                                 break;
                             }
 
                         case "Execute":
                             {
-                                ExecuteRequestBody executeRequest = new ExecuteRequestBody();
-                                executeRequest.Parse(stream);
-                                objectOut = executeRequest;
+                                objectOut = Block.Parse<ExecuteRequestBody>(stream);
                                 break;
                             }
 
                         case "Disconnect":
                             {
-                                DisconnectRequestBody disconnectRequest = new DisconnectRequestBody();
-                                disconnectRequest.Parse(stream);
-                                objectOut = disconnectRequest;
+                                objectOut = Block.Parse<DisconnectRequestBody>(stream);
                                 break;
                             }
 
                         case "NotificationWait":
                             {
-                                NotificationWaitRequestBody notificationWaitRequest = new NotificationWaitRequestBody();
-                                notificationWaitRequest.Parse(stream);
-                                objectOut = notificationWaitRequest;
+                                objectOut = Block.Parse<NotificationWaitRequestBody>(stream);
                                 break;
                             }
 
                         case "Bind":
                             {
-                                BindRequest bindRequest = new BindRequest();
-                                bindRequest.Parse(stream);
-                                objectOut = bindRequest;
+                                objectOut = Block.Parse<BindRequest>(stream);
                                 break;
                             }
 
                         case "Unbind":
                             {
-                                UnbindRequest unbindRequest = new UnbindRequest();
-                                unbindRequest.Parse(stream);
-                                objectOut = unbindRequest;
+                                objectOut = Block.Parse<UnbindRequest>(stream);
                                 break;
                             }
 
                         case "CompareMIds":
                             {
-                                CompareMinIdsRequest compareMinIdsRequest = new CompareMinIdsRequest();
-                                compareMinIdsRequest.Parse(stream);
-                                objectOut = compareMinIdsRequest;
+                                objectOut = Block.Parse<CompareMinIdsRequest>(stream);
                                 break;
                             }
 
                         case "DNToMId":
                             {
-                                DnToMinIdRequest dnToMinIdRequest = new DnToMinIdRequest();
-                                dnToMinIdRequest.Parse(stream);
-                                objectOut = dnToMinIdRequest;
+                                objectOut = Block.Parse<DnToMinIdRequest>(stream);
                                 break;
                             }
 
                         case "GetMatches":
                             {
-                                GetMatchesRequest getMatchesRequest = new GetMatchesRequest();
-                                getMatchesRequest.Parse(stream);
-                                objectOut = getMatchesRequest;
+                                objectOut = Block.Parse<GetMatchesRequest>(stream);
                                 break;
                             }
 
                         case "GetPropList":
                             {
-                                GetPropListRequest getPropListRequest = new GetPropListRequest();
-                                getPropListRequest.Parse(stream);
-                                objectOut = getPropListRequest;
+                                objectOut = Block.Parse<GetPropListRequest>(stream);
                                 break;
                             }
 
                         case "GetProps":
                             {
-                                GetPropsRequest getPropsRequest = new GetPropsRequest();
-                                getPropsRequest.Parse(stream);
-                                objectOut = getPropsRequest;
+                                objectOut = Block.Parse<GetPropsRequest>(stream);
                                 break;
                             }
 
                         case "GetSpecialTable":
                             {
-                                GetSpecialTableRequest getSpecialTableRequest = new GetSpecialTableRequest();
-                                getSpecialTableRequest.Parse(stream);
-                                objectOut = getSpecialTableRequest;
+                                objectOut = Block.Parse<GetSpecialTableRequest>(stream);
                                 break;
                             }
 
                         case "GetTemplateInfo":
                             {
-                                GetTemplateInfoRequest getTemplateInfoRequest = new GetTemplateInfoRequest();
-                                getTemplateInfoRequest.Parse(stream);
-                                objectOut = getTemplateInfoRequest;
+                                objectOut = Block.Parse<GetTemplateInfoRequest>(stream);
                                 break;
                             }
 
                         case "ModLinkAtt":
                             {
-                                ModLinkAttRequest modLinkAttRequest = new ModLinkAttRequest();
-                                modLinkAttRequest.Parse(stream);
-                                objectOut = modLinkAttRequest;
+                                objectOut = Block.Parse<ModLinkAttRequest>(stream);
                                 break;
                             }
 
                         case "ModProps":
                             {
-                                ModPropsRequest modPropsRequest = new ModPropsRequest();
-                                modPropsRequest.Parse(stream);
-                                objectOut = modPropsRequest;
+                                objectOut = Block.Parse<ModPropsRequest>(stream);
                                 break;
                             }
 
                         case "QueryRows":
                             {
-                                QueryRowsRequest queryRowsRequest = new QueryRowsRequest();
-                                queryRowsRequest.Parse(stream);
-                                objectOut = queryRowsRequest;
+                                objectOut = Block.Parse<QueryRowsRequest>(stream);
                                 break;
                             }
 
                         case "QueryColumns":
                             {
-                                QueryColumnsRequest queryColumnsRequest = new QueryColumnsRequest();
-                                queryColumnsRequest.Parse(stream);
-                                objectOut = queryColumnsRequest;
+                                objectOut = Block.Parse<QueryColumnsRequest>(stream);
                                 break;
                             }
 
                         case "ResolveNames":
                             {
-                                ResolveNamesRequest resolveNamesRequest = new ResolveNamesRequest();
-                                resolveNamesRequest.Parse(stream);
-                                objectOut = resolveNamesRequest;
+                                objectOut = Block.Parse<ResolveNamesRequest>(stream);
                                 break;
                             }
 
                         case "ResortRestriction":
                             {
-                                ResortRestrictionRequest resortRestrictionRequest = new ResortRestrictionRequest();
-                                resortRestrictionRequest.Parse(stream);
-                                objectOut = resortRestrictionRequest;
+                                objectOut = Block.Parse<ResortRestrictionRequest>(stream);
                                 break;
                             }
 
                         case "SeekEntries":
                             {
-                                SeekEntriesRequest seekEntriesRequest = new SeekEntriesRequest();
-                                seekEntriesRequest.Parse(stream);
-                                objectOut = seekEntriesRequest;
+                                objectOut = Block.Parse<SeekEntriesRequest>(stream);
                                 break;
                             }
 
                         case "UpdateStat":
                             {
-                                UpdateStatRequest updateStatRequest = new UpdateStatRequest();
-                                updateStatRequest.Parse(stream);
-                                objectOut = updateStatRequest;
+                                objectOut = Block.Parse<UpdateStatRequest>(stream);
                                 break;
                             }
 
                         case "GetMailboxUrl":
                             {
-                                GetMailboxUrlRequest getMailboxUrlRequest = new GetMailboxUrlRequest();
-                                getMailboxUrlRequest.Parse(stream);
-                                objectOut = getMailboxUrlRequest;
+                                objectOut = Block.Parse<GetMailboxUrlRequest>(stream);
                                 break;
                             }
 
                         case "GetAddressBookUrl":
                             {
-                                GetAddressBookUrlRequest getAddressBookUrlRequest = new GetAddressBookUrlRequest();
-                                getAddressBookUrlRequest.Parse(stream);
-                                objectOut = getAddressBookUrlRequest;
+                                objectOut = Block.Parse<GetAddressBookUrlRequest>(stream);
                                 break;
                             }
 
@@ -1495,185 +1447,139 @@ sessionID >= currentSessionID)
                     {
                         case "Connect":
                             {
-                                ConnectResponseBody connectResponse = new ConnectResponseBody();
-                                connectResponse.Parse(stream);
-                                objectOut = connectResponse;
+                                objectOut = Block.Parse<ConnectResponseBody>(stream);
                                 break;
                             }
 
                         case "Execute":
                             {
-                                ExecuteResponseBody executeResponse = new ExecuteResponseBody();
-                                executeResponse.Parse(stream);
-                                objectOut = executeResponse;
+                                objectOut = Block.Parse<ExecuteResponseBody>(stream);
                                 break;
                             }
 
                         case "Disconnect":
                             {
-                                DisconnectResponseBody disconnectResponse = new DisconnectResponseBody();
-                                disconnectResponse.Parse(stream);
-                                objectOut = disconnectResponse;
+                                objectOut = Block.Parse<DisconnectResponseBody>(stream);
                                 break;
                             }
 
                         case "NotificationWait":
                             {
-                                NotificationWaitResponseBody notificationWaitResponse = new NotificationWaitResponseBody();
-                                notificationWaitResponse.Parse(stream);
-                                objectOut = notificationWaitResponse;
+                                objectOut = Block.Parse<NotificationWaitResponseBody>(stream);
                                 break;
                             }
 
                         case "Bind":
                             {
-                                BindResponse bindResponse = new BindResponse();
-                                bindResponse.Parse(stream);
-                                objectOut = bindResponse;
+                                objectOut = Block.Parse<BindResponse>(stream);
                                 break;
                             }
 
                         case "Unbind":
                             {
-                                UnbindResponse unbindResponse = new UnbindResponse();
-                                unbindResponse.Parse(stream);
-                                objectOut = unbindResponse;
+                                objectOut = Block.Parse<UnbindResponse>(stream);
                                 break;
                             }
 
                         case "CompareMIds":
                             {
-                                CompareMinIdsResponse compareMinIdsResponse = new CompareMinIdsResponse();
-                                compareMinIdsResponse.Parse(stream);
-                                objectOut = compareMinIdsResponse;
+                                objectOut = Block.Parse<CompareMinIdsResponse>(stream);
                                 break;
                             }
 
                         case "DNToMId":
                             {
-                                DnToMinIdResponse dnToMinIdResponse = new DnToMinIdResponse();
-                                dnToMinIdResponse.Parse(stream);
-                                objectOut = dnToMinIdResponse;
+                                objectOut = Block.Parse<DnToMinIdResponse>(stream);
                                 break;
                             }
 
                         case "GetMatches":
                             {
-                                GetMatchesResponse getMatchesResponse = new GetMatchesResponse();
-                                getMatchesResponse.Parse(stream);
-                                objectOut = getMatchesResponse;
+                                objectOut = Block.Parse<GetMatchesResponse>(stream);
                                 break;
                             }
 
                         case "GetPropList":
                             {
-                                GetPropListResponse getPropListResponse = new GetPropListResponse();
-                                getPropListResponse.Parse(stream);
-                                objectOut = getPropListResponse;
+                                objectOut = Block.Parse<GetPropListResponse>(stream);
                                 break;
                             }
 
                         case "GetProps":
                             {
-                                GetPropsResponse getPropsResponse = new GetPropsResponse();
-                                getPropsResponse.Parse(stream);
-                                objectOut = getPropsResponse;
+                                objectOut = Block.Parse<GetPropsResponse>(stream);
                                 break;
                             }
 
                         case "GetSpecialTable":
                             {
-                                GetSpecialTableResponse getSpecialTableResponse = new GetSpecialTableResponse();
-                                getSpecialTableResponse.Parse(stream);
-                                objectOut = getSpecialTableResponse;
+                                objectOut = Block.Parse<GetSpecialTableResponse>(stream);
                                 break;
                             }
 
                         case "GetTemplateInfo":
                             {
-                                GetTemplateInfoResponse getTemplateInfoResponse = new GetTemplateInfoResponse();
-                                getTemplateInfoResponse.Parse(stream);
-                                objectOut = getTemplateInfoResponse;
+                                objectOut = Block.Parse<GetTemplateInfoResponse>(stream);
                                 break;
                             }
 
                         case "ModLinkAtt":
                             {
-                                ModLinkAttResponse modLinkAttResponse = new ModLinkAttResponse();
-                                modLinkAttResponse.Parse(stream);
-                                objectOut = modLinkAttResponse;
+                                objectOut = Block.Parse<ModLinkAttResponse>(stream);
                                 break;
                             }
 
                         case "ModProps":
                             {
-                                ModPropsResponse modPropsResponse = new ModPropsResponse();
-                                modPropsResponse.Parse(stream);
-                                objectOut = modPropsResponse;
+                                objectOut = Block.Parse<ModPropsResponse>(stream);
                                 break;
                             }
 
                         case "QueryRows":
                             {
-                                QueryRowsResponse queryRowsResponse = new QueryRowsResponse();
-                                queryRowsResponse.Parse(stream);
-                                objectOut = queryRowsResponse;
+                                objectOut = Block.Parse<QueryRowsResponse>(stream);
                                 break;
                             }
 
                         case "QueryColumns":
                             {
-                                QueryColumnsResponse queryColumnsResponse = new QueryColumnsResponse();
-                                queryColumnsResponse.Parse(stream);
-                                objectOut = queryColumnsResponse;
+                                objectOut = Block.Parse<QueryColumnsResponse>(stream);
                                 break;
                             }
 
                         case "ResolveNames":
                             {
-                                ResolveNamesResponse resolveNamesResponse = new ResolveNamesResponse();
-                                resolveNamesResponse.Parse(stream);
-                                objectOut = resolveNamesResponse;
+                                objectOut = Block.Parse<ResolveNamesResponse>(stream);
                                 break;
                             }
 
                         case "ResortRestriction":
                             {
-                                ResortRestrictionResponse resortRestrictionResponse = new ResortRestrictionResponse();
-                                resortRestrictionResponse.Parse(stream);
-                                objectOut = resortRestrictionResponse;
+                                objectOut = Block.Parse<ResortRestrictionResponse>(stream);
                                 break;
                             }
 
                         case "SeekEntries":
                             {
-                                SeekEntriesResponse seekEntriesResponse = new SeekEntriesResponse();
-                                seekEntriesResponse.Parse(stream);
-                                objectOut = seekEntriesResponse;
+                                objectOut = Block.Parse<SeekEntriesResponse>(stream);
                                 break;
                             }
 
                         case "UpdateStat":
                             {
-                                UpdateStatResponse updateStatResponse = new UpdateStatResponse();
-                                updateStatResponse.Parse(stream);
-                                objectOut = updateStatResponse;
+                                objectOut = Block.Parse<UpdateStatResponse>(stream);
                                 break;
                             }
 
                         case "GetMailboxUrl":
                             {
-                                GetMailboxUrlResponse getMailboxUrlResponse = new GetMailboxUrlResponse();
-                                getMailboxUrlResponse.Parse(stream);
-                                objectOut = getMailboxUrlResponse;
+                                objectOut = Block.Parse< GetMailboxUrlResponse>(stream);
                                 break;
                             }
 
                         case "GetAddressBookUrl":
                             {
-                                GetAddressBookUrlResponse getAddressBookUrlResponse = new GetAddressBookUrlResponse();
-                                getAddressBookUrlResponse.Parse(stream);
-                                objectOut = getAddressBookUrlResponse;
+                                objectOut = Block.Parse<GetAddressBookUrlResponse>(stream);
                                 break;
                             }
 
