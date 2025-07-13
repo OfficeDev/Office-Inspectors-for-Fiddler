@@ -159,15 +159,5 @@ namespace MAPIInspector.Parsers
 
             return node;
         }
-
-        /// <summary>
-        /// Convert a value to PropertyDataType
-        /// </summary>
-        /// <param name="typeValue">The type value</param>
-        /// <returns>PropertyDataType type</returns>
-        public static PropertyDataType ConvertToPropType(ushort typeValue)
-        {
-            return (PropertyDataType)(typeValue & (ushort)~PropertyDataTypeFlag.MultivalueInstance);
-        }
     }
 }
