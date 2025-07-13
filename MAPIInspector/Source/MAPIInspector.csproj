@@ -755,6 +755,7 @@
     <Compile Include="Parsers\MSOXPROPS\NamedProperty.cs" />
     <Compile Include="Parsers\MSOXPROPS\PropertyNameMap.cs" />
     <Compile Include="Parsers\PidTagPropertyEnum.cs" />
+    <Compile Include="Parsers\Position.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>

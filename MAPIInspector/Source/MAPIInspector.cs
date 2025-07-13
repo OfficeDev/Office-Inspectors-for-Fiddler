@@ -165,7 +165,7 @@ namespace MapiInspector
                 {
                     if (pos.IsCompressedXOR)
                     {
-                        if (pos.IsAuxiliayPayload)
+                        if (pos.IsAuxiliaryPayload)
                         {
                             this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(AuxPayLoadCompressedXOR);
                         }

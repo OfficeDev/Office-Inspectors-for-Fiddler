@@ -1,10 +1,4 @@
 ﻿using BlockParser;
-using MapiInspector;
-using System;
-using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Forms;
 
 namespace MAPIInspector.Parsers
@@ -12,7 +6,7 @@ namespace MAPIInspector.Parsers
     /// <summary>
     /// BaseStructure class
     /// </summary>
-    public class BaseStructure
+    public partial class BaseStructure
     {
         /// <summary>
         /// Boolean value, if payload is compressed or obfuscated, value is true. otherwise, value is false.
@@ -174,54 +168,6 @@ namespace MAPIInspector.Parsers
         public static PropertyDataType ConvertToPropType(ushort typeValue)
         {
             return (PropertyDataType)(typeValue & (ushort)~PropertyDataTypeFlag.MultivalueInstance);
-        }
-
-        /// <summary>
-        /// Record start position and byte counts consumed
-        /// </summary>
-        public class Position
-        {
-            /// <summary>
-            /// Int value specifies field start position
-            /// </summary>
-            public int StartIndex;
-
-            /// <summary>
-            /// Int value specifies field length
-            /// </summary>
-            public int Offset;
-
-            /// <summary>
-            /// Boolean value specifies if field is in the compressed payload
-            /// </summary>
-            public bool IsCompressedXOR;
-
-            /// <summary>
-            /// Boolean value specifies if field is in the auxiliary payload
-            /// </summary>
-            public bool IsAuxiliayPayload;
-
-            /// <summary>
-            /// Int value specifies the buffer index of a field
-            /// </summary>
-            public int BufferIndex = 0;
-
-            /// <summary>
-            /// Source block
-            /// </summary>
-            public Block SourceBlock = null;
-
-            /// <summary>
-            /// Initializes a new instance of the Position class
-            /// </summary>
-            /// <param name="startIndex">The start position of field</param>
-            /// <param name="offset">The Length of field </param>
-            public Position(int startIndex, int offset)
-            {
-                this.StartIndex = startIndex;
-                this.Offset = offset;
-                this.IsAuxiliayPayload = false;
-            }
         }
     }
 }
