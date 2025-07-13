@@ -302,8 +302,7 @@ namespace MapiInspector
             this.MAPIViewControl.BeginUpdate();
             try
             {
-                int result;
-                TreeNode topNode = BaseStructure.AddNodesForTree("DisplayObjectRoot", obj, 0, out result);
+                var topNode = BaseStructure.AddBlock(obj, 0);
                 this.MAPIViewControl.Nodes.Add(topNode);
                 topNode.ExpandAll();
                 if (bytesForHexview != null)

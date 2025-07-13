@@ -144,7 +144,7 @@ namespace MAPIInspector.Parsers
         /// <param name="block">The block to add as a node.</param>
         /// <param name="blockRootOffset">The root offset to calculate the absolute position of the block.</param>
         /// <returns>The TreeNode representing the block and its children.</returns>
-        private static TreeNode AddBlock(Block block, int blockRootOffset)
+        public static TreeNode AddBlock(Block block, int blockRootOffset)
         {
             // Clean up embedded null characters in the block text for display purposes
             var text = block.Text.Replace("\0", "\\0");
@@ -243,20 +243,6 @@ namespace MAPIInspector.Parsers
             }
 
             return node;
-        }
-
-        /// <summary>
-        /// Add the object to TreeNode and calculate the byte number it consumed
-        /// </summary>
-        /// <param name="nodeName">Best guess at current node name for debugging - not currently used for display</param>
-        /// <param name="obj">The object need to display in TreeView</param>
-        /// <param name="startIndex">The start position of the object in HexView</param>
-        /// <param name="offset">The byte number consumed by the object</param>
-        /// <returns>The TreeNode with object value information</returns>
-        public static TreeNode AddNodesForTree(string nodeName, Block block, int startIndex, out int offset)
-        {
-            offset = (int)block.Size;
-            return AddBlock(block, startIndex);
         }
 
         /// <summary>
