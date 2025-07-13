@@ -1293,143 +1293,74 @@ sessionID >= currentSessionID)
                     switch (requestType)
                     {
                         case "Connect":
-                            {
                                 objectOut = Block.Parse<ConnectRequestBody>(parser);
                                 break;
-                            }
-
                         case "Execute":
-                            {
                                 objectOut = Block.Parse<ExecuteRequestBody>(parser);
                                 break;
-                            }
-
                         case "Disconnect":
-                            {
                                 objectOut = Block.Parse<DisconnectRequestBody>(parser);
                                 break;
-                            }
-
                         case "NotificationWait":
-                            {
                                 objectOut = Block.Parse<NotificationWaitRequestBody>(parser);
                                 break;
-                            }
-
                         case "Bind":
-                            {
                                 objectOut = Block.Parse<BindRequest>(parser);
                                 break;
-                            }
-
                         case "Unbind":
-                            {
                                 objectOut = Block.Parse<UnbindRequest>(parser);
                                 break;
-                            }
-
                         case "CompareMIds":
-                            {
                                 objectOut = Block.Parse<CompareMinIdsRequest>(parser);
                                 break;
-                            }
-
                         case "DNToMId":
-                            {
                                 objectOut = Block.Parse<DnToMinIdRequest>(parser);
                                 break;
-                            }
-
                         case "GetMatches":
-                            {
                                 objectOut = Block.Parse<GetMatchesRequest>(parser);
                                 break;
-                            }
-
                         case "GetPropList":
-                            {
                                 objectOut = Block.Parse<GetPropListRequest>(parser);
                                 break;
-                            }
-
                         case "GetProps":
-                            {
                                 objectOut = Block.Parse<GetPropsRequest>(parser);
                                 break;
-                            }
-
                         case "GetSpecialTable":
-                            {
                                 objectOut = Block.Parse<GetSpecialTableRequest>(parser);
                                 break;
-                            }
-
                         case "GetTemplateInfo":
-                            {
                                 objectOut = Block.Parse<GetTemplateInfoRequest>(parser);
                                 break;
-                            }
-
                         case "ModLinkAtt":
-                            {
                                 objectOut = Block.Parse<ModLinkAttRequest>(parser);
                                 break;
-                            }
-
                         case "ModProps":
-                            {
                                 objectOut = Block.Parse<ModPropsRequest>(parser);
                                 break;
-                            }
-
                         case "QueryRows":
-                            {
                                 objectOut = Block.Parse<QueryRowsRequest>(parser);
                                 break;
-                            }
-
                         case "QueryColumns":
-                            {
                                 objectOut = Block.Parse<QueryColumnsRequest>(parser);
                                 break;
-                            }
-
                         case "ResolveNames":
-                            {
                                 objectOut = Block.Parse<ResolveNamesRequest>(parser);
                                 break;
-                            }
-
                         case "ResortRestriction":
-                            {
                                 objectOut = Block.Parse<ResortRestrictionRequest>(parser);
                                 break;
-                            }
-
                         case "SeekEntries":
-                            {
                                 objectOut = Block.Parse<SeekEntriesRequest>(parser);
                                 break;
-                            }
-
                         case "UpdateStat":
-                            {
                                 objectOut = Block.Parse<UpdateStatRequest>(parser);
                                 break;
-                            }
-
                         case "GetMailboxUrl":
-                            {
                                 objectOut = Block.Parse<GetMailboxUrlRequest>(parser);
                                 break;
-                            }
-
                         case "GetAddressBookUrl":
-                            {
                                 objectOut = Block.Parse<GetAddressBookUrlRequest>(parser);
                                 break;
-                            }
-
                         default:
                             {
                                 objectOut = Block.Create("Unavailable Request Type");
@@ -1446,143 +1377,74 @@ sessionID >= currentSessionID)
                     switch (requestType)
                     {
                         case "Connect":
-                            {
                                 objectOut = Block.Parse<ConnectResponseBody>(parser);
                                 break;
-                            }
-
                         case "Execute":
-                            {
                                 objectOut = Block.Parse<ExecuteResponseBody>(parser);
                                 break;
-                            }
-
                         case "Disconnect":
-                            {
                                 objectOut = Block.Parse<DisconnectResponseBody>(parser);
                                 break;
-                            }
-
                         case "NotificationWait":
-                            {
                                 objectOut = Block.Parse<NotificationWaitResponseBody>(parser);
                                 break;
-                            }
-
                         case "Bind":
-                            {
                                 objectOut = Block.Parse<BindResponse>(parser);
                                 break;
-                            }
-
                         case "Unbind":
-                            {
                                 objectOut = Block.Parse<UnbindResponse>(parser);
                                 break;
-                            }
-
                         case "CompareMIds":
-                            {
                                 objectOut = Block.Parse<CompareMinIdsResponse>(parser);
                                 break;
-                            }
-
                         case "DNToMId":
-                            {
                                 objectOut = Block.Parse<DnToMinIdResponse>(parser);
                                 break;
-                            }
-
                         case "GetMatches":
-                            {
                                 objectOut = Block.Parse<GetMatchesResponse>(parser);
                                 break;
-                            }
-
                         case "GetPropList":
-                            {
                                 objectOut = Block.Parse<GetPropListResponse>(parser);
                                 break;
-                            }
-
                         case "GetProps":
-                            {
                                 objectOut = Block.Parse<GetPropsResponse>(parser);
                                 break;
-                            }
-
                         case "GetSpecialTable":
-                            {
                                 objectOut = Block.Parse<GetSpecialTableResponse>(parser);
                                 break;
-                            }
-
                         case "GetTemplateInfo":
-                            {
                                 objectOut = Block.Parse<GetTemplateInfoResponse>(parser);
                                 break;
-                            }
-
                         case "ModLinkAtt":
-                            {
                                 objectOut = Block.Parse<ModLinkAttResponse>(parser);
                                 break;
-                            }
-
                         case "ModProps":
-                            {
                                 objectOut = Block.Parse<ModPropsResponse>(parser);
                                 break;
-                            }
-
                         case "QueryRows":
-                            {
                                 objectOut = Block.Parse<QueryRowsResponse>(parser);
                                 break;
-                            }
-
                         case "QueryColumns":
-                            {
                                 objectOut = Block.Parse<QueryColumnsResponse>(parser);
                                 break;
-                            }
-
                         case "ResolveNames":
-                            {
                                 objectOut = Block.Parse<ResolveNamesResponse>(parser);
                                 break;
-                            }
-
                         case "ResortRestriction":
-                            {
                                 objectOut = Block.Parse<ResortRestrictionResponse>(parser);
                                 break;
-                            }
-
                         case "SeekEntries":
-                            {
                                 objectOut = Block.Parse<SeekEntriesResponse>(parser);
                                 break;
-                            }
-
                         case "UpdateStat":
-                            {
                                 objectOut = Block.Parse<UpdateStatResponse>(parser);
                                 break;
-                            }
-
                         case "GetMailboxUrl":
-                            {
                                 objectOut = Block.Parse< GetMailboxUrlResponse>(parser);
                                 break;
-                            }
-
                         case "GetAddressBookUrl":
-                            {
                                 objectOut = Block.Parse<GetAddressBookUrlResponse>(parser);
                                 break;
-                            }
-
                         default:
                             {
                                 objectOut = Block.Create("Unavailable Response Type");
