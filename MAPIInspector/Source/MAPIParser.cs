@@ -333,8 +333,6 @@ namespace MapiInspector
         public static void HandleContextInformation(RopIdType sourceRopID, out Block obj, out byte[] bytes, uint[] parameters = null)
         {
             byte[] bytesForHexView;
-            object mapiRequest = new object();
-            object mapiResponse = new object();
             string savedResult = string.Empty;
             object result = new object();
             Session thisSession = ParsingSession;
