@@ -205,7 +205,7 @@ namespace MapiInspector
                     if (currentSession["Transfer-Encoding"] != null &&
                         currentSession["Transfer-Encoding"] == "chunked")
                     {
-                        bytesFromHTTP = Utilities.GetPaylodFromChunkedBody(bytesFromHTTP);
+                        bytesFromHTTP = Utilities.GetPayloadFromChunkedBody(bytesFromHTTP);
                         bytes = bytesFromHTTP;
                     }
                 }
@@ -213,7 +213,7 @@ namespace MapiInspector
                     headers.Exists("Transfer-Encoding") &&
                     headers["Transfer-Encoding"] == "chunked")
                 {
-                    bytesFromHTTP = Utilities.GetPaylodFromChunkedBody(bytesFromHTTP);
+                    bytesFromHTTP = Utilities.GetPayloadFromChunkedBody(bytesFromHTTP);
                     bytes = bytesFromHTTP;
                 }
                 else
@@ -1277,7 +1277,7 @@ sessionID >= currentSessionID)
                     if (currentSession["Transfer-Encoding"] != null &&
                         currentSession["Transfer-Encoding"] == "chunked")
                     {
-                        bytesFromHTTP = Utilities.GetPaylodFromChunkedBody(bytesFromHTTP);
+                        bytesFromHTTP = Utilities.GetPayloadFromChunkedBody(bytesFromHTTP);
                         bytes = bytesFromHTTP;
                     }
                 }
@@ -1285,7 +1285,7 @@ sessionID >= currentSessionID)
                     headers.Exists("Transfer-Encoding") &&
                     headers["Transfer-Encoding"] == "chunked")
                 {
-                    bytesFromHTTP = Utilities.GetPaylodFromChunkedBody(bytesFromHTTP);
+                    bytesFromHTTP = Utilities.GetPayloadFromChunkedBody(bytesFromHTTP);
                     bytes = bytesFromHTTP;
                 }
                 else

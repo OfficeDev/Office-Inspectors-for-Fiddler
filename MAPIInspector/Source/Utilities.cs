@@ -90,7 +90,7 @@ namespace MapiInspector
         /// </summary>
         /// <param name="responseBodyFromFiddler">The raw response body from Fiddler.</param>
         /// <returns>The valid response bytes</returns>
-        public static byte[] GetPaylodFromChunkedBody(byte[] responseBodyFromFiddler)
+        public static byte[] GetPayloadFromChunkedBody(byte[] responseBodyFromFiddler)
         {
             int length = responseBodyFromFiddler.Length;
             List<byte> payload = new List<byte>();
