@@ -52,8 +52,9 @@ namespace BlockParser
         /// </summary>
         protected abstract void Parse();
         /// <summary>
-        /// When overridden in a derived class, parses and adds any child blocks to this block.
+        /// When overridden in a derived class, parses and adds any child blocks to this block, building a tree of blocks
         /// No default implementation is provided, as this method is expected to be specific to the derived class's structure.
+        /// Do NOT attempt to parse data from the stream or parser here; that should be done in the <see cref="Parse"/> method.
         /// </summary>
         protected abstract void ParseBlocks();
 
@@ -114,6 +115,8 @@ namespace BlockParser
                 try
                 {
                     Parse();
+                    // Compute Size so ParseBlocks can use it
+                    Size = parser.Offset - Offset;
                     ParseBlocks();
                 }
                 catch (System.Exception e)
@@ -131,6 +134,7 @@ namespace BlockParser
                     AddChild(ParseJunk("Unparsed data"));
                 }
 
+                // Recompute Size just in case ParseBlocks changed it
                 Size = parser.Offset - Offset;
             }
         }

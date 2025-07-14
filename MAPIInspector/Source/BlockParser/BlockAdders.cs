@@ -99,8 +99,6 @@
             if (child != null && child.Parsed)
             {
                 child.SetText($"{label}:{child.ToHexString()}");
-                child.AddChild(Create(child.Size, child.Offset, $"bin: {child.ToTextStringA()}"));
-                child.AddHeader($"cb: {child.Count}");
                 children.Add(child);
             }
         }

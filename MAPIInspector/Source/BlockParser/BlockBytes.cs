@@ -39,6 +39,8 @@ namespace BlockParser
         protected override void ParseBlocks()
         {
             SetText(ToHexString(false));
+            AddSubHeader($"bin: {ToTextStringA()}");
+            AddHeader($"cb: {Count}");
         }
     }
 }
