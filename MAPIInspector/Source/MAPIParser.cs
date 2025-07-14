@@ -734,7 +734,7 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                                 currentSession.RequestHeaders["X-RequestType"] == "Execute")
                             {
                                 IsOnlyGetServerHandle = true;
-                                object resResult = ParseResponseMessage(currentSession, out bytesForHexView, false);
+                                var resResult = ParseResponseMessage(currentSession, out bytesForHexView, false);
                                 IsOnlyGetServerHandle = false;
 
                                 if (resResult != null &&
@@ -749,7 +749,7 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                                         currentClientInfo == clientInfo)
                                     {
                                         int handleIndex = tableHandles.IndexOf(parameters[1]);
-                                        object requestResult = ParseRequestMessage(currentSession, out bytesForHexView, true);
+                                        var requestResult = ParseRequestMessage(currentSession, out bytesForHexView, true);
 
                                         if (requestResult != null)
                                         {
@@ -1051,7 +1051,10 @@ sessionID >= currentSessionID)
                         if (!IsOnlyGetServerHandle)
                         {
                             requestDic.Add(parsingSessionID, mapiRequest);
-                            requestBytesForHexview.Add(parsingSessionID, bytesForHexView);
+                            if (!requestBytesForHexview.ContainsKey(parsingSessionID))
+                            {
+                                requestBytesForHexview.Add(parsingSessionID, bytesForHexView);
+                            }
                         }
                         else
                         {
@@ -1121,7 +1124,10 @@ sessionID >= currentSessionID)
                             if (!IsOnlyGetServerHandle)
                             {
                                 responseDic.Add(parsingSessionID, mapiResponse);
-                                responseBytesForHexview.Add(parsingSessionID, bytesForHexView);
+                                if (!responseBytesForHexview.ContainsKey(parsingSessionID))
+                                {
+                                    responseBytesForHexview.Add(parsingSessionID, bytesForHexView);
+                                }
                             }
                             else
                             {
@@ -1171,7 +1177,10 @@ sessionID >= currentSessionID)
                             if (!IsOnlyGetServerHandle)
                             {
                                 responseDic.Add(parsingSessionID, mapiResponse);
-                                responseBytesForHexview.Add(parsingSessionID, bytesForHexView);
+                                if (!requestBytesForHexview.ContainsKey(parsingSessionID))
+                                {
+                                    requestBytesForHexview.Add(parsingSessionID, bytesForHexView);
+                                }
                             }
                             else
                             {
@@ -1563,8 +1572,8 @@ sessionID >= currentSessionID)
             public string LocalProcess { get; set; }
             public string ClientRequestId { get; set; }
             public string RequestId { get; set; }
-            public object Request { get; set; }
-            public object Response { get; set; }
+            public Block Request { get; set; }
+            public Block Response { get; set; }
         }
 
         /// <summary>
@@ -1617,10 +1626,10 @@ sessionID >= currentSessionID)
                     {
                         IsLooperCall = false;
                         Partial.ResetPartialParameters();
-                        object requestObj = ParseHTTPPayload(session.RequestHeaders, session, session.requestBodyBytes, TrafficDirection.In, out var bytes);
-                        object responseObj = ParseHTTPPayload(session.RequestHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out bytes);
+                        var requestObj = ParseHTTPPayload(session.RequestHeaders, session, session.requestBodyBytes, TrafficDirection.In, out var bytes);
+                        var responseObj = ParseHTTPPayload(session.RequestHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out bytes);
 
-                        MAPIFrame mapiFrame = new MAPIFrame
+                        var mapiFrame = new MAPIFrame
                         {
                             Frame = session.id,
                             Time = session.Timers.ClientBeginRequest.ToString("yyyy-MM-dd HH:mm:ss.fff"),
