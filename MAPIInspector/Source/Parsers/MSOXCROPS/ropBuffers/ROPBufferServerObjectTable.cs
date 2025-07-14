@@ -22,7 +22,7 @@ namespace MAPIInspector.Parsers
             if (ropSize <= sizeof(ushort)) return;
             parser.Advance(ropSize - sizeof(ushort));
             ServerObjectHandleTable = new List<uint>();
-            while (parser.RemainingBytes > sizeof(uint))
+            while (parser.RemainingBytes >= sizeof(uint))
             {
                 ServerObjectHandleTable.Add(ParseT<uint>());
             }

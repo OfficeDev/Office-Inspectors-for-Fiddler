@@ -139,13 +139,14 @@ namespace MapiInspector
             if (IsMapihttpSession(currentSession, TrafficDirection.Out))
             {
                 byte[] bytesForHexView;
-                object mapiResponse;
-                mapiResponse = ParseHTTPExecuteResponsePayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
-                int rgbOutputBufferCount = (mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers.Length;
+                var mapiResponse = ParseHTTPExecuteResponsePayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                var responseBody = mapiResponse as ExecuteResponseBody;
+                int rgbOutputBufferCount = responseBody.RopBuffer.RgbOutputBuffers.Length;
 
                 for (int i = 0; i < rgbOutputBufferCount; i++)
                 {
-                    handle_InResponse = ((mapiResponse as ExecuteResponseBody).RopBuffer.RgbOutputBuffers[i].Payload as ROPBufferServerObjectTable).ServerObjectHandleTable[outputHandleIndex];
+                    var objectTable = responseBody.RopBuffer.RgbOutputBuffers[i].Payload as ROPBufferServerObjectTable;
+                    handle_InResponse = objectTable.ServerObjectHandleTable[outputHandleIndex];
                 }
             }
 
