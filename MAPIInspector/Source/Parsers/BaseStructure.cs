@@ -18,7 +18,7 @@ namespace MAPIInspector.Parsers
         /// </summary>
         private static int compressBufferindex = 0;
 
-        const bool DebugNodes = true;
+        const bool DebugNodes = false;
 
         /// <summary>
         /// Recursively adds a BlockParser.Block and its children to a TreeNode structure.
@@ -41,14 +41,11 @@ namespace MAPIInspector.Parsers
             {
                 SourceBlock = block
             };
-            var node = new TreeNode(text)
-            {
-                BackColor = System.Drawing.Color.PaleGreen, // TODO: This is just for debugging
-                Tag = position
-            };
+            var node = new TreeNode(text) { Tag = position };
 
             if (DebugNodes)
             {
+                node.BackColor = System.Drawing.Color.PaleGreen;
                 System.Drawing.Color backColor;
                 if (string.IsNullOrEmpty(text))
                 {
@@ -141,10 +138,13 @@ namespace MAPIInspector.Parsers
             {
                 if (nd.Tag is Position pos)
                 {
-                    nd.Nodes.Insert(0, new TreeNode($"Compressed: SI: {pos.StartIndex:X} SI`:{pos.StartIndex - current:X} C:{current:X} BI:{compressBufferindex:X}")
+                    if (DebugNodes)
                     {
-                        BackColor = System.Drawing.Color.AliceBlue
-                    });
+                        nd.Nodes.Insert(0, new TreeNode($"Compressed: SI: {pos.StartIndex:X} SI`:{pos.StartIndex - current:X} C:{current:X} BI:{compressBufferindex:X}")
+                        {
+                            BackColor = System.Drawing.Color.AliceBlue
+                        });
+                    }
 
                     pos.IsCompressedXOR = true;
                     pos.StartIndex -= current;
