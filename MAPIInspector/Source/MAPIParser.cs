@@ -1627,7 +1627,7 @@ sessionID >= currentSessionID)
                         IsLooperCall = false;
                         Partial.ResetPartialParameters();
                         var requestObj = ParseHTTPPayload(session.RequestHeaders, session, session.requestBodyBytes, TrafficDirection.In, out var bytes);
-                        var responseObj = ParseHTTPPayload(session.RequestHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out bytes);
+                        var responseObj = ParseHTTPPayload(session.ResponseHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out bytes);
 
                         var mapiFrame = new MAPIFrame
                         {

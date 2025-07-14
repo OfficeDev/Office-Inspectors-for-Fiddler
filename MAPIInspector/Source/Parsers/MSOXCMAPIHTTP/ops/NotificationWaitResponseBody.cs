@@ -1,5 +1,4 @@
 ﻿using BlockParser;
-using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
