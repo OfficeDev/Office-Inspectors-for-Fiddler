@@ -73,7 +73,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             SetText("PtypMultipleString_AddressBook");
-            AddChild(Count, $"Count:{Count}");
+            AddChildBlockT(Count, "Count");
             AddLabeledChildren(Value, "Value");
         }
     }

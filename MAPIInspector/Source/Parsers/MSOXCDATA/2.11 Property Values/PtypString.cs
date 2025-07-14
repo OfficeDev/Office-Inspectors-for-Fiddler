@@ -64,7 +64,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             Text = $"\"{Value.Text}\"";
-            AddChild(Count, $"Count:{Count.Data} = 0x{Count.Data:X}");
+            AddChildBlockT(Count, "Count");
             AddHeader($"cch:{Value.Data.Length} = 0x{Value.Data.Length:X}");
         }
     }

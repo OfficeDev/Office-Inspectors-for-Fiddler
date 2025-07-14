@@ -53,7 +53,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            AddChild(Count, $"Count:{Count}");
+            AddChildBlockT(Count, "Count");
             AddChildBytes(Value, "Value");
         }
     }

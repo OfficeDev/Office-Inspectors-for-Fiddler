@@ -147,10 +147,7 @@ namespace MAPIInspector.Parsers
             AddChildBlockT(_actionType, "ActionType");
             AddChild(ActionFlavor, "ActionFlavor");
             AddChildBlockT(ActionFlags, "ActionFlags");
-            if (ActionData != null)
-            {
-                AddChild(ActionData, "ActionData");
-            }
+            AddChild(ActionData, "ActionData");
         }
     }
 }

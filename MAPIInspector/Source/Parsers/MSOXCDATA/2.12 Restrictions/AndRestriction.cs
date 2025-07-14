@@ -16,8 +16,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// This value specifies how many restriction structures are present in the Restricts field. The width of this field is 16 bits in the context of ROPs and 32 bits in the context of extended rules.
         /// </summary>
-        private Block _restrictCount;
-        public uint RestrictCount;
+        private BlockT<uint> RestrictCount;
 
         /// <summary>
         /// An array of restriction structures.
@@ -47,13 +46,11 @@ namespace MAPIInspector.Parsers
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
-                    _restrictCount = ParseT<ushort>();
-                    RestrictCount = (_restrictCount as BlockT<ushort>);
+                    RestrictCount = ParseAs<ushort, uint>();
                     break;
                 default:
                 case CountWideEnum.fourBytes:
-                    _restrictCount = ParseT<uint>();
-                    RestrictCount = (_restrictCount as BlockT<uint>);
+                    RestrictCount = ParseT<uint>();
                     break;
             }
 
@@ -72,7 +69,7 @@ namespace MAPIInspector.Parsers
         {
             SetText("AndRestriction");
             AddChildBlockT(RestrictType, "RestrictType");
-            AddChild(_restrictCount, $"RestrictCount:{RestrictCount}");
+            AddChildBlockT(RestrictCount, "RestrictCount");
             AddLabeledChildren(Restricts, "Restricts");
         }
     }
