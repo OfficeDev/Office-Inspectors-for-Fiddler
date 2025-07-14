@@ -55,7 +55,7 @@ namespace MAPIInspector.Parsers
             }
 
             var tempRestricts = new List<RestrictionType>();
-            for (int length = 0; length < RestrictCount.GetHashCode(); length++)
+            for (int length = 0; length < RestrictCount; length++)
             {
                 var tempRestriction = new RestrictionType();
                 tempRestriction.Parse(parser);
