@@ -53,7 +53,7 @@
                 string valueStr;
                 if (child is IBlockT blockT)
                 {
-                    valueStr = blockT.GetValueString();
+                    valueStr = blockT.ToString();
                 }
                 else
                 {
@@ -176,7 +176,7 @@
                         }
                         else if (block is IBlockT blockT)
                         {
-                            label = blockT.GetValueString();
+                            label = blockT.ToString();
                         }
                         else if (string.IsNullOrEmpty(block.Text))
                         {

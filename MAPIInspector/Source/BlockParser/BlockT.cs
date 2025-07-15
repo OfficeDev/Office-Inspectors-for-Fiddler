@@ -2,10 +2,8 @@
 
 namespace BlockParser
 {
-    public interface IBlockT
-    {
-        string GetValueString();
-    }
+    // Dummy interface to signal this is a BlockT type
+    public interface IBlockT { }
 
     public class BlockT<T> : Block, IBlockT where T : struct
     {
@@ -24,15 +22,22 @@ namespace BlockParser
         // Construct directly from a parser
         public BlockT(BinaryParser parser) => Parse(parser);
 
-        public string GetValueString()
+        public static implicit operator string(BlockT<T> block) => block.ToString();
+        public override string ToString()
         {
             var type = typeof(T);
-            if (type == typeof(byte) || type == typeof(sbyte) ||
-                type == typeof(short) || type == typeof(ushort) ||
-                type == typeof(int) || type == typeof(uint) ||
-                type == typeof(long) || type == typeof(ulong))
+            if (type == typeof(Guid))
             {
-                return $"{Data} = 0x{Data:X}";
+                // Consider Guid as a special case - we may wanna format it differently
+                return Data.ToString();
+            }
+            else if (type.IsEnum)
+            {
+                return $"{Data} = 0x{Convert.ToUInt64(Data):X}";
+            }
+            else if (Data is IFormattable formattable)
+            {
+                return $"{Data} = 0x{formattable.ToString("X", null)}";
             }
             else
             {

@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
             var commands = new List<Command>();
             while (tmp.Parsed && tmp != 0x00)
             {
-                switch (tmp)
+                switch (tmp.Data)
                 {
                     case 0x01:
                     case 0x02:
