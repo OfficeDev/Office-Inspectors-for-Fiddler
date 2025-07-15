@@ -11,7 +11,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// The reserved bit.
         /// </summary>
-        public BlockT<byte> Byte0;
+        private BlockT<byte> Byte0;
 
         public BlockT<byte> Reservedbits0;
 

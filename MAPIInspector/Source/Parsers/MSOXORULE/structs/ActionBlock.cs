@@ -10,7 +10,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An integer that specifies the cumulative length, in bytes, of the subsequent fields in this ActionBlock structure. For extended rules, the size of the ActionLength field is 4 bytes instead of 2 bytes.
         /// </summary>
-        private BlockT<uint> ActionLength;
+        public BlockT<uint> ActionLength;
 
         /// <summary>
         /// An integer that specifies the type of action (2).

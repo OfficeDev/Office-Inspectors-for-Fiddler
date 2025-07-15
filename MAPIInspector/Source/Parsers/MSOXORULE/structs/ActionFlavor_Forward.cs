@@ -8,7 +8,7 @@ namespace MAPIInspector.Parsers
     /// </summary>
     public class ActionFlavor_Forward : Block
     {
-        public BlockT<byte> Byte0;
+        private BlockT<byte> Byte0;
 
         /// <summary>
         /// The reserved bit.

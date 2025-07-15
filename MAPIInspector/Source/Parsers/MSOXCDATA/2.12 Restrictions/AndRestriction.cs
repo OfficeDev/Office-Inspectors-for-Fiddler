@@ -16,7 +16,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// This value specifies how many restriction structures are present in the Restricts field. The width of this field is 16 bits in the context of ROPs and 32 bits in the context of extended rules.
         /// </summary>
-        private BlockT<uint> RestrictCount;
+        public BlockT<uint> RestrictCount;
 
         /// <summary>
         /// An array of restriction structures.

@@ -22,7 +22,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Count values are typically used to specify the size of an associated field.
         /// </summary>
-        private BlockT<uint> Count;
+        public BlockT<uint> Count;
 
         /// <summary>
         /// The array of string value.

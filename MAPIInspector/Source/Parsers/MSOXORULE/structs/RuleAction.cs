@@ -11,7 +11,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Specifies the number of structures that are contained in the ActionBlocks field. For extended rules, the size of the NoOfActions field is 4 bytes instead of 2 bytes.
         /// </summary>
-        private BlockT<uint> NoOfActions;
+        public BlockT<uint> NoOfActions;
 
         /// <summary>
         /// An array of ActionBlock structures, each of which specifies an action (2) of the rule (2), as specified in section 2.2.5.1.

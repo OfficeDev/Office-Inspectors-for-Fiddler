@@ -12,7 +12,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// 64-bit integer representing the number of 100-nanosecond intervals since January 1, 1601.[MS-DTYP]: FILETIME.
         /// </summary>
-        private BlockT<ulong> Value;
+        public BlockT<ulong> Value;
 
         /// <summary>
         /// Parse the PtypTime structure.
