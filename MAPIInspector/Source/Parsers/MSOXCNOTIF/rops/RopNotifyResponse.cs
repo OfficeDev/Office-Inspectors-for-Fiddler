@@ -3,7 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.3.4 RopPending ROP
+    /// 2.2.14.2.1 RopNotify ROP Response Buffer
     /// A class indicates the RopNotify ROP Response Buffer.
     /// </summary>
     public class RopNotifyResponse : Block
