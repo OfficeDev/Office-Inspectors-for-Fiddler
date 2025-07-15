@@ -50,17 +50,7 @@
         {
             if (child != null && child.Parsed)
             {
-                string valueStr;
-                if (child is IBlockT blockT)
-                {
-                    valueStr = blockT.ToString();
-                }
-                else
-                {
-                    valueStr = child.Data.ToString();
-                }
-
-                child.SetText($"{label}:{valueStr}");
+                child.SetText($"{label}:{child}");
                 children.Add(child);
             }
         }
