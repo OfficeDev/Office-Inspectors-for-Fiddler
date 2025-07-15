@@ -36,7 +36,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             AddChildBlockT(X, "X");
-            AddChildBlockT(R, "R");
+            AddChildBlockT(R, "R (Replace)");
         }
     }
 }

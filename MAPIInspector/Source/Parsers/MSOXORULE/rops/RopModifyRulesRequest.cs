@@ -62,6 +62,7 @@ namespace MAPIInspector.Parsers
         {
             SetText("RopModifyRulesRequest");
             AddChildBlockT(RopId, "RopId");
+            AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChild(ModifyRulesFlags, "ModifyRulesFlags");
             AddChildBlockT(RulesCount, "RulesCount");
