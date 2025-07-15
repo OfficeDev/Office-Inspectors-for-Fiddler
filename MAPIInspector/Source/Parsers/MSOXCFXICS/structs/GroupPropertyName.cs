@@ -16,7 +16,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A value that identifies the type of property.
         /// </summary>
-        public BlockT<uint> Kind;
+        public BlockT<KindEnum> Kind;
 
         /// <summary>
         /// A value that identifies the named property within its property set.
@@ -26,7 +26,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A value that specifies the length of the Name field, in bytes.
         /// </summary>
-        public BlockT<uint> NameSize;
+        public BlockT<int> NameSize;
 
         /// <summary>
         /// A Unicode (UTF-16) string that identifies the property within the property set.
@@ -39,16 +39,16 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             Guid = Parse<BlockGuid>();
-            Kind = ParseT<uint>();
+            Kind = ParseT<KindEnum>();
 
-            if (Kind == 0x00000000)
+            if (Kind == KindEnum.LID)
             {
                 Lid = ParseT<uint>();
             }
-            else if (Kind == 0x00000001)
+            else if (Kind == KindEnum.Name)
             {
-                NameSize = ParseT<uint>();
-                Name = new PtypString((int)NameSize.Data);
+                NameSize = ParseT<int>();
+                Name = new PtypString(NameSize / 2);
                 Name.Parse(parser);
             }
         }
