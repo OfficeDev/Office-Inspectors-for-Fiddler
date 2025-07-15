@@ -11,7 +11,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// 32-bit integer encoding error information.
         /// </summary>
-        public BlockT<AdditionalErrorCodes> Value;
+        public BlockT<ErrorCodes> Value;
 
         /// <summary>
         /// Parse the PtypErrorCode structure.
@@ -19,13 +19,12 @@ namespace MAPIInspector.Parsers
         /// <param name="s">A stream containing the PtypErrorCode structure</param>
         protected override void Parse()
         {
-            Value = ParseT<AdditionalErrorCodes>();
+            Value = ParseT<ErrorCodes>();
         }
 
         protected override void ParseBlocks()
         {
-            // TODO: Map the error
-            Text = $"{Value.Data}";
+            Text = $"{Value.Data.FormatErrorCode()}";
         }
     }
 }

@@ -4,28 +4,27 @@ namespace MAPIInspector.Parsers
 {
     public static class HelpMethod
     {
-        // TODO: Make this a string later
-        public static object FormatErrorCode(this ErrorCodes errorCodeUint)
+        public static string FormatErrorCode(this ErrorCodes errorCodeUint)
         {
-            object errorCode = null;
+            string errorCodeString = string.Empty;
             if (Enum.IsDefined(typeof(ErrorCodes), (uint)errorCodeUint))
             {
-                errorCode = errorCodeUint;
+                errorCodeString = errorCodeUint.ToString();
             }
             else if (Enum.IsDefined(typeof(AdditionalErrorCodes), (uint)errorCodeUint))
             {
-                errorCode = (AdditionalErrorCodes)errorCodeUint;
+                errorCodeString = ((AdditionalErrorCodes)errorCodeUint).ToString();
             }
             else if (Enum.IsDefined(typeof(WarningCodes), (uint)errorCodeUint))
             {
-                errorCode = (WarningCodes)errorCodeUint;
+                errorCodeString = ((WarningCodes)errorCodeUint).ToString();
             }
             else
             {
-                errorCode = errorCodeUint;
+                errorCodeString = errorCodeUint.ToString();
             }
 
-            return errorCode;
+            return $"{errorCodeString} = 0x{errorCodeUint:X}";
         }
     }
 }
