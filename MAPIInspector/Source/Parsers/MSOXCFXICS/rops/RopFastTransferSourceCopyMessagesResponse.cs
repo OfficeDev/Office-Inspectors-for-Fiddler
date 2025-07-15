@@ -35,6 +35,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
+            SetText("RopFastTransferSourceCopyMessagesResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
             if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");

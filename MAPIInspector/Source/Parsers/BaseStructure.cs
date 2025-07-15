@@ -18,7 +18,7 @@ namespace MAPIInspector.Parsers
         /// </summary>
         private static int compressBufferindex = 0;
 
-        const bool DebugNodes = false;
+        const bool DebugNodes = true;
 
         /// <summary>
         /// Recursively adds a BlockParser.Block and its children to a TreeNode structure.

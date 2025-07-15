@@ -41,6 +41,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
+            SetText("ServerEid");
             AddChildBlockT(Ours, "Ours");
             AddChild(FolderId, "FolderId");
             AddChildBlockT(MessageId, "MessageId");
