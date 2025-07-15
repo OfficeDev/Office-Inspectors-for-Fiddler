@@ -89,7 +89,6 @@
             }
         }
 
-
         /// <summary>
         /// Adds a header node with the specified text to this block.
         /// </summary>
@@ -98,6 +97,16 @@
         /// </remarks>
         /// <param name="header">The subheader text to set as the node's label.</param>
         public void AddHeader(string header) => AddChild(Create(header));
+
+        /// <summary>
+        /// Inserts a header node with the specified text to this block.
+        /// Node is added as first child of this block.
+        /// </summary>
+        /// <remarks>
+        /// The header node is created with the given text and added as a child. The node has no size or offset.
+        /// </remarks>
+        /// <param name="header">The subheader text to set as the node's label.</param>
+        public void InsertHeader(string header) => children.Insert(0, Create(header));
 
         /// <summary>
         /// Adds a subheader node with the specified label to this block.
