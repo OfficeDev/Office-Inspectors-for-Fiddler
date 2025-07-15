@@ -51,13 +51,9 @@
             if (child != null && child.Parsed)
             {
                 string valueStr;
-                var type = typeof(T);
-                if (type == typeof(byte) || type == typeof(sbyte) ||
-                    type == typeof(short) || type == typeof(ushort) ||
-                    type == typeof(int) || type == typeof(uint) ||
-                    type == typeof(long) || type == typeof(ulong))
+                if (child is IBlockT blockT)
                 {
-                    valueStr = $"{child.Data} = 0x{child.Data:X}";
+                    valueStr = blockT.GetValueString();
                 }
                 else
                 {
@@ -173,7 +169,24 @@
                     long size = 0;
                     foreach (var block in blocks)
                     {
-                        var label = string.IsNullOrEmpty(block.Text) ? block.GetType().Name : block.Text;
+                        string label;
+                        if (block is BlockString blockString)
+                        {
+                            label = $"\"{blockString.Data}\"";
+                        }
+                        else if (block is IBlockT blockT)
+                        {
+                            label = blockT.GetValueString();
+                        }
+                        else if (string.IsNullOrEmpty(block.Text))
+                        {
+                            label = block.GetType().Name;
+                        }
+                        else
+                        {
+                            label = block.Text;
+                        }
+
                         node.AddChild(block, label);
                         size += block.Size;
                     }

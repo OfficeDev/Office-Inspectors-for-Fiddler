@@ -2,7 +2,12 @@
 
 namespace BlockParser
 {
-    public class BlockT<T> : Block where T : struct
+    public interface IBlockT
+    {
+        string GetValueString();
+    }
+
+    public class BlockT<T> : Block, IBlockT where T : struct
     {
         public T Data { get; set; }
 
@@ -18,6 +23,22 @@ namespace BlockParser
 
         // Construct directly from a parser
         public BlockT(BinaryParser parser) => Parse(parser);
+
+        public string GetValueString()
+        {
+            var type = typeof(T);
+            if (type == typeof(byte) || type == typeof(sbyte) ||
+                type == typeof(short) || type == typeof(ushort) ||
+                type == typeof(int) || type == typeof(uint) ||
+                type == typeof(long) || type == typeof(ulong))
+            {
+                return $"{Data} = 0x{Data:X}";
+            }
+            else
+            {
+                return Data.ToString();
+            }
+        }
 
         protected override void Parse()
         {
