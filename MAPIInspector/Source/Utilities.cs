@@ -11,81 +11,6 @@ namespace MapiInspector
     public class Utilities
     {
         /// <summary>
-        /// Convert the data format from uInt to string
-        /// </summary>
-        /// <param name="data">The UInt data</param>
-        /// <returns>The converted string result</returns>
-        public static string ConvertUintToString(uint data)
-        {
-            return data.ToString() + " (0x" + data.ToString("X8") + ")";
-        }
-
-        /// <summary>
-        /// Convert the data format from uShort to string
-        /// </summary>
-        /// <param name="data">The uShort data</param>
-        /// <returns>The converted string result</returns>
-        public static string ConvertUshortToString(ushort data)
-        {
-            return data.ToString() + " (0x" + data.ToString("X4") + ")";
-        }
-
-        public static string ConvertByteArrayToString(byte[] bin, uint? limit = null)
-        {
-            if (bin == null || bin.Length == 0) return string.Empty;
-
-            var szText = new StringBuilder();
-            long length = bin.Length;
-            if (limit.HasValue) length = Math.Min(length, limit.Value);
-            for (uint i = 0; i < length; i++)
-            {
-                if (bin[i] <= 0x8)
-                {
-                    szText.Append(".");
-                }
-                else if (bin[i] >= 0xA && bin[i] <= 0x1F)
-                {
-                    szText.Append(".");
-                }
-                else if (bin[i] > 0xff)
-                {
-                    szText.Append(".");
-                }
-                else
-                {
-                    szText.Append((char)bin[i]);
-                }
-            }
-
-            return szText.ToString();
-        }
-
-        // Array type just display the first 30 values if the array length is more than 30.
-        public static string ConvertArrayToHexString(Array bin, int? limit = 30)
-        {
-            var result = new StringBuilder();
-            int displayLength = limit ?? bin.Length;
-            result.Append("[");
-
-            foreach (var b in bin)
-            {
-                result.Append($"{b:X2},");
-
-                if (displayLength <= 1)
-                {
-                    result.Insert(result.Length - 1, "...");
-                    break;
-                }
-
-                displayLength--;
-            }
-
-            result.Remove(result.Length - 1, 1);
-            result.Append("]");
-            return result.ToString();
-        }
-
-        /// <summary>
         /// Get the valid response from HTTP chunked response body.
         /// </summary>
         /// <param name="responseBodyFromFiddler">The raw response body from Fiddler.</param>
@@ -201,6 +126,7 @@ namespace MapiInspector
                 Obj = obj;
             }
         }
+
         /// <summary>
         /// Method to seal parse result to Json string
         /// Used in test automation
@@ -216,10 +142,10 @@ namespace MapiInspector
         }
 
         /// <summary>
-                 /// Converts a simple (non-flag) enum to string. If the value is not present in the underlying enum, converts to a hex string.
-                 /// </summary>
-                 /// <param name="obj"></param>
-                 /// <returns></returns>
+        /// Converts a simple (non-flag) enum to string. If the value is not present in the underlying enum, converts to a hex string.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public static string EnumToString(object obj)
         {
             if (Enum.IsDefined(obj.GetType(), obj))
