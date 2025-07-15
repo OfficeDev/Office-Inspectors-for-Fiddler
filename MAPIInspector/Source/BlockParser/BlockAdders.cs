@@ -164,9 +164,9 @@
                         {
                             label = $"\"{blockString.Data}\"";
                         }
-                        else if (block is IBlockT blockT)
+                        else if (block is IBlockT)
                         {
-                            label = blockT.ToString();
+                            label = block.ToString();
                         }
                         else if (string.IsNullOrEmpty(block.Text))
                         {
@@ -174,7 +174,7 @@
                         }
                         else
                         {
-                            label = block.Text;
+                            label = block.ToString();
                         }
 
                         node.AddChild(block, label);
