@@ -116,18 +116,16 @@ namespace MAPIInspector.Parsers
                 case PropertyDataType.PtypMultipleInteger64: return Parse<PtypMultipleInteger64>(parser);
                 case PropertyDataType.PtypMultipleString:
                     {
-                        if (bIsAddressBook)
-                        {
-                            var tempPropertyValue = new PtypMultipleString_AddressBook(ptypMultiCountSize);
-                            tempPropertyValue.Parse(parser);
-                            return tempPropertyValue;
-                        }
-                        else
-                        {
-                            return Parse<PtypMultipleString>(parser);
-                        }
+                        var tempPropertyValue = new PtypMultipleString(ptypMultiCountSize, bIsAddressBook);
+                        tempPropertyValue.Parse(parser);
+                        return tempPropertyValue;
                     }
-                case PropertyDataType.PtypMultipleString8: return Parse<PtypMultipleString8>(parser);
+                case PropertyDataType.PtypMultipleString8:
+                    {
+                        var tempPropertyValue = new PtypMultipleString8(ptypMultiCountSize, bIsAddressBook);
+                        tempPropertyValue.Parse(parser);
+                        return tempPropertyValue;
+                    }
                 case PropertyDataType.PtypMultipleTime: return Parse<PtypMultipleTime>(parser);
                 case PropertyDataType.PtypMultipleGuid: return Parse<PtypMultipleGuid>(parser);
                 case PropertyDataType.PtypMultipleBinary:

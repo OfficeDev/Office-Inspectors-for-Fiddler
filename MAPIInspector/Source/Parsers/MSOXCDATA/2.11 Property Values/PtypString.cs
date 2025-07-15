@@ -17,9 +17,16 @@ namespace MAPIInspector.Parsers
         public BlockString Value;
 
         /// <summary>
+        /// 2.2.1.1 AddressBookPropertyValue Structure
+        /// </summary>
+        public BlockT<bool> HasValue;
+
+        /// <summary>
         /// The Count wide size.
         /// </summary>
         private CountWideEnum countWide = 0; // Default to no count field
+
+        private readonly bool isAddressBook = false;
 
         /// <summary>
         /// Initializes a new instance of the PtypString class
@@ -30,7 +37,11 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the PtypString class
         /// </summary>
         /// <param name="wide">The Count wide size of PtypString type.</param>
-        public PtypString(CountWideEnum wide) => countWide = wide;
+        public PtypString(CountWideEnum wide, bool isAddressBook)
+        {
+            countWide = wide;
+            this.isAddressBook = isAddressBook;
+        }
 
         /// <summary>
         /// Initializes a new instance of the PtypString class
@@ -43,17 +54,25 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
+            if (isAddressBook)
+            {
+                // If this is an AddressBookPropertyValue, we need to check if HasValue is present
+                HasValue = ParseAs<byte, bool>();
+                if (HasValue) Value = ParseStringW(-1);
+                return;
+            }
+
             // If we have a countWide enum, we read a count field and use it.
             // Otherwise, if we were given a count, we use that directly.
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
                     Count = ParseAs<ushort, int>();
-                    Value = ParseStringW(Count);
+                    Value = ParseStringW(Count/2);
                     break;
                 case CountWideEnum.fourBytes:
                     Count = ParseT<int>();
-                    Value = ParseStringW(Count);
+                    Value = ParseStringW(Count/2);
                     break;
                 default:
                     Value = ParseStringW(-1);
@@ -64,6 +83,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             Text = $"\"{Value.Text}\"";
+            AddChildBlockT(HasValue, "HasValue");
             AddChildBlockT(Count, "Count");
             AddHeader($"cch:{Value.Data.Length} = 0x{Value.Data.Length:X}");
         }

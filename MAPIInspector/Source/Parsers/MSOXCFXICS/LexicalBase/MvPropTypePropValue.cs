@@ -76,11 +76,11 @@ namespace MAPIInspector.Parsers
                         tmpBlock.Parse(parser);
                         break;
                     case PropertyDataType.PtypMultipleString:
-                        tmpBlock = new PtypString(CountWideEnum.fourBytes);
+                        tmpBlock = new PtypString(CountWideEnum.fourBytes, false);
                         tmpBlock.Parse(parser);
                         break;
                     case PropertyDataType.PtypMultipleString8:
-                        tmpBlock = new PtypString8(CountWideEnum.fourBytes);
+                        tmpBlock = new PtypString8(CountWideEnum.fourBytes, false);
                         tmpBlock.Parse(parser);
                         break;
                 }

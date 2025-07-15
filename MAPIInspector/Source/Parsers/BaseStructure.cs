@@ -142,7 +142,8 @@ namespace MAPIInspector.Parsers
                     {
                         nd.Nodes.Insert(0, new TreeNode($"Compressed: SI: {pos.StartIndex:X} SI`:{pos.StartIndex - current:X} C:{current:X} BI:{compressBufferindex:X}")
                         {
-                            BackColor = System.Drawing.Color.AliceBlue
+                            BackColor = System.Drawing.Color.AliceBlue,
+                            Tag = "ignore"
                         });
                     }
 

@@ -177,7 +177,6 @@
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PtypMultipleInteger64.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PtypMultipleString.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PtypMultipleString8.cs" />
-    <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PtypMultipleString_AddressBook.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PtypMultipleTime.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PtypNull.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PtypObject_Or_PtypEmbeddedTable.cs" />
@@ -201,7 +200,6 @@
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\CountWideEnum.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.4 Error Codes\HelpMethod.cs" />
     <Compile Include="Parsers\MSOXCDATA\BlockGuidExtensions.cs" />
-    <Compile Include="Parsers\MSOXCDATA\MAPIStringAddressBook.cs" />
     <Compile Include="Parsers\MSOXCFOLD\enums\ContentsTableFlags.cs" />
     <Compile Include="Parsers\MSOXCFOLD\enums\DeleteFolderFlags.cs" />
     <Compile Include="Parsers\MSOXCFOLD\enums\FolderType.cs" />

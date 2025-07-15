@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
     public class PtypMultipleString8 : Block
     {
         /// <summary>
-        /// COUNT values are typically used to specify the size of an associated field.
+        /// Count values are typically used to specify the size of an associated field.
         /// </summary>
         public BlockT<uint> Count;
 
@@ -30,16 +30,41 @@ namespace MAPIInspector.Parsers
         public PtypString8[] Value;
 
         /// <summary>
+        /// The Count wide size.
+        /// </summary>
+        private CountWideEnum countWide = CountWideEnum.fourBytes;
+
+        private readonly bool isAddressBook = false;
+
+        /// <summary>
+        /// Initializes a new instance of the PtypMultipleString class
+        /// </summary>
+        /// <param name="wide">The Count wide size of PtypMultipleString8 type.</param>
+        public PtypMultipleString8(CountWideEnum wide, bool isAddressBook)
+        {
+            countWide = wide;
+            this.isAddressBook = isAddressBook;
+        }
         /// Parse the PtypMultipleString8 structure.
         /// </summary>
         protected override void Parse()
         {
-            Count = ParseT<uint>();
-
+            switch (countWide)
+            {
+                case CountWideEnum.twoBytes:
+                    Count = ParseAs<ushort, uint>();
+                    break;
+                default:
+                case CountWideEnum.fourBytes:
+                    Count = ParseT<uint>();
+                    break;
+            }
             var tempvalue = new List<PtypString8>();
             for (int i = 0; i < Count; i++)
             {
-                tempvalue.Add(Parse<PtypString8>());
+                var str = new PtypString8(countWide, isAddressBook);
+                str.Parse(parser);
+                tempvalue.Add(str);
             }
 
             Value = tempvalue.ToArray();

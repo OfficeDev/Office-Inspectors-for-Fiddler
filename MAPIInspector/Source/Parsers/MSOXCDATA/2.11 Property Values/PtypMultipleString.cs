@@ -30,16 +30,43 @@ namespace MAPIInspector.Parsers
         public PtypString[] Value;
 
         /// <summary>
+        /// The Count wide size.
+        /// </summary>
+        private CountWideEnum countWide = CountWideEnum.fourBytes;
+
+        private readonly bool isAddressBook = false;
+
+        /// <summary>
+        /// Initializes a new instance of the PtypMultipleString class
+        /// </summary>
+        /// <param name="wide">The Count wide size of PtypMultipleString type.</param>
+        public PtypMultipleString(CountWideEnum wide, bool isAddressBook)
+        {
+            countWide = wide;
+            this.isAddressBook = isAddressBook;
+        }
+
+        /// <summary>
         /// Parse the PtypMultipleString structure.
         /// </summary>
         protected override void Parse()
         {
-            Count = ParseT<uint>();
-
+            switch (countWide)
+            {
+                case CountWideEnum.twoBytes:
+                    Count = ParseAs<ushort, uint>();
+                    break;
+                default:
+                case CountWideEnum.fourBytes:
+                    Count = ParseT<uint>();
+                    break;
+            }
             var tempvalue = new List<PtypString>();
             for (int i = 0; i < Count; i++)
             {
-                tempvalue.Add(Parse<PtypString>());
+                var str = new PtypString(countWide, isAddressBook);
+                str.Parse(parser);
+                tempvalue.Add(str);
             }
 
             Value = tempvalue.ToArray();

@@ -17,10 +17,15 @@ namespace MAPIInspector.Parsers
         public BlockString Value;
 
         /// <summary>
+        /// 2.2.1.1 AddressBookPropertyValue Structure
+        /// </summary>
+        public BlockT<bool> HasValue;
+        /// <summary>
         /// The Count wide size.
         /// </summary>
         private CountWideEnum countWide = 0; // Default to no count field
 
+        private readonly bool isAddressBook = false;
         /// <summary>
         /// Initializes a new instance of the PtypString8 class
         /// </summary>
@@ -30,7 +35,11 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the PtypString8 class
         /// </summary>
         /// <param name="wide">The Count wide size of PtypString8 type.</param>
-        public PtypString8(CountWideEnum wide) => countWide = wide;
+        public PtypString8(CountWideEnum wide, bool isAddressBook)
+        {
+            countWide = wide;
+            this.isAddressBook = isAddressBook;
+        }
 
         /// <summary>
         /// Initializes a new instance of the PtypString8 class
@@ -38,10 +47,19 @@ namespace MAPIInspector.Parsers
         /// <param name="count">The count of bytes to be read.</param>
         public PtypString8(int count) => Count = CreateBlock(count, 0, 0);
 
+        /// <summary>
         /// Parse the PtypString8 structure.
         /// </summary>
         protected override void Parse()
         {
+            if (isAddressBook)
+            {
+                // If this is an AddressBookPropertyValue, we need to check if HasValue is present
+                HasValue = ParseAs<byte, bool>();
+                if (HasValue) Value = ParseStringA(-1);
+                return;
+            }
+
             // If we have a countWide enum, we read a count field and use it.
             // Otherwise, if we were given a count, we use that directly.
             switch (countWide)
@@ -63,6 +81,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             Text = $"\"{Value.Text}\"";
+            AddChildBlockT(HasValue, "HasValue");
             AddChildBlockT(Count, "Count");
             AddHeader($"cch:{Value.Data.Length} = 0x{Value.Data.Length:X}");
         }
