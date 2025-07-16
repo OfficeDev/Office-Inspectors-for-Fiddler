@@ -18,15 +18,14 @@ namespace MAPIInspector.Parsers
         /// </summary>
         private static int compressBufferindex = 0;
 
-        const bool DebugNodes = false;
-
         /// <summary>
         /// Recursively adds a BlockParser.Block and its children to a TreeNode structure.
         /// </summary>
         /// <param name="block">The block to add as a node.</param>
         /// <param name="blockRootOffset">The root offset to calculate the absolute position of the block.</param>
+        /// <param name="debug">Indicates whether to enable debug mode for this node</param>
         /// <returns>The TreeNode representing the block and its children.</returns>
-        public static TreeNode AddBlock(Block block, int blockRootOffset)
+        public static TreeNode AddBlock(Block block, int blockRootOffset, bool debug)
         {
             // Clean up embedded null characters in the block text for display purposes
             var text = block.Text.Replace("\0", "\\0");
@@ -43,7 +42,7 @@ namespace MAPIInspector.Parsers
             };
             var node = new TreeNode(text) { Tag = position };
 
-            if (DebugNodes)
+            if (debug)
             {
                 node.BackColor = System.Drawing.Color.PaleGreen;
                 System.Drawing.Color backColor;
@@ -99,7 +98,7 @@ namespace MAPIInspector.Parsers
                 {
                     var rpcHeader = (block as RgbOutputBuffer)?.RPCHEADEREXT ??
                         (block as ExtendedBuffer_Input)?.RPCHEADEREXT;
-                    var childNode = AddBlock(child, blockRootOffset);
+                    var childNode = AddBlock(child, blockRootOffset, debug);
                     node.Nodes.Add(childNode);
                     if (childNode.Tag is Position nodePosition && nodePosition != null)
                     {
@@ -107,7 +106,7 @@ namespace MAPIInspector.Parsers
                         childNode.Tag = nodePosition;
                     }
                     childNode.Text = "Payload(CompressedOrObfuscated)";
-                    TreeNodeForCompressed(childNode, blockOffset + (int)rpcHeader.Size, compressBufferindex - 1);
+                    TreeNodeForCompressed(childNode, blockOffset + (int)rpcHeader.Size, compressBufferindex - 1, debug);
                 }
                 else
                 {
@@ -117,7 +116,7 @@ namespace MAPIInspector.Parsers
                         compressBufferindex -= 1;
                     }
 
-                    node.Nodes.Add(AddBlock(child, blockRootOffset));
+                    node.Nodes.Add(AddBlock(child, blockRootOffset, debug));
                 }
             }
 
@@ -130,15 +129,15 @@ namespace MAPIInspector.Parsers
         /// <param name="node">The node in compressed buffers</param>
         /// <param name="current">Indicates start position of the node</param>
         /// <param name="compressBufferindex">Indicates the index of this node in all compressed buffers in same session</param>
-        /// <param name="isAux">Indicates whether the buffer which this node are in is auxiliary</param>
+        /// <param name="debug">Indicates whether to enable debug mode for this node</param>
         /// <returns>The tree node with BufferIndex and IsCompressedXOR properties </returns>
-        public static TreeNode TreeNodeForCompressed(TreeNode node, int current, int compressBufferindex, bool isAux = false)
+        public static TreeNode TreeNodeForCompressed(TreeNode node, int current, int compressBufferindex, bool debug)
         {
             foreach (TreeNode nd in node.Nodes)
             {
                 if (nd.Tag is Position pos)
                 {
-                    if (DebugNodes)
+                    if (debug)
                     {
                         nd.Nodes.Insert(0, new TreeNode($"Compressed: SI: {pos.StartIndex:X} SI`:{pos.StartIndex - current:X} C:{current:X} BI:{compressBufferindex:X}")
                         {
@@ -154,7 +153,7 @@ namespace MAPIInspector.Parsers
 
                 if (nd.Nodes.Count != 0)
                 {
-                    TreeNodeForCompressed(nd, current, compressBufferindex, isAux);
+                    TreeNodeForCompressed(nd, current, compressBufferindex, debug);
                 }
             }
 

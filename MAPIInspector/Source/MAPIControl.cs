@@ -11,10 +11,13 @@ namespace MapiInspector
         /// <summary>
         /// Initializes a new instance of the MAPIControl class
         /// </summary>
-        public MAPIControl()
+        public MAPIControl(MAPIInspector inspector)
         {
+            Inspector = inspector;
             this.InitializeComponent();
         }
+
+        private MAPIInspector Inspector { get; set; }
 
         /// <summary>
         /// Gets mapiTreeView

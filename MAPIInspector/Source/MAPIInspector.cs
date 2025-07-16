@@ -132,7 +132,7 @@ namespace MapiInspector
         public override void AddToTab(TabPage o)
         {
             o.Text = "MAPI";
-            this.MAPIControl = new MAPIControl();
+            this.MAPIControl = new MAPIControl(this);
             o.Controls.Add(this.MAPIControl);
             this.MAPIControl.Size = o.Size;
             this.MAPIControl.Dock = DockStyle.Fill;
@@ -302,7 +302,7 @@ namespace MapiInspector
             this.MAPIViewControl.BeginUpdate();
             try
             {
-                var topNode = BaseStructure.AddBlock(obj, 0);
+                var topNode = BaseStructure.AddBlock(obj, 0, DoDebug);
                 this.MAPIViewControl.Nodes.Add(topNode);
                 topNode.ExpandAll();
                 if (bytesForHexview != null)
@@ -336,6 +336,14 @@ namespace MapiInspector
             ResetHandleInformation();
             Partial.ResetPartialContextInformation();
             Partial.ResetPartialParameters();
+        }
+
+        private bool DoDebug { get; set; } = false;
+
+        public void ToggleDebug()
+        {
+            DoDebug = !DoDebug;
+            this.UpdateView();
         }
 
         /// <summary>

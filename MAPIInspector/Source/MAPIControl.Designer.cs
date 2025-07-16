@@ -58,10 +58,12 @@ namespace MapiInspector
             MenuItem mapiTreeViewMenuItem2 = this.mapiTreeView.ContextMenu.MenuItems.Add("Copy tree");
             MenuItem mapiTreeViewMenuItem3 = this.mapiTreeView.ContextMenu.MenuItems.Add("Expand");
             MenuItem mapiTreeViewMenuItem4 = this.mapiTreeView.ContextMenu.MenuItems.Add("Collapse");
+            MenuItem mapiTreeViewMenuItem5 = this.mapiTreeView.ContextMenu.MenuItems.Add("Toggle Debug");
             mapiTreeViewMenuItem1.Click += new EventHandler(MapiTreeViewMenuItem1_Click);
             mapiTreeViewMenuItem2.Click += new EventHandler(MapiTreeViewMenuItem2_Click);
             mapiTreeViewMenuItem3.Click += new EventHandler(MapiTreeViewMenuItem3_Click);
             mapiTreeViewMenuItem4.Click += new EventHandler(MapiTreeViewMenuItem4_Click);
+            mapiTreeViewMenuItem5.Click += new EventHandler(MapiTreeViewMenuItem5_Click);
             //
             // mapiRichTextBox
             //
@@ -242,6 +244,11 @@ namespace MapiInspector
         {
             var node = mapiTreeView.SelectedNode ?? mapiTreeView.Nodes[0];
             node.Collapse();
+        }
+
+        private void MapiTreeViewMenuItem5_Click(object sender, EventArgs e)
+        {
+            Inspector.ToggleDebug();
         }
 
         private void GetNodeTreeText(StringBuilder sb, TreeNode node, int count)
