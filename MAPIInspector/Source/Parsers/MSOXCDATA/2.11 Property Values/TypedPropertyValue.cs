@@ -20,13 +20,18 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// The Count wide size of ptypMutiple type.
         /// </summary>
-        private CountWideEnum countWide;
+        private CountWideEnum countWide = CountWideEnum.twoBytes;
+
+        /// <summary>
+        /// Initializes a new instance of the TypedPropertyValue class
+        /// </summary>
+        public TypedPropertyValue() { }
 
         /// <summary>
         /// Initializes a new instance of the TypedPropertyValue class
         /// </summary>
         /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type</param>
-        public TypedPropertyValue(CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes)
+        public TypedPropertyValue(CountWideEnum ptypMultiCountSize)
         {
             countWide = ptypMultiCountSize;
         }

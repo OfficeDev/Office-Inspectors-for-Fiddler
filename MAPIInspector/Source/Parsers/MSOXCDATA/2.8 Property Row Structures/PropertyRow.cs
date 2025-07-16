@@ -72,37 +72,28 @@ namespace MAPIInspector.Parsers
                     {
                         if (tempPropTag.PropertyType != PropertyDataType.PtypUnspecified)
                         {
-                            var propValue = new PropertyValue(tempPropTag.PropertyType);
-                            propValue.Parse(parser);
-                            propValue.InsertHeader($"PropertyTag: {tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}");
-                            rowPropValue = propValue;
+                            rowPropValue = new PropertyValue(tempPropTag.PropertyType);
+                            rowPropValue.Parse(parser);
                         }
                         else
                         {
-                            var typePropValue = new TypedPropertyValue();
-                            typePropValue.Parse(parser);
-                            typePropValue.InsertHeader($"PropertyTag: {tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}");
-                            rowPropValue = typePropValue;
+                            rowPropValue = Parse<TypedPropertyValue>();
                         }
                     }
                     else if (Flag == 0x01)
                     {
                         if (tempPropTag.PropertyType != PropertyDataType.PtypUnspecified)
                         {
-                            var flagPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType);
-                            flagPropValue.Parse(parser);
-                            flagPropValue.InsertHeader($"PropertyTag: {tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}");
-                            rowPropValue = flagPropValue;
+                            rowPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType);
+                            rowPropValue.Parse(parser);
                         }
                         else
                         {
-                            var flagPropValue = new FlaggedPropertyValueWithType();
-                            flagPropValue.Parse(parser);
-                            flagPropValue.InsertHeader($"PropertyTag: {tempPropTag.PropertyType}:{MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}");
-                            rowPropValue = flagPropValue;
+                            rowPropValue = Parse<FlaggedPropertyValueWithType>();
                         }
                     }
 
+                    rowPropValue.InsertHeader($"PropertyTag: {MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}:{tempPropTag.PropertyType}");
                     tempPropArray.Add(rowPropValue);
                 }
             }
