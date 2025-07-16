@@ -235,12 +235,15 @@ namespace MapiInspector
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (keyData == (Keys.Control | Keys.F))
+            if (keyData == (Keys.Control | Keys.F) || keyData == Keys.F3)
             {
                 searchTextBox.Focus();
                 searchTextBox.SelectAll();
+                PerformSearch();
+
                 return true;
             }
+
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
@@ -251,6 +254,7 @@ namespace MapiInspector
             {
                 return;
             }
+
             var foundNode = FindNode(mapiTreeView.Nodes, searchText);
             if (foundNode != null)
             {
@@ -272,6 +276,7 @@ namespace MapiInspector
                 if (found != null)
                     return found;
             }
+
             return null;
         }
     }
