@@ -80,6 +80,7 @@ namespace MapiInspector
 			this.mapiHexBox.Location = new System.Drawing.Point(0, 0);
 			this.mapiHexBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.mapiHexBox.Name = "mapiHexBox";
+			this.mapiHexBox.ReadOnly = true;
 			this.mapiHexBox.SelectionLength = ((long)(0));
 			this.mapiHexBox.SelectionStart = ((long)(-1));
 			this.mapiHexBox.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
@@ -96,6 +97,7 @@ namespace MapiInspector
 			this.cropsHexBox.Location = new System.Drawing.Point(0, 0);
 			this.cropsHexBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.cropsHexBox.Name = "cropsHexBox";
+			this.cropsHexBox.ReadOnly = true;
 			this.cropsHexBox.SelectionLength = ((long)(0));
 			this.cropsHexBox.SelectionStart = ((long)(-1));
 			this.cropsHexBox.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
