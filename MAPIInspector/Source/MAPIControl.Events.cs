@@ -41,6 +41,9 @@ namespace MapiInspector
             this.cropsHexBox.ContextMenu = cm_crops;
             MenuItem copyCropsHexMenuItem = this.cropsHexBox.ContextMenu.MenuItems.Add("Copy");
             copyCropsHexMenuItem.Click += new EventHandler(CropsHexBox_CopyHex_Click);
+
+            AttachHexBoxCopyHandler(mapiHexBox);
+            AttachHexBoxCopyHandler(cropsHexBox);
         }
 
         private void CopyMethod(object sender, EventArgs e, Be.Windows.Forms.HexBox hexBox)
@@ -368,6 +371,17 @@ namespace MapiInspector
                 foreach (var child in FlattenNodes(node.Nodes))
                     yield return child;
             }
+        }
+        private void AttachHexBoxCopyHandler(Be.Windows.Forms.HexBox hexBox)
+        {
+            hexBox.KeyDown += (sender, e) =>
+            {
+                if (e.Control && e.KeyCode == Keys.C)
+                {
+                    CopyMethod(sender, e, hexBox);
+                    e.Handled = true;
+                }
+            };
         }
     }
 }
