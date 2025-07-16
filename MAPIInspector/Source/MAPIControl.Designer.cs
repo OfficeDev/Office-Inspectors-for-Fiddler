@@ -40,6 +40,7 @@ namespace MapiInspector
 			// mapiTreeView
 			// 
 			this.mapiTreeView.Dock = System.Windows.Forms.DockStyle.Left;
+			this.mapiTreeView.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.mapiTreeView.Location = new System.Drawing.Point(0, 36);
 			this.mapiTreeView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.mapiTreeView.Name = "mapiTreeView";
@@ -75,7 +76,7 @@ namespace MapiInspector
 			this.mapiHexBox.AccessibleRole = System.Windows.Forms.AccessibleRole.ScrollBar;
 			this.mapiHexBox.BodyOffset = 0;
 			this.mapiHexBox.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.mapiHexBox.Font = new System.Drawing.Font("Courier New", 9F);
+			this.mapiHexBox.Font = new System.Drawing.Font("Segoe UI", 10F);
 			this.mapiHexBox.HeaderColor = System.Drawing.Color.Maroon;
 			this.mapiHexBox.Location = new System.Drawing.Point(0, 0);
 			this.mapiHexBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -92,7 +93,7 @@ namespace MapiInspector
 			// 
 			this.cropsHexBox.BodyOffset = 1;
 			this.cropsHexBox.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.cropsHexBox.Font = new System.Drawing.Font("Courier New", 9F);
+			this.cropsHexBox.Font = new System.Drawing.Font("Segoe UI", 10F);
 			this.cropsHexBox.HeaderColor = System.Drawing.Color.Maroon;
 			this.cropsHexBox.Location = new System.Drawing.Point(0, 0);
 			this.cropsHexBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
@@ -129,10 +130,11 @@ namespace MapiInspector
 			// searchTextBox
 			// 
 			this.searchTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.searchTextBox.Font = new System.Drawing.Font("Segoe UI", 10F);
 			this.searchTextBox.Location = new System.Drawing.Point(4, 4);
 			this.searchTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 4, 0);
 			this.searchTextBox.Name = "searchTextBox";
-			this.searchTextBox.Size = new System.Drawing.Size(1024, 26);
+			this.searchTextBox.Size = new System.Drawing.Size(1024, 34);
 			this.searchTextBox.TabIndex = 0;
 			this.searchTextBox.Text = "Search (Ctrl+F)";
 			this.searchTextBox.GotFocus += new System.EventHandler(this.SearchTextBox_GotFocus);
