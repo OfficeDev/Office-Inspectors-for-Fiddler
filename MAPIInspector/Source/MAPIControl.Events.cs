@@ -10,12 +10,12 @@ namespace MapiInspector
         {
             // TreeView context menu
             ContextMenu mapiTreeViewContextMenu = new ContextMenu();
-            this.mapiTreeView.ContextMenu = mapiTreeViewContextMenu;
-            MenuItem copyNodeTextMenuItem = this.mapiTreeView.ContextMenu.MenuItems.Add("Copy selected text");
-            MenuItem copySubtreeMenuItem = this.mapiTreeView.ContextMenu.MenuItems.Add("Copy tree");
-            MenuItem expandAllMenuItem = this.mapiTreeView.ContextMenu.MenuItems.Add("Expand");
-            MenuItem collapseNodeMenuItem = this.mapiTreeView.ContextMenu.MenuItems.Add("Collapse");
-            MenuItem toggleDebugMenuItem = this.mapiTreeView.ContextMenu.MenuItems.Add("Toggle Debug");
+            mapiTreeView.ContextMenu = mapiTreeViewContextMenu;
+            MenuItem copyNodeTextMenuItem = mapiTreeView.ContextMenu.MenuItems.Add("Copy selected text");
+            MenuItem copySubtreeMenuItem = mapiTreeView.ContextMenu.MenuItems.Add("Copy tree");
+            MenuItem expandAllMenuItem = mapiTreeView.ContextMenu.MenuItems.Add("Expand");
+            MenuItem collapseNodeMenuItem = mapiTreeView.ContextMenu.MenuItems.Add("Collapse");
+            MenuItem toggleDebugMenuItem = mapiTreeView.ContextMenu.MenuItems.Add("Toggle Debug");
             copyNodeTextMenuItem.Click += new EventHandler(TreeView_CopyNodeText_Click);
             copySubtreeMenuItem.Click += new EventHandler(TreeView_CopySubtree_Click);
             expandAllMenuItem.Click += new EventHandler(TreeView_ExpandAll_Click);
@@ -24,22 +24,22 @@ namespace MapiInspector
 
             // MAPI HexBox context menu
             ContextMenu cm = new ContextMenu();
-            this.mapiHexBox.ContextMenu = cm;
-            MenuItem copyHexNoSpacesMenuItem = this.mapiHexBox.ContextMenu.MenuItems.Add("Copy (no spaces)");
+            mapiHexBox.ContextMenu = cm;
+            MenuItem copyHexNoSpacesMenuItem = mapiHexBox.ContextMenu.MenuItems.Add("Copy (no spaces)");
             copyHexNoSpacesMenuItem.Click += new EventHandler(HexBox_CopyNoSpaces_Click);
-            MenuItem copyHexWithSpacesMenuItem = this.mapiHexBox.ContextMenu.MenuItems.Add("Copy (with spaces)");
+            MenuItem copyHexWithSpacesMenuItem = mapiHexBox.ContextMenu.MenuItems.Add("Copy (with spaces)");
             copyHexWithSpacesMenuItem.Click += new EventHandler(HexBox_CopyWithSpaces_Click);
-            MenuItem copyHex16BlocksMenuItem = this.mapiHexBox.ContextMenu.MenuItems.Add("Copy as 16 byte Blocks");
+            MenuItem copyHex16BlocksMenuItem = mapiHexBox.ContextMenu.MenuItems.Add("Copy as 16 byte Blocks");
             copyHex16BlocksMenuItem.Click += new EventHandler(HexBox_Copy16ByteBlocks_Click);
-            MenuItem copyHex16BlocksWithPrefixMenuItem = this.mapiHexBox.ContextMenu.MenuItems.Add("Copy as 16 byte blocks (with prefix)");
+            MenuItem copyHex16BlocksWithPrefixMenuItem = mapiHexBox.ContextMenu.MenuItems.Add("Copy as 16 byte blocks (with prefix)");
             copyHex16BlocksWithPrefixMenuItem.Click += new EventHandler(HexBox_Copy16ByteBlocksWithPrefix_Click);
-            MenuItem copyHexAsCodeBlockMenuItem = this.mapiHexBox.ContextMenu.MenuItems.Add("Copy as 0x00 code block");
+            MenuItem copyHexAsCodeBlockMenuItem = mapiHexBox.ContextMenu.MenuItems.Add("Copy as 0x00 code block");
             copyHexAsCodeBlockMenuItem.Click += new EventHandler(HexBox_CopyAsCodeBlock_Click);
 
             // CROPS HexBox context menu
             ContextMenu cm_crops = new ContextMenu();
-            this.cropsHexBox.ContextMenu = cm_crops;
-            MenuItem copyCropsHexMenuItem = this.cropsHexBox.ContextMenu.MenuItems.Add("Copy");
+            cropsHexBox.ContextMenu = cm_crops;
+            MenuItem copyCropsHexMenuItem = cropsHexBox.ContextMenu.MenuItems.Add("Copy");
             copyCropsHexMenuItem.Click += new EventHandler(CropsHexBox_CopyHex_Click);
 
             AttachHexBoxCopyHandler(mapiHexBox);
@@ -74,7 +74,7 @@ namespace MapiInspector
 
         private void TreeView_CopyNodeText_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText(GetNodeText(this.mapiTreeView.SelectedNode));
+            Clipboard.SetText(GetNodeText(mapiTreeView.SelectedNode));
         }
 
         private void TreeView_CopySubtree_Click(object sender, EventArgs e)
@@ -116,7 +116,7 @@ namespace MapiInspector
 
         private void HexBox_CopyNoSpaces_Click(object sender, EventArgs e)
         {
-            CopyMethod(sender, e, this.mapiHexBox);
+            CopyMethod(sender, e, mapiHexBox);
         }
 
         private void HexBox_CopyWithSpaces_Click(object sender, EventArgs e)
@@ -202,7 +202,7 @@ namespace MapiInspector
 
         private void CropsHexBox_CopyHex_Click(object sender, EventArgs e)
         {
-            CopyMethod(sender, e, this.cropsHexBox);
+            CopyMethod(sender, e, cropsHexBox);
         }
 
         private void SearchButton_Click(object sender, EventArgs e)
