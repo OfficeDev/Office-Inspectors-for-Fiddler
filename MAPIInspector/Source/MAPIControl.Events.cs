@@ -243,6 +243,32 @@ namespace MapiInspector
             bool isShiftF3 = keyData == (Keys.Shift | Keys.F3);
             bool isCtrlF = keyData == (Keys.Control | Keys.F);
 
+            if (mapiTreeView.Focused)
+            {
+                if (keyData == (Keys.Control | Keys.C))
+                {
+                    TreeView_CopyNodeText_Click(mapiTreeView, EventArgs.Empty);
+                    return true;
+                }
+
+                if (keyData == (Keys.Control | Keys.T))
+                {
+                    TreeView_CopySubtree_Click(mapiTreeView, EventArgs.Empty);
+                    return true;
+                }
+
+                if (keyData == (Keys.Control | Keys.Shift | Keys.C))
+                {
+                    // If cropsHexBox is visible, use it; otherwise, use mapiHexBox
+                    if (!splitContainer.Panel2Collapsed)
+                        CropsHexBox_CopyHex_Click(cropsHexBox, EventArgs.Empty);
+                    else
+                        HexBox_CopyNoSpaces_Click(mapiHexBox, EventArgs.Empty);
+
+                    return true;
+                }
+            }
+
             if (isCtrlF)
             {
                 searchTextBox.Focus();
