@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms;
+using System.Windows.Forms;
 using Be.Windows.Forms;
 
 namespace MapiInspector
@@ -14,6 +14,7 @@ namespace MapiInspector
         public MAPIControl()
         {
             this.InitializeComponent();
+            this.InitializeContextMenus();
         }
 
         public MAPIInspector Inspector { get; set; }
@@ -21,56 +22,26 @@ namespace MapiInspector
         /// <summary>
         /// Gets mapiTreeView
         /// </summary>
-        public TreeView MAPITreeView
-        {
-           get
-           {
-                return this.mapiTreeView;
-           }
-        }
+        public TreeView MAPITreeView => this.mapiTreeView;
 
         /// <summary>
         /// Gets mapiHexBox
         /// </summary>
-        public HexBox MAPIHexBox
-        {
-            get
-            {
-                return this.mapiHexBox;
-            }
-        }
+        public HexBox MAPIHexBox => this.mapiHexBox;
 
         /// <summary>
         /// Gets mapiRichTextBox
         /// </summary>
-        public RichTextBox MAPIRichTextBox
-        {
-            get
-            {
-                return this.mapiRichTextBox;
-            }
-        }
+        public RichTextBox MAPIRichTextBox => this.mapiRichTextBox;
 
         /// <summary>
         /// Gets cropsHexBox
         /// </summary>
-        public HexBox CROPSHexBox
-        {
-            get
-            {
-                return this.cropsHexBox;
-            }
-        }
+        public HexBox CROPSHexBox => this.cropsHexBox;
 
         /// <summary>
         /// Gets splitContainer
         /// </summary>
-        public SplitContainer SplitContainer
-        {
-            get
-            {
-                return this.splitContainer;
-            }
-        }
+        public SplitContainer SplitContainer => this.splitContainer;
     }
 }
