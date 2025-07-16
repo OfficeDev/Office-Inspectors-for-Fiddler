@@ -7,6 +7,7 @@ using System.Linq;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// 2.2.1 ROP Input and Output Buffers
     /// A class indicates the ROP input buffer, which is sent by the client, includes an array of ROP request buffers to be processed by the server.
     /// </summary>
     public class ROPInputBuffer : Block
@@ -18,8 +19,8 @@ namespace MAPIInspector.Parsers
 
         /// <summary>
         /// An array of ROP request buffers.
+        /// The size of this field is 2 bytes less than the value specified in the RopSize field.
         /// </summary>
-        /// </summary
         public Block[] RopsList;
 
         /// <summary>
