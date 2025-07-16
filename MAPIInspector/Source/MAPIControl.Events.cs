@@ -382,6 +382,11 @@ namespace MapiInspector
                     CopyMethod(sender, e, hexBox);
                     e.Handled = true;
                 }
+                else if (e.Control && e.KeyCode == Keys.A)
+                {
+                    hexBox.Select(0, hexBox.ByteProvider.Length);
+                    e.Handled = true;
+                }
             };
         }
     }
