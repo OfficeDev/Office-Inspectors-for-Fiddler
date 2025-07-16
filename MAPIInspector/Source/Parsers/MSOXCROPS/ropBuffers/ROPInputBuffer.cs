@@ -77,10 +77,11 @@ namespace MAPIInspector.Parsers
                 var propertyTagsForGetPropertiesSpec = new Dictionary<uint, Queue<PropertyTag[]>>();
                 var logonFlagsInLogonRop = new Dictionary<uint, LogonFlags>();
 
-                if (RopSize > sizeof(ushort))
+                if (RopSize >= sizeof(ushort))
                 {
-                    ropRemainSize.Add(RopSize - (uint)2);
+                    ropRemainSize.Add(RopSize - (uint)sizeof(ushort));
 
+                    parser.PushCap(RopSize - sizeof(ushort));
                     do
                     {
                         var currentRop = TestParse<RopIdType>();
@@ -1026,8 +1027,7 @@ namespace MAPIInspector.Parsers
                                 break;
 
                             default:
-                                BlockBytes ropsBytes = ParseBytes(RopSize - parser.Offset);
-                                ropsList.Add(ropsBytes);
+                                ropsList.Add(ParseJunk("Remaining Data"));
                                 break;
                         }
 
@@ -1038,7 +1038,9 @@ namespace MAPIInspector.Parsers
 
                         ropRemainSize.Add(RopSize - (uint)parser.Offset);
                     }
-                    while (parser.Offset < RopSize);
+                    while (parser.RemainingBytes > 0);
+
+                    parser.PopCap();
                 }
                 else
                 {

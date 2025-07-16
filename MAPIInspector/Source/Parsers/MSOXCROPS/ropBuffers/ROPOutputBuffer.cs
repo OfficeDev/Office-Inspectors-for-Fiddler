@@ -76,8 +76,9 @@ namespace MAPIInspector.Parsers
                 // empty intermediate variables for ROPs need context information
                DecodingContext.SetColumn_InputHandles_InResponse = new List<uint>();
 
-                if (RopSize > sizeof(ushort))
+                if (RopSize >= sizeof(ushort))
                 {
+                    parser.PushCap(RopSize - sizeof(ushort));
                     do
                     {
                         BlockT<RopIdType> currentRop = TestParse<RopIdType>(parser);
@@ -765,12 +766,13 @@ namespace MAPIInspector.Parsers
                                 break;
 
                             default:
-                                BlockBytes ropsBytes = ParseBytes(RopSize - parser.Offset);
-                                ropsList.Add(ropsBytes);
+                                ropsList.Add(ParseJunk("Remaining Data"));
                                 break;
                         }
                     }
-                    while (parser.Offset < RopSize);
+                    while (parser.RemainingBytes > 0);
+
+                    parser.PopCap();
                 }
                 else
                 {
