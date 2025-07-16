@@ -1,4 +1,3 @@
-
 using System;
 using System.Text;
 using System.Windows.Forms;
@@ -201,6 +200,79 @@ namespace MapiInspector
 
             sb.Append(" };");
             Clipboard.SetText(sb.ToString());
+        }
+
+        private void SearchButton_Click(object sender, EventArgs e)
+        {
+            PerformSearch();
+        }
+
+        private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                PerformSearch();
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void SearchTextBox_GotFocus(object sender, EventArgs e)
+        {
+            if (searchTextBox.Text == "Search (Ctrl+F)")
+            {
+                searchTextBox.Text = "";
+            }
+        }
+
+        private void SearchTextBox_LostFocus(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(searchTextBox.Text))
+            {
+                searchTextBox.Text = "Search (Ctrl+F)";
+            }
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.F))
+            {
+                searchTextBox.Focus();
+                searchTextBox.SelectAll();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void PerformSearch()
+        {
+            string searchText = searchTextBox.Text.Trim();
+            if (string.IsNullOrEmpty(searchText) || searchText == "Search (Ctrl+F)")
+            {
+                return;
+            }
+            var foundNode = FindNode(mapiTreeView.Nodes, searchText);
+            if (foundNode != null)
+            {
+                mapiTreeView.SelectedNode = foundNode;
+                mapiTreeView.Focus();
+                foundNode.EnsureVisible();
+            }
+        }
+
+        // Recursively searches for a TreeNode whose text contains the searchText (case-insensitive substring match).
+        private TreeNode FindNode(TreeNodeCollection nodes, string searchText)
+        {
+            if (string.IsNullOrEmpty(searchText)) return null;
+            foreach (TreeNode node in nodes)
+            {
+                if (GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                    return node;
+                var found = FindNode(node.Nodes, searchText);
+                if (found != null)
+                    return found;
+            }
+            return null;
         }
     }
 }
