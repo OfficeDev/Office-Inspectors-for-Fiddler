@@ -204,14 +204,18 @@ namespace MapiInspector
 
         private void SearchButton_Click(object sender, EventArgs e)
         {
-            PerformSearch();
+            bool bIsShift = (ModifierKeys & Keys.Shift) == Keys.Shift;
+            PerformSearch(bIsShift);
         }
 
         private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
+            bool bEnter = e.KeyCode == Keys.Enter;
+            bool bShiftEnter = (e.KeyCode == Keys.Enter) && (e.Modifiers == Keys.Shift);
+
+            if (bEnter || bShiftEnter)
             {
-                PerformSearch();
+                PerformSearch(e.Modifiers == Keys.Shift);
                 e.Handled = true;
                 e.SuppressKeyPress = true;
             }
@@ -235,27 +239,44 @@ namespace MapiInspector
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (keyData == (Keys.Control | Keys.F) || keyData == Keys.F3)
+            bool isF3 = keyData == Keys.F3;
+            bool isShiftF3 = keyData == (Keys.Shift | Keys.F3);
+            bool isCtrlF = keyData == (Keys.Control | Keys.F);
+
+            if (isCtrlF)
             {
                 searchTextBox.Focus();
                 searchTextBox.SelectAll();
-                PerformSearch();
+                return true;
+            }
 
+            if (isF3 || isShiftF3)
+            {
+                PerformSearch(keyData.HasFlag(Keys.Shift));
                 return true;
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        private void PerformSearch()
+        private void PerformSearch(bool searchUp)
         {
             string searchText = searchTextBox.Text.Trim();
-            if (string.IsNullOrEmpty(searchText) || searchText == "Search (Ctrl+F)")
+            if (mapiTreeView.Nodes.Count == 0 ||
+                string.IsNullOrEmpty(searchText) ||
+                searchText == "Search (Ctrl+F)")
             {
                 return;
             }
 
-            var foundNode = FindNode(mapiTreeView.Nodes, searchText);
+            var startNode = mapiTreeView.SelectedNode ?? mapiTreeView.Nodes[0];
+            if (startNode == null)
+                return;
+
+            var foundNode = searchUp
+                ? FindPrevNode(mapiTreeView.Nodes, startNode, searchText)
+                : FindNextNode(mapiTreeView.Nodes, startNode, searchText);
+
             if (foundNode != null)
             {
                 mapiTreeView.SelectedNode = foundNode;
@@ -264,20 +285,63 @@ namespace MapiInspector
             }
         }
 
-        // Recursively searches for a TreeNode whose text contains the searchText (case-insensitive substring match).
-        private TreeNode FindNode(TreeNodeCollection nodes, string searchText)
+        // Find next node (downwards, wraps around)
+        private TreeNode FindNextNode(TreeNodeCollection nodes, TreeNode startNode, string searchText)
         {
-            if (string.IsNullOrEmpty(searchText)) return null;
-            foreach (TreeNode node in nodes)
+            bool foundStart = false;
+            TreeNode firstMatch = null;
+            foreach (var node in FlattenNodes(nodes))
             {
-                if (GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                if (node == startNode)
+                {
+                    foundStart = true;
+                    continue;
+                }
+
+                if (foundStart && GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
                     return node;
-                var found = FindNode(node.Nodes, searchText);
-                if (found != null)
-                    return found;
+                if (firstMatch == null && GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                    firstMatch = node;
             }
 
-            return null;
+            // Wrap around
+            return firstMatch;
+        }
+
+        // Find previous node (upwards, wraps around)
+        private TreeNode FindPrevNode(TreeNodeCollection nodes, TreeNode startNode, string searchText)
+        {
+            TreeNode lastMatch = null;
+            foreach (var node in FlattenNodes(nodes))
+            {
+                if (node == startNode)
+                    break;
+                if (GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                    lastMatch = node;
+            }
+
+            // Wrap around: if nothing before, search from end
+            if (lastMatch == null)
+            {
+                foreach (var node in FlattenNodes(nodes))
+                {
+                    if (GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                        lastMatch = node;
+                }
+            }
+
+            return lastMatch;
+        }
+
+        // Helper: flatten all nodes in tree (preorder)
+        private System.Collections.Generic.IEnumerable<TreeNode> FlattenNodes(TreeNodeCollection nodes)
+        {
+            foreach (TreeNode node in nodes)
+            {
+                yield return node;
+                foreach (var child in FlattenNodes(node.Nodes))
+                    yield return child;
+            }
         }
     }
 }
