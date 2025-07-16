@@ -335,7 +335,7 @@ namespace MAPIInspector.Parsers
                                         try
                                         {
                                             MapiInspector.MAPIParser.IsOnlyGetServerHandle = true;
-                                            outputHandle = MapiInspector.MAPIParser.ParseResponseMessageSimplely(MapiInspector.MAPIParser.ParsingSession, ropSetColumnsRequest.InputHandleIndex);
+                                            outputHandle = MapiInspector.MAPIParser.ParseResponseMessageSimply(MapiInspector.MAPIParser.ParsingSession, ropSetColumnsRequest.InputHandleIndex);
                                         }
                                         finally
                                         {
@@ -401,7 +401,7 @@ namespace MAPIInspector.Parsers
                                     try
                                     {
                                         MapiInspector.MAPIParser.IsOnlyGetServerHandle = true;
-                                        outputHandle = MapiInspector.MAPIParser.ParseResponseMessageSimplely(MapiInspector.MAPIParser.ParsingSession, ropSetColumnsRequest.InputHandleIndex);
+                                        outputHandle = MapiInspector.MAPIParser.ParseResponseMessageSimply(MapiInspector.MAPIParser.ParsingSession, ropSetColumnsRequest.InputHandleIndex);
                                     }
                                     finally
                                     {

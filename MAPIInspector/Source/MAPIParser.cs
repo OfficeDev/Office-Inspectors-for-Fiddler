@@ -133,7 +133,7 @@ namespace MapiInspector
         /// <param name="currentSession">The session to parse</param>
         /// <param name="outputHandleIndex">The handle index need to get</param>
         /// <returns>The object handle table</returns>
-        public static uint ParseResponseMessageSimplely(Session currentSession, int outputHandleIndex)
+        public static uint ParseResponseMessageSimply(Session currentSession, int outputHandleIndex)
         {
             uint handle_InResponse = 0;
             if (IsMapihttpSession(currentSession, TrafficDirection.Out))
