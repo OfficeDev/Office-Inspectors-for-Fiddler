@@ -132,7 +132,8 @@ namespace MapiInspector
         public override void AddToTab(TabPage o)
         {
             o.Text = "MAPI";
-            this.MAPIControl = new MAPIControl(this);
+            this.MAPIControl = new MAPIControl();
+            this.MAPIControl.Inspector = this;
             o.Controls.Add(this.MAPIControl);
             this.MAPIControl.Size = o.Size;
             this.MAPIControl.Dock = DockStyle.Fill;
