@@ -214,8 +214,6 @@ namespace MapiInspector
         public void Clear()
         {
             this.MAPIViewControl.Nodes.Clear();
-            this.MAPIControl.MAPIRichTextBox.Visible = false;
-            this.MAPIControl.MAPIRichTextBox.Clear();
             this.MAPIControl.CROPSHexBox.Visible = false;
             byte[] empty = new byte[0];
             this.MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(empty);
@@ -315,11 +313,11 @@ namespace MapiInspector
                 {
                     this.MAPIViewControl.Nodes[0].EnsureVisible();
                 }
+                throw new Exception("This is a test exception to ensure that the DisplayObject method works correctly.");
             }
             catch (Exception e)
             {
-                this.MAPIControl.MAPIRichTextBox.Visible = true;
-                this.MAPIControl.MAPIRichTextBox.Text = e.ToString();
+                this.MAPIViewControl.Nodes.Add(new TreeNode($"Exception: {e}"));
             }
             finally
             {

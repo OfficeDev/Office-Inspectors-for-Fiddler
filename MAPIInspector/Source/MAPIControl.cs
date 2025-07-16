@@ -30,11 +30,6 @@ namespace MapiInspector
         public HexBox MAPIHexBox => this.mapiHexBox;
 
         /// <summary>
-        /// Gets mapiRichTextBox
-        /// </summary>
-        public RichTextBox MAPIRichTextBox => this.mapiRichTextBox;
-
-        /// <summary>
         /// Gets cropsHexBox
         /// </summary>
         public HexBox CROPSHexBox => this.cropsHexBox;
