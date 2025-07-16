@@ -313,7 +313,6 @@ namespace MapiInspector
                 {
                     this.MAPIViewControl.Nodes[0].EnsureVisible();
                 }
-                throw new Exception("This is a test exception to ensure that the DisplayObject method works correctly.");
             }
             catch (Exception e)
             {
