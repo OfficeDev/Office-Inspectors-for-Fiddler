@@ -117,7 +117,6 @@ namespace MapiInspector
 			// 
 			// searchTableLayoutPanel
 			// 
-			this.searchTableLayoutPanel.BackColor = System.Drawing.Color.Pink;
 			this.searchTableLayoutPanel.ColumnCount = 2;
 			this.searchTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this.searchTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 36F));
@@ -149,10 +148,12 @@ namespace MapiInspector
 			// searchButton
 			// 
 			this.searchButton.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.searchButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.searchButton.Image = global::MAPIInspector.Properties.Resources.Search;
-			this.searchButton.Location = new System.Drawing.Point(1035, 3);
+			this.searchButton.Location = new System.Drawing.Point(1032, 0);
+			this.searchButton.Margin = new System.Windows.Forms.Padding(0);
 			this.searchButton.Name = "searchButton";
-			this.searchButton.Size = new System.Drawing.Size(30, 30);
+			this.searchButton.Size = new System.Drawing.Size(36, 36);
 			this.searchButton.TabIndex = 1;
 			this.toolTip1.SetToolTip(this.searchButton, "Search");
 			this.searchButton.Click += new System.EventHandler(this.SearchButton_Click);
