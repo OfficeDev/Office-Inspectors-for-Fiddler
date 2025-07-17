@@ -26,7 +26,7 @@ namespace MapiInspector
 			this.mapiHexBox = new Be.Windows.Forms.HexBox();
 			this.cropsHexBox = new Be.Windows.Forms.HexBox();
 			this.splitter = new System.Windows.Forms.Splitter();
-			this.searchPanel = new System.Windows.Forms.Panel();
+			this.searchTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
 			this.searchTextBox = new System.Windows.Forms.TextBox();
 			this.searchButton = new System.Windows.Forms.Button();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -34,7 +34,7 @@ namespace MapiInspector
 			this.splitContainer.Panel1.SuspendLayout();
 			this.splitContainer.Panel2.SuspendLayout();
 			this.splitContainer.SuspendLayout();
-			this.searchPanel.SuspendLayout();
+			this.searchTableLayoutPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// mapiTreeView
@@ -115,26 +115,31 @@ namespace MapiInspector
 			this.splitter.TabIndex = 5;
 			this.splitter.TabStop = false;
 			// 
-			// searchPanel
+			// searchTableLayoutPanel
 			// 
-			this.searchPanel.BackColor = System.Drawing.SystemColors.Control;
-			this.searchPanel.Controls.Add(this.searchTextBox);
-			this.searchPanel.Controls.Add(this.searchButton);
-			this.searchPanel.Dock = System.Windows.Forms.DockStyle.Top;
-			this.searchPanel.Location = new System.Drawing.Point(0, 0);
-			this.searchPanel.Name = "searchPanel";
-			this.searchPanel.Padding = new System.Windows.Forms.Padding(4);
-			this.searchPanel.Size = new System.Drawing.Size(1068, 36);
-			this.searchPanel.TabIndex = 100;
+			this.searchTableLayoutPanel.BackColor = System.Drawing.Color.Pink;
+			this.searchTableLayoutPanel.ColumnCount = 2;
+			this.searchTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.searchTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 36F));
+			this.searchTableLayoutPanel.Controls.Add(this.searchTextBox, 0, 0);
+			this.searchTableLayoutPanel.Controls.Add(this.searchButton, 1, 0);
+			this.searchTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Top;
+			this.searchTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
+			this.searchTableLayoutPanel.Margin = new System.Windows.Forms.Padding(0);
+			this.searchTableLayoutPanel.Name = "searchTableLayoutPanel";
+			this.searchTableLayoutPanel.RowCount = 1;
+			this.searchTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.searchTableLayoutPanel.Size = new System.Drawing.Size(1068, 36);
+			this.searchTableLayoutPanel.TabIndex = 0;
 			// 
 			// searchTextBox
 			// 
 			this.searchTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.searchTextBox.Font = new System.Drawing.Font("Segoe UI", 10F);
-			this.searchTextBox.Location = new System.Drawing.Point(4, 4);
+			this.searchTextBox.Location = new System.Drawing.Point(0, 0);
 			this.searchTextBox.Margin = new System.Windows.Forms.Padding(0, 0, 4, 0);
 			this.searchTextBox.Name = "searchTextBox";
-			this.searchTextBox.Size = new System.Drawing.Size(1024, 34);
+			this.searchTextBox.Size = new System.Drawing.Size(1028, 34);
 			this.searchTextBox.TabIndex = 0;
 			this.searchTextBox.Text = "Search (Ctrl+F)";
 			this.searchTextBox.GotFocus += new System.EventHandler(this.SearchTextBox_GotFocus);
@@ -143,11 +148,11 @@ namespace MapiInspector
 			// 
 			// searchButton
 			// 
-			this.searchButton.Dock = System.Windows.Forms.DockStyle.Right;
+			this.searchButton.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.searchButton.Image = global::MAPIInspector.Properties.Resources.Search;
-			this.searchButton.Location = new System.Drawing.Point(1028, 4);
+			this.searchButton.Location = new System.Drawing.Point(1035, 3);
 			this.searchButton.Name = "searchButton";
-			this.searchButton.Size = new System.Drawing.Size(36, 28);
+			this.searchButton.Size = new System.Drawing.Size(30, 30);
 			this.searchButton.TabIndex = 1;
 			this.toolTip1.SetToolTip(this.searchButton, "Search");
 			this.searchButton.Click += new System.EventHandler(this.SearchButton_Click);
@@ -160,7 +165,7 @@ namespace MapiInspector
 			this.Controls.Add(this.splitter);
 			this.Controls.Add(this.splitContainer);
 			this.Controls.Add(this.mapiTreeView);
-			this.Controls.Add(this.searchPanel);
+			this.Controls.Add(this.searchTableLayoutPanel);
 			this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.Name = "MAPIControl";
 			this.Size = new System.Drawing.Size(1068, 487);
@@ -168,8 +173,8 @@ namespace MapiInspector
 			this.splitContainer.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
 			this.splitContainer.ResumeLayout(false);
-			this.searchPanel.ResumeLayout(false);
-			this.searchPanel.PerformLayout();
+			this.searchTableLayoutPanel.ResumeLayout(false);
+			this.searchTableLayoutPanel.PerformLayout();
 			this.ResumeLayout(false);
 
         }
@@ -179,7 +184,7 @@ namespace MapiInspector
         private Be.Windows.Forms.HexBox mapiHexBox;
         private Be.Windows.Forms.HexBox cropsHexBox;
         private System.Windows.Forms.Splitter splitter;
-        private System.Windows.Forms.Panel searchPanel;
+        private TableLayoutPanel searchTableLayoutPanel;
         private System.Windows.Forms.TextBox searchTextBox;
         private System.Windows.Forms.Button searchButton;
         private System.Windows.Forms.ToolTip toolTip1;
