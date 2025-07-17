@@ -45,7 +45,7 @@ namespace MapiInspector
 			this.mapiTreeView.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
 			this.mapiTreeView.Name = "mapiTreeView";
 			this.mapiTreeView.Size = new System.Drawing.Size(634, 451);
-			this.mapiTreeView.TabIndex = 0;
+			this.mapiTreeView.TabIndex = 2;
 			// 
 			// splitContainer
 			// 
@@ -69,7 +69,7 @@ namespace MapiInspector
 			this.splitContainer.Size = new System.Drawing.Size(434, 451);
 			this.splitContainer.SplitterDistance = 214;
 			this.splitContainer.SplitterWidth = 6;
-			this.splitContainer.TabIndex = 4;
+			this.splitContainer.TabIndex = 6;
 			// 
 			// mapiHexBox
 			// 
@@ -86,7 +86,7 @@ namespace MapiInspector
 			this.mapiHexBox.SelectionStart = ((long)(-1));
 			this.mapiHexBox.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
 			this.mapiHexBox.Size = new System.Drawing.Size(434, 451);
-			this.mapiHexBox.TabIndex = 2;
+			this.mapiHexBox.TabIndex = 3;
 			this.mapiHexBox.VScrollBarVisible = true;
 			// 
 			// cropsHexBox
