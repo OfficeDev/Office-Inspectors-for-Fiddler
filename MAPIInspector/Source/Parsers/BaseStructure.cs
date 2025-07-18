@@ -72,6 +72,7 @@ namespace MAPIInspector.Parsers
                 node.Nodes.Add(debugNode);
             }
 
+
             if (block is RPC_HEADER_EXT header)
             {
                 IsCompressedXOR = header.Flags.Data.HasFlag(RpcHeaderFlags.XorMagic) ||
@@ -120,7 +121,20 @@ namespace MAPIInspector.Parsers
                 }
             }
 
+            if (block is BlockException) ColorNodes(node, System.Drawing.Color.LightPink);
+
             return node;
+        }
+
+        public static void ColorNodes(TreeNode node, System.Drawing.Color color)
+        {
+            // Set the color for the current node
+            node.BackColor = color;
+            // Recursively set the color for all child nodes
+            foreach (TreeNode childNode in node.Nodes)
+            {
+                ColorNodes(childNode, color);
+            }
         }
 
         /// <summary>

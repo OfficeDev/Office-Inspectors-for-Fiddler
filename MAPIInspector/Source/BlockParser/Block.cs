@@ -112,21 +112,30 @@ namespace BlockParser
                 Parsed = true; // parse can unset this if needed
                 Offset = parser.Offset;
 
+                // Parse and ParseBlocks are seperate so that if one throws an exception, the other can still
+                // run and we can still get the tree layout, even if the data parsing failed.
                 try
                 {
                     Parse();
-                    // Compute Size so ParseBlocks can use it
-                    Size = parser.Offset - Offset;
-                    ParseBlocks();
                 }
                 catch (System.Exception e)
                 {
                     var typeName = e.GetType().FullName;
                     if (typeName == "MAPIInspector.Parsers.MissingInformationException") throw e;
                     if (typeName == "MAPIInspector.Parsers.MissingPartialInformationException") throw e;
-                    AddHeader($"Exception: {e.Message} at offset {Offset}");
-                    AddHeader($"Stack Trace: {e.StackTrace}");
-                    AddHeader($"Exception Type: {e.GetType()}");
+                    children.Add(BlockException.Create("Buffer Parsing Exception", e, Offset));
+                }
+
+                // Compute Size so ParseBlocks can use it
+                Size = parser.Offset - Offset;
+
+                try
+                {
+                    ParseBlocks();
+                }
+                catch (System.Exception e)
+                {
+                    children.Add(BlockException.Create("Tree Layout Exception", e, Offset));
                 }
 
                 if (HasData && EnableJunk && parser.RemainingBytes > 0)

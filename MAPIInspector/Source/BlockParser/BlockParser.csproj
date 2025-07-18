@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="BinaryParser.cs" />
     <Compile Include="BlockAdders.cs" />
+    <Compile Include="BlockException.cs" />
     <Compile Include="BlockParsers.cs" />
     <Compile Include="BlockString.cs" />
     <Compile Include="BlockStringA.cs" />
