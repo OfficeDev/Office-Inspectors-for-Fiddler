@@ -301,7 +301,7 @@ namespace MapiInspector
             this.MAPIViewControl.BeginUpdate();
             try
             {
-                var topNode = BaseStructure.AddBlock(obj, 0, DoDebug);
+                var topNode = BaseStructure.AddBlock(obj, DoDebug);
                 this.MAPIViewControl.Nodes.Add(topNode);
                 topNode.ExpandAll();
                 if (bytesForHexview != null)
@@ -316,7 +316,10 @@ namespace MapiInspector
             }
             catch (Exception e)
             {
-                this.MAPIViewControl.Nodes.Add(new TreeNode($"Exception: {e}"));
+                var exBlock = BlockException.Create("Exception", e, 0);
+                var topNode = BaseStructure.AddBlock(obj, DoDebug);
+                this.MAPIViewControl.Nodes.Add(topNode);
+                topNode.ExpandAll();
             }
             finally
             {
@@ -398,7 +401,7 @@ namespace MapiInspector
                 }
                 catch (Exception e)
                 {
-                    var exception = Block.Create(e.ToString());
+                    var exception = BlockException.Create("Exception", e, 0);
                     this.DisplayObject(exception, null);
                 }
                 finally

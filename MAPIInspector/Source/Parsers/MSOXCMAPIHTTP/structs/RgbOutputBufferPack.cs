@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
                 catch (MissingPartialInformationException) { throw; }
                 catch (Exception e)
                 {
-                    buffer.AddHeader($"{e.ToString()}");
+                    AddChild(BlockException.Create("Exception", e, 0));
                 }
 
                 rgbOutputBufferList.Add(buffer);

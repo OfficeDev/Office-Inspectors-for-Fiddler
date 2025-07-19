@@ -234,8 +234,7 @@ namespace MapiInspector
             }
             catch (Exception ex)
             {
-                objectOut = Block.Create(ex.ToString());
-                return objectOut;
+                return BlockException.Create("Exception", ex, 0);
             }
         }
 
@@ -1480,8 +1479,7 @@ sessionID >= currentSessionID)
             }
             catch (Exception ex)
             {
-                objectOut = Block.Create(ex.ToString());
-                return objectOut;
+                return BlockException.Create("Exception", ex, 0);
             }
         }
 

@@ -11,7 +11,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Boolean value, if payload is compressed or obfuscated, value is true. otherwise, value is false.
         /// </summary>
-        public static bool IsCompressedXOR = false;
+        private static bool IsCompressedXOR = false;
 
         /// <summary>
         /// This field is for rgbOutputBuffer or ExtendedBuffer_Input in MAPIHTTP layer
@@ -22,10 +22,33 @@ namespace MAPIInspector.Parsers
         /// Recursively adds a BlockParser.Block and its children to a TreeNode structure.
         /// </summary>
         /// <param name="block">The block to add as a node.</param>
+        /// <param name="debug">Indicates whether to enable debug mode for this node</param>
+        /// <returns>The TreeNode representing the block and its children.</returns>
+        public static TreeNode AddBlock(Block block, bool debug)
+        {
+            var node = AddBlock(block, 0, debug);
+            if (HasExceptions(node))
+            {
+                var exNode = new TreeNode("Exceptions found in this block")
+                {
+                    BackColor = System.Drawing.Color.LightPink,
+                    Tag = "ignore"
+                };
+                exNode.Nodes.Add(node);
+                return exNode;
+            }
+
+            return node;
+        }
+
+        /// <summary>
+        /// Recursively adds a BlockParser.Block and its children to a TreeNode structure.
+        /// </summary>
+        /// <param name="block">The block to add as a node.</param>
         /// <param name="blockRootOffset">The root offset to calculate the absolute position of the block.</param>
         /// <param name="debug">Indicates whether to enable debug mode for this node</param>
         /// <returns>The TreeNode representing the block and its children.</returns>
-        public static TreeNode AddBlock(Block block, int blockRootOffset, bool debug)
+        private static TreeNode AddBlock(Block block, int blockRootOffset, bool debug)
         {
             // Clean up embedded null characters in the block text for display purposes
             var text = block.Text.Replace("\0", "\\0");
@@ -126,7 +149,7 @@ namespace MAPIInspector.Parsers
             return node;
         }
 
-        public static void ColorNodes(TreeNode node, System.Drawing.Color color)
+        private static void ColorNodes(TreeNode node, System.Drawing.Color color)
         {
             // Set the color for the current node
             node.BackColor = color;
@@ -145,7 +168,7 @@ namespace MAPIInspector.Parsers
         /// <param name="compressBufferindex">Indicates the index of this node in all compressed buffers in same session</param>
         /// <param name="debug">Indicates whether to enable debug mode for this node</param>
         /// <returns>The tree node with BufferIndex and IsCompressedXOR properties </returns>
-        public static TreeNode TreeNodeForCompressed(TreeNode node, int current, int compressBufferindex, bool debug)
+        private static TreeNode TreeNodeForCompressed(TreeNode node, int current, int compressBufferindex, bool debug)
         {
             foreach (TreeNode nd in node.Nodes)
             {
@@ -172,6 +195,25 @@ namespace MAPIInspector.Parsers
             }
 
             return node;
+        }
+
+        private static bool HasExceptions(TreeNode node)
+        {
+            var pos = node.Tag as Position;
+            if (pos?.SourceBlock is BlockException)
+            {
+                return true;
+            }
+
+            foreach (TreeNode child in node.Nodes)
+            {
+                if (HasExceptions(child))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

@@ -110,7 +110,7 @@ namespace MAPIInspector.Parsers
                     catch (MissingPartialInformationException) { throw; }
                     catch (Exception e)
                     {
-                        AddHeader($"{e.ToString()}");
+                        AddChild(BlockException.Create("Exception", e, 0));
                     }
                 }
             }
