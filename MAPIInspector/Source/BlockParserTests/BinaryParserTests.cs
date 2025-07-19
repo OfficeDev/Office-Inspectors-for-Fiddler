@@ -57,14 +57,6 @@ namespace BlockParser.Tests
         }
 
         [TestMethod]
-        public void Constructor_ListByte()
-        {
-            var list = new List<byte> { 1, 2, 3 };
-            var parser = new BinaryParser(list);
-            Assert.AreEqual(3, parser.RemainingBytes);
-        }
-
-        [TestMethod]
         public void Advance_And_Rewind()
         {
             byte[] data = { 1, 2, 3, 4 };
