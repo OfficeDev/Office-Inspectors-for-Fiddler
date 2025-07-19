@@ -114,9 +114,7 @@ namespace BlockParser.Tests
         {
             var bin = new byte[] { 0xAB, 0xCD, 0xEF };
             Assert.AreEqual("ABCDEF", Strings.BinToHexString(bin));
-            Assert.AreEqual("cb: 3 lpb: ABCDEF", Strings.BinToHexString(bin, true));
             Assert.AreEqual("NULL", Strings.BinToHexString(new byte[] { }));
-            Assert.AreEqual("cb: 0 lpb: NULL", Strings.BinToHexString(new byte[] { }, true));
         }
 
         [TestMethod]

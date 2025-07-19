@@ -48,8 +48,7 @@ namespace BlockParserTests
             var parser = new BinaryParser(data);
             var block = Block.ParseBytes(parser, 3);
 
-            Assert.AreEqual("0A1B2C", block.ToHexString(false));
-            Assert.AreEqual("cb: 3 lpb: 0A1B2C", block.ToHexString(true));
+            Assert.AreEqual("0A1B2C", block.ToHexString());
         }
 
         [TestMethod]

@@ -166,22 +166,30 @@ namespace BlockParser
             return Array.Empty<byte>();
         }
 
-        // Only used for debugging purposes, returns the entire binary stream as a byte array
+        /// <summary>
+        /// Only used for debugging purposes, returns the entire binary stream as a byte array
+        /// </summary>
+        /// <returns>A string representation of the binary data in hexadecimal format</returns>
         public string PeekBytes()
         {
             var bytes = new byte[bin.Length];
             int read = bin.Read(bytes, 0, (int)bin.Length);
-            return Strings.BinToHexString(bytes, false, bytes.Length);
+            return Strings.BinToHexString(bytes, bytes.Length);
         }
 
+        /// <summary>
+        /// Outputs a sample of bytes from the current offset in the binary stream.
+        /// Only used for debugging purposes
+        /// </summary>
+        /// <param name="cb">Amount to output</param>
         public void SampleBytes(int cb = 20)
         {
             var offset = Offset;
             var length = Math.Min(cb, RemainingBytes);
             var _data = ReadBytes(length);
-            var hex = Strings.BinToHexString(_data, true, 0);
+            var hex = Strings.BinToHexString(_data, 0);
             var text = Strings.BinToTextStringA(_data, true);
-            Debug.WriteLine($"{hex}={text}");
+            Debug.WriteLine($"cb: 0x{length:X}={length} lpb: {hex}={text}");
             Offset = offset;
         }
     }

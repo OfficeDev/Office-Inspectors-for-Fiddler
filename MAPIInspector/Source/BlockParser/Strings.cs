@@ -113,14 +113,9 @@ namespace BlockParser
             return sb.ToString();
         }
 
-        public static string BinToHexString(byte[] bin, bool prependCb = false, int limit = 128)
+        public static string BinToHexString(byte[] bin, int limit = 128)
         {
             var sb = new System.Text.StringBuilder();
-
-            if (prependCb)
-            {
-                sb.AppendFormat("cb: {0} lpb: ", bin.Length);
-            }
 
             if (bin == null || bin.Length == 0)
             {

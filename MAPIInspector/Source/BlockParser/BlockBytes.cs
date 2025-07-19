@@ -16,7 +16,7 @@ namespace BlockParser
 
         public string ToTextStringA(bool multiLine = false) => Strings.StripCharacter(Strings.BinToTextStringA(_data, multiLine), '\0');
 
-        public string ToHexString(bool multiLine = false) => Strings.BinToHexString(_data, multiLine, 0);
+        public string ToHexString() => Strings.BinToHexString(_data, 0);
 
         public bool Equal(int cb, byte[] bin)
         {
@@ -37,7 +37,7 @@ namespace BlockParser
 
         protected override void ParseBlocks()
         {
-            SetText(ToHexString(false));
+            SetText(ToHexString());
             AddSubHeader($"bin: {ToTextStringA()}");
             AddHeader($"cb: {Count}");
         }
