@@ -71,7 +71,7 @@ namespace MAPIInspector.Parsers
             SetText("RopCopyPropertiesResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(SourceHandleIndex, "SourceHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(PropertyProblemCount, "PropertyProblemCount");
             AddLabeledChildren(PropertyProblems, "PropertyProblems");
             AddChildBlockT(DestHandleIndex, "DestHandleIndex");

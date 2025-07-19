@@ -86,7 +86,7 @@ namespace MAPIInspector.Parsers
             SetText("RopOpenFolderResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(HasRules, "HasRules");
             AddChildBlockT(IsGhosted, "IsGhosted");
             AddChildBlockT(ServerCount, "ServerCount");

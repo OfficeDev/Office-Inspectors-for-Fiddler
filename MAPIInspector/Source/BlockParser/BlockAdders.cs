@@ -41,7 +41,7 @@
         /// Adds a child block of type <see cref="BlockT{T}"/> to this block with a specified label.
         /// </summary>
         /// <remarks>
-        /// The child's text is set to the label followed by its data value (e.g., "Label:Value").
+        /// The child's text is set to the label followed by its data value (e.g., "Label: Value").
         /// </remarks>
         /// <typeparam name="T">The value type of the data contained in the child block.</typeparam>
         /// <param name="child">The child block to add. Must not be <c>null</c> and must be parsed.</param>
@@ -50,7 +50,7 @@
         {
             if (child != null && child.Parsed)
             {
-                child.SetText($"{label}:{child}");
+                child.SetText($"{label}: {child}");
                 children.Add(child);
             }
         }
@@ -59,7 +59,7 @@
         /// Adds a <see cref="BlockString"/> child to this block with a specified label.
         /// </summary>
         /// <remarks>
-        /// The child's text is set to the label followed by its data (e.g., "Label:Data").
+        /// The child's text is set to the label followed by its data (e.g., "Label: Data").
         /// </remarks>
         /// <param name="child">The <see cref="BlockString"/> to add. Must not be <c>null</c> and must be parsed.</param>
         /// <param name="label">The label to prepend to the child's data in its text.</param>
@@ -67,7 +67,7 @@
         {
             if (child != null && child.Parsed)
             {
-                child.SetText($"{label}:{child.Data}");
+                child.SetText($"{label}: {child.Data}");
                 children.Add(child);
             }
         }
@@ -76,7 +76,7 @@
         /// Adds a <see cref="BlockBytes"/> child to this block with a specified label.
         /// </summary>
         /// <remarks>
-        /// The child's text is set to the label followed by its data in hex format (e.g., "Label:01020304").
+        /// The child's text is set to the label followed by its data in hex format (e.g., "Label: 01020304").
         /// </remarks>
         /// <param name="child">The <see cref="BlockBytes"/> to add. Must not be <c>null</c> and must be parsed.</param>
         /// <param name="label">The label to prepend to the child's data in its text.</param>
@@ -84,7 +84,7 @@
         {
             if (child != null && child.Parsed)
             {
-                child.SetText($"{label}:{child.ToHexString()}");
+                child.SetText($"{label}: {child.ToHexString()}");
                 children.Add(child);
             }
         }

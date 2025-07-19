@@ -59,7 +59,7 @@ namespace MAPIInspector.Parsers
             SetText("RopReadPerUserInformationResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(HasFinished, "HasFinished");
             AddChildBlockT(DataSize, "DataSize");
             AddChildBytes(Data, "Data");

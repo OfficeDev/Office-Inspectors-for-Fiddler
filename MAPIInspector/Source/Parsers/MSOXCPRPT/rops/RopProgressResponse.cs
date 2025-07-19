@@ -60,7 +60,7 @@ namespace MAPIInspector.Parsers
             SetText("RopProgressResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(CompletedTaskCount, "CompletedTaskCount");
             AddChildBlockT(TotalTaskCount, "TotalTaskCount");

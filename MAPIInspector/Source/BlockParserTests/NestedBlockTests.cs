@@ -89,7 +89,7 @@ namespace BlockParserTests
             Assert.AreEqual(sizeof(int) + sizeof(short) * 3 + sizeof(byte) * 3, block.Size, "ParentBlock size");
 
             // KidCount
-            Assert.AreEqual("KidCount:3 = 0x3", block.Children[0].Text, "KidCount text");
+            Assert.AreEqual("KidCount: 3 = 0x3", block.Children[0].Text, "KidCount text");
             Assert.AreEqual(0, block.Children[0].Offset, "KidCount offset");
             Assert.AreEqual(sizeof(int), block.Children[0].Size, "KidCount size");
 

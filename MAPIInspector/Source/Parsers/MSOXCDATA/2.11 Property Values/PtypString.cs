@@ -85,7 +85,7 @@ namespace MAPIInspector.Parsers
             Text = $"\"{Value.Text}\"";
             AddChildBlockT(HasValue, "HasValue");
             AddChildBlockT(Count, "Count");
-            AddHeader($"cch:{Value.Data.Length} = 0x{Value.Data.Length:X}");
+            AddHeader($"cch: {Value.Data.Length} = 0x{Value.Data.Length:X}");
         }
     }
 }

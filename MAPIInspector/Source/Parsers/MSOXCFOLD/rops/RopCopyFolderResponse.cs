@@ -58,7 +58,7 @@ namespace MAPIInspector.Parsers
             SetText("RopCopyFolderResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(SourceHandleIndex, "SourceHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(DestHandleIndex, "DestHandleIndex");
             AddChildBlockT(PartialCompletion, "PartialCompletion");
         }

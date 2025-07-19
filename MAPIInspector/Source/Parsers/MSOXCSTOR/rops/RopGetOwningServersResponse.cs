@@ -67,7 +67,7 @@ namespace MAPIInspector.Parsers
             SetText("RopGetOwningServersResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(OwningServersCount, "OwningServersCount");
             AddChildBlockT(CheapServersCount, "CheapServersCount");
             AddLabeledChildren(OwningServers, "OwningServers");

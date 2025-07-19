@@ -65,7 +65,7 @@ namespace MAPIInspector.Parsers
             AddChild(PropertyTag, "PropertyTag");
             if (_PropertyValue != null)
             {
-                AddChild(_PropertyValue, $"PropertyValue:{_PropertyValue.Text}");
+                AddChild(_PropertyValue, $"PropertyValue: {_PropertyValue.Text}");
             }
             else
             {

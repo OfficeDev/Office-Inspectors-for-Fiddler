@@ -61,7 +61,7 @@ namespace MAPIInspector.Parsers
             SetText("RopCopyToStreamResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(SourceHandleIndex, "SourceHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(DestHandleIndex, "DestHandleIndex");
             AddChildBlockT(ReadByteCount, "ReadByteCount");
             AddChildBlockT(WrittenByteCount, "WrittenByteCount");

@@ -38,7 +38,7 @@ namespace MAPIInspector.Parsers
             SetText("RopOpenAttachmentResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(ResponseHandleIndex, "ResponseHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
         }
     }
 }

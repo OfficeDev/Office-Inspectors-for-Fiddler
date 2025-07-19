@@ -628,28 +628,28 @@ namespace MAPIInspector.Parsers
         {
             var comment = Block.Create("Partial Details");
             if (IsGet) comment.AddHeader("IsGet");
-            if (PartialGetType != PropertyDataType.PtypUnspecified) comment.AddHeader($"PartialGetType:{PartialGetType}");
-            if (PartialGetId != 0) comment.AddHeader($"PartialGetId:{PartialGetId}");
-            if (PartialGetRemainSize != -1) comment.AddHeader($"PartialGetRemainSize:{PartialGetRemainSize:X}");
-            if (PartialGetSubRemainSize != -1) comment.AddHeader($"PartialGetSubRemainSize:{PartialGetSubRemainSize:X}");
-            if (IsGet) comment.AddHeader($"IsOneMoreGetByteToRead:{IsOneMoreGetByteToRead}");
-            if (IsGet) comment.AddHeader($"OneMoreGetByte:{OneMoreGetByte}");
+            if (PartialGetType != PropertyDataType.PtypUnspecified) comment.AddHeader($"PartialGetType: {PartialGetType}");
+            if (PartialGetId != 0) comment.AddHeader($"PartialGetId: {PartialGetId}");
+            if (PartialGetRemainSize != -1) comment.AddHeader($"PartialGetRemainSize: {PartialGetRemainSize:X}");
+            if (PartialGetSubRemainSize != -1) comment.AddHeader($"PartialGetSubRemainSize: {PartialGetSubRemainSize:X}");
+            if (IsGet) comment.AddHeader($"IsOneMoreGetByteToRead: {IsOneMoreGetByteToRead}");
+            if (IsGet) comment.AddHeader($"OneMoreGetByte: {OneMoreGetByte}");
 
             if (IsPut) comment.AddHeader("IsPut");
-            if (PartialPutType != PropertyDataType.PtypUnspecified) comment.AddHeader($"PartialPutType:{PartialPutType}");
-            if (PartialPutId != 0) comment.AddHeader($"PartialPutId:{PartialPutId}");
-            if (PartialPutRemainSize != -1) comment.AddHeader($"PartialPutRemainSize:{PartialPutRemainSize}");
-            if (PartialPutSubRemainSize != -1) comment.AddHeader($"PartialPutSubRemainSize:{PartialPutSubRemainSize:X}");
-            if (IsPut) comment.AddHeader($"IsOneMorePutByteToRead:{IsOneMorePutByteToRead}");
-            if (IsPut) comment.AddHeader($"OneMorePutByte:{OneMorePutByte}");
+            if (PartialPutType != PropertyDataType.PtypUnspecified) comment.AddHeader($"PartialPutType: {PartialPutType}");
+            if (PartialPutId != 0) comment.AddHeader($"PartialPutId: {PartialPutId}");
+            if (PartialPutRemainSize != -1) comment.AddHeader($"PartialPutRemainSize: {PartialPutRemainSize}");
+            if (PartialPutSubRemainSize != -1) comment.AddHeader($"PartialPutSubRemainSize: {PartialPutSubRemainSize:X}");
+            if (IsPut) comment.AddHeader($"IsOneMorePutByteToRead: {IsOneMorePutByteToRead}");
+            if (IsPut) comment.AddHeader($"OneMorePutByte: {OneMorePutByte}");
 
             if (IsPutExtend) comment.AddHeader("IsPutExtend");
-            if (PartialPutExtendType != PropertyDataType.PtypUnspecified) comment.AddHeader($"PartialPutExtendType:{PartialPutExtendType}");
-            if (PartialPutExtendId != 0) comment.AddHeader($"PartialPutExtendId:{PartialPutExtendId}");
-            if (PartialPutExtendRemainSize != -1) comment.AddHeader($"PartialPutExtendRemainSize:{PartialPutExtendRemainSize:X}");
-            if (PartialPutExtendSubRemainSize != -1) comment.AddHeader($"PartialPutExtendSubRemainSize:{PartialPutExtendSubRemainSize:X}");
-            if (IsPutExtend) comment.AddHeader($"IsOneMorePutExtendByteToRead:{IsOneMorePutExtendByteToRead}");
-            if (IsPutExtend) comment.AddHeader($"OneMorePutExtendByte:{OneMorePutExtendByte}");
+            if (PartialPutExtendType != PropertyDataType.PtypUnspecified) comment.AddHeader($"PartialPutExtendType: {PartialPutExtendType}");
+            if (PartialPutExtendId != 0) comment.AddHeader($"PartialPutExtendId: {PartialPutExtendId}");
+            if (PartialPutExtendRemainSize != -1) comment.AddHeader($"PartialPutExtendRemainSize: {PartialPutExtendRemainSize:X}");
+            if (PartialPutExtendSubRemainSize != -1) comment.AddHeader($"PartialPutExtendSubRemainSize: {PartialPutExtendSubRemainSize:X}");
+            if (IsPutExtend) comment.AddHeader($"IsOneMorePutExtendByteToRead: {IsOneMorePutExtendByteToRead}");
+            if (IsPutExtend) comment.AddHeader($"OneMorePutExtendByte: {OneMorePutExtendByte}");
 
             return comment;
         }

@@ -117,7 +117,7 @@ namespace MAPIInspector.Parsers
             SetText("RopLogonResponse_PrivateMailboxes");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(LogonFlags, "LogonFlags");
             AddLabeledChildren(FolderIds, "FolderIds"); // TODO Interpert which folder is which
             AddChildBlockT(LogonFlags, "ResponseFlags");

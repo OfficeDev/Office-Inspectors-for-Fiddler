@@ -34,7 +34,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             base.ParseBlocks();
-            AddChild(FixedValue, $"FixedValue:{FixedValue}");
+            AddChild(FixedValue, $"FixedValue: {FixedValue}");
         }
 
         public static Block ParseFixedProp(BinaryParser parser, PropertyDataType dataType, PidTagPropertyEnum id)

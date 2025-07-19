@@ -119,7 +119,7 @@ namespace MAPIInspector.Parsers
                                     {
                                         var oneMoreGetByte = ParseT<byte>();
                                         string skippedChar = System.Text.Encoding.Unicode.GetString(new byte[] { Partial.OneMoreGetByte, oneMoreGetByte });
-                                        SkippedBytes = Create(oneMoreGetByte.Size, oneMoreGetByte.Offset, $"SkippedBytes:{Partial.OneMoreGetByte:X2} {oneMoreGetByte.Data:X2} = \"{skippedChar}\"");
+                                        SkippedBytes = Create(oneMoreGetByte.Size, oneMoreGetByte.Offset, $"SkippedBytes: {Partial.OneMoreGetByte:X2} {oneMoreGetByte.Data:X2} = \"{skippedChar}\"");
                                         Partial.IsOneMoreGetByteToRead = false;
                                     }
 
@@ -148,7 +148,7 @@ namespace MAPIInspector.Parsers
                                 {
                                     var oneMoreGetByte = ParseT<byte>();
                                     string skippedChar = System.Text.Encoding.Unicode.GetString(new byte[] { Partial.OneMoreGetByte, oneMoreGetByte });
-                                    SkippedBytes = Create(oneMoreGetByte.Size, oneMoreGetByte.Offset, $"SkippedBytes:{Partial.OneMoreGetByte:X2} {oneMoreGetByte.Data:X2} = \"{skippedChar}\"");
+                                    SkippedBytes = Create(oneMoreGetByte.Size, oneMoreGetByte.Offset, $"SkippedBytes: {Partial.OneMoreGetByte:X2} {oneMoreGetByte.Data:X2} = \"{skippedChar}\"");
                                     Partial.IsOneMoreGetByteToRead = false;
                                 }
 
@@ -180,7 +180,7 @@ namespace MAPIInspector.Parsers
                                     {
                                         var oneMoreGetByte = ParseT<byte>();
                                         string skippedChar = System.Text.Encoding.Unicode.GetString(new byte[] { Partial.OneMoreGetByte, oneMoreGetByte });
-                                        SkippedBytes = Create(oneMoreGetByte.Size, oneMoreGetByte.Offset, $"SkippedBytes:{Partial.OneMoreGetByte:X2} {oneMoreGetByte.Data:X2} = \"{skippedChar}\"");
+                                        SkippedBytes = Create(oneMoreGetByte.Size, oneMoreGetByte.Offset, $"SkippedBytes: {Partial.OneMoreGetByte:X2} {oneMoreGetByte.Data:X2} = \"{skippedChar}\"");
                                         Partial.IsOneMoreGetByteToRead = false;
                                     }
 
@@ -209,7 +209,7 @@ namespace MAPIInspector.Parsers
                                 {
                                     var oneMoreGetByte = ParseT<byte>();
                                     string skippedChar = System.Text.Encoding.Unicode.GetString(new byte[] { Partial.OneMoreGetByte, oneMoreGetByte });
-                                    SkippedBytes = Create(oneMoreGetByte.Size, oneMoreGetByte.Offset, $"SkippedBytes:{Partial.OneMoreGetByte:X2} {oneMoreGetByte.Data:X2} = \"{skippedChar}\"");
+                                    SkippedBytes = Create(oneMoreGetByte.Size, oneMoreGetByte.Offset, $"SkippedBytes: {Partial.OneMoreGetByte:X2} {oneMoreGetByte.Data:X2} = \"{skippedChar}\"");
                                     Partial.IsOneMoreGetByteToRead = false;
                                 }
 
@@ -264,7 +264,7 @@ namespace MAPIInspector.Parsers
                                     {
                                         var oneMoreGetByte = ParseT<byte>();
                                         string skippedChar = System.Text.Encoding.Unicode.GetString(new byte[] { Partial.OneMoreGetByte, oneMoreGetByte });
-                                        SkippedBytes = Create(oneMoreGetByte.Size, oneMoreGetByte.Offset, $"SkippedBytes:{Partial.OneMoreGetByte:X2} {oneMoreGetByte.Data:X2} = \"{skippedChar}\"");
+                                        SkippedBytes = Create(oneMoreGetByte.Size, oneMoreGetByte.Offset, $"SkippedBytes: {Partial.OneMoreGetByte:X2} {oneMoreGetByte.Data:X2} = \"{skippedChar}\"");
                                         Partial.IsOneMoreGetByteToRead = false;
                                     }
 
@@ -293,7 +293,7 @@ namespace MAPIInspector.Parsers
                                 {
                                     var oneMoreGetByte = ParseT<byte>();
                                     string skippedChar = System.Text.Encoding.Unicode.GetString(new byte[] { Partial.OneMoreGetByte, oneMoreGetByte });
-                                    SkippedBytes = Create(oneMoreGetByte.Size, oneMoreGetByte.Offset, $"SkippedBytes:{Partial.OneMoreGetByte:X2} {oneMoreGetByte.Data:X2} = \"{skippedChar}\"");
+                                    SkippedBytes = Create(oneMoreGetByte.Size, oneMoreGetByte.Offset, $"SkippedBytes: {Partial.OneMoreGetByte:X2} {oneMoreGetByte.Data:X2} = \"{skippedChar}\"");
                                     Partial.IsOneMoreGetByteToRead = false;
                                 }
 

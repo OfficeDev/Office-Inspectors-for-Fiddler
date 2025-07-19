@@ -75,7 +75,7 @@ namespace MAPIInspector.Parsers
             SetText("RopPublicFolderIsGhostedResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue:{ReturnValue.Data.FormatErrorCode()}");
+            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
             AddChildBlockT(IsGhosted, "IsGhosted");
             AddChildBlockT(ServersCount, "ServersCount");
             AddChildBlockT(CheapServersCount, "CheapServersCount");

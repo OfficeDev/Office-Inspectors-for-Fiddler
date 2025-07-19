@@ -47,6 +47,8 @@ namespace MAPIInspector.Parsers
             RopId = ParseT<RopIdType>();
             LogonId = ParseT<byte>();
             InputHandleIndex = ParseT<byte>();
+            // throw with a custom message
+            throw new System.Exception("Parse bad");
             OutputHandleIndex = ParseT<byte>();
             FolderId = Parse<FolderID>();
             OpenModeFlags = ParseT<OpenModeFlagsMSOXCFOLD>();
@@ -58,6 +60,7 @@ namespace MAPIInspector.Parsers
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
+            throw new System.Exception("Layout bad");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
             AddChild(FolderId);
             AddChildBlockT(OpenModeFlags, "OpenModeFlags");
