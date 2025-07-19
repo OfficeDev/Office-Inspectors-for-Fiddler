@@ -138,7 +138,7 @@ namespace MAPIInspector.Parsers
             }
             else
             {
-                throw new Exception(string.Format("Request format error: the RecipientColumnCount {0} should be less than RecipientColumns count {1}", RecipientColumnCount, propTags.Length));
+                throw new Exception($"Request format error: the RecipientColumnCount {RecipientColumnCount} should be less than RecipientColumns count {propTags.Length}");
             }
 
             RecipientProperties = new PropertyRow(propTagsActually.ToArray());
