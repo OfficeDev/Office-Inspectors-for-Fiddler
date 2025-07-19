@@ -23,7 +23,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            Text = $"{Value.Data}";
+            Text = $"{Value.Data} = 0x{Value.Data:X}";
         }
     }
 }
