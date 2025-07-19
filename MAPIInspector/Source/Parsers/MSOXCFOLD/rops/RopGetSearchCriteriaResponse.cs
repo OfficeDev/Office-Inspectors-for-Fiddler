@@ -90,7 +90,7 @@ namespace MAPIInspector.Parsers
             SetText("RopGetSearchCriteriaResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
+            this.AddError(ReturnValue, "ReturnValue");
             AddChildBlockT(RestrictionDataSize, "RestrictionDataSize");
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(FolderIdCount, "FolderIdCount");

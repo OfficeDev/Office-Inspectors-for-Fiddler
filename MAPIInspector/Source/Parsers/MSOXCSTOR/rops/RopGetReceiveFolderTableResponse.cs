@@ -70,7 +70,7 @@ namespace MAPIInspector.Parsers
             SetText("RopGetReceiveFolderTableResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
+            this.AddError(ReturnValue, "ReturnValue");
             AddChild(RowCount, "RowCount");
             AddLabeledChildren(Rows, "Rows");
         }

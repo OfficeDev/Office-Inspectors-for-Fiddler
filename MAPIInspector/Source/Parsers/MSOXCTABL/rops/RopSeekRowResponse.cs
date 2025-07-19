@@ -53,7 +53,7 @@ namespace MAPIInspector.Parsers
             SetText("RopSeekRowResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
+            this.AddError(ReturnValue, "ReturnValue");
             AddChildBlockT(HasSoughtLess, "HasSoughtLess");
             AddChildBlockT(RowsSought, "RowsSought");
         }

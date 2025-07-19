@@ -106,7 +106,7 @@ namespace MAPIInspector.Parsers
             SetText("RopReloadCachedInformationResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
+            this.AddError(ReturnValue, "ReturnValue");
             AddChildBlockT(HasNamedProperties, "HasNamedProperties");
             AddChild(SubjectPrefix, "SubjectPrefix");
             AddChild(NormalizedSubject, "NormalizedSubject");

@@ -70,7 +70,7 @@ namespace MAPIInspector.Parsers
             AddLabeledChildren(MetaTags, "MetaTags");
             AddLabeledChildren(AdditionalHeaders, "AdditionalHeaders");
             AddChildBlockT(StatusCode, "StatusCode");
-            if (ErrorCode != null) AddChild(ErrorCode, $"ErrorCode: {ErrorCode.Data.FormatErrorCode()}");
+            this.AddError(ErrorCode, "ErrorCode ");
             this.AddChildGuid(ServerGuid, "ServerGuid");
             AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
             AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");

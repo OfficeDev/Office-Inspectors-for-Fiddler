@@ -86,7 +86,7 @@ namespace MAPIInspector.Parsers
             SetText("RopQueryRowsResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
+            this.AddError(ReturnValue, "ReturnValue");
             AddChildBlockT(Origin, "Origin");
             AddChildBlockT(RowCount, "RowCount");
             AddLabeledChildren(RowData, "RowData");

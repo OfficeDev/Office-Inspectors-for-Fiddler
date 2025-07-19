@@ -69,7 +69,7 @@ namespace MAPIInspector.Parsers
             SetText("RopGetAddressTypesResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
+            this.AddError(ReturnValue, "ReturnValue");
             AddChildBlockT(AddressTypeCount, "AddressTypeCount");
             AddChildBlockT(AddressTypeSize, "AddressTypeSize");
             AddLabeledChildren(AddressTypes, "AddressTypes");

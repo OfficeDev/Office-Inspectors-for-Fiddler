@@ -81,7 +81,7 @@ namespace MAPIInspector.Parsers
             AddLabeledChildren(MetaTags, "MetaTags");
             AddLabeledChildren(AdditionalHeaders, "AdditionalHeaders");
             AddChildBlockT(StatusCode, "StatusCode");
-            if (ErrorCode != null) AddChild(ErrorCode, $"ErrorCode: {ErrorCode.Data.FormatErrorCode()}");
+            this.AddError(ErrorCode, "ErrorCode ");
             AddChildBlockT(CodePage, "CodePage");
             AddChildBlockT(HasRow, "HasRow");
             AddChild(Row, "Row");

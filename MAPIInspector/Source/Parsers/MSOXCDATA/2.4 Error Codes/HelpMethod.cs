@@ -1,9 +1,15 @@
-﻿using System;
+﻿using BlockParser;
+using System;
 
 namespace MAPIInspector.Parsers
 {
     public static class HelpMethod
     {
+        public static void AddError(this Block parent, BlockT<ErrorCodes> error, string label)
+        {
+            if (error != null) parent.AddChild(error, $"{label}: {error.Data.FormatErrorCode()}");
+        }
+
         public static string FormatErrorCode(this ErrorCodes errorCodeUint)
         {
             string errorCodeString = string.Empty;
@@ -24,7 +30,7 @@ namespace MAPIInspector.Parsers
                 errorCodeString = errorCodeUint.ToString();
             }
 
-            return $"{errorCodeString} = 0x{errorCodeUint:X}";
+            return string.IsNullOrEmpty(errorCodeString) ? "0x{errorCodeUint:X}" : $"{errorCodeString} = 0x{errorCodeUint:X}";
         }
     }
 }

@@ -44,7 +44,7 @@ namespace MAPIInspector.Parsers
             SetText("RopHardDeleteMessagesAndSubfoldersResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
+            this.AddError(ReturnValue, "ReturnValue");
             AddChildBlockT(PartialCompletion, "PartialCompletion");
         }
     }

@@ -60,7 +60,7 @@ namespace MAPIInspector.Parsers
         {
             RopId = ParseT<RopIdType>();
             InputHandleIndex = ParseT<byte>();
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
+            this.AddError(ReturnValue, "ReturnValue");
 
             if (ReturnValue == ErrorCodes.Success)
             {
@@ -82,7 +82,7 @@ namespace MAPIInspector.Parsers
             SetText("RopOptionsDataResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
+            this.AddError(ReturnValue, "ReturnValue");
             AddChildBlockT(Reserved, "Reserved");
             AddChildBlockT(OptionalInfoSize, "OptionalInfoSize");
             AddChildBytes(OptionalInfo, "OptionalInfo");

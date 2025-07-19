@@ -79,7 +79,7 @@ namespace MAPIInspector.Parsers
             AddChildBlockT(RequestID, "RequestID");
             AddChildBlockT(TimeSinceRequest, "TimeSinceRequest");
             AddChildBlockT(TimeToFailRequest, "TimeToFailRequest");
-            if (ResultCode != null) AddChild(ResultCode, $"ResultCode:{ResultCode.Data.FormatErrorCode()}");
+            this.AddError(ResultCode, "ResultCode ");
             AddChildBlockT(RequestOperation, "RequestOperation");
             AddChildBytes(Reserved, "Reserved");
         }

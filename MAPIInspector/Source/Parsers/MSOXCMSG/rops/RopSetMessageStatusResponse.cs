@@ -48,7 +48,7 @@ namespace MAPIInspector.Parsers
             SetText("RopSetMessageStatusResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
+            this.AddError(ReturnValue, "ReturnValue");
             AddChildBlockT(MessageStatusFlags, "MessageStatusFlags");
         }
     }

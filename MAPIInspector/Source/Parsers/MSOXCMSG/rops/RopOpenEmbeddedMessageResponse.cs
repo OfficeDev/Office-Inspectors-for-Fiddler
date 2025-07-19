@@ -119,7 +119,7 @@ namespace MAPIInspector.Parsers
             SetText("RopOpenEmbeddedMessageResponse");
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
-            if (ReturnValue != null) AddChild(ReturnValue, $"ReturnValue: {ReturnValue.Data.FormatErrorCode()}");
+            this.AddError(ReturnValue, "ReturnValue");
             AddChildBlockT(Reserved, "Reserved");
             AddChild(MessageId, "MessageId");
             AddChildBlockT(HasNamedProperties, "HasNamedProperties");
