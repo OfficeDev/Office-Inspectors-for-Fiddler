@@ -77,7 +77,9 @@ namespace MAPIInspector.Parsers
                 var propertyTagsForGetPropertiesSpec = new Dictionary<uint, Queue<PropertyTag[]>>();
                 var logonFlagsInLogonRop = new Dictionary<uint, LogonFlags>();
 
-                if (RopSize >= sizeof(ushort))
+                // RopSize includes ropSize itself, so we need to subtract sizeof(ushort) to get the actual size of RopsList
+                // We need this to be at least sizeof(RopIdType) for the ropID
+                if (RopSize - sizeof(ushort) > sizeof(RopIdType))
                 {
                     ropRemainSize.Add(RopSize - (uint)sizeof(ushort));
 
@@ -191,12 +193,13 @@ namespace MAPIInspector.Parsers
                                     DecodingContext.SessionLogonFlagMapLogId.ContainsKey(parsingSessionID) &&
                                     DecodingContext.SessionLogonFlagMapLogId[parsingSessionID].ContainsKey(logonId)))
                                 {
-                                    throw new MissingInformationException(
+                                    ropsList.Add(MissingInformationException.MaybeThrow(
                                         "Missing LogonFlags information for RopWritePerUserInformation",
                                         currentRop,
                                         new uint[] {
                                             logonId
-                                        });
+                                        }));
+                                    ropsList.Add(ParseJunk("Remaining Data"));
                                 }
 
                                 ropsList.Add(Parse<RopWritePerUserInformationRequest>());
@@ -974,11 +977,13 @@ namespace MAPIInspector.Parsers
                                     DecodingContext.SessionLogonFlagMapLogId.ContainsKey(parsingSessionID) &&
                                     DecodingContext.SessionLogonFlagMapLogId[parsingSessionID].ContainsKey(logId)))
                                 {
-                                    throw new MissingInformationException("Missing LogonFlags information for RopSetMessageReadFlag",
+                                    ropsList.Add(MissingInformationException.MaybeThrow(
+                                        "Missing LogonFlags information for RopSetMessageReadFlag",
                                         currentRop,
                                         new uint[] {
                                             logId }
-                                        );
+                                        ));
+                                    ropsList.Add(ParseJunk("Remaining Data"));
                                 }
 
                                 ropsList.Add(Parse<RopSetMessageReadFlagRequest>());

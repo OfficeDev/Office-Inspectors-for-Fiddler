@@ -23,6 +23,7 @@
                 }
             }
 
+            node.Parsed = true; // Mark as parsed to avoid re-parsing
             return node;
         }
 

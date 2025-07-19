@@ -74,9 +74,11 @@ namespace MAPIInspector.Parsers
             if (!MapiInspector.MAPIParser.IsLooperCall || parseToCROPSResponseLayer || MapiInspector.MAPIParser.NeedToParseCROPSLayer)
             {
                 // empty intermediate variables for ROPs need context information
-               DecodingContext.SetColumn_InputHandles_InResponse = new List<uint>();
+                DecodingContext.SetColumn_InputHandles_InResponse = new List<uint>();
 
-                if (RopSize >= sizeof(ushort))
+                // RopSize includes ropSize itself, so we need to subtract sizeof(ushort) to get the actual size of RopsList
+                // We need this to be at least sizeof(RopIdType) for the ropID
+                if (RopSize - sizeof(ushort) > sizeof(RopIdType))
                 {
                     parser.PushCap(RopSize - sizeof(ushort));
                     do
@@ -95,21 +97,22 @@ namespace MAPIInspector.Parsers
                                     DecodingContext.SessionLogonFlagsInLogonRop.ContainsKey(parsingSessionID) &&
                                     DecodingContext.SessionLogonFlagsInLogonRop[parsingSessionID].ContainsKey(tempOutputHandleIndex_logon)))
                                 {
-                                    throw new MissingInformationException("Missing LogonFlags information for RopLogon", currentRop);
+                                    ropsList.Add(MissingInformationException.MaybeThrow("Missing LogonFlags information for RopLogon", currentRop));
+                                    ropsList.Add(ParseJunk("Remaining Data"));
                                 }
                                 else
                                 {
                                     if (((byte)DecodingContext.SessionLogonFlagsInLogonRop[parsingSessionID][tempOutputHandleIndex_logon] & 0x01) == (byte)LogonFlags.Private)
                                     {
                                         ropsList.Add(Parse<RopLogonResponse_PrivateMailboxes>());
-                                        break;
                                     }
                                     else
                                     {
                                         ropsList.Add(Parse<RopLogonResponse_PublicFolders>());
-                                        break;
                                     }
                                 }
+
+                                break;
 
                             case RopIdType.RopGetReceiveFolder:
                                 ropsList.Add(Parse<RopGetReceiveFolderResponse>());
@@ -193,12 +196,15 @@ namespace MAPIInspector.Parsers
                                     var ropBufferTooSmallResponse = new RopBufferTooSmallResponse(requestBuffersSize);
                                     ropBufferTooSmallResponse.Parse(parser);
                                     ropsList.Add(ropBufferTooSmallResponse);
-                                    break;
                                 }
                                 else
                                 {
-                                    throw new MissingInformationException("Missing RequestBuffersSize information for RopBufferTooSmall", currentRop);
+                                    ropsList.Add(MissingInformationException.MaybeThrow(
+                                        "Missing RequestBuffersSize information for RopBufferTooSmall",
+                                        currentRop));
+                                    ropsList.Add(ParseJunk("Remaining Data"));
                                 }
+                                break;
 
                             // MSOXCTABL ROPs
                             case RopIdType.RopSetColumns:
@@ -239,13 +245,14 @@ namespace MAPIInspector.Parsers
                                         DecodingContext.RowRops_handlePropertyTags[objHandle_QueryROw][parsingSessionID].Item2 == processName_QueryROw &&
                                      DecodingContext.RowRops_handlePropertyTags[objHandle_QueryROw][parsingSessionID].Item3 == clientInfo_QueryROw))
                                     {
-                                        throw new MissingInformationException(
+                                        ropsList.Add(MissingInformationException.MaybeThrow(
                                             "Missing PropertyTags information for RopQueryRowsResponse",
                                             RopIdType.RopQueryRows,
                                             new uint[] {
                                                 (uint)tempInputHandleIndex_QueryRow,
                                                 tempServerObjectHandleTable[tempInputHandleIndex_QueryRow]
-                                            });
+                                            }));
+                                        ropsList.Add(ParseJunk("Remaining Data"));
                                     }
 
                                     var ropQueryRowsResponse = new RopQueryRowsResponse(DecodingContext.RowRops_handlePropertyTags[objHandle_QueryROw][parsingSessionID].Item4);
@@ -311,13 +318,14 @@ namespace MAPIInspector.Parsers
                                         DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow][parsingSessionID].Item2 == processName_FindRow &&
                                         DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow][parsingSessionID].Item3 == clientInfo_FindRow))
                                     {
-                                        throw new MissingInformationException(
+                                        ropsList.Add(MissingInformationException.MaybeThrow(
                                             "Missing PropertyTags information for RopFindRowsResponse",
                                             RopIdType.RopFindRow,
                                             new uint[] {
                                                 (uint)tempInputHandleIndex_findRow,
                                                 objHandle_FindRow
-                                            });
+                                            }));
+                                        ropsList.Add(ParseJunk("Remaining Data"));
                                     }
 
                                     var ropFindRowResponse = new RopFindRowResponse(DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow][parsingSessionID].Item4);
@@ -359,13 +367,14 @@ namespace MAPIInspector.Parsers
                                     DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow][parsingSessionID].Item2 == processName_ExpandRow &&
                                     DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow][parsingSessionID].Item3 == clientInfo_ExpandRow))
                                     {
-                                        throw new MissingInformationException(
+                                        ropsList.Add(MissingInformationException.MaybeThrow(
                                             "Missing PropertyTags information for RopExpandRowsResponse",
                                             RopIdType.RopExpandRow,
                                             new uint[] {
                                                 (uint)tempInputHandleIndex_expandRow,
                                                 objHandle_ExpandRow
-                                            });
+                                            }));
+                                        ropsList.Add(ParseJunk("Remaining Data"));
                                     }
 
                                     var ropFindRowResponse = new RopExpandRowResponse(DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow][parsingSessionID].Item4);
@@ -533,7 +542,10 @@ namespace MAPIInspector.Parsers
                                     DecodingContext.GetPropertiesSpec_propertyTags[parsingSessionID].ContainsKey((uint)tempInputHandleIndex_getPropertiesSpec) &&
                                     DecodingContext.GetPropertiesSpec_propertyTags[parsingSessionID][(uint)tempInputHandleIndex_getPropertiesSpec].Count != 0))
                                 {
-                                    throw new MissingInformationException("Missing PropertyTags information for RopGetPropertiesSpecific", currentRop);
+                                    ropsList.Add(MissingInformationException.MaybeThrow(
+                                        "Missing PropertyTags information for RopGetPropertiesSpecific",
+                                        currentRop));
+                                    ropsList.Add(ParseJunk("Remaining Data"));
                                 }
 
                                 ropsList.Add(Parse<RopGetPropertiesSpecificResponse>());
