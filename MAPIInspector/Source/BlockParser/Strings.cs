@@ -143,7 +143,7 @@ namespace BlockParser
             return sb.ToString();
         }
 
-        public static string RemoveInvalidCharacters(string input, bool multiLine = true)
+        public static string RemoveInvalidCharacters(string input)
         {
             if (string.IsNullOrEmpty(input))
                 return input;
@@ -153,7 +153,7 @@ namespace BlockParser
 
             for (int i = 0; i < chars.Length; i++)
             {
-                if (InvalidCharacter((uint)(chars[i] & 0xFF), multiLine))
+                if (InvalidCharacter((uint)(chars[i] & 0xFF), true))
                     chars[i] = '.';
             }
 
