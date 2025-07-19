@@ -63,7 +63,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("GetMailboxUrlResponse: {0} bytes", Size);
+            SetText("GetMailboxUrlResponse");
             AddLabeledChildren(MetaTags, "MetaTags");
             AddLabeledChildren(AdditionalHeaders, "AdditionalHeaders");
             AddChild(StatusCode, "StatusCode");

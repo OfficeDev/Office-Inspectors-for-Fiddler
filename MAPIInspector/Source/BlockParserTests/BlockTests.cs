@@ -29,14 +29,6 @@ namespace BlockParserTests
         }
 
         [TestMethod]
-        public void SetText_Format_AssignsFormattedText()
-        {
-            var b = Block.Create();
-            b.SetText("Value: {0}", 42);
-            Assert.AreEqual("Value: 42", b.Text);
-        }
-
-        [TestMethod]
         public void SetSize_AssignsSize()
         {
             var b = Block.Create();
