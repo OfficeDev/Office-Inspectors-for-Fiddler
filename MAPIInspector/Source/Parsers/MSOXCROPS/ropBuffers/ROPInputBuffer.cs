@@ -1064,8 +1064,7 @@ namespace MAPIInspector.Parsers
 
             if (RopsList.Length != 0)
             {
-                object[] roplist = RopsList;
-                foreach (object obj in roplist)
+                foreach (var obj in ropsList)
                 {
                     if (MapiInspector.MAPIParser.AllRopsList.Count <= 0 ||
                         !MapiInspector.MAPIParser.AllRopsList.Contains(obj.GetType().Name))
