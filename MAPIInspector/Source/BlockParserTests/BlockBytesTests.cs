@@ -36,7 +36,7 @@ namespace BlockParserTests
             var data = new byte[] { 0x41, 0x42, 0x43, 0x00 };
             var parser = new BinaryParser(data);
             var block = Block.ParseBytes(parser, 4);
-            var text = block.ToTextStringA(false);
+            var text = block.ToTextString();
 
             Assert.AreEqual("ABC.", text);
         }

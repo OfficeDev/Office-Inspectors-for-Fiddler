@@ -14,7 +14,7 @@ namespace BlockParser
         public int Count => _data.Length;
         public bool Empty => _data.Length == 0;
 
-        public string ToTextStringA() => Strings.StripCharacter(Strings.BinToTextStringA(_data, false), '\0');
+        public string ToTextString() => Strings.StripCharacter(Strings.BinToTextStringA(_data, false), '\0');
 
         public string ToHexString() => Strings.BinToHexString(_data, 0);
 
@@ -38,7 +38,7 @@ namespace BlockParser
         protected override void ParseBlocks()
         {
             SetText(ToHexString());
-            AddSubHeader($"bin: {ToTextStringA()}");
+            AddSubHeader($"bin: {ToTextString()}");
             AddHeader($"cb: {Count}");
         }
     }
