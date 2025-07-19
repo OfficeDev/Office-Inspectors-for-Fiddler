@@ -6,6 +6,12 @@ namespace BlockParser
 {
     public static class Strings
     {
+        /// <summary>
+        /// Trims leading and trailing whitespace characters (including null, space, carriage return, line feed, and tab) from the input string.
+        /// Returns an empty string if the input is null or contains only whitespace.
+        /// </summary>
+        /// <param name="input">The string to trim.</param>
+        /// <returns>The trimmed string, or an empty string if input is null or whitespace.</returns>
         public static string TrimWhitespace(string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -29,6 +35,13 @@ namespace BlockParser
             return input.Substring(first, last - first + 1);
         }
 
+        /// <summary>
+        /// Removes all occurrences of a specified character from the input string.
+        /// Returns an empty string if the input is null or empty.
+        /// </summary>
+        /// <param name="input">The string to process.</param>
+        /// <param name="character">The character to remove.</param>
+        /// <returns>The string with the specified character removed.</returns>
         public static string StripCharacter(string input, char character)
         {
             if (string.IsNullOrEmpty(input))
@@ -43,7 +56,15 @@ namespace BlockParser
             return sb.ToString();
         }
 
-        // Determines if a character is invalid based on Unicode and multiline rules
+        /// <summary>
+        /// Determines if a character is invalid based on Unicode and multiline rules.
+        /// Control characters in the range 0x80-0x9F are considered invalid.
+        /// Printable Unicode characters (>= 0x20) are valid.
+        /// If multiLine is true, tab, line feed, and carriage return are also valid.
+        /// </summary>
+        /// <param name="chr">The character code to check.</param>
+        /// <param name="multiLine">Whether multiline characters are allowed.</param>
+        /// <returns>True if the character is invalid; otherwise, false.</returns>
         public static bool InvalidCharacter(uint chr, bool multiLine)
         {
             // Remove range of control characters
@@ -65,7 +86,13 @@ namespace BlockParser
             return true;
         }
 
-        // Converts binary data to a string, assuming source string was unicode
+        /// <summary>
+        /// Converts a byte array to a string, assuming the source string was Unicode (UTF-16LE).
+        /// Invalid characters are replaced with '.'.
+        /// </summary>
+        /// <param name="bin">The byte array to convert.</param>
+        /// <param name="multiLine">Whether multiline characters are allowed.</param>
+        /// <returns>The resulting string with invalid characters replaced.</returns>
         public static string BinToTextStringW(byte[] bin, bool multiLine)
         {
             if (bin == null || bin.Length == 0 || bin.Length % sizeof(char) != 0)
@@ -87,7 +114,13 @@ namespace BlockParser
             return sb.ToString();
         }
 
-        // Converts binary data to a string, assuming each byte is a single character (ASCII/Latin1)
+        /// <summary>
+        /// Converts a byte array to a string, assuming each byte is a single character (ASCII/Latin1).
+        /// Invalid characters are replaced with '.'.
+        /// </summary>
+        /// <param name="bin">The byte array to convert.</param>
+        /// <param name="multiLine">Whether multiline characters are allowed.</param>
+        /// <returns>The resulting string with invalid characters replaced.</returns>
         public static string BinToTextStringA(byte[] bin, bool multiLine)
         {
             if (bin == null || bin.Length == 0)
@@ -113,6 +146,14 @@ namespace BlockParser
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Converts a byte array to a hexadecimal string representation.
+        /// If a limit is specified and the array is longer, the output is truncated and suffixed with "...".
+        /// Returns "NULL" if the input is null or empty.
+        /// </summary>
+        /// <param name="bin">The byte array to convert.</param>
+        /// <param name="limit">The maximum number of bytes to convert (0 for no limit).</param>
+        /// <returns>The hexadecimal string representation of the byte array.</returns>
         public static string BinToHexString(byte[] bin, int limit = 128)
         {
             var sb = new System.Text.StringBuilder();
@@ -143,6 +184,12 @@ namespace BlockParser
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Replaces invalid characters in a string with '.'.
+        /// The last character is preserved as null if the input was null-terminated.
+        /// </summary>
+        /// <param name="input">The string to process.</param>
+        /// <returns>The string with invalid characters replaced by '.'.</returns>
         public static string RemoveInvalidCharacters(string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -163,6 +210,12 @@ namespace BlockParser
             return new string(chars);
         }
 
+        /// <summary>
+        /// Prepends each string in the list with a tab character or a pipe and tab, depending on the usePipes flag.
+        /// </summary>
+        /// <param name="elems">The list of strings to process.</param>
+        /// <param name="usePipes">If true, prepends "|\t" to each string; otherwise, prepends "\t".</param>
+        /// <returns>A new list of strings with the specified prefix added to each element.</returns>
         public static List<string> TabStrings(List<string> elems, bool usePipes)
         {
             if (elems == null || elems.Count == 0) return new List<string>();
@@ -181,6 +234,5 @@ namespace BlockParser
 
             return strings;
         }
-
     }
 }
