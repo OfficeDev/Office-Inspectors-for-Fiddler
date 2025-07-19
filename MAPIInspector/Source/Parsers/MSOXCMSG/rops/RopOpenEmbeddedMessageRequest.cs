@@ -54,7 +54,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopOpenEmbeddedMessageRequest");
+            Text = "RopOpenEmbeddedMessageRequest";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");

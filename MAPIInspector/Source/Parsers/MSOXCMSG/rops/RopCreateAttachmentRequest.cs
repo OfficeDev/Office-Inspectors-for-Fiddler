@@ -41,7 +41,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopCreateAttachmentRequest");
+            Text = "RopCreateAttachmentRequest";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");

@@ -49,7 +49,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("SubFolderNoDelProps");
+            Text = "SubFolderNoDelProps";
             AddChildBlockT(StartMarker, "StartMarker");
             if (FolderContentNoDelProps != null) AddChild(FolderContentNoDelProps, "FolderContentNoDelProps");
             AddChildBlockT(EndMarker, "EndMarker");

@@ -58,7 +58,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText($"LogonTime: {Year?.Data:D4}-{Month?.Data}-{Day?.Data:D2} {Hour?.Data:D2}:{Minutes?.Data:D2}:{Seconds?.Data:D2} ({DayOfWeek?.Data})");
+            Text = $"LogonTime: {Year?.Data:D4}-{Month?.Data}-{Day?.Data:D2} {Hour?.Data:D2}:{Minutes?.Data:D2}:{Seconds?.Data:D2} ({DayOfWeek?.Data})";
             AddChildBlockT(Seconds, "Seconds");
             AddChildBlockT(Minutes, "Minutes");
             AddChildBlockT(Hour, "Hour");

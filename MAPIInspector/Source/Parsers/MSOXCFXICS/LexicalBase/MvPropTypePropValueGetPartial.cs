@@ -78,7 +78,7 @@ namespace MAPIInspector.Parsers
         {
             base.ParseBlocks();
             AddChild(Comment);
-            SetText("MvPropTypePropValueGetPartial");
+            Text = "MvPropTypePropValueGetPartial";
             AddChildBlockT(Length, "Length");
             AddLabeledChildren(ValueArray, "ValueArray");
         }

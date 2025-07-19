@@ -10,7 +10,7 @@ namespace BlockParserTests
         public void ScratchBlock_CanSetAndGetText()
         {
             var block = new ScratchBlock();
-            block.SetText("TestText");
+            block.Text = "TestText";
             Assert.AreEqual("TestText", block.Text);
         }
 
@@ -18,7 +18,7 @@ namespace BlockParserTests
         public void ScratchBlock_ToStringBlock_ReturnsExpected()
         {
             var block = new ScratchBlock();
-            block.SetText("TestBlock");
+            block.Text = "TestBlock";
             Assert.IsTrue(block.ToString().Contains("TestBlock"));
         }
     }

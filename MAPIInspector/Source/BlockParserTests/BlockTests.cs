@@ -24,7 +24,7 @@ namespace BlockParserTests
         public void SetText_AssignsText()
         {
             var b = Block.Create();
-            b.SetText("abc");
+            b.Text = "abc";
             Assert.AreEqual("abc", b.Text);
         }
 
@@ -80,7 +80,7 @@ namespace BlockParserTests
         {
             var b = Block.Create();
             Assert.IsFalse(b.HasData);
-            b.SetText("abc");
+            b.Text = "abc";
             Assert.IsTrue(b.HasData);
             var b2 = Block.Create();
             b2.AddChild(Block.Create());
@@ -192,7 +192,7 @@ namespace BlockParserTests
         public void ToStringBlock_EnsuresParsedAndFormats()
         {
             var tb = new TestBlock();
-            tb.SetText("abc");
+            tb.Text = "abc";
             Assert.IsTrue(tb.ToString().Contains("abc"));
         }
 
@@ -207,7 +207,7 @@ namespace BlockParserTests
         public void SetText_Null_SetsEmpty()
         {
             var b = Block.Create();
-            b.SetText(null);
+            b.Text = null;
             Assert.AreEqual(string.Empty, b.Text);
         }
 
@@ -287,7 +287,7 @@ namespace BlockParserTests
         {
             var b = Block.Create();
             var c = Block.Create();
-            c.SetText("child");
+            c.Text = "child";
             b.AddChild(c);
             Assert.IsTrue(b.FullString().Contains("child"));
         }

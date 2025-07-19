@@ -60,7 +60,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("FolderEntryID");
+            Text = "FolderEntryID";
             AddChildBlockT(Flags, "Flags");
             this.AddChildGuid(ProviderUID, "ProviderUID}");
             AddChildBlockT(FolderType, "FolderType");

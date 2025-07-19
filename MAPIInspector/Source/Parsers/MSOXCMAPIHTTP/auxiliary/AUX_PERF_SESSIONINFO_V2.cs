@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_PERF_SESSIONINFO_V2");
+            Text = "AUX_PERF_SESSIONINFO_V2";
             AddChildBlockT(SessionID, "SessionID");
             AddChildBlockT(Reserved, "Reserved");
             this.AddChildGuid(SessionGuid, "SessionGuid");

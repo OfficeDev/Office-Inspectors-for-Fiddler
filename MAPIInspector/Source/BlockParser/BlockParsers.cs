@@ -236,7 +236,7 @@ namespace BlockParser
         {
             var junkData = ParseBytes(parser.RemainingBytes);
             var node = Create();
-            node.SetText(label);
+            node.Text = label;
             node.Offset = junkData.Offset;
             node.Size = junkData.Size;
             node.AddChild(junkData);

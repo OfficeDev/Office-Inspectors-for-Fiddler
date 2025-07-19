@@ -28,7 +28,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("MessageID");
+            Text = "MessageID";
             AddChildBlockT(ReplicaId, "ReplicaId");
             AddChildBytes(GlobalCounter, "GlobalCounter");
         }

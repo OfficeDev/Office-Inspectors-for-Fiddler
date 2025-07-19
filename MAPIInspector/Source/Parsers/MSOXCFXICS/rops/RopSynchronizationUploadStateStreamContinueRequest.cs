@@ -47,7 +47,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopSynchronizationUploadStateStreamContinueRequest");
+            Text = "RopSynchronizationUploadStateStreamContinueRequest";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(StreamDataSize, "StreamDataSize");

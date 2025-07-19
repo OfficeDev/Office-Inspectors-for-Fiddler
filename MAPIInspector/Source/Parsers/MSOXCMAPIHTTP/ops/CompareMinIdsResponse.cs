@@ -66,7 +66,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("CompareMinIdsResponse");
+            Text = "CompareMinIdsResponse";
             AddLabeledChildren(MetaTags, "MetaTags");
             AddLabeledChildren(AdditionalHeaders, "AdditionalHeaders");
             AddLabeledChild(StatusCode, "StatusCode");

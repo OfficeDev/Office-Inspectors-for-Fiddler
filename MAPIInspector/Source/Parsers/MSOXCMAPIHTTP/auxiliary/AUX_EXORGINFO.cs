@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_EXORGINFO");
+            Text = "AUX_EXORGINFO";
             AddChildBlockT(OrgFlags, "OrgFlags");
         }
     }

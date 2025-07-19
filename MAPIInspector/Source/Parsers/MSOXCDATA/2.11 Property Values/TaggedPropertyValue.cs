@@ -61,7 +61,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("TaggedPropertyValue");
+            Text = "TaggedPropertyValue";
             AddChild(PropertyTag, "PropertyTag");
             if (_PropertyValue != null)
             {

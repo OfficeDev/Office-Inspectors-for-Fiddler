@@ -23,7 +23,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("PopCommand");
+            Text = "PopCommand";
             AddChildBlockT(Command, "Command");
         }
     }

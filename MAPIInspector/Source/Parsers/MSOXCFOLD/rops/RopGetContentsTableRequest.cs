@@ -47,7 +47,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopGetContentsTableRequest");
+            Text = "RopGetContentsTableRequest";
             AddChildBlockT(RopId, "RopId");
             if (LogonId != null) AddChild(LogonId, $"LogonId:0x{LogonId.Data:X2}");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");

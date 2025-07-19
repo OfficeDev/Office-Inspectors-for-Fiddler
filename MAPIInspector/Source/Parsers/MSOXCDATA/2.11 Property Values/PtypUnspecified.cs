@@ -15,7 +15,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("MSOXCDATA: Not implemented type definition - PtypUnspecified");
+            Text = "MSOXCDATA: Not implemented type definition - PtypUnspecified";
         }
     }
 }

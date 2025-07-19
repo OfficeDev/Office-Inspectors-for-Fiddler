@@ -61,7 +61,7 @@ namespace BlockParser
 
                 data = Strings.RemoveInvalidCharacters(data);
 
-                SetText(data);
+                Text = data;
                 parser.Advance(length);
                 // If we were given a length, that's all we read. But if we were not given a length, we read until the null terminator.
                 // So we must now skip the null terminator.

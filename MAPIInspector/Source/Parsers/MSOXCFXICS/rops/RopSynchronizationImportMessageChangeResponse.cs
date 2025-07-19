@@ -45,7 +45,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopSynchronizationImportMessageChangeResponse");
+            Text = "RopSynchronizationImportMessageChangeResponse";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
             this.AddError(ReturnValue, "ReturnValue");

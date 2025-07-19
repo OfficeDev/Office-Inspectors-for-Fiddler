@@ -114,7 +114,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopLogonResponse_PrivateMailboxes");
+            Text = "RopLogonResponse_PrivateMailboxes";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
             this.AddError(ReturnValue, "ReturnValue");

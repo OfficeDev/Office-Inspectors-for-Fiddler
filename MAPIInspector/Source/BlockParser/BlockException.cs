@@ -5,7 +5,7 @@
         public static BlockException Create(string message, System.Exception ex, long offset)
         {
             var node = new BlockException();
-            node.SetText(message);
+            node.Text = message;
             node.Offset = offset;
             node.Size = 1; // We just want to signal where the exception occurred, so size is minimal
             if (ex != null)

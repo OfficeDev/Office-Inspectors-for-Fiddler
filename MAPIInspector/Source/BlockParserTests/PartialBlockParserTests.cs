@@ -26,7 +26,7 @@ namespace BlockParserTests
 
             protected override void ParseBlocks()
             {
-                SetText("TestBlock");
+                Text = "TestBlock";
                 int i = 0;
                 foreach (var b in f1)
                 {
@@ -53,7 +53,7 @@ namespace BlockParserTests
 
             protected override void ParseBlocks()
             {
-                SetText("ParentBlock");
+                Text = "ParentBlock";
                 AddChild(size, $"size = 0x{size:X8}");
                 AddChild(expandingBlock, "ExpandingBlock");
                 AddChild(footer, $"footer = 0x{footer:X8}");
@@ -104,7 +104,7 @@ namespace BlockParserTests
 
             protected override void ParseBlocks()
             {
-                SetText("GrandParentBlock");
+                Text = "GrandParentBlock";
                 AddChild(size, $"size = 0x{size:X8}");
                 foreach (var parent in parents)
                 {

@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_CLIENT_CONTROL");
+            Text = "AUX_CLIENT_CONTROL";
             AddChildBlockT(EnableFlags, "EnableFlags");
             AddChildBlockT(ExpiryTime, "ExpiryTime");
         }

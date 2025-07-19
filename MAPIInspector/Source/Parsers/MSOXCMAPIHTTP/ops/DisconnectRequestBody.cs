@@ -31,7 +31,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("DisconnectRequestBody");
+            Text = "DisconnectRequestBody";
             AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
             AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");
         }

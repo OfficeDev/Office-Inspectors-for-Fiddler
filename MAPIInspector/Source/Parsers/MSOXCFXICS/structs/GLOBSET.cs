@@ -73,7 +73,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("GLOBSET");
+            Text = "GLOBSET";
             foreach (var command in Commands)
             {
                 AddChild(command);

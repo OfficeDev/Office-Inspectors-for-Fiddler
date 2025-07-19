@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RecipientType");
+            Text = "RecipientType";
             AddChildBlockT(Flag, "Flag");
             AddChildBlockT(Type, "Type");
         }

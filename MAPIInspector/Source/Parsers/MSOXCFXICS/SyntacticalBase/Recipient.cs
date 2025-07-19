@@ -50,7 +50,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("Recipient");
+            Text = "Recipient";
             AddChildBlockT(StartMarker, "StartMarker");
             AddLabeledChild(PropList, "PropList");
             AddChildBlockT(EndMarker, "EndMarker");

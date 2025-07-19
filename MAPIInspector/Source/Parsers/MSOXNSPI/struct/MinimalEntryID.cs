@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("MinimalEntryID");
+            Text = "MinimalEntryID";
             AddChildBlockT(MinEntryID, "MinEntryID");
         }
     }

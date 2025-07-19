@@ -94,7 +94,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopCreateFolderResponse");
+            Text = "RopCreateFolderResponse";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
             this.AddError(ReturnValue, "ReturnValue");

@@ -46,7 +46,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AddressBookEntryID");
+            Text = "AddressBookEntryID";
             AddChildBlockT(Flags, "Flags");
             this.AddChildGuid(ProviderUID, "ProviderUID");
             AddChildBlockT(Version, "Version");

@@ -76,7 +76,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("ContentsSync");
+            Text = "ContentsSync";
             AddChild(ProgressTotal);
             if (ProgressPerMessageChanges != null)
             {

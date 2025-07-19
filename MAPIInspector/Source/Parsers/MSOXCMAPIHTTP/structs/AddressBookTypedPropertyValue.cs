@@ -31,7 +31,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AddressBookTypedPropertyValue");
+            Text = "AddressBookTypedPropertyValue";
             AddChild(PropertyValue, "PropertyValue");
         }
     }

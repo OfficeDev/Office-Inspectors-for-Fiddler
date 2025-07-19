@@ -59,7 +59,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("GetSpecialTableRequest");
+            Text = "GetSpecialTableRequest";
             AddChildBlockT(Flags, "Flags");
             AddChildBlockT(HasState, "HasState");
             AddChild(State, "State");

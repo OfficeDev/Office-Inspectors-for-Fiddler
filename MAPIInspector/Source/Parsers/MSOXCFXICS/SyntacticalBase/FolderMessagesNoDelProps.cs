@@ -37,7 +37,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("FolderMessagesNoDelProps");
+            Text = "FolderMessagesNoDelProps";
             AddLabeledChildren(MessageLists, "MessageLists");
         }
     }

@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
         }
         protected override void ParseBlocks()
         {
-            SetText("RopSetStreamSizeRequest");
+            Text = "RopSetStreamSizeRequest";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");

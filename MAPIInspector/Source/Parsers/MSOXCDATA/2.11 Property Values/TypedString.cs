@@ -49,7 +49,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("TypedString");
+            Text = "TypedString";
             AddChildBlockT(StringType, "StringType");
             AddChildString(String, "String");
         }

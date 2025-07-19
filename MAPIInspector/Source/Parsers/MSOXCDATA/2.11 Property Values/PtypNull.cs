@@ -15,7 +15,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("MSOXCDATA: PtypNull placeholder");
+            Text = "MSOXCDATA: PtypNull placeholder";
         }
     }
 }

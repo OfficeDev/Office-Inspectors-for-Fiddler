@@ -81,7 +81,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("GetPropsResponse");
+            Text = "GetPropsResponse";
             AddLabeledChildren(MetaTags, "MetaTags");
             AddLabeledChildren(AdditionalHeaders, "AdditionalHeaders");
             AddChildBlockT(StatusCode, "StatusCode");

@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("SortOrder");
+            Text = "SortOrder";
             AddChildBlockT(PropertyType, "PropertyType");
             AddChildBlockT(PropertyId, "PropertyId");
             AddChildBlockT(Order, "Order");

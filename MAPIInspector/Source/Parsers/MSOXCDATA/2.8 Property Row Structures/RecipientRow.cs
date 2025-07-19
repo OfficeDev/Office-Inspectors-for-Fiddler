@@ -147,7 +147,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RecipientRow");
+            Text = "RecipientRow";
             AddChild(RecipientFlags, "RecipientFlags");
             AddChildBlockT(AddressPrefixUsed, "AddressPrefixUsed");
             AddChildBlockT(DisplayType, "DisplayType");

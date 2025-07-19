@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("GroupInfo");
+            Text = "GroupInfo";
             AddChildBlockT(StartMarker, "StartMarker");
             if (PropertiesTag != null) AddChild(PropertiesTag, $"PropertiesTag:0x{PropertiesTag.Data:X8}");
             AddChildBlockT(PropertiesLength, "PropertiesLength");

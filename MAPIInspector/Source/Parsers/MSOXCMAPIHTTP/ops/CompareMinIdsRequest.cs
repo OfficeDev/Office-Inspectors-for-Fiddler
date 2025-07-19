@@ -63,7 +63,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("CompareMinIdsRequest");
+            Text = "CompareMinIdsRequest";
             AddChildBlockT(Reserved, "Reserved");
             AddChildBlockT(HasState, "HasState");
             AddChild(State, "State");

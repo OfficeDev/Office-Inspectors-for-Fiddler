@@ -67,7 +67,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("OrRestriction");
+            Text = "OrRestriction";
             AddChildBlockT(RestrictType, "RestrictType");
             AddChildBlockT(RestrictCount, "RestrictCount");
             AddLabeledChildren(Restricts, "Restricts");

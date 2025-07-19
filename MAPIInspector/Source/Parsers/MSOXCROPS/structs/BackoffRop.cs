@@ -29,7 +29,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("BackoffRop");
+            Text = "BackoffRop";
             AddChildBlockT(RopIdBackoff, "RopIdBackoff");
             AddChildBlockT(Duration, "Duration");
         }

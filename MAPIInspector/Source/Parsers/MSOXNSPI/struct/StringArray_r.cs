@@ -37,7 +37,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("StringArray_r");
+            Text = "StringArray_r";
             AddChildBlockT(CValues, "CValues");
             AddLabeledChildren(LppszA, "LppszA");
         }

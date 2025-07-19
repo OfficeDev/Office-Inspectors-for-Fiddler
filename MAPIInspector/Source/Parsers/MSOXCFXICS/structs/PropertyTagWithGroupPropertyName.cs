@@ -38,7 +38,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("PropertyTagWithGroupPropertyName");
+            Text = "PropertyTagWithGroupPropertyName";
             AddChildBlockT(PropertyType, "PropertyType");
             AddChildBlockT(PropertyId, "PropertyId");
             if (PropertyId >= 0x8000)

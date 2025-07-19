@@ -65,7 +65,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopFastTransferDestinationPutBufferResponse");
+            Text = "RopFastTransferDestinationPutBufferResponse";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             this.AddError(ReturnValue, "ReturnValue");

@@ -41,7 +41,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("GetMailboxUrlRequest");
+            Text = "GetMailboxUrlRequest";
             AddChildBlockT(Flags, "Flags");
             AddChild(ServerDn, "ServerDn");
             AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");

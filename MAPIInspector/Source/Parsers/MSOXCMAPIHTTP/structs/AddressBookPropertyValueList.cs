@@ -37,7 +37,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AddressBookPropertyValueList");
+            Text = "AddressBookPropertyValueList";
             AddChildBlockT(PropertyValueCount, "PropertyValueCount");
             AddLabeledChildren(PropertyValues, "PropertyValues");
         }

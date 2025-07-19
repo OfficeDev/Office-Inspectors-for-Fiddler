@@ -46,7 +46,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("PermissionData");
+            Text = "PermissionData";
             AddChildBlockT(PermissionDataFlags, "PermissionDataFlags");
             AddChildBlockT(PropertyValueCount, "PropertyValueCount");
             AddLabeledChildren(PropertyValues, "PropertyValues");

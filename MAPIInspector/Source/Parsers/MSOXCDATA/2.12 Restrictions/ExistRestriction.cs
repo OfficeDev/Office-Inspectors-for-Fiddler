@@ -28,7 +28,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("ExistRestriction");
+            Text = "ExistRestriction";
             AddChildBlockT(RestrictType, "RestrictType");
             AddChild(PropTag, "PropTag");
         }

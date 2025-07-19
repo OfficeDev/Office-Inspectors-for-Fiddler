@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_PERF_DEFMDB_SUCCESS");
+            Text = "AUX_PERF_DEFMDB_SUCCESS";
             AddChildBlockT(TimeSinceRequest, "TimeSinceRequest");
             AddChildBlockT(TimeToCompleteRequest, "TimeToCompleteRequest");
             AddChildBlockT(RequestID, "RequestID");

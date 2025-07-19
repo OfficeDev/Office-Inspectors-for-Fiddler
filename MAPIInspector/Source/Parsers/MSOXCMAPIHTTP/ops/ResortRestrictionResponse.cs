@@ -100,7 +100,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("ResortRestrictionResponse");
+            Text = "ResortRestrictionResponse";
             AddLabeledChildren(MetaTags, "MetaTags");
             AddLabeledChildren(AdditionalHeaders, "AdditionalHeaders");
             AddChildBlockT(StatusCode, "StatusCode");

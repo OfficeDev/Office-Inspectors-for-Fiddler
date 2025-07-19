@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopSaveChangesMessageResponse");
+            Text = "RopSaveChangesMessageResponse";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(ResponseHandleIndex, "ResponseHandleIndex");
             this.AddError(ReturnValue, "ReturnValue");

@@ -37,7 +37,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("DateTimeArray_r");
+            Text = "DateTimeArray_r";
             AddChildBlockT(CValues, "CValues");
             AddLabeledChildren(Lpft, "Lpft");
         }

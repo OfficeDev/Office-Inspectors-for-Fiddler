@@ -51,7 +51,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("ProgressTotal");
+            Text = "ProgressTotal";
             AddChildBlockT(StartMarker, "StartMarker");
             AddChildBlockT(PropertiesTag, "PropertiesTag");
             AddChildBlockT(PropertiesLength, "PropertiesLength");

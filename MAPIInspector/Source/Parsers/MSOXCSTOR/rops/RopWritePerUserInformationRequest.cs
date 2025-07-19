@@ -86,7 +86,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopWritePerUserInformationRequest");
+            Text = "RopWritePerUserInformationRequest";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChild(FolderId, "FolderId");

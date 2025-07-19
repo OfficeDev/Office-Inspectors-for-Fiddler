@@ -49,7 +49,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("TopFolder");
+            Text = "TopFolder";
             AddChild(MetaTagDnPrefix, "MetaTagDnPrefix");
             AddChildBlockT(StartMarker, "StartMarker");
             AddChild(FolderContentNoDelProps, "FolderContentNoDelProps");

@@ -29,7 +29,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("SyncMessagePartialPropList");
+            Text = "SyncMessagePartialPropList";
             AddChild(MetaSyncMessagePartial, "MetaSyncMessagePartial");
             AddChild(PropList, "PropList");
         }

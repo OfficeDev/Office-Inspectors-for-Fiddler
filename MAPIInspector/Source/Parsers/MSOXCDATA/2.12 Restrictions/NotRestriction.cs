@@ -43,7 +43,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("NotRestriction");
+            Text = "NotRestriction";
             AddChildBlockT(RestrictType, "RestrictType");
             AddLabeledChild(Restriction, "Restriction");
         }

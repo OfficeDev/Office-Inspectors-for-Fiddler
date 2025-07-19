@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("FolderID");
+            Text = "FolderID";
             AddChildBlockT(ReplicaId, "ReplicaId");
             AddChildBytes(GlobalCounter, "GlobalCounter");
         }

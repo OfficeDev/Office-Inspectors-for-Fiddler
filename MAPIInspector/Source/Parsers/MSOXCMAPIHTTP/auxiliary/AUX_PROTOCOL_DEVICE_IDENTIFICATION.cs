@@ -103,7 +103,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_PROTOCOL_DEVICE_IDENTIFICATION");
+            Text = "AUX_PROTOCOL_DEVICE_IDENTIFICATION";
             AddChildBlockT(DeviceManufacturerOffset, "DeviceManufacturerOffset");
             AddChildBlockT(DeviceModelOffset, "DeviceModelOffset");
             AddChildBlockT(DeviceSerialNumberOffset, "DeviceSerialNumberOffset");

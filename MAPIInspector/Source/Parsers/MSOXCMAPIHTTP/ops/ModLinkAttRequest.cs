@@ -86,7 +86,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("ModLinkAttRequest");
+            Text = "ModLinkAttRequest";
             AddChildBlockT(Flags, "Flags");
             AddChild(PropertyTag, "PropertyTag");
             AddChild(MinimalId, "MinimalId");

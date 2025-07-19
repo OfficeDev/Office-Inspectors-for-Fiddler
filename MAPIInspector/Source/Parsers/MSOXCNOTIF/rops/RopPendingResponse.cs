@@ -29,7 +29,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopPendingResponse");
+            Text = "RopPendingResponse";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(SessionIndex, "SessionIndex");
         }

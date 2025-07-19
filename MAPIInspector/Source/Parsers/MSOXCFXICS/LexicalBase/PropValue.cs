@@ -114,7 +114,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("PropValue");
+            Text = "PropValue";
             AddChildBlockT(PropType, "PropType"); // Consider: ({(ushort)PropType:X4})
             AddChild(PropInfo);
         }

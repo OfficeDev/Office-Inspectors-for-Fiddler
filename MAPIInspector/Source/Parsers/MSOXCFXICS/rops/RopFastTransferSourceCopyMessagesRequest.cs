@@ -73,7 +73,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopFastTransferSourceCopyMessagesRequest");
+            Text = "RopFastTransferSourceCopyMessagesRequest";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");

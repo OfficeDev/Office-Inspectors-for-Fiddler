@@ -36,7 +36,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_PERF_ACCOUNTINFO");
+            Text = "AUX_PERF_ACCOUNTINFO";
             AddChildBlockT(ClientID, "ClientID");
             AddChildBlockT(Reserved, "Reserved");
             this.AddChildGuid(Account, "Account");

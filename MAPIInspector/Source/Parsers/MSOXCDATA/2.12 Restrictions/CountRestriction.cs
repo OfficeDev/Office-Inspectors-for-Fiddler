@@ -49,7 +49,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("CountRestriction");
+            Text = "CountRestriction";
             AddChildBlockT(RestrictType, "RestrictType");
             AddChildBlockT(Count, "Count");
             AddLabeledChild(SubRestriction, "SubRestriction");

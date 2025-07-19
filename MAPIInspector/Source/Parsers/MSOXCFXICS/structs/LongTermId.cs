@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("LongTermId");
+            Text = "LongTermId";
             this.AddChildGuid(DatabaseGuid, "DatabaseGuid");
             AddChildBytes(GlobalCounter, "GlobalCounter");
             AddChildBlockT(Pad, "Pad");

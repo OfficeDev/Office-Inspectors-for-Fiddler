@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("MessageReadState");
+            Text = "MessageReadState";
             AddChild(MessageIdSize, "MessageIdSize");
             AddChild(MessageId, "MessageId");
             AddChild(MarkAsRead, "MarkAsRead");

@@ -139,7 +139,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("Restriction");
+            Text = "Restriction";
             AddLabeledChild(Restriction, "Restriction");
         }
     }

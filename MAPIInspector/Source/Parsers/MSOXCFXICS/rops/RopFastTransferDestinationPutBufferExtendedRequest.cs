@@ -70,7 +70,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopFastTransferDestinationPutBufferExtendedRequest");
+            Text = "RopFastTransferDestinationPutBufferExtendedRequest";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");

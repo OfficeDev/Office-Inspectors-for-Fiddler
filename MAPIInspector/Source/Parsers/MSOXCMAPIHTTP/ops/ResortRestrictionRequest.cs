@@ -77,7 +77,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("ResortRestrictionRequest");
+            Text = "ResortRestrictionRequest";
             AddChildBlockT(Reserved, "Reserved");
             AddChildBlockT(HasState, "HasState");
             AddChild(State, "State");

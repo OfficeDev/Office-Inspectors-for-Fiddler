@@ -60,7 +60,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("ExecuteRequestBody");
+            Text = "ExecuteRequestBody";
             AddChildBlockT(Flags, "Flags");
             AddChildBlockT(RopBufferSize, "RopBufferSize");
             AddChild(RopBuffer, "RopBuffer");

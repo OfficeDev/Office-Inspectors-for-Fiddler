@@ -59,7 +59,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_PERF_PROCESSINFO");
+            Text = "AUX_PERF_PROCESSINFO";
             AddChildBlockT(ProcessID, "ProcessID");
             AddChildBlockT(Reserved1, "Reserved1");
             this.AddChildGuid(ProcessGuid, "ProcessGuid");

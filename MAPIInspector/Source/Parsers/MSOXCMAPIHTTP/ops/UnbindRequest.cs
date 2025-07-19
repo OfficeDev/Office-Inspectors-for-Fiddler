@@ -36,7 +36,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("UnbindRequest");
+            Text = "UnbindRequest";
             AddChildBlockT(Reserved, "Reserved");
             AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
             AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");

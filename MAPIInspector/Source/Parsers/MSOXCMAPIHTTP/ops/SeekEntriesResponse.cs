@@ -110,7 +110,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("SeekEntriesResponse");
+            Text = "SeekEntriesResponse";
             AddLabeledChildren(MetaTags, "MetaTags");
             AddLabeledChildren(AdditionalHeaders, "AdditionalHeaders");
             AddChildBlockT(StatusCode, "StatusCode");

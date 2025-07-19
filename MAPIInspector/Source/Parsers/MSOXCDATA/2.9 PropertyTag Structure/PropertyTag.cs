@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("PropertyTag");
+            Text = "PropertyTag";
             AddChildBlockT(PropertyType, "PropertyType");
             AddChildBlockT(PropertyId, "PropertyId");
         }

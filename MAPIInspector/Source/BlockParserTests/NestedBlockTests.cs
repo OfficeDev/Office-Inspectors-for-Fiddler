@@ -29,7 +29,7 @@ namespace BlockParserTests
 
             protected override void ParseBlocks()
             {
-                SetText("ParentBlock");
+                Text = "ParentBlock";
                 AddChildBlockT(KidCount, "KidCount");
                 AddLabeledChildren(Kids, "Kids");
             }
@@ -46,7 +46,7 @@ namespace BlockParserTests
 
             protected override void ParseBlocks()
             {
-                SetText("ChildBlock");
+                Text = "ChildBlock";
                 AddChildBlockT(f2, "f2");
             }
         }

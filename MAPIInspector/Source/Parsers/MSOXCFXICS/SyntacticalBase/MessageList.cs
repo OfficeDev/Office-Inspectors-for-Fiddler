@@ -39,7 +39,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("MessageList");
+            Text = "MessageList";
             if (MetaTagMessages != null)
             {
                 foreach (var message in MetaTagMessages)

@@ -162,7 +162,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_PERF_CLIENTINFO");
+            Text = "AUX_PERF_CLIENTINFO";
             AddChildBlockT(AdapterSpeed, "AdapterSpeed");
             AddChildBlockT(ClientID, "ClientID");
             AddChildBlockT(MachineNameOffset, "MachineNameOffset");

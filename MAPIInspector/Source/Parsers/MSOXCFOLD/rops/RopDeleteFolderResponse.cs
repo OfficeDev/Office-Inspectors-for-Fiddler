@@ -41,7 +41,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopDeleteFolderResponse");
+            Text = "RopDeleteFolderResponse";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             this.AddError(ReturnValue, "ReturnValue");

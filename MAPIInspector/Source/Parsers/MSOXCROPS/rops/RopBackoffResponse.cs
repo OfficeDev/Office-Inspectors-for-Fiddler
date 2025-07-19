@@ -67,7 +67,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopBackoffResponse");
+            Text = "RopBackoffResponse";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(Duration, "Duration");

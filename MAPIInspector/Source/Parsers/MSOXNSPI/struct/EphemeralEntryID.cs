@@ -66,7 +66,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("EphemeralEntryID");
+            Text = "EphemeralEntryID";
             AddChildBlockT(Type, "Type");
             AddChildBlockT(R1, "R1");
             AddChildBlockT(R2, "R2");

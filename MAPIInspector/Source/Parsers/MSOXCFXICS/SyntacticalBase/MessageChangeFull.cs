@@ -66,7 +66,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("MessageChangeFull");
+            Text = "MessageChangeFull";
             AddChildBlockT(StartMarker, "StartMarker");
             AddLabeledChild(MessageChangeHeader, "MessageChangeHeader");
             AddChildBlockT(SecondMarker, "SecondMarker");

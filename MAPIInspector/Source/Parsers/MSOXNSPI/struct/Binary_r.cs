@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("Binary_r");
+            Text = "Binary_r";
             AddChildBlockT(Cb, "cb");
             AddChildBytes(Lpb, "lpb");
         }

@@ -36,7 +36,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("MessageContent");
+            Text = "MessageContent";
             AddLabeledChild(MetaTagDnPrefix, "MetaTagDnPrefix");
             AddLabeledChild(PropList, "PropList");
             AddLabeledChild(MessageChildren, "MessageChildren");

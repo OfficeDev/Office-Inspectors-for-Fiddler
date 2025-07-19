@@ -38,7 +38,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("FolderMessages");
+            Text = "FolderMessages";
             if (MetaTagFxDelPropMessageLists != null)
             {
                 foreach (var messageList in MetaTagFxDelPropMessageLists)

@@ -108,7 +108,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("ExtendedBuffer_Input");
+            Text = "ExtendedBuffer_Input";
             AddChild(RPCHEADEREXT, "RPCHEADEREXT");
             AddChild(Payload, "Payload");
         }

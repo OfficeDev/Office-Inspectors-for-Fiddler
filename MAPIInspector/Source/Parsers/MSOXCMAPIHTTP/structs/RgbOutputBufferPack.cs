@@ -63,7 +63,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("rgbOutputBufferPack");
+            Text = "rgbOutputBufferPack";
             AddLabeledChildren(RgbOutputBuffers, "RgbOutputBuffers");
         }
     }

@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("FlatUID_r");
+            Text = "FlatUID_r";
             this.AddChildGuid(Ab, "Ab");
         }
     }

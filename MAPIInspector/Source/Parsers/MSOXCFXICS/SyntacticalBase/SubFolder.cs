@@ -49,7 +49,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("SubFolder");
+            Text = "SubFolder";
             AddChildBlockT(StartMarker, "StartMarker");
             AddLabeledChild(FolderContent, "FolderContent");
             AddChildBlockT(EndMarker, "EndMarker");

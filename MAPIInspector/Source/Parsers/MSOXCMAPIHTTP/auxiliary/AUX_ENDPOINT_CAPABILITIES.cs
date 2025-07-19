@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_ENDPOINT_CAPABILITIES");
+            Text = "AUX_ENDPOINT_CAPABILITIES";
             AddChildBlockT(EndpointCapabilityFlag, "EndpointCapabilityFlag");
         }
     }

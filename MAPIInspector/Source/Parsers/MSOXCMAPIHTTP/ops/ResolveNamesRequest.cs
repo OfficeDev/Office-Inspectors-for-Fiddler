@@ -71,7 +71,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("ResolveNamesRequest");
+            Text = "ResolveNamesRequest";
             AddChildBlockT(Reserved, "Reserved");
             AddChildBlockT(HasState, "HasState");
             AddChild(State, "State");

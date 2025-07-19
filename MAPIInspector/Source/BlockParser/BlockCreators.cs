@@ -20,7 +20,7 @@
             var ret = Create();
             ret.Size = size;
             ret.Offset = offset;
-            ret.SetText(text);
+            ret.Text = text;
             return ret;
         }
 
@@ -32,7 +32,7 @@
         public static Block Create(string text)
         {
             var ret = Create();
-            ret.SetText(text);
+            ret.Text = text;
             return ret;
         }
 

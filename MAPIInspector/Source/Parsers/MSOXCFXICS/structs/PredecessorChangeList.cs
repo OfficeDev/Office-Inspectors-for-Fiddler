@@ -46,7 +46,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("PredecessorChangeList");
+            Text = "PredecessorChangeList";
             foreach (var sizedXid in SizedXidList)
             {
                 AddLabeledChild(sizedXid, "SizedXid");

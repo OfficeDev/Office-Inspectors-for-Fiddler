@@ -73,7 +73,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("CommentRestriction");
+            Text = "CommentRestriction";
             AddChildBlockT(RestrictType, "RestrictType");
             AddChildBlockT(TaggedValuesCount, "TaggedValuesCount");
             AddLabeledChildren(TaggedValues, "TaggedValues");

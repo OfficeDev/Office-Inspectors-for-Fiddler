@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopNotifyResponse");
+            Text = "RopNotifyResponse";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(NotificationHandle, "NotificationHandle");
             AddChildBlockT(LogonId, "LogonId");

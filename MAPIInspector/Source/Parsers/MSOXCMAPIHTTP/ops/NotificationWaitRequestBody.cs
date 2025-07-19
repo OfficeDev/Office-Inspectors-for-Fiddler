@@ -36,7 +36,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("NotificationWaitRequestBody");
+            Text = "NotificationWaitRequestBody";
             AddChildBlockT(Flags, "Flags");
             AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");
             AddChild(AuxiliaryBuffer, "AuxiliaryBuffer");

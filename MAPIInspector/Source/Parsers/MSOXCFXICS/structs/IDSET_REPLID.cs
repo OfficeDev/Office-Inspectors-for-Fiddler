@@ -29,7 +29,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("IDSET_REPLID");
+            Text = "IDSET_REPLID";
             if (REPLID != null) AddChild(REPLID, $"REPLID: {REPLID.Data} ({REPLID.Data:X4})");
             AddChild(GLOBSET, "GLOBSET");
         }

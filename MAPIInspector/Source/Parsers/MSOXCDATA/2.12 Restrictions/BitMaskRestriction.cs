@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("BitMaskRestriction");
+            Text = "BitMaskRestriction";
             AddChildBlockT(RestrictType, "RestrictType");
             AddChildBlockT(BitmapRelOp, "BitmapRelOp");
             AddChild(PropTag, "PropTag");

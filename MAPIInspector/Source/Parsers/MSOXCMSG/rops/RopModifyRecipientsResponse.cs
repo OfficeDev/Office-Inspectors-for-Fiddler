@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopModifyRecipientsResponse");
+            Text = "RopModifyRecipientsResponse";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             this.AddError(ReturnValue, "ReturnValue");

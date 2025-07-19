@@ -65,7 +65,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("MessageChildren");
+            Text = "MessageChildren";
             AddLabeledChild(FxdelPropsBeforeRecipient, "FxdelPropsBeforeRecipient");
             AddLabeledChildren(Recipients, "Recipients");
             AddLabeledChild(FxdelPropsBeforeAttachment, "FxdelPropsBeforeAttachment");

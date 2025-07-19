@@ -47,7 +47,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("MetaPropValue");
+            Text = "MetaPropValue";
             AddLabeledChild(PropType, "PropType");
             if (PropID != null) AddChild(PropID, $"PropID:{MapiInspector.Utilities.EnumToString(PropID.Data)}");
             AddLabeledChild(PropValue, "PropValue");

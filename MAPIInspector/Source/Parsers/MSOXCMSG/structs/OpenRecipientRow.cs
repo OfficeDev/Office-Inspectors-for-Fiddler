@@ -62,7 +62,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("OpenRecipientRow");
+            Text = "OpenRecipientRow";
             AddChild(RecipientType, "RecipientType");
             AddChildBlockT(CodePageId, "CodePageId");
             AddChildBlockT(Reserved, "Reserved");

@@ -65,7 +65,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("GetTemplateInfoRequest");
+            Text = "GetTemplateInfoRequest";
             AddChildBlockT(Flags, "Flags");
             AddChildBlockT(DisplayType, "DisplayType");
             AddChildBlockT(HasTemplateDn, "HasTemplateDn");

@@ -87,7 +87,7 @@ namespace MAPIInspector.Parsers
                         {
                             if (Length != 0)
                             {
-                                ValueArray.SetText("IDSET_REPLID list");
+                                ValueArray.Text = "IDSET_REPLID list";
                                 long EveLength = Length;
                                 var InterIDSET_REPLID = new List<IDSET_REPLID>();
                                 while (EveLength > 0)
@@ -108,7 +108,7 @@ namespace MAPIInspector.Parsers
                         {
                             if (Length != 0)
                             {
-                                ValueArray.SetText("IDSET_REPLGUID list");
+                                ValueArray.Text = "IDSET_REPLGUID list";
                                 long EveLength = Length;
                                 var InterIDSET_REPLGUID = new List<IDSET_REPLGUID>();
                                 while (EveLength > 0)
@@ -147,7 +147,7 @@ namespace MAPIInspector.Parsers
         protected override void ParseBlocks()
         {
             base.ParseBlocks();
-            SetText("VarPropTypePropValue");
+            Text = "VarPropTypePropValue";
             AddChildBlockT(Length, "Length");
             AddChild(ValueArray);
         }

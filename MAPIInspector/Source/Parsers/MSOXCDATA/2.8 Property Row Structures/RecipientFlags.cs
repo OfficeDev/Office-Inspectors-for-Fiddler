@@ -100,7 +100,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RecipientFlags");
+            Text = "RecipientFlags";
             AddChildBlockT(R, "R");
             AddChildBlockT(S, "S");
             AddChildBlockT(T, "T");

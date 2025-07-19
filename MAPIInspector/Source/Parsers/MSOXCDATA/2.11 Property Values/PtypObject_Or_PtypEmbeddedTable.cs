@@ -15,7 +15,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("MSOXCDATA: Not implemented type definition - PtypObject_Or_PtypEmbeddedTable");
+            Text = "MSOXCDATA: Not implemented type definition - PtypObject_Or_PtypEmbeddedTable";
         }
     }
 }

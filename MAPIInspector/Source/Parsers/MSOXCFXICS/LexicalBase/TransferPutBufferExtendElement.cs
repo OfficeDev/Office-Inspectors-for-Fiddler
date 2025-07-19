@@ -102,7 +102,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("TransferPutBufferExtendElement");
+            Text = "TransferPutBufferExtendElement";
             AddChild(MetaValue, "MetaValue");
             AddChild(PropValue, "PropValue");
             AddChildBlockT(Marker, "Marker");

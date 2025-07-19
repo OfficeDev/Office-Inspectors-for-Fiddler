@@ -64,7 +64,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("FolderContentNoDelProps");
+            Text = "FolderContentNoDelProps";
             AddLabeledChild(PropList, "PropList");
             AddLabeledChild(MetaTagNewFXFolder, "MetaTagNewFXFolder");
             AddLabeledChild(FolderMessagesNoDelProps, "FolderMessagesNoDelProps");

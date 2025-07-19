@@ -41,7 +41,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopPublicFolderIsGhostedRequest");
+            Text = "RopPublicFolderIsGhostedRequest";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChild(FolderId, "FolderId");

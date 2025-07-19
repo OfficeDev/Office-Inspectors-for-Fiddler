@@ -59,7 +59,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("PropertyName");
+            Text = "PropertyName";
 
             AddChildBlockT(Kind, "Kind");
             this.AddChildGuid(GUID, "GUID");

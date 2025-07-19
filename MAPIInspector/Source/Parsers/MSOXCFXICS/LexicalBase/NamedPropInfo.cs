@@ -46,7 +46,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("NamedPropInfo");
+            Text = "NamedPropInfo";
 
             this.AddChildGuid(PropertySet, "PropertySet");
             AddChildBlockT(Flag, "Flag");

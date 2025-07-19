@@ -56,7 +56,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("HierarchySync");
+            Text = "HierarchySync";
             if (FolderChanges != null)
             {
                 foreach (var folderChange in FolderChanges)

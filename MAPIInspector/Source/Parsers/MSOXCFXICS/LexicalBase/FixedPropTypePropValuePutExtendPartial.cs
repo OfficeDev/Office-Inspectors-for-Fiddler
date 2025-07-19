@@ -66,7 +66,7 @@ namespace MAPIInspector.Parsers
         {
             base.ParseBlocks();
             AddChild(Comment);
-            SetText("FixedPropTypePropValuePutExtendPartial");
+            Text = "FixedPropTypePropValuePutExtendPartial";
             AddChild(FixedValue, $"FixedValue: {FixedValue}");
         }
     }

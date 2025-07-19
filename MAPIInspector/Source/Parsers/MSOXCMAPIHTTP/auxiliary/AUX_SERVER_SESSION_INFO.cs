@@ -34,7 +34,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_SERVER_SESSION_INFO");
+            Text = "AUX_SERVER_SESSION_INFO";
             AddChildBlockT(OffsetServerSessionContextInfo, "OffsetServerSessionContextInfo");
             AddChildString(ServerSessionContextInfo, "ServerSessionContextInfo");
         }

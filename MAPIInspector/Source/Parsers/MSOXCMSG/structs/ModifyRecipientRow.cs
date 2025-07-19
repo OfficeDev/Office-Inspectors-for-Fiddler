@@ -60,7 +60,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("ModifyRecipientRow");
+            Text = "ModifyRecipientRow";
             AddChildBlockT(RowId, "RowId");
             AddChild(RecipientType, "RecipientType");
             AddChildBlockT(RecipientRowSize, "RecipientRowSize");

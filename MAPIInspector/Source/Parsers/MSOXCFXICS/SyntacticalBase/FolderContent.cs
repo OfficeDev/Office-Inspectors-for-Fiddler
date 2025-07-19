@@ -80,7 +80,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("FolderContent");
+            Text = "FolderContent";
             AddLabeledChild(MetaTagDnPrefix, "MetaTagDnPrefix");
             AddLabeledChild(PropList, "PropList");
             AddLabeledChild(MetaTagNewFXFolder, "MetaTagNewFXFolder");

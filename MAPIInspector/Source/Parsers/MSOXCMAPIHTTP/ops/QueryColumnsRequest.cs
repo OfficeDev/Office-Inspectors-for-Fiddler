@@ -41,7 +41,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("QueryColumnsRequest");
+            Text = "QueryColumnsRequest";
             AddChildBlockT(Reserved, "Reserved");
             AddChildBlockT(MapiFlags, "MapiFlags");
             AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");

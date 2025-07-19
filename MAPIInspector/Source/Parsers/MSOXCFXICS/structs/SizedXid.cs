@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("SizedXid");
+            Text = "SizedXid";
             AddChildBlockT(XidSize, "XidSize");
             AddLabeledChild(Xid, "Xid");
         }

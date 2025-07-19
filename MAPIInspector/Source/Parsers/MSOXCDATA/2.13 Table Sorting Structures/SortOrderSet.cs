@@ -48,7 +48,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("SortOrderSet");
+            Text = "SortOrderSet";
             AddChildBlockT(SortOrderCount, "SortOrderCount");
             AddChildBlockT(CategorizedCount, "CategorizedCount");
             AddChildBlockT(ExpandedCount, "ExpandedCount");

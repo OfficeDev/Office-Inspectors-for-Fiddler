@@ -32,7 +32,7 @@
         {
             if (child != null && child.Parsed)
             {
-                child.SetText(label);
+                child.Text = label;
                 children.Add(child);
             }
         }
@@ -50,7 +50,7 @@
         {
             if (child != null && child.Parsed)
             {
-                child.SetText($"{label}: {child}");
+                child.Text = $"{label}: {child}";
                 children.Add(child);
             }
         }
@@ -67,7 +67,7 @@
         {
             if (child != null && child.Parsed)
             {
-                child.SetText($"{label}: {child.Data}");
+                child.Text = $"{label}: {child.Data}";
                 children.Add(child);
             }
         }
@@ -84,7 +84,7 @@
         {
             if (child != null && child.Parsed)
             {
-                child.SetText($"{label}: {child.ToHexString()}");
+                child.Text = $"{label}: {child.ToHexString()}";
                 children.Add(child);
             }
         }
@@ -118,7 +118,7 @@
         public void AddSubHeader(string header)
         {
             var node = Create();
-            node.SetText(header);
+            node.Text = header;
             node.Offset = Offset;
             node.Size = Size;
             AddChild(node);
@@ -138,7 +138,7 @@
             if (block != null && block.Parsed)
             {
                 var node = Create();
-                node.SetText(text);
+                node.Text = text;
                 node.Offset = block.Offset;
                 node.Size = block.Size;
                 node.AddChild(block);
@@ -161,7 +161,7 @@
             if (blocks != null)
             {
                 var node = Create();
-                node.SetText(text);
+                node.Text = text;
 
                 if (blocks.Length > 0)
                 {

@@ -49,7 +49,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopBufferTooSmallResponse");
+            Text = "RopBufferTooSmallResponse";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(SizeNeeded, "SizeNeeded");
             AddChildBytes(RequestBuffers, "RequestBuffers");

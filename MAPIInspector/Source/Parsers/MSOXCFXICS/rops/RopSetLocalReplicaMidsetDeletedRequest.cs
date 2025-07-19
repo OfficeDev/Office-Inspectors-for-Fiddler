@@ -61,7 +61,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopSetLocalReplicaMidsetDeletedRequest");
+            Text = "RopSetLocalReplicaMidsetDeletedRequest";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");

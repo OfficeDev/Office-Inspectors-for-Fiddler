@@ -76,7 +76,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("StoreObjectEntryID");
+            Text = "StoreObjectEntryID";
             AddChildBlockT(Flags, "Flags");
             this.AddChildGuid(ProviderUID, "ProviderUID");
             AddChildBlockT(Version, "Version");

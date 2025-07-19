@@ -58,7 +58,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AddressBookFlaggedPropertyValue");
+            Text = "AddressBookFlaggedPropertyValue";
             AddChildBlockT(Flag, "Flag");
             AddChild(PropertyValue, "PropertyValue");
         }

@@ -41,7 +41,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopSynchronizationGetTransferStateRequest");
+            Text = "RopSynchronizationGetTransferStateRequest";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");

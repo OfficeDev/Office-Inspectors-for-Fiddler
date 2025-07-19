@@ -39,7 +39,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("FolderChange");
+            Text = "FolderChange";
             AddChildBlockT(StartMarker, "StartMarker");
             AddLabeledChild(PropList, "PropList");
         }

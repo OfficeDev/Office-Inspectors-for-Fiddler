@@ -142,7 +142,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("ActionBlock");
+            Text = "ActionBlock";
             AddChildBlockT(ActionLength, "ActionLength");
             AddChildBlockT(_actionType, "ActionType");
             AddChild(ActionFlavor, "ActionFlavor");

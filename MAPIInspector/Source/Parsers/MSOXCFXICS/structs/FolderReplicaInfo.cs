@@ -62,7 +62,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("FolderReplicaInfo");
+            Text = "FolderReplicaInfo";
             AddChildBlockT(Flags, "Flags");
             AddChildBlockT(Depth, "Depth");
             if (FolderLongTermId != null) AddChild(FolderLongTermId, "FolderLongTermId");

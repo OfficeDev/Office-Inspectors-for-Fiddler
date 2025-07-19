@@ -28,7 +28,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("PropList");
+            Text = "PropList";
             AddLabeledChildren(PropValues, "PropValues");
         }
     }

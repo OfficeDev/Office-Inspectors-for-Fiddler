@@ -44,7 +44,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_HEADER");
+            Text = "AUX_HEADER";
             AddChildBlockT(_Size, "Size");
             AddChildBlockT(Version, "Version");
             AddChildBlockT(Type1, "Type");

@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("PropertyProblem");
+            Text = "PropertyProblem";
             AddChildBlockT(Index, "Index");
             AddChild(PropertyTag, "PropertyTag");
             AddChildBlockT(ErrorCode, "ErrorCode");

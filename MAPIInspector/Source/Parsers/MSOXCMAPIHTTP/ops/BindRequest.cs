@@ -48,7 +48,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("BindRequest");
+            Text = "BindRequest";
             AddChildBlockT(Flags, "Flags");
             AddChildBlockT(HasState, "HasState");
             AddChild(State, "State");

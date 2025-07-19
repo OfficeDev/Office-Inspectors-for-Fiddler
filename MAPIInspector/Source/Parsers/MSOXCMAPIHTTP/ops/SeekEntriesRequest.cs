@@ -100,7 +100,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("SeekEntriesRequest");
+            Text = "SeekEntriesRequest";
             AddChildBlockT(Reserved, "Reserved");
             AddChildBlockT(HasState, "HasState");
             AddChild(State, "State");

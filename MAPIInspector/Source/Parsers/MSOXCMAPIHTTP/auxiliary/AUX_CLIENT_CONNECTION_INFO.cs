@@ -58,7 +58,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_CLIENT_CONNECTION_INFO");
+            Text = "AUX_CLIENT_CONNECTION_INFO";
             this.AddChildGuid(ConnectionGUID, "ConnectionGUID");
             AddChildBlockT(OffsetConnectionContextInfo, "OffsetConnectionContextInfo");
             AddChildBlockT(Reserved, "Reserved");

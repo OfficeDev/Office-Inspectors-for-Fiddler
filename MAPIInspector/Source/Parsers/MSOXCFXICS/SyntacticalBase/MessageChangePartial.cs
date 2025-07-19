@@ -80,7 +80,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("MessageChangePartial");
+            Text = "MessageChangePartial";
             AddChild(GroupInfo, "GroupInfo");
             AddChild(MetaTagIncrSyncGroupId, "MetaTagIncrSyncGroupId");
             AddChildBlockT(Marker, "Marker");

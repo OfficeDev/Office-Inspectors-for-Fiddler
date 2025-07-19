@@ -118,7 +118,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText($"rgbOutputBuffer");
+            Text = $"rgbOutputBuffer";
             AddChild(RPCHEADEREXT, "RPC_HEADER_EXT");
             AddChild(Payload, "Payload");
         }

@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("MetaTagFxDelPropMessageList");
+            Text = "MetaTagFxDelPropMessageList";
             AddLabeledChild(MetaTagFXDelProp, "MetaTagFXDelProp");
             AddLabeledChild(MessageLists, "MessageLists");
         }

@@ -64,7 +64,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_PERF_SERVERINFO");
+            Text = "AUX_PERF_SERVERINFO";
             AddChildBlockT(ServerID, "ServerID");
             AddChildBlockT(ServerType, "ServerType");
             AddChildBlockT(ServerDNOffset, "ServerDNOffset");

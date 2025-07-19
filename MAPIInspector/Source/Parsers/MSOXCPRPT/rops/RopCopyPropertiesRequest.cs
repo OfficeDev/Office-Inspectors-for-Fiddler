@@ -73,7 +73,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopCopyPropertiesRequest");
+            Text = "RopCopyPropertiesRequest";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(SourceHandleIndex, "SourceHandleIndex");

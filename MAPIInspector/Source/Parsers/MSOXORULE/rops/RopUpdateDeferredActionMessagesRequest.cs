@@ -59,7 +59,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RopUpdateDeferredActionMessagesRequest");
+            Text = "RopUpdateDeferredActionMessagesRequest";
             AddChildBlockT(RopId, "RopId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(ServerEntryIdSize, "ServerEntryIdSize");

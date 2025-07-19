@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AddressList");
+            Text = "AddressList";
             AddChildBlockT(AddressCount, "AddressCount");
             AddLabeledChildren(Addresses, "Addresses");
         }

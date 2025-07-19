@@ -30,7 +30,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_PERF_REQUESTID");
+            Text = "AUX_PERF_REQUESTID";
             AddChildBlockT(SessionID, "SessionID");
             AddChildBlockT(RequestID, "RequestID");
         }

@@ -37,7 +37,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("FlatUIDArray_r");
+            Text = "FlatUIDArray_r";
             AddChildBlockT(CValues, "CValues");
             AddLabeledChildren(Lpguid, "Lpguid");
         }

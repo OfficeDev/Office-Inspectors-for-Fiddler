@@ -290,7 +290,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AuxiliaryBufferPayload");
+            Text = "AuxiliaryBufferPayload";
             AddChild(AUXHEADER, "AUXHEADER");
             if (AuxiliaryBlock is BlockBytes bb)
             {

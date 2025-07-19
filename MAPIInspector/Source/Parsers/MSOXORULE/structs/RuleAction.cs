@@ -60,7 +60,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RuleAction");
+            Text = "RuleAction";
             AddChildBlockT(NoOfActions, "NoOfActions");
             AddLabeledChildren(ActionBlocks, "ActionBlocks");
         }

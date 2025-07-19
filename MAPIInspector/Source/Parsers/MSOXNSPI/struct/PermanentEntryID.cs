@@ -66,7 +66,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("PermanentEntryID");
+            Text = "PermanentEntryID";
             AddChildBlockT(IDType, "IDType ");
             AddChildBlockT(R1, "R1");
             AddChildBlockT(R2, "R2");

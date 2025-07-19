@@ -72,7 +72,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_PERF_FAILURE");
+            Text = "AUX_PERF_FAILURE";
             AddChildBlockT(ClientID, "ClientID");
             AddChildBlockT(ServerID, "ServerID");
             AddChildBlockT(SessionID, "SessionID");

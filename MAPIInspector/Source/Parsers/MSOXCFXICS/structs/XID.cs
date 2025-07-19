@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("XID");
+            Text = "XID";
             this.AddChildGuid(NamespaceGuid, "NamespaceGuid");
             AddLabeledChild(LocalId, "LocalId");
         }

@@ -41,7 +41,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RPC_HEADER_EXT");
+            Text = "RPC_HEADER_EXT";
             AddChildBlockT(Version, "Version");
             AddChildBlockT(Flags, "Flags");
             AddChildBlockT(_Size, "Size");

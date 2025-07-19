@@ -42,7 +42,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("GetAddressBookUrlRequest");
+            Text = "GetAddressBookUrlRequest";
             AddChildBlockT(Flags, "Flags");
             AddChildString(UserDn, "UserDn");
             AddChildBlockT(AuxiliaryBufferSize, "AuxiliaryBufferSize");

@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("String_r");
+            Text = "String_r";
             AddChildString(Value, "Value");
         }
     }

@@ -72,7 +72,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("STAT");
+            Text = "STAT";
             AddChildBlockT(SortType, "SortType");
             AddChildBlockT(ContainerID, "ContainerID");
             AddChildBlockT(CurrentRec, "CurrentRec");

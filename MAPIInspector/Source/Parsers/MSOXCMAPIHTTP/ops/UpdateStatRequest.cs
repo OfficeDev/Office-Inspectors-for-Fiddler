@@ -53,7 +53,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("UpdateStatRequest");
+            Text = "UpdateStatRequest";
             AddChildBlockT(Reserved, "Reserved");
             AddChildBlockT(HasState, "HasState");
             AddChild(State, "State");

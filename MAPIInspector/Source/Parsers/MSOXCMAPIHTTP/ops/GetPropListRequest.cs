@@ -47,7 +47,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("GetPropListRequest");
+            Text = "GetPropListRequest";
             AddChildBlockT(Flags, "Flags");
             AddChild(MinimalId, "MinimalId");
             AddChildBlockT(CodePage, "CodePage");

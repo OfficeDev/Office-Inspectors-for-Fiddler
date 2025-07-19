@@ -86,7 +86,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("QueryRowsRequest");
+            Text = "QueryRowsRequest";
             AddChildBlockT(Flags, "Flags");
             AddChildBlockT(HasState, "HasState");
             AddChild(State, "State");

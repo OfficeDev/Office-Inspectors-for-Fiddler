@@ -1084,7 +1084,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("ROPInputBuffer");
+            Text = "ROPInputBuffer";
             AddChildBlockT(RopSize, "RopSize");
             AddLabeledChildren(RopsList, "RopsList");
             AddLabeledChildren(ServerObjectHandleTable, "ServerObjectHandleTable");

@@ -61,7 +61,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("ConnectRequestBody");
+            Text = "ConnectRequestBody";
             AddChildString(UserDn, "UserDn");
             AddChildBlockT(Flags, "Flags");
             AddChildBlockT(DefaultCodePage, "DefaultCodePage");

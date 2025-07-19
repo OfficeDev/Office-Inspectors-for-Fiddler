@@ -137,7 +137,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("MetaPropValueGetPartial");
+            Text = "MetaPropValueGetPartial";
             AddChild(Comment);
             AddChildBlockT(PropType, "PropType");
             if (PropID != null) AddChild(PropID, $"PropID:{MapiInspector.Utilities.EnumToString(PropID.Data)}");

@@ -17,7 +17,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            if (value != null) SetText($"{Guids.ToString(value)}");
+            if (value != null) Text = $"{Guids.ToString(value)}";
         }
     }
 }

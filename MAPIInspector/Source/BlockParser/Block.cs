@@ -19,7 +19,12 @@ namespace BlockParser
     {
         public long Size { get; set; }
         public long Offset { get; set; }
-        public string Text { get; protected set; } = string.Empty;
+        private string _text;
+        public string Text
+        {
+            get => _text;
+            set => _text = value ?? "";
+        }
         public uint Source
         {
             get => _source;
@@ -57,8 +62,6 @@ namespace BlockParser
         /// Do NOT attempt to parse data from the stream or parser here; that should be done in the <see cref="Parse"/> method.
         /// </summary>
         protected abstract void ParseBlocks();
-
-        public void SetText(string text) => Text = text ?? "";
 
         public void ShiftOffset(long shift)
         {

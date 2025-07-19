@@ -51,14 +51,14 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("PropertyValue");
+            Text = "PropertyValue";
             if (Value != null)
             {
                 AddChild(Value, $"Value: {Value.Text}");
             }
             else
             {
-                SetText("MSOXCDATA: Not implemented type definition - PropertyValue");
+                Text = "MSOXCDATA: Not implemented type definition - PropertyValue";
             }
         }
 

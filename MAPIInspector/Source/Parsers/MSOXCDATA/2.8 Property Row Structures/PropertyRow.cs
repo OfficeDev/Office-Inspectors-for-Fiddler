@@ -107,7 +107,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("PropertyRow");
+            Text = "PropertyRow";
             AddChildBlockT(Flag, "Flag");
 
             AddChildBytes(bytes, "Bytes");

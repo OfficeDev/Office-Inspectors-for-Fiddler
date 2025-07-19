@@ -36,7 +36,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("PropertyValue_r");
+            Text = "PropertyValue_r";
             AddChild(UlPropTag, "UlPropTag");
             AddChild(Value, "Value");
         }

@@ -61,7 +61,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("MetaTagMessage");
+            Text = "MetaTagMessage";
             if (MetaTagDnPrefix != null) AddLabeledChild(MetaTagDnPrefix, "MetaTagDnPrefix");
             if (MetaTagEcWaring != null) AddLabeledChild(MetaTagEcWaring, "MetaTagEcWaring");
             if (Message != null) AddLabeledChild(Message, "Message");

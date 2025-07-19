@@ -174,7 +174,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("PROP_VAL_UNION");
+            Text = "PROP_VAL_UNION";
             AddChildBlockT(I, "I");
             AddChildBlockT(L, "L");
             AddChildBlockT(B, "B");

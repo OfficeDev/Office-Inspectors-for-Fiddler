@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("BitmaskCommand");
+            Text = "BitmaskCommand";
             if (Command != null) AddChild(Command, $"Command: {Command.Data:X2}");
             AddChildBlockT(StartValue, "StartValue");
             if (Bitmask != null) AddChild(Bitmask, $"Bitmask: {Bitmask.Data:X2}");

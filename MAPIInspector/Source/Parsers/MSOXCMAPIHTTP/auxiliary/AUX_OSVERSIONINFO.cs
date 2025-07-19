@@ -66,7 +66,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_OSVERSIONINFO");
+            Text = "AUX_OSVERSIONINFO";
             AddChildBlockT(OSVersionInfoSize, "OSVersionInfoSize");
             AddChildBlockT(MajorVersion, "MajorVersion");
             AddChildBlockT(MinorVersion, "MinorVersion");

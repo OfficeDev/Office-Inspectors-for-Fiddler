@@ -345,7 +345,7 @@ namespace MAPIInspector.Parsers
         {
             base.ParseBlocks();
             AddChild(Comment);
-            SetText("VarPropTypePropValuePutPartial");
+            Text = "VarPropTypePropValuePutPartial";
             AddChildBlockT(Length, "Length");
             AddChild(SkippedBytes);
             AddChild(ValueArray, $"ValueArray: {ValueArray}");

@@ -61,7 +61,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("ContentRestriction");
+            Text = "ContentRestriction";
             AddChildBlockT(RestrictType, "RestrictType");
             AddChildBlockT(FuzzyLevelLow, "FuzzyLevelLow");
             AddChildBlockT(FuzzyLevelHigh, "FuzzyLevelHigh");

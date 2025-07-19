@@ -66,7 +66,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_PERF_GC_SUCCESS");
+            Text = "AUX_PERF_GC_SUCCESS";
             AddChildBlockT(ClientID, "ClientID");
             AddChildBlockT(ServerID, "ServerID");
             AddChildBlockT(SessionID, "SessionID");

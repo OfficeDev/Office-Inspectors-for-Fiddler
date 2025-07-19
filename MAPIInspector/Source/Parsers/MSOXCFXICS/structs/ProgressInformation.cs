@@ -59,7 +59,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("ProgressInformation");
+            Text = "ProgressInformation";
             AddChildBlockT(Version, "Version");
             AddChildBlockT(Padding1, "Padding1");
             AddChildBlockT(FAIMessageCount, "FAIMessageCount");

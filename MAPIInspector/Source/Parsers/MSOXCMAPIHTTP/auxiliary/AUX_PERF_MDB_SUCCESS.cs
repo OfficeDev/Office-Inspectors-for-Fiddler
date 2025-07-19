@@ -54,7 +54,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("AUX_PERF_MDB_SUCCESS");
+            Text = "AUX_PERF_MDB_SUCCESS";
             AddChildBlockT(ClientID, "ClientID");
             AddChildBlockT(ServerID, "ServerID");
             AddChildBlockT(SessionID, "SessionID");

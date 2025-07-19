@@ -29,7 +29,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("PushCommand");
+            Text = "PushCommand";
             AddChildBlockT(Command, "Command");
             AddLabeledChild(CommonBytes, "CommonBytes");
         }

@@ -55,7 +55,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("Attachment");
+            Text = "Attachment";
             AddChildBlockT(StartMarker, "StartMarker");
             AddChild(PidTagAttachNumber, "PidTagAttachNumber");
             AddChild(AttachmentContent, "AttachmentContent");

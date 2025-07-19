@@ -49,7 +49,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("RangeCommand");
+            Text = "RangeCommand";
             AddChildBlockT(Command, "Command");
             AddLabeledChild(LowValue, "LowValue");
             AddLabeledChild(HighValue, "HighValue");

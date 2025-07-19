@@ -65,7 +65,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            SetText("DnToMinIdRequest");
+            Text = "DnToMinIdRequest";
             AddChildBlockT(Reserved, "Reserved");
             AddChildBlockT(HasNames, "HasNames");
             AddChildBlockT(NameCount, "NameCount");
