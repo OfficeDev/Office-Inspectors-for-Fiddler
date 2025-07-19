@@ -467,7 +467,7 @@ namespace MapiInspector
                     }
                     catch (Exception ex)
                     {
-                        errorStringList.Add(string.Format("{0}. Error: Frame#{1} Error Message:{2}", errorStringList.Count + 1, val["VirtualID"], ex.Message));
+                        errorStringList.Add($"{errorStringList.Count + 1}. Error: Frame#{val["VirtualID"]} Error Message:{ex.Message}");
                     }
                     finally
                     {

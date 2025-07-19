@@ -393,7 +393,7 @@ namespace MapiInspector
                     }
                     else
                     {
-                        result = string.Format("{0} cannot be parsed successfully due to missing the LogOn information for handle {1}, check whether the trace is complete.", sourceRopID, parameters[0]);
+                        result = $"{sourceRopID} cannot be parsed successfully due to missing the LogOn information for handle {parameters[0]}, check whether the trace is complete.";
                     }
 
                     if (TargetHandle.Count == 1)
@@ -495,7 +495,7 @@ namespace MapiInspector
                     }
                     else
                     {
-                        result = string.Format("{0} cannot be parsed successfully due to missing the LogOn information for handle {1}, check whether the trace is complete.", sourceRopID, parameters[0]);
+                        result = $"{sourceRopID} cannot be parsed successfully due to missing the LogOn information for handle {parameters[0]}, check whether the trace is complete.";
                     }
 
                     if (TargetHandle.Count == 1)
@@ -633,7 +633,7 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                     }
                     else
                     {
-                        result = string.Format("{0} cannot be parsed successfully due to missing the PropertyTags for handle {1}, check whether the trace is complete.", sourceRopID, parameters[1]);
+                        result = $"{sourceRopID} cannot be parsed successfully due to missing the PropertyTags for handle {parameters[1]}, check whether the trace is complete.";
                     }
                 }
 
@@ -874,12 +874,12 @@ sessionID >= currentSessionID)
                     }
                     else
                     {
-                        result = string.Format("RopNotify cannot be parsed successfully due to missing the PropertyTags for handle {0}, check whether the trace is complete.", parameters[1]);
+                        result = $"RopNotify cannot be parsed successfully due to missing the PropertyTags for handle {parameters[1]}, check whether the trace is complete.";
                     }
                 }
                 else
                 {
-                    result = string.Format("RopNotify cannot be parsed successfully due to missing the PropertyTags for handle {0}, check whether the trace is complete.", parameters[1]);
+                    result = $"RopNotify cannot be parsed successfully due to missing the PropertyTags for handle {parameters[1]}, check whether the trace is complete.";
                 }
 
                 if (TargetHandle.Count == 1)
@@ -1642,7 +1642,7 @@ sessionID >= currentSessionID)
                     }
                     catch (Exception ex)
                     {
-                        errorStringList.Add(string.Format("{0}. Error: Frame#{1} Error Message:{2}", errorStringList.Count + 1, session["VirtualID"], ex.Message));
+                        errorStringList.Add($"{errorStringList.Count + 1}. Error: Frame#{session["VirtualID"]} Error Message:{ex.Message}");
                     }
                     finally
                     {

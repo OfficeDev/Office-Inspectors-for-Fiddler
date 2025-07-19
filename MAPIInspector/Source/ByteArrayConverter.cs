@@ -43,11 +43,7 @@ namespace MAPIInspector
             }
             else
             {
-                throw new Exception(
-                    string.Format(
-                        "Unexpected token parsing binary. "
-                        + "Expected String, got {0}.",
-                        reader.TokenType));
+                throw new Exception($"Unexpected token parsing binary. Expected String, got {reader.TokenType}.");
             }
         }
 

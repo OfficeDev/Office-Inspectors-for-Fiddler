@@ -255,7 +255,7 @@ namespace MAPIInspector.Parsers
             string propSet = this.GetPropSetNameByGuid(guidValue);
             string key = "{ " + propSet + " }::" + propName;
 
-            return string.Format("{0} ({1}), PropertySet: {2}", this.PidNamePropertyDic[key], propName, propSet) + ", " + guidValue.ToString();
+            return $"{this.PidNamePropertyDic[key]} ({propName}), PropertySet: {propSet}" + ", " + guidValue.ToString();
         }
     }
 }
