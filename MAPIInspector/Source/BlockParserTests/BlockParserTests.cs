@@ -207,8 +207,8 @@ namespace BlockParserTests
             Assert.AreEqual(TestEnumNoType.Value1, block.f2);
             Assert.AreEqual("TestBlock", block.Text);
             Assert.AreEqual("TestBlock\r\n" +
-                "\tf1:Value1 = 0xBCD\r\n" +
-                "\tf2:Value1 = 0xBCDEF",
+                "\tf1: Value1 = 0xBCD\r\n" +
+                "\tf2: Value1 = 0xBCDEF",
                 block.FullString());
         }
     }
