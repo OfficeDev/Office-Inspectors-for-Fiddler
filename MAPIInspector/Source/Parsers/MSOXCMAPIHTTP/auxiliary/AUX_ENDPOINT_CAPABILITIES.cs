@@ -4,8 +4,8 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AUX_ENDPOINT_CAPABILITIES Auxiliary Block Structure
-    ///  Section 2.2.2.2 AUX_HEADER Structure
-    ///  Section 2.2.2.2.19  AUX_ENDPOINT_CAPABILITIES
+    /// 2.2.2.2 AUX_HEADER Structure
+    /// 2.2.2.2.19 AUX_ENDPOINT_CAPABILITIES
     /// </summary>
     public class AUX_ENDPOINT_CAPABILITIES : Block
     {

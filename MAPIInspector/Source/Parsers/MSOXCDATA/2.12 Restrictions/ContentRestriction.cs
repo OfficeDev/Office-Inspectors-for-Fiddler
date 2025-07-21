@@ -33,7 +33,7 @@ namespace MAPIInspector.Parsers
         public TaggedPropertyValue TaggedValue;
 
         /// <summary>
-        ///  The Count wide size.
+        /// The Count wide size.
         /// </summary>
         private CountWideEnum countWide;
 

@@ -19,7 +19,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> InputHandleIndex;
 
         /// <summary>
-        ///  An unsigned integer that specifies the status of the ROP.
+        /// An unsigned integer that specifies the status of the ROP.
         /// </summary>
         public BlockT<ErrorCodes> ReturnValue;
 

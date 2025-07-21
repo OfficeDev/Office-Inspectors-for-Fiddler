@@ -293,7 +293,7 @@ namespace MAPIInspector.Parsers
             new NamedProperty("PidLidCleanGlobalObjectId", 0x0023, Guids.PSETID_Meeting, PropertyDataType.PtypBinary, "Meetings"),
 
             /// <summary>
-            ///  Indicates what actions the user has taken on this Meeting object.
+            /// Indicates what actions the user has taken on this Meeting object.
             /// </summary>
             new NamedProperty("PidLidClientIntent", 0x0015, Guids.PSETID_CalendarAssistant, PropertyDataType.PtypInteger32, "Calendar"),
 
@@ -1102,7 +1102,7 @@ namespace MAPIInspector.Parsers
             new NamedProperty("PidLidReminderFileParameter", 0x851F, Guids.PSETID_Common, PropertyDataType.PtypString, "Reminders"),
 
             /// <summary>
-            /// Specifies whether the client is to respect the current values of the  PidLidReminderPlaySound property (section 2.221) and the PidLidReminderFileParameter property (section 2.219), or use the default values for those properties.
+            /// Specifies whether the client is to respect the current values of the PidLidReminderPlaySound property (section 2.221) and the PidLidReminderFileParameter property (section 2.219), or use the default values for those properties.
             /// </summary>
             new NamedProperty("PidLidReminderOverride", 0x851C, Guids.PSETID_Common, PropertyDataType.PtypBoolean, "Reminders"),
 
@@ -1742,7 +1742,7 @@ namespace MAPIInspector.Parsers
             new NamedProperty("PidLidUseTnef", 0x8582, Guids.PSETID_Common, PropertyDataType.PtypBoolean, "Run"),
 
             /// <summary>
-            /// Contains the value of the PidTagMessageDeliveryTime  property (section 2.780) when modifying the PidLidFlagRequest property (section 2.136).
+            /// Contains the value of the PidTagMessageDeliveryTime property (section 2.780) when modifying the PidLidFlagRequest property (section 2.136).
             /// </summary>
             new NamedProperty("PidLidValidFlagStringProof", 0x85BF, Guids.PSETID_Common, PropertyDataType.PtypTime, "Tasks"),
 

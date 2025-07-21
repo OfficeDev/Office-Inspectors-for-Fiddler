@@ -4,8 +4,8 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AUX_PERF_SESSIONINFO_V2 Auxiliary Block Structure
-    ///  Section 2.2.2.2 AUX_HEADER Structure
-    ///  Section 2.2.2.2.3 AUX_PERF_SESSIONINFO_V2 Auxiliary Block Structure
+    /// 2.2.2.2 AUX_HEADER Structure
+    /// 2.2.2.2.3 AUX_PERF_SESSIONINFO_V2 Auxiliary Block Structure
     /// </summary>
     public class AUX_PERF_SESSIONINFO_V2 : Block
     {

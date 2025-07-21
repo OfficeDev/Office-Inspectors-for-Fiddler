@@ -14,7 +14,7 @@ namespace MAPIInspector.Parsers
         public BlockT<RopIdType> RopId;
 
         /// <summary>
-        ///  An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
+        /// An unsigned integer index that MUST be set to the value specified in the InputHandleIndex field in the request.
         /// </summary>
         public BlockT<byte> InputHandleIndex;
 

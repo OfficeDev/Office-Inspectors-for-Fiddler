@@ -8,7 +8,7 @@ namespace MAPIInspector.Parsers
     public class Attachment : Block
     {
         /// <summary>
-        /// The  start marker of an attachment object.
+        /// The start marker of an attachment object.
         /// </summary>
         public BlockT<Markers> StartMarker;
 

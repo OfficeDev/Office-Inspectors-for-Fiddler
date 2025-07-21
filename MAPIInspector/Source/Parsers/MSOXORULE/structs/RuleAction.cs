@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
         private CountWideEnum countWide;
 
         /// <summary>
-        ///  Initializes a new instance of the RuleAction class
+        /// Initializes a new instance of the RuleAction class
         /// </summary>
         /// <param name="wide">The wide size of NoOfActions.</param>
         public RuleAction(CountWideEnum wide = CountWideEnum.twoBytes)

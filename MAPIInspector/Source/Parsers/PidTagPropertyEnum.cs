@@ -686,7 +686,7 @@ namespace MAPIInspector.Parsers
         PidTagReportText = 0x1001,
 
         /// <summary>
-        ///  Contains a count of the significant characters of the message text.
+        /// Contains a count of the significant characters of the message text.
         /// </summary>
         PidTagRtfSyncBodyCount = 0x1007,
 
@@ -756,7 +756,7 @@ namespace MAPIInspector.Parsers
         PidTagListHelp = 0x1043,
 
         /// <summary>
-        /// Contains the URI that subscribes a recipient to a  message’s associated mailing list.
+        /// Contains the URI that subscribes a recipient to a message’s associated mailing list.
         /// </summary>
         PidTagListSubscribe = 0x1044,
 
@@ -1126,7 +1126,7 @@ namespace MAPIInspector.Parsers
         PidTagAttachTag = 0x370A,
 
         /// <summary>
-        /// Represents an offset, in rendered characters, to use when rendering an attachment  within the main message text.
+        /// Represents an offset, in rendered characters, to use when rendering an attachment within the main message text.
         /// </summary>
         PidTagRenderingPosition = 0x370B,
 
@@ -1755,8 +1755,8 @@ namespace MAPIInspector.Parsers
         PidTagReadReceiptName = 0x402B,
 
         /// <summary>
-        ///  The IDSETs contain IDs of messages that were marked as read (as specified by the PidTagMessageFlags property
-        ///  in [MS-OXCMSG] section 2.2.1.6) since the last synchronization, as identified by the initial ICS state.
+        /// The IDSETs contain IDs of messages that were marked as read (as specified by the PidTagMessageFlags property
+        /// in [MS-OXCMSG] section 2.2.1.6) since the last synchronization, as identified by the initial ICS state.
         /// 2.2.1.3.4 MetaTagIdsetRead Meta-Property
         /// </summary>
         MetaTagIdsetRead = 0x402D,
@@ -2488,7 +2488,7 @@ namespace MAPIInspector.Parsers
         PidTagWlinkGroupName = 0x6851,
 
         /// <summary>
-        /// Specifies the blocks of times for which the free/busy status is set to a value of  tentative.
+        /// Specifies the blocks of times for which the free/busy status is set to a value of tentative.
         /// </summary>
         PidTagScheduleInfoFreeBusyTentative = 0x6852,
 

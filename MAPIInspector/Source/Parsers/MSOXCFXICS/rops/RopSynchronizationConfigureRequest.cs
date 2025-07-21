@@ -65,7 +65,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> PropertyTagCount;
 
         /// <summary>
-        ///  An array of PropertyTag structures that specifies the properties to exclude during the copy.
+        /// An array of PropertyTag structures that specifies the properties to exclude during the copy.
         /// </summary>
         public PropertyTag[] PropertyTags;
 

@@ -3,7 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// Section 2.2.1.14.1   RopGetContentsTable ROP Request Buffer
+    /// 2.2.1.14.1 RopGetContentsTable ROP Request Buffer
     /// </summary>
     [Flags]
     public enum ContentsTableFlags : byte

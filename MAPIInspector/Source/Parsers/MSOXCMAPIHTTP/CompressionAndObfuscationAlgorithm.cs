@@ -3,7 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    ///  The DecodingContext is shared between some ROP request and response.
+    /// The DecodingContext is shared between some ROP request and response.
     /// </summary>
     public class CompressionAndObfuscationAlgorithm
     {

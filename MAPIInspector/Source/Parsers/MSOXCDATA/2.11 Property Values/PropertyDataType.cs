@@ -3,8 +3,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// Section 2.11.1   Property Data Types
-    /// Section 2.11.1.3   Multi-value Property Value Instances
+    /// 2.11.1 Property Data Types
+    /// 2.11.1.3 Multi-value Property Value Instances
     /// </summary>
     [Flags]
     public enum PropertyDataType : ushort

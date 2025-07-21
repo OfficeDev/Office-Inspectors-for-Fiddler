@@ -71,7 +71,7 @@
         AUX_TYPE_PERF_BG_DEFGC_SUCCESS = 0x0D,
 
         /// <summary>
-        ///  AUX_TYPE_PERF_BG_MDB_SUCCESS type
+        /// AUX_TYPE_PERF_BG_MDB_SUCCESS type
         /// </summary>
         AUX_TYPE_PERF_BG_MDB_SUCCESS = 0x0E,
 

@@ -13,7 +13,7 @@ namespace MAPIInspector.Parsers
         public BlockT<RestrictTypeEnum> RestrictType;
 
         /// <summary>
-        ///  An unsigned integer. This value indicates the relational operator used in the size comparison.
+        /// An unsigned integer. This value indicates the relational operator used in the size comparison.
         /// </summary>
         public BlockT<RelOpType> RelOp;
 

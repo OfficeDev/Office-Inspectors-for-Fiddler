@@ -24,7 +24,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> ResponseHandleIndex;
 
         /// <summary>
-        ///  An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
+        /// An unsigned integer index that specifies the location in the Server object handle table where the handle for the input Server object is stored.
         /// </summary>
         public BlockT<byte> InputHandleIndex;
 

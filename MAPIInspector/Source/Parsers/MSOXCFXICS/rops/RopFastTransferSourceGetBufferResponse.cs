@@ -50,7 +50,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> TransferBufferSize;
 
         /// <summary>
-        ///  An array of blocks that specifies FastTransferStream.
+        /// An array of blocks that specifies FastTransferStream.
         /// </summary>
         public Block[] TransferBuffer;
 

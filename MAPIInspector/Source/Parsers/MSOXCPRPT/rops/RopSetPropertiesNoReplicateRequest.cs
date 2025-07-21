@@ -35,7 +35,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> PropertyValueCount;
 
         /// <summary>
-        /// PropertyValues (variable):  An array of TaggedPropertyValue structures that specifies the property values to be set on the object.
+        /// PropertyValues (variable): An array of TaggedPropertyValue structures that specifies the property values to be set on the object.
         /// </summary>
         public TaggedPropertyValue[] PropertyValues;
 

@@ -38,7 +38,7 @@ namespace MAPIInspector.Parsers
         private CountWideEnum countWide;
 
         /// <summary>
-        ///  Initializes a new instance of the ActionBlock class.
+        /// Initializes a new instance of the ActionBlock class.
         /// </summary>
         /// <param name="wide">The wide size of ActionLength.</param>
         public ActionBlock(CountWideEnum wide = CountWideEnum.twoBytes)

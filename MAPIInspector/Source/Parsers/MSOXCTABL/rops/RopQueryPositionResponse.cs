@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// 2.2.2.8 RopQueryPosition ROP
-    /// A class indicates the  RopQueryPosition ROP Response Buffer.
+    /// A class indicates the RopQueryPosition ROP Response Buffer.
     /// </summary>
     public class RopQueryPositionResponse : Block
     {

@@ -14,7 +14,7 @@ namespace MAPIInspector.Parsers
         public BlockT<ushort> Version;
 
         /// <summary>
-        ///  The padding.
+        /// The padding.
         /// </summary>
         public BlockT<ushort> Padding1;
 
@@ -39,7 +39,7 @@ namespace MAPIInspector.Parsers
         public BlockT<uint> Padding2;
 
         /// <summary>
-        /// An unsigned 64-bit integer value that contains the size in bytes of all changes to normal messages  that are scheduled for download during the current synchronization operation.
+        /// An unsigned 64-bit integer value that contains the size in bytes of all changes to normal messages that are scheduled for download during the current synchronization operation.
         /// </summary>
         public BlockT<ulong> NormalMessageTotalSize;
 

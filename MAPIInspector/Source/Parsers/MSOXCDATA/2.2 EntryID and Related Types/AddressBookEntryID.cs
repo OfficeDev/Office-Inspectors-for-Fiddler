@@ -3,7 +3,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.5.2  Address Book EntryID Structure
+    /// 2.2.5.2 Address Book EntryID Structure
     /// </summary>
     public class AddressBookEntryID : Block
     {

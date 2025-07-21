@@ -13,7 +13,7 @@ namespace MAPIInspector.Parsers
         public MetaPropValuePutPartial MetaValue;
 
         /// <summary>
-        /// PropValue  field
+        /// PropValue field
         /// </summary>
         public PropValue PropValue;
 

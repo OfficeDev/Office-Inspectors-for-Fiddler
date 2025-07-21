@@ -25,7 +25,7 @@ namespace MAPIInspector.Parsers
         public BlockT<uint> Count;
 
         /// <summary>
-        ///  The Int32 value.
+        /// The Int32 value.
         /// </summary>
         public PtypInteger32[] Value;
 

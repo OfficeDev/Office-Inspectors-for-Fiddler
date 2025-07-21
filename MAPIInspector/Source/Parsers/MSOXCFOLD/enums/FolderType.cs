@@ -1,7 +1,7 @@
 ﻿namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// Section 2.2.1.2.1   RopCreateFolder ROP Request Buffer
+    /// 2.2.1.2.1 RopCreateFolder ROP Request Buffer
     /// </summary>
     public enum FolderType : byte
     {

@@ -40,7 +40,7 @@ namespace MAPIInspector.Parsers
         public BlockT<byte> LogonId;
 
         /// <summary>
-        ///  An unsigned integer that specifies the number of identifiers in the FolderIds field.
+        /// An unsigned integer that specifies the number of identifiers in the FolderIds field.
         /// </summary>
         public BlockT<ushort> FolderIdCount;
 

@@ -4,8 +4,8 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AUX_PERF_ACCOUNTINFO Auxiliary Block Structure
-    /// Section 2.2.2.2 AUX_HEADER Structure
-    /// Section 2.2.2.2.18 AUX_PERF_ACCOUNTINFO Auxiliary Block Structure
+    /// 2.2.2.2 AUX_HEADER Structure
+    /// 2.2.2.2.18 AUX_PERF_ACCOUNTINFO Auxiliary Block Structure
     /// </summary>
     public class AUX_PERF_ACCOUNTINFO : Block
     {

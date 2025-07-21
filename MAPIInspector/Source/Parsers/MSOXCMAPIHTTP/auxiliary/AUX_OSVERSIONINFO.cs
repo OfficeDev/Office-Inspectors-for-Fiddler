@@ -4,8 +4,8 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AUX_OSVERSIONINFO Auxiliary Block Structure
-    /// Section 2.2.2.2 AUX_HEADER Structure
-    /// Section 2.2.2.2.16 AUX_OSVERSIONINFO Auxiliary Block Structure
+    /// 2.2.2.2 AUX_HEADER Structure
+    /// 2.2.2.2.16 AUX_OSVERSIONINFO Auxiliary Block Structure
     /// </summary>
     public class AUX_OSVERSIONINFO : Block
     {

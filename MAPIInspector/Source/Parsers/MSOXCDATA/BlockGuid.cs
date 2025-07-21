@@ -4,7 +4,7 @@ using System;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// The BlockGuid  class.
+    /// The BlockGuid class.
     /// </summary>
     public class BlockGuid : Block
     {

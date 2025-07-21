@@ -29,7 +29,7 @@ namespace MAPIInspector.Parsers
         public BlockT<uint> SourceFolderIdSize;
 
         /// <summary>
-        ///  An array of bytes that identifies the parent folder of the source message.
+        /// An array of bytes that identifies the parent folder of the source message.
         /// </summary>
         public BlockBytes SourceFolderId;
 

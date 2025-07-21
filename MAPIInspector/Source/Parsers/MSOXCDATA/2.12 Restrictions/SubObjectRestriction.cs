@@ -28,7 +28,7 @@ namespace MAPIInspector.Parsers
         private CountWideEnum countWide;
 
         /// <summary>
-        ///  Initializes a new instance of the SubObjectRestriction class
+        /// Initializes a new instance of the SubObjectRestriction class
         /// </summary>
         /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
         public SubObjectRestriction(CountWideEnum ptypMultiCountSize)

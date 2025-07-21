@@ -1796,7 +1796,7 @@
         IsamErrorOutOfDbtimeValues = 0xFFFFFBCB,
 
         /// <summary>
-        /// A sequential index counter has reached the maximum value. An offline defragmentation has to  be performed to reclaim Free or unused SequentialIndex values.
+        /// A sequential index counter has reached the maximum value. An offline defragmentation has to be performed to reclaim Free or unused SequentialIndex values.
         /// </summary>
         IsamErrorOutOfSequentialIndexValues = 0xFFFFFBCA,
 
