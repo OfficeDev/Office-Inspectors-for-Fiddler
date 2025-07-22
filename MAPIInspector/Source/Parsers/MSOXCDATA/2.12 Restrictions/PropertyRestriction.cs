@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.12.5 Property Restriction Structures
+    /// [MS-OXCDATA] 2.12.5 Property Restriction Structures
     /// </summary>
     public class PropertyRestriction : Block
     {

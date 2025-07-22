@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.11.1 Property Data Types
+    /// [MS-OXCDATA] 2.11.1 Property Data Types
     /// 4 bytes; a 32-bit integer. [MS-DTYP]: INT32
     /// </summary>
     public class PtypInteger32 : Block

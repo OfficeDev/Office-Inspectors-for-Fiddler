@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.12 RopHardDeleteMessages ROP
+    /// [MS-OXCFOLD] 2.2.1.12 RopHardDeleteMessages ROP
     /// The RopHardDeleteMessages ROP ([MS-OXCROPS] section 2.2.4.12) is used to hard delete one or more messages from a folder.
     /// </summary>
     public class RopHardDeleteMessagesRequest : Block

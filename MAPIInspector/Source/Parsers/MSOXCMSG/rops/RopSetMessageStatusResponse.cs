@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.6.8 RopSetMessageStatus ROP
+    /// [MS-OXCROPS] 2.2.6.8 RopSetMessageStatus ROP
     /// A class indicates the RopSetMessageStatus ROP response Buffer.
     /// </summary>
     public class RopSetMessageStatusResponse : Block

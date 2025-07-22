@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.9 EntryIDs
-    /// 2.2.9.1 MinimalEntryID
+    /// [MS-OXNSPI] 2.2.9 EntryIDs
+    /// [MS-OXNSPI] 2.2.9.1 MinimalEntryID
     /// A class indicates the MinimalEntryID structure.
     /// </summary>
     public class MinimalEntryID : Block

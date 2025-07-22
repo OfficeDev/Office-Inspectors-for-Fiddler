@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.6.6.2.1 ReadRecipientRow Structure
+    /// [MS-OXCROPS] 2.2.6.6.2.1 ReadRecipientRow Structure
     /// A class indicates the ReadRecipientRow structure.
     /// </summary>
     public class ReadRecipientRow : Block

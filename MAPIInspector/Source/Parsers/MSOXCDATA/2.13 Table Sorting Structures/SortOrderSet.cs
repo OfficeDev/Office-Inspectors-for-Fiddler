@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.13.2 SortOrderSet Structure
+    /// [MS-OXCDATA] 2.13.2 SortOrderSet Structure
     /// </summary>
     public class SortOrderSet : Block
     {

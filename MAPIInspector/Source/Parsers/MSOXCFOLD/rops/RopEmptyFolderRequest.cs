@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.9 RopEmptyFolder ROP
+    /// [MS-OXCFOLD] 2.2.1.9 RopEmptyFolder ROP
     /// The RopEmptyFolder ROP ([MS-OXCROPS] section 2.2.4.9) is used to soft delete messages and sub-folders from a folder without deleting the folder itself.
     /// </summary>
     public class RopEmptyFolderRequest : Block

@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AddressBookFlaggedPropertyValueWithType structure.
-    /// 2.2.1 Common Data Types
-    /// 2.2.1.6 AddressBookFlaggedPropertyValueWithType Structure
+    /// [MS-OXCMAPIHTTP] 2.2.1 Common Data Types
+    /// [MS-OXCMAPIHTTP] 2.2.1.6 AddressBookFlaggedPropertyValueWithType Structure
     /// </summary>
     public class AddressBookFlaggedPropertyValueWithType : Block
     {

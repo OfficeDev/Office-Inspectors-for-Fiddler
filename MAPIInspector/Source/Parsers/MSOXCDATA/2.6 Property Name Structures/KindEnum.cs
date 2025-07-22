@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.6.1 PropertyName Structure
+    /// [MS-OXCDATA] 2.6.1 PropertyName Structure
     /// The enum of Kind.
     /// </summary>
     public enum KindEnum : byte

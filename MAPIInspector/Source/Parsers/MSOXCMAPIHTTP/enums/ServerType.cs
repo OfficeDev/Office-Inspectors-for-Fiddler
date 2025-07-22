@@ -1,4 +1,4 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The server type assigned by client.

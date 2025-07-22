@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.11.3 TypedPropertyValue Structure
+    /// [MS-OXCDATA] 2.11.3 TypedPropertyValue Structure
     /// </summary>
     public class TypedPropertyValue : Block
     {

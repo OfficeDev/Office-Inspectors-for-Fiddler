@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.11.4 TaggedPropertyValue Structure
+    /// [MS-OXCDATA] 2.11.4 TaggedPropertyValue Structure
     /// </summary>
     public class TaggedPropertyValue : Block
     {

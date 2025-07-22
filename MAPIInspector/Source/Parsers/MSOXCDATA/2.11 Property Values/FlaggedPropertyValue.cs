@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.11.5 FlaggedPropertyValue Structure
+    /// [MS-OXCDATA] 2.11.5 FlaggedPropertyValue Structure
     /// </summary>
     public class FlaggedPropertyValue : Block
     {

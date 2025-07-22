@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.8 STAT
+    /// [MS-OXNSPI] 2.2.8 STAT
     /// A class indicates the STAT structure.
     /// </summary>
     public class STAT : Block

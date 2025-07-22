@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.4.3.22 readStateChanges Element
+    /// [MS-OXCFXICS] 2.2.4.3.22 readStateChanges Element
     /// The readStateChanges element contains information of Message objects that had their read state changed
     /// </summary>
     public class ReadStateChanges : Block

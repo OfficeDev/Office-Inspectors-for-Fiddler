@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.8 Property Row Structures
-    /// 2.8.1 PropertyRow Structures
+    /// [MS-OXCDATA] 2.8 Property Row Structures
+    /// [MS-OXCDATA] 2.8.1 PropertyRow Structures
     /// </summary>
     public class PropertyRow : Block
     {

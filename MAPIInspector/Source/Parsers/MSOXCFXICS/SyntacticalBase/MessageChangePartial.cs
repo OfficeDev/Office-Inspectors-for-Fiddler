@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.4.3.15 messageChangePartial Element
+    /// [MS-OXCFXICS] 2.2.4.3.15 messageChangePartial Element
     /// The MessageChangePartial element represents the difference in message content since the last download, as identified by the initial ICS state.
     /// </summary>
     public class MessageChangePartial : Block

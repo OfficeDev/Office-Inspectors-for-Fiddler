@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.5.1.2.4 OP_FORWARD and OP_DELEGATE ActionData Structure
+    /// [MS-OXORULE] 2.2.5.1.2.4 OP_FORWARD and OP_DELEGATE ActionData Structure
     /// This type is specified in MS-OXORULE section 2.2.5.1.2.4 OP_FORWARD and OP_DELEGATE ActionData Structure
     /// </summary>
     public class OP_FORWARD_and_OP_DELEGATE_ActionData : Block

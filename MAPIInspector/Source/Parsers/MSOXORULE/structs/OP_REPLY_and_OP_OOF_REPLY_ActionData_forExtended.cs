@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.5.1.2.2 OP_REPLY and OP_OOF_REPLY ActionData Structure
+    /// [MS-OXORULE] 2.2.5.1.2.2 OP_REPLY and OP_OOF_REPLY ActionData Structure
     /// This type is specified in MS-OXORULE section 2.2.5.1.2.2 OP_REPLY and OP_OOF_REPLY ActionData Structure for Extended Rules
     /// </summary>
     public class OP_REPLY_and_OP_OOF_REPLY_ActionData_forExtended : Block

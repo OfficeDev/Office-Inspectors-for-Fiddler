@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Net.Mail;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.6.17 RopGetAttachmentTable ROP
+    /// [MS-OXCROPS] 2.2.6.17 RopGetAttachmentTable ROP
     /// A class indicates the RopGetAttachmentTable ROP request Buffer.
     /// </summary>
     public class RopGetAttachmentTableRequest : Block

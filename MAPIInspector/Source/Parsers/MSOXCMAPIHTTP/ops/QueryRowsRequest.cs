@@ -1,4 +1,4 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Windows.Forms.Design;
@@ -7,7 +7,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the QueryRowsRequest structure.
-    /// 2.2.5.12 QueryRows
+    /// [MS-OXCMAPIHTTP] 2.2.5.12 QueryRows
     /// </summary>
     public class QueryRowsRequest : Block
     {

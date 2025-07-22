@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Represent a range command.
-    /// 2.2.2.6.4 Range Command (0x52)
+    /// [MS-OXCFXICS] 2.2.2.6.4 Range Command (0x52)
     /// </summary>
     public class RangeCommand : Command
     {

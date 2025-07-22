@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using Fiddler;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1 RopModifyRules ROP
+    /// [MS-OXORULE] 2.2.1 RopModifyRules ROP
     /// A class indicates the ModifyRulesFlags ROP Response Buffer.
     /// </summary>
     public class ModifyRulesFlags : Block

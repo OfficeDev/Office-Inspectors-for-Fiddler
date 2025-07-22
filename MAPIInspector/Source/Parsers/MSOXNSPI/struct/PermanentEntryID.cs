@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.9 EntryIDs
-    /// 2.2.9.3 PermanentEntryID
+    /// [MS-OXNSPI] 2.2.9 EntryIDs
+    /// [MS-OXNSPI] 2.2.9.3 PermanentEntryID
     /// A class indicates the PermanentEntryID structure.
     /// </summary>
     public class PermanentEntryID : Block

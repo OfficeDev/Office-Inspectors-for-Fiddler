@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.8.3.2 RopGetPropertiesSpecific ROP Success Response Buffer
-    /// 2.2.8.3.3 RopGetPropertiesSpecific ROP Failure Response Buffer
+    /// [MS-OXCROPS] 2.2.8.3.2 RopGetPropertiesSpecific ROP Success Response Buffer
+    /// [MS-OXCROPS] 2.2.8.3.3 RopGetPropertiesSpecific ROP Failure Response Buffer
     /// A class indicates the RopGetPropertiesSpecific ROP Response Buffer.
     /// </summary>
     public class RopGetPropertiesSpecificResponse : Block

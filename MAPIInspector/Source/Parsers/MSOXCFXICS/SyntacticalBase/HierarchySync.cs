@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.4.3.9 hierarchySync Element
+    /// [MS-OXCFXICS] 2.2.4.3.9 hierarchySync Element
     /// The hierarchySync element contains the result of the hierarchy synchronization download operation.
     /// </summary>
     public class HierarchySync : Block

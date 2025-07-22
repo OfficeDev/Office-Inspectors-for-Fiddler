@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the Bind request type request body.
-    /// 2.2.5 Request Types for Address Book Server Endpoint
-    /// 2.2.5.1 Bind
+    /// [MS-OXCMAPIHTTP] 2.2.5 Request Types for Address Book Server Endpoint
+    /// [MS-OXCMAPIHTTP] 2.2.5.1 Bind
     /// </summary>
     public class BindRequest : Block
     {

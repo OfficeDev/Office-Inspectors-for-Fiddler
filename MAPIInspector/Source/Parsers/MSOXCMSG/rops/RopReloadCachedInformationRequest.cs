@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.6.7 RopReloadCachedInformation ROP
+    /// [MS-OXCROPS] 2.2.6.7 RopReloadCachedInformation ROP
     /// A class indicates the RopReloadCachedInformation ROP request Buffer.
     /// </summary>
     public class RopReloadCachedInformationRequest : Block

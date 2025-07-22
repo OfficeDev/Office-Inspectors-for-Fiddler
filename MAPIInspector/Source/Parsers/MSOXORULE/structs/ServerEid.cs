@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.5.1.2.1.1 ServerEid Structure
+    /// [MS-OXORULE] 2.2.5.1.2.1.1 ServerEid Structure
     /// This type is specified in MS-OXORULE Section 2.2.5.1.2.1.1 ServerEid Structure
     /// </summary>
     public class ServerEid : Block

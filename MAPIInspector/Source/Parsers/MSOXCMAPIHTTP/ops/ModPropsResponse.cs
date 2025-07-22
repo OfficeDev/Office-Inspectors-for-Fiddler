@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the ModPropsResponse structure.
-    /// 2.2.5.11 ModProps
+    /// [MS-OXCMAPIHTTP] 2.2.5.11 ModProps
     /// </summary>
     public class ModPropsResponse : Block
     {

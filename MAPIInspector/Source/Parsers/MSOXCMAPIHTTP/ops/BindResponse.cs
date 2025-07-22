@@ -1,12 +1,12 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the Bind request type response body.
-    /// 2.2.5 Request Types for Address Book Server Endpoint
-    /// 2.2.5.1 Bind
+    /// [MS-OXCMAPIHTTP] 2.2.5 Request Types for Address Book Server Endpoint
+    /// [MS-OXCMAPIHTTP] 2.2.5.1 Bind
     /// </summary>
     public class BindResponse : Block
     {

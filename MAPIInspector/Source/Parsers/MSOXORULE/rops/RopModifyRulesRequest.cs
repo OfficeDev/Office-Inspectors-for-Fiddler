@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1 RopModifyRules ROP
+    /// [MS-OXORULE] 2.2.1 RopModifyRules ROP
     /// The RopModifyRules ROP ([MS-OXCROPS] section 2.2.11.1) creates, modifies, or deletes rules (2) in a folder.
     /// </summary>
     public class RopModifyRulesRequest : Block

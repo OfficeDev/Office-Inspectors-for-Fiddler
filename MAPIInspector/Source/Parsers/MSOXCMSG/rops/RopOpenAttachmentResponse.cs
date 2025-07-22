@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.6.12 RopOpenAttachment ROP
+    /// [MS-OXCROPS] 2.2.6.12 RopOpenAttachment ROP
     /// A class indicates the RopOpenAttachment ROP response Buffer.
     /// </summary>
     public class RopOpenAttachmentResponse : Block

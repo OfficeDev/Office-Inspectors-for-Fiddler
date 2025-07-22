@@ -1,4 +1,4 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
@@ -14,7 +14,7 @@ namespace MAPIInspector.Parsers
     // rather than an explicit width, as throughout section 2.11.
 
     /// <summary>
-    /// 2.11.1 Property Data Types
+    /// [MS-OXCDATA] 2.11.1 Property Data Types
     /// Variable size; a COUNT field followed by that many PtypString values.
     /// </summary>
     public class PtypMultipleString : Block

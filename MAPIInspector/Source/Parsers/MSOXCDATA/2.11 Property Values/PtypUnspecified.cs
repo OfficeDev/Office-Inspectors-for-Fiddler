@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.11.1 Property Data Types
+    /// [MS-OXCDATA] 2.11.1 Property Data Types
     /// Any: this property type value matches any type;
     /// </summary>
     public class PtypUnspecified : Block

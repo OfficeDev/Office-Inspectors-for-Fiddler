@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the ResolveNamesResponse structure.
-    /// 2.2.5.14 ResolveNames
+    /// [MS-OXCMAPIHTTP] 2.2.5.14 ResolveNames
     /// </summary>
     public class ResolveNamesResponse : Block
     {

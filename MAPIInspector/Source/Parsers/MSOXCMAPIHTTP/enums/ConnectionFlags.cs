@@ -1,4 +1,4 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// ConnectionFlags designating the mode of operation.

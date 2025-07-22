@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.5.1.1 Action Flavors
+    /// [MS-OXORULE] 2.2.5.1.1 Action Flavors
     /// This type is specified in MS-OXORULE section 2.2.5.1.1 ActionFlavor structure when ActionType is relate to REPLY
     /// </summary>
     public class ActionFlavor_Reply : Block

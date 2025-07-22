@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.3.3.1 RopSaveChangesMessage ROP Request Buffer
+    /// [MS-OXCMSG] 2.2.3.3.1 RopSaveChangesMessage ROP Request Buffer
     /// The enum value of SaveFlags that contains flags that specify how the save operation behaves.
     /// </summary>
     public enum SaveFlags : byte

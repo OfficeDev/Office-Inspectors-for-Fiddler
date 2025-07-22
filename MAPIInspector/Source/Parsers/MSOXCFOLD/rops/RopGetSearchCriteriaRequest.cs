@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.5 RopGetSearchCriteria ROP
+    /// [MS-OXCFOLD] 2.2.1.5 RopGetSearchCriteria ROP
     /// The RopGetSearchCriteria ROP ([MS-OXCROPS] section 2.2.4.5) obtains the search criteria and the status of a search for a search folder.
     /// </summary>
     public class RopGetSearchCriteriaRequest : Block

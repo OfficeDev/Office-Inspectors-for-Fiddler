@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.11.1 Property Data Types
+    /// [MS-OXCDATA] 2.11.1 Property Data Types
     /// Variable size; a COUNT field followed by that many bytes.
     /// </summary>
     public class PtypBinary : Block

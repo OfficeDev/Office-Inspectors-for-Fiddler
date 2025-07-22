@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the QueryRowsResponse structure.
-    /// 2.2.5.12 QueryRows
+    /// [MS-OXCMAPIHTTP] 2.2.5.12 QueryRows
     /// </summary>
     public class QueryRowsResponse : Block
     {

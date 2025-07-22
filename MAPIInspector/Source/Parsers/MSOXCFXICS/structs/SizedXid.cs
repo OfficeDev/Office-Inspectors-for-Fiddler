@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// SizedXid structure.
-    /// 2.2.2.3.1 SizedXid Structure
+    /// [MS-OXCFXICS] 2.2.2.3.1 SizedXid Structure
     /// </summary>
     public class SizedXid : Block
     {

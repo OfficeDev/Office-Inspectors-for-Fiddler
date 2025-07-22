@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.3 RuleData
+    /// [MS-OXORULE] 2.2.1.3 RuleData
     /// The enum value of RuleDataFlags
     /// </summary>
     [Flags]

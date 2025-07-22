@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.8.3.2 RecipientRow Structure
+    /// [MS-OXCDATA] 2.8.3.2 RecipientRow Structure
     /// The enum value of DisplayType.
     /// </summary>
     public enum DisplayType : byte

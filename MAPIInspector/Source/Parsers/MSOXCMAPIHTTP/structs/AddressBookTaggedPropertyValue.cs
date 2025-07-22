@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AddressBookTaggedPropertyValue structure.
-    /// 2.2.1 Common Data Types
-    /// 2.2.1.2 AddressBookTaggedPropertyValue Structure
+    /// [MS-OXCMAPIHTTP] 2.2.1 Common Data Types
+    /// [MS-OXCMAPIHTTP] 2.2.1.2 AddressBookTaggedPropertyValue Structure
     /// </summary>
     public class AddressBookTaggedPropertyValue : Block
     {

@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.4 RopSetSearchCriteria ROP
+    /// [MS-OXCFOLD] 2.2.1.4 RopSetSearchCriteria ROP
     /// The RopSetSearchCriteria ROP ([MS-OXCROPS] section 2.2.4.4) establishes search criteria for a search folder.
     /// </summary>
     public class RopSetSearchCriteriaRequest : Block

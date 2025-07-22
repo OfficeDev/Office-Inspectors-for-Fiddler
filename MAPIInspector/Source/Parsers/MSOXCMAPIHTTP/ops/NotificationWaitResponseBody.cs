@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the NotificationWait request type response body.
-    /// 2.2.4 Request Types for Mailbox Server Endpoint
-    /// 2.2.4.4 NotificationWait
+    /// [MS-OXCMAPIHTTP] 2.2.4 Request Types for Mailbox Server Endpoint
+    /// [MS-OXCMAPIHTTP] 2.2.4.4 NotificationWait
     /// </summary>
     public class NotificationWaitResponseBody : Block
     {

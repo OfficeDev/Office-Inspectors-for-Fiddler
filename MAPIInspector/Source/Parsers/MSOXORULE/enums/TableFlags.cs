@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.3 RuleData Structure
+    /// [MS-OXORULE] 2.2.1.3 RuleData Structure
     /// The enum value of TableFlags.
     /// </summary>
     public enum TableFlags : byte

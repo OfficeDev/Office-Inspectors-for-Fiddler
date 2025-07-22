@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.7.2 RopAbortSubmit
+    /// [MS-OXCROPS] 2.2.7.2 RopAbortSubmit
     /// A class indicates the RopSubmitMessage ROP Response Buffer.
     /// </summary>
     public class RopAbortSubmitResponse : Block

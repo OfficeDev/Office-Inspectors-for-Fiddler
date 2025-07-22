@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1 RopGetPermissionsTable ROP
+    /// [MS-OXCPERM] 2.2.1 RopGetPermissionsTable ROP
     /// The RopGetPermissionsTable ROP ([MS-OXCROPS] section 2.2.10.2) retrieves a Server object handle to a Table object, which is then used in other ROP requests to retrieve the current permissions list on a folder.
     /// </summary>
     public class RopGetPermissionsTableRequest : Block

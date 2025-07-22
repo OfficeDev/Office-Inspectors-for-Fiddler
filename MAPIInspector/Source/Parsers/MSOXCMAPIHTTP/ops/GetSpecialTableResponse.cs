@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the GetSpecialTableResponse structure.
-    /// 2.2.5.8 GetSpecialTable
+    /// [MS-OXCMAPIHTTP] 2.2.5.8 GetSpecialTable
     /// </summary>
     public class GetSpecialTableResponse : Block
     {

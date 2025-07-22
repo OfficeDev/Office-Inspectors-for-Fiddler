@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A flags structure that contains flags control the additional behavior of the synchronization.
-    /// 2.2.3.2.1.1.1 RopSynchronizationConfigure ROP Request Buffer
+    /// [MS-OXCFXICS] 2.2.3.2.1.1.1 RopSynchronizationConfigure ROP Request Buffer
     /// </summary>
     public enum SynchronizationExtraFlags : uint
     {

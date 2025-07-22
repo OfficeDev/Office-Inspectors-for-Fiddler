@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.5.1.2.4.1 RecipientBlockData Structure
+    /// [MS-OXORULE] 2.2.5.1.2.4.1 RecipientBlockData Structure
     /// This type is specified in MS-OXORULE section 2.2.5.1.2.4.1 RecipientBlockData Structure
     /// </summary>
     public class RecipientBlockData : Block

@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.5.2 Address Book EntryID Structure
+    /// [MS-OXCDATA] 2.2.5.2 Address Book EntryID Structure
     /// The enum of AddressbookEntryID type.
     /// </summary>
     public enum AddressbookEntryIDtype : uint

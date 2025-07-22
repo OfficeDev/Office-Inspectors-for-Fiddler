@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.5.1.2.5 OP_BOUNCE ActionData Structure
+    /// [MS-OXORULE] 2.2.5.1.2.5 OP_BOUNCE ActionData Structure
     /// The enum value of Bounce Code.
     /// </summary>
     public enum BounceCodeEnum : uint

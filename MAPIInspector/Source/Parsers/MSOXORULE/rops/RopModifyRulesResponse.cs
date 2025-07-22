@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1 RopModifyRules ROP
+    /// [MS-OXORULE] 2.2.1 RopModifyRules ROP
     /// A class indicates the RopModifyRules ROP Response Buffer.
     /// </summary>
     public class RopModifyRulesResponse : Block

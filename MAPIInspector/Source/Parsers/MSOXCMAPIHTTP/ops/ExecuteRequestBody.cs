@@ -1,12 +1,12 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the Execute request type.
-    /// 2.2.2.1 Common Request Format
-    /// 2.2.4 Request Types for Mailbox Server Endpoint
-    /// 2.2.4.2.1 Execute Request Type Request Body
+    /// [MS-OXCMAPIHTTP] 2.2.2.1 Common Request Format
+    /// [MS-OXCMAPIHTTP] 2.2.4 Request Types for Mailbox Server Endpoint
+    /// [MS-OXCMAPIHTTP] 2.2.4.2.1 Execute Request Type Request Body
     /// </summary>
     public class ExecuteRequestBody : Block
     {

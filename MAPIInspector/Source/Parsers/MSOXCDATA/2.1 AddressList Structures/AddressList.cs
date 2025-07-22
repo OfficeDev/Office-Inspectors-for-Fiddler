@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.1.2 AddressList Structure
+    /// [MS-OXCDATA] 2.1.2 AddressList Structure
     /// </summary>
     public class AddressList : Block
     {

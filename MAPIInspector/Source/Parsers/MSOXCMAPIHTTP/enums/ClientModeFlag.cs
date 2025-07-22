@@ -1,4 +1,4 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A flag that shows the mode in which the client is running.

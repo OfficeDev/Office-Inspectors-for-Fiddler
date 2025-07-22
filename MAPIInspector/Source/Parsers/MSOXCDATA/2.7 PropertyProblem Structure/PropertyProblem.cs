@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.IO;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.7 PropertyProblem Structure
+    /// [MS-OXCDATA] 2.7 PropertyProblem Structure
     /// </summary>
     public class PropertyProblem : Block
     {

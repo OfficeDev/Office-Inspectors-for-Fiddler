@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.11.1 Property Data Types
+    /// [MS-OXCDATA] 2.11.1 Property Data Types
     /// IN FUTURE: How to distinguish PtypObject from PtypEmbeddedTable since they share the same value
     /// </summary>
     public class PtypObject_Or_PtypEmbeddedTable : Block

@@ -1,4 +1,4 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The enum value of ROP response status.

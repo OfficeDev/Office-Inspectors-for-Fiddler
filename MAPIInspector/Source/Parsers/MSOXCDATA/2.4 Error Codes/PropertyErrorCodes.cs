@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.4.2 Property Error Codes
+    /// [MS-OXCDATA] 2.4.2 Property Error Codes
     /// </summary>
     public enum PropertyErrorCodes : uint
     {

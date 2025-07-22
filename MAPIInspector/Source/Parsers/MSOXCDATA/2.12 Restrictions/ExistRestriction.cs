@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.12.9 Exist Restriction Structures
+    /// [MS-OXCDATA] 2.12.9 Exist Restriction Structures
     /// </summary>
     public class ExistRestriction : Block
     {

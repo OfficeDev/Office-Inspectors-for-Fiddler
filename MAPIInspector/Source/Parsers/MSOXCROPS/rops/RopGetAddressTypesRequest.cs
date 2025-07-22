@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.7.3 RopGetAddressTypes
+    /// [MS-OXCROPS] 2.2.7.3 RopGetAddressTypes
     /// A class indicates the RopGetAddressTypes ROP Request Buffer.
     /// </summary>
     public class RopGetAddressTypesRequest : Block

@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.8.3.1 RecipientFlags Field
+    /// [MS-OXCDATA] 2.8.3.1 RecipientFlags Field
     /// </summary>
     public class RecipientFlags : Block
     {

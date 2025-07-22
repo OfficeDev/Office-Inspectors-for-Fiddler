@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.11.1.4 PtypServerId Type
+    /// [MS-OXCDATA] 2.11.1.4 PtypServerId Type
     /// </summary>
     public class PtypServerIdStruct : Block
     {

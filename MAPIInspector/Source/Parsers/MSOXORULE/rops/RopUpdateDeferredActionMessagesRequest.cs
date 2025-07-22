@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.3 RopUpdateDeferredActionMessages ROP
+    /// [MS-OXORULE] 2.2.3 RopUpdateDeferredActionMessages ROP
     /// The RopUpdateDeferredActionMessages ROP ([MS-OXCROPS] section 2.2.11.3) instructs the server to update the PidTagDamOriginalEntryId property (section 2.2.6.3) on one or more DAMs.
     /// </summary>
     public class RopUpdateDeferredActionMessagesRequest : Block

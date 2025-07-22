@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the GetPropsRequest structure.
-    /// 2.2.5.7 GetProps
+    /// [MS-OXCMAPIHTTP] 2.2.5.7 GetProps
     /// </summary>
     public class GetPropsRequest : Block
     {

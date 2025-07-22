@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.1.1 RopOpenFolder ROP Request Buffer
+    /// [MS-OXCFOLD] 2.2.1.1.1 RopOpenFolder ROP Request Buffer
     /// The RopOpenFolder ROP ([MS-OXCROPS] section 2.2.4.1) opens an existing folder.
-    /// 2.2.4.1.1 RopOpenFolder ROP Request Buffer
+    /// [MS-OXCROPS] 2.2.4.1.1 RopOpenFolder ROP Request Buffer
     /// </summary>
     public class RopOpenFolderRequest : Block
     {

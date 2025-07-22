@@ -1,12 +1,12 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AddressBookPropertyRow structure.
-    /// 2.2.1 Common Data Types
-    /// 2.2.1.7 AddressBookPropertyRow Structure
+    /// [MS-OXCMAPIHTTP] 2.2.1 Common Data Types
+    /// [MS-OXCMAPIHTTP] 2.2.1.7 AddressBookPropertyRow Structure
     /// </summary>
     public class AddressBookPropertyRow : Block
     {

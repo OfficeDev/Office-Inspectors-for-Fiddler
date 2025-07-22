@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// An enumeration that specifies flags control the type of RopFastTransferSourceCopyMessages operation.
-    /// 2.2.3.1.1.3.1 RopFastTransferSourceCopyMessages ROP Request Buffer
+    /// [MS-OXCFXICS] 2.2.3.1.1.3.1 RopFastTransferSourceCopyMessages ROP Request Buffer
     /// </summary>
     public enum CopyFlags_CopyMessages : byte
     {

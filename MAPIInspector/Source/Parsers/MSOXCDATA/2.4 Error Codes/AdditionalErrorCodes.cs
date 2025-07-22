@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.4.1 Additional Error Codes
+    /// [MS-OXCDATA] 2.4.1 Additional Error Codes
     /// </summary>
     public enum AdditionalErrorCodes : uint
     {

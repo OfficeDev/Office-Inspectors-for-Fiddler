@@ -1,4 +1,4 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 using System.Diagnostics;
 

@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the UnbindRequest structure.
-    /// 2.2.5 Request Types for Address Book Server Endpoint
-    /// 2.2.5.2 Unbind
+    /// [MS-OXCMAPIHTTP] 2.2.5 Request Types for Address Book Server Endpoint
+    /// [MS-OXCMAPIHTTP] 2.2.5.2 Unbind
     /// </summary>
     public class UnbindRequest : Block
     {

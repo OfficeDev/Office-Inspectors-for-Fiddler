@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.11.1 Property Data Types
+    /// [MS-OXCDATA] 2.11.1 Property Data Types
     /// Variable size; a string of Unicode characters in UTF-16LE format encoding with terminating null character (0x0000).
     /// </summary>
     public class PtypString : Block
@@ -17,7 +17,7 @@ namespace MAPIInspector.Parsers
         public BlockString Value;
 
         /// <summary>
-        /// 2.2.1.1 AddressBookPropertyValue Structure
+        /// [MS-OXCMAPIHTTP] 2.2.1.1 AddressBookPropertyValue Structure
         /// </summary>
         public BlockT<bool> HasValue;
 

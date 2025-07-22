@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.12 Restrictions
+    /// [MS-OXCDATA] 2.12 Restrictions
     /// The enum value of restriction value.
     /// </summary>
     public enum RestrictTypeEnum : byte

@@ -1,15 +1,15 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.1 RopOpenFolder ROP
-    /// 2.2.1.1.2 RopOpenFolder ROP Response Buffer
+    /// [MS-OXCFOLD] 2.2.1.1 RopOpenFolder ROP
+    /// [MS-OXCFOLD] 2.2.1.1.2 RopOpenFolder ROP Response Buffer
     /// The RopOpenFolder ROP ([MS-OXCROPS] section 2.2.4.1) opens an existing folder.
-    /// 2.2.4.1.2 RopOpenFolder ROP Success Response Buffer
-    /// 2.2.4.1.3 RopOpenFolder ROP Failure Response Buffer
+    /// [MS-OXCROPS] 2.2.4.1.2 RopOpenFolder ROP Success Response Buffer
+    /// [MS-OXCROPS] 2.2.4.1.3 RopOpenFolder ROP Failure Response Buffer
     /// </summary>
     public class RopOpenFolderResponse : Block
     {

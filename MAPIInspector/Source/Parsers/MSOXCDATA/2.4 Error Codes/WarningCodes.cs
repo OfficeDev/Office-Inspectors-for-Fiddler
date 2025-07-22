@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.4.3 Warning Codes
+    /// [MS-OXCDATA] 2.4.3 Warning Codes
     /// </summary>
     public enum WarningCodes : uint
     {

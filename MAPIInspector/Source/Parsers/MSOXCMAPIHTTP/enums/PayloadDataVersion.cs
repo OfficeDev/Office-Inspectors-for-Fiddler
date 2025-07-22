@@ -1,4 +1,4 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The version information of the payload data. It is defined in section 2.2.2.2 of MS-OXCRPC.

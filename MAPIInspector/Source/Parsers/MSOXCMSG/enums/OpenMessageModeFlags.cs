@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.3.1.1 RopOpenMessage ROP Request Buffer
+    /// [MS-OXCMSG] 2.2.3.1.1 RopOpenMessage ROP Request Buffer
     /// The enum value of OpenModeFlags that contains flags that control the access to the message.
     /// </summary>
     public enum OpenMessageModeFlags : byte

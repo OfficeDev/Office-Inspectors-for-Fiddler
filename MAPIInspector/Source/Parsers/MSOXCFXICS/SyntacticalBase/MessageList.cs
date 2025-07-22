@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.4.3.17 messageList Element
+    /// [MS-OXCFXICS] 2.2.4.3.17 messageList Element
     /// The MessageList element contains a list of messages, which is determined by the scope of the operation.
     /// </summary>
     public class MessageList : Block

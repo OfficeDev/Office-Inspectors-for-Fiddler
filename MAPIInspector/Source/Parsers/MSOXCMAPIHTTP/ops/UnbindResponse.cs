@@ -1,12 +1,12 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the UnbindResponse structure.
-    /// 2.2.5 Request Types for Address Book Server Endpoint
-    /// 2.2.5.2 Unbind
+    /// [MS-OXCMAPIHTTP] 2.2.5 Request Types for Address Book Server Endpoint
+    /// [MS-OXCMAPIHTTP] 2.2.5.2 Unbind
     /// </summary>
     public class UnbindResponse : Block
     {

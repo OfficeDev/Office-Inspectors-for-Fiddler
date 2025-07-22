@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.4 FastTransfer Stream
+    /// [MS-OXCFXICS] 2.2.4 FastTransfer Stream
     /// </summary>
     public class TransferGetBufferElement : Block
     {

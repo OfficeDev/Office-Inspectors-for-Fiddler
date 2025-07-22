@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Syntactical markers
-    /// 2.2.4.1.4 Markers
+    /// [MS-OXCFXICS] 2.2.4.1.4 Markers
     /// </summary>
     public enum Markers : uint
     {

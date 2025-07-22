@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the ModLinkAttResponse structure.
-    /// 2.2.5.10 ModLinkAtt
+    /// [MS-OXCMAPIHTTP] 2.2.5.10 ModLinkAtt
     /// </summary>
     public class ModLinkAttResponse : Block
     {

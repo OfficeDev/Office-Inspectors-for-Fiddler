@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.11.1 Property Data Types
+    /// [MS-OXCDATA] 2.11.1 Property Data Types
     /// 8 bytes; a 64-bit floating point number. [MS-DTYP]: DOUBLE
     /// </summary>
     public class PtypFloating64 : Block

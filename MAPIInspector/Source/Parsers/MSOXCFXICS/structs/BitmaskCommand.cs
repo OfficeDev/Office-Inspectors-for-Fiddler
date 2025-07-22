@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Represent a bitmask command.
-    /// 2.2.2.6.3 Bitmask Command (0x42)
+    /// [MS-OXCFXICS] 2.2.2.6.3 Bitmask Command (0x42)
     /// </summary>
     public class BitmaskCommand : Command
     {

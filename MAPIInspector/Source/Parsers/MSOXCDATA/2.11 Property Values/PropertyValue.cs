@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.11.2 Property Value Structures
-    /// 2.11.2.1 PropertyValue Structure
+    /// [MS-OXCDATA] 2.11.2 Property Value Structures
+    /// [MS-OXCDATA] 2.11.2.1 PropertyValue Structure
     /// </summary>
     public class PropertyValue : Block
     {

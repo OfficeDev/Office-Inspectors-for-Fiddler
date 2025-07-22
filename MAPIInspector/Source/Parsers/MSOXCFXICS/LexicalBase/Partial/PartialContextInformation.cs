@@ -1,4 +1,4 @@
-﻿using Fiddler;
+using Fiddler;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers

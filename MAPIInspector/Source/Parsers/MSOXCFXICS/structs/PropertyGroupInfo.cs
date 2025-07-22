@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The PropertyGroupInfo class
-    /// 2.2.2.8 PropertyGroupInfo
+    /// [MS-OXCFXICS] 2.2.2.8 PropertyGroupInfo
     /// </summary>
     public class PropertyGroupInfo : Block
     {

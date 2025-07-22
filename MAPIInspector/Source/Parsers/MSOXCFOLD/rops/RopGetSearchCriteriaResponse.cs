@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.5 RopGetSearchCriteria ROP
+    /// [MS-OXCFOLD] 2.2.1.5 RopGetSearchCriteria ROP
     /// A class indicates the RopGetSearchCriteria ROP Response Buffer.
     /// </summary>
     public class RopGetSearchCriteriaResponse : Block

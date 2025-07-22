@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.4 Messaging Object EntryIDs Structures
-    /// 2.2.4.1 Folder EntryID Structure
+    /// [MS-OXCDATA] 2.2.4 Messaging Object EntryIDs Structures
+    /// [MS-OXCDATA] 2.2.4.1 Folder EntryID Structure
     /// </summary>
     public class FolderEntryID : Block
     {

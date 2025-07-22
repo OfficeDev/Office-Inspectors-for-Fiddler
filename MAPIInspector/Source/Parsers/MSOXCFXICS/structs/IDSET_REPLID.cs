@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Represents a REPLID and GLOBSET structure pair.
-    /// 2.2.2.4.1 Serialized IDSET Structure Containing a REPLID Structure
+    /// [MS-OXCFXICS] 2.2.2.4.1 Serialized IDSET Structure Containing a REPLID Structure
     /// </summary>
     public class IDSET_REPLID : Block
     {

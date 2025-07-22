@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the GetAddressBookUrlResponse structure.
-    /// 2.2.5.19 GetAddressBookUrl
+    /// [MS-OXCMAPIHTTP] 2.2.5.19 GetAddressBookUrl
     /// </summary>
     public class GetAddressBookUrlResponse : Block
     {

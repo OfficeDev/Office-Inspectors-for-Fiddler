@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.2 Message ID Structure
+    /// [MS-OXCDATA] 2.2.1.2 Message ID Structure
     /// </summary>
     public class MessageID : Block
     {

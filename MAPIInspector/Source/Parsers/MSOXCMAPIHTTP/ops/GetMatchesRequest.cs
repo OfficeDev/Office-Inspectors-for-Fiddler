@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the GetMatchesRequest structure.
-    /// 2.2.5.5 GetMatches
+    /// [MS-OXCMAPIHTTP] 2.2.5.5 GetMatches
     /// </summary>
     public class GetMatchesRequest : Block
     {

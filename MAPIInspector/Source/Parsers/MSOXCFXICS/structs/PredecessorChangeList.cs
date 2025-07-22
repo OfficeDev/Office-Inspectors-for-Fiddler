@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Contains a set of XIDs that represent change numbers of messaging objects in different replicas.
-    /// 2.2.2.3 PredecessorChangeList Structure
+    /// [MS-OXCFXICS] 2.2.2.3 PredecessorChangeList Structure
     /// </summary>
     public class PredecessorChangeList : Block
     {

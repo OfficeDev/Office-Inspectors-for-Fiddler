@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the RopTellVersion ROP Response Buffer.
-    /// 2.2.3.1.1.6.2 RopTellVersion ROP Response Buffer
+    /// [MS-OXCFXICS] 2.2.3.1.1.6.2 RopTellVersion ROP Response Buffer
     /// </summary>
     public class RopTellVersionResponse : Block
     {

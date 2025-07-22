@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.5.2 RopGetSearchCriteria ROP Response Buffer
+    /// [MS-OXCFOLD] 2.2.1.5.2 RopGetSearchCriteria ROP Response Buffer
     /// </summary>
     [Flags]
     public enum SearchResponseFlags : uint

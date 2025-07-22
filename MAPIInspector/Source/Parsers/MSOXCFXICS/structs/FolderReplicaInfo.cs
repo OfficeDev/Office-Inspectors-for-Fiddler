@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The FolderReplicaInfo structure contains information about server replicas of a public folder.
-    /// 2.2.2.9 FolderReplicaInfo
+    /// [MS-OXCFXICS] 2.2.2.9 FolderReplicaInfo
     /// </summary>
     public class FolderReplicaInfo : Block
     {

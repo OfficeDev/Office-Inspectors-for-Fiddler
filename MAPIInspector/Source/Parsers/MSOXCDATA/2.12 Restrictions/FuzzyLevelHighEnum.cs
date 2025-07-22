@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The enum of FuzzyLevelHighEnum.
-    /// 2.12.4 Content Restriction Structures
+    /// [MS-OXCDATA] 2.12.4 Content Restriction Structures
     /// </summary>
     public enum FuzzyLevelHighEnum : ushort
     {

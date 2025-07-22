@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.9 PropertyTag Structure
+    /// [MS-OXCDATA] 2.9 PropertyTag Structure
     /// </summary>
     public class PropertyTag : Block
     {

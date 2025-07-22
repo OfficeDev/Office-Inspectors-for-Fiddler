@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.11.1 Property Data Types
+    /// [MS-OXCDATA] 2.11.1 Property Data Types
     /// 2.11.1.3 Multi-value Property Value Instances
     /// </summary>
     [Flags]

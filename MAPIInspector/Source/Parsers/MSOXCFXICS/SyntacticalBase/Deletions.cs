@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.4.3.3 deletions Element
+    /// [MS-OXCFXICS] 2.2.4.3.3 deletions Element
     /// The Deletions element contains information of messages that have been deleted expired or moved out of the sync scope.
     /// </summary>
     public class Deletions : Block

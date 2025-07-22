@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.8.3.2 RecipientRow Structure
+    /// [MS-OXCDATA] 2.8.3.2 RecipientRow Structure
     /// </summary>
     public class RecipientRow : Block
     {

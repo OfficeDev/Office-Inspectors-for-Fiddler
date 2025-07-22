@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.5.1 ActionBlock Structure
+    /// [MS-OXORULE] 2.2.5.1 ActionBlock Structure
     /// </summary>
     public class ActionBlock : Block
     {

@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.7.8 RopGetTransportFolder
+    /// [MS-OXCROPS] 2.2.7.8 RopGetTransportFolder
     /// A class indicates the RopGetTransportFolder ROP Request Buffer.
     /// </summary>
     public class RopGetTransportFolderRequest : Block

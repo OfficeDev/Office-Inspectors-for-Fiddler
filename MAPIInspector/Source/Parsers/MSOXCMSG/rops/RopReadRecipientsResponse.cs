@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.6.6 RopReadRecipients ROP
+    /// [MS-OXCROPS] 2.2.6.6 RopReadRecipients ROP
     /// A class indicates the RopReadRecipients ROP response Buffer.
     /// </summary>
     public class RopReadRecipientsResponse : Block

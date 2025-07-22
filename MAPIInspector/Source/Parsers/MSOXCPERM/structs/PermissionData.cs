@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 using System.Security.Permissions;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2 RopModifyPermissions ROP
+    /// [MS-OXCPERM] 2.2.2 RopModifyPermissions ROP
     /// A class indicates the PermissionData.
     /// </summary>
     public class PermissionData : Block

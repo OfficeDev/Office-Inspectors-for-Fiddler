@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.11.1 Property Data Types
+    /// [MS-OXCDATA] 2.11.1 Property Data Types
     /// 8 bytes; a 64-bit integer representing the number of 100-nanosecond intervals since January 1, 1601.[MS-DTYP]: FILETIME.
     /// </summary>
     public class PtypTime : Block

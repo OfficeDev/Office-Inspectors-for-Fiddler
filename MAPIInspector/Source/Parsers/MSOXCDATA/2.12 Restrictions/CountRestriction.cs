@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.12.12 CountRestriction Structure
+    /// [MS-OXCDATA] 2.12.12 CountRestriction Structure
     /// </summary>
     public class CountRestriction : Block
     {

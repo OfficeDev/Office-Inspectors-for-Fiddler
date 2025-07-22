@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.4.3.2 contentsSync Element
+    /// [MS-OXCFXICS] 2.2.4.3.2 contentsSync Element
     /// The ContentsSync element contains the result of the contents synchronization download operation.
     /// </summary>
     public class ContentsSync : Block

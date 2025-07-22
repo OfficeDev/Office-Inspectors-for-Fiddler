@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Represent an end command.
-    /// 2.2.2.6.5 End Command (0x00)
+    /// [MS-OXCFXICS] 2.2.2.6.5 End Command (0x00)
     /// </summary>
     public class EndCommand : Command
     {

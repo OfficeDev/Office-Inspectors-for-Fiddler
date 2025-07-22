@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The GroupPropertyName.
-    /// 2.2.2.8.1.1 GroupPropertyName
+    /// [MS-OXCFXICS] 2.2.2.8.1.1 GroupPropertyName
     /// </summary>
     public class GroupPropertyName : Block
     {

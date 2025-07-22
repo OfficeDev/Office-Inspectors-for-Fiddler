@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.7.3 RopGetAddressTypes
+    /// [MS-OXCROPS] 2.2.7.3 RopGetAddressTypes
     /// A class indicates the RopGetAddressTypes ROP Response Buffer.
     /// </summary>
     public class RopGetAddressTypesResponse : Block

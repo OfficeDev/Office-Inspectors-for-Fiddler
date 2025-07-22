@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.8.3.1 RecipientFlags Field
+    /// [MS-OXCDATA] 2.8.3.1 RecipientFlags Field
     /// The enumeration specifies the type of address.
     /// </summary>
     public enum AddressTypeEnum : int

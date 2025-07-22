@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.2.1 RopRegisterNotification ROP
+    /// [MS-OXCNOTIF] 2.2.1.2.1 RopRegisterNotification ROP
     /// The RopRegisterNotification ROP ([MS-OXCROPS] section 2.2.14.1) creates a subscription for specified notifications on the server and returns a handle of the subscription to the client.
     /// </summary>
     public class RopRegisterNotificationRequest : Block

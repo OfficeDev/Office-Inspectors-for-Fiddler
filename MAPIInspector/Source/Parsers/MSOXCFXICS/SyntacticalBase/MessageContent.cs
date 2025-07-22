@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.4.3.16 messageContent Element
+    /// [MS-OXCFXICS] 2.2.4.3.16 messageContent Element
     /// The MessageContent element represents the content of a message: its properties, the recipients, and the attachments.
     /// </summary>
     public class MessageContent : Block

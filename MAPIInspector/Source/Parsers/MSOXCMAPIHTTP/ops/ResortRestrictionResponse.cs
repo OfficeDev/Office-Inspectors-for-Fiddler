@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the ResortRestrictionResponse structure.
-    /// 2.2.5.15 ResortRestriction
+    /// [MS-OXCMAPIHTTP] 2.2.5.15 ResortRestriction
     /// </summary>
     public class ResortRestrictionResponse : Block
     {

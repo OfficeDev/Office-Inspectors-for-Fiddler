@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.7 RopMoveFolder ROP
+    /// [MS-OXCFOLD] 2.2.1.7 RopMoveFolder ROP
     /// The RopMoveFolder ROP ([MS-OXCROPS] section 2.2.4.7) moves a folder from one parent folder to another parent folder.
     /// </summary>
     public class RopMoveFolderRequest : Block

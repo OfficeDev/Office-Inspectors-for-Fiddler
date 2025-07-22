@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.3 RopDeleteFolder ROP
+    /// [MS-OXCFOLD] 2.2.1.3 RopDeleteFolder ROP
     /// The RopDeleteFolder ROP ([MS-OXCROPS] section 2.2.4.3) removes a folder.
     /// </summary>
     public class RopDeleteFolderRequest : Block

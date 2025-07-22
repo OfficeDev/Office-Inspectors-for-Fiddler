@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.3.1.2 RopOpenMessage ROP Response Buffer
+    /// [MS-OXCMSG] 2.2.3.1.2 RopOpenMessage ROP Response Buffer
     /// An enumeration that specifies the type of RecipientType.
     /// </summary>
     public enum RecipientTypeType : byte

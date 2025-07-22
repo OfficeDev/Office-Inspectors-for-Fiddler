@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.4.3 Store Object EntryID Structure
+    /// [MS-OXCDATA] 2.2.4.3 Store Object EntryID Structure
     /// </summary>
     public class StoreObjectEntryID : Block
     {

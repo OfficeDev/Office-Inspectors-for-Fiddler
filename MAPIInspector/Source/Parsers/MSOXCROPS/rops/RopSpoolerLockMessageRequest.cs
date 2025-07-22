@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.7.5 RopSpoolerLockMessage
+    /// [MS-OXCROPS] 2.2.7.5 RopSpoolerLockMessage
     /// A class indicates the RopSpoolerLockMessage ROP Request Buffer.
     /// </summary>
     public class RopSpoolerLockMessageRequest : Block

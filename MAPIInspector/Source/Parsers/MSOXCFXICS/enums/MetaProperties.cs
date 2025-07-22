@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Meta properties
-    /// 2.2.4.1.5 Meta-Properties
+    /// [MS-OXCFXICS] 2.2.4.1.5 Meta-Properties
     /// </summary>
     public enum MetaProperties : uint
     {

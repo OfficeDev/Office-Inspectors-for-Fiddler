@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Represents GLOBSET structure is a set of GLOBCNT structures, that are reduced to one or more GLOBCNT ranges. A GLOBCNT range is created using any of the commands
-    /// 2.2.2.6 GLOBSET Structure
+    /// [MS-OXCFXICS] 2.2.2.6 GLOBSET Structure
     /// </summary>
     public class GLOBSET : Block
     {

@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// An 8-bit flag structure that defines the parameters of the import operation.
-    /// 2.2.3.2.4.5 RopSynchronizationImportDeletes
+    /// [MS-OXCFXICS] 2.2.3.2.4.5 RopSynchronizationImportDeletes
     /// </summary>
     public enum ImportDeleteFlags : byte
     {

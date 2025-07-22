@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.4.1.2 NotificationData Structure
+    /// [MS-OXCNOTIF] 2.2.1.4.1.2 NotificationData Structure
     /// A class indicates the NotificationData
     /// </summary>
     public class NotificationData : Block

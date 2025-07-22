@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.5.1.2.3 OP_DEFER_ACTION ActionData Structure
+    /// [MS-OXORULE] 2.2.5.1.2.3 OP_DEFER_ACTION ActionData Structure
     /// This type is specified in MS-OXORULE section 2.2.5.1.2.3 OP_DEFER_ACTION ActionData Structure
     /// </summary>
     public class OP_DEFER_ACTION : Block

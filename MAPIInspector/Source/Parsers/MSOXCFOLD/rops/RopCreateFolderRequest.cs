@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.2 RopCreateFolder ROP
+    /// [MS-OXCFOLD] 2.2.1.2 RopCreateFolder ROP
     /// The RopCreateFolder ROP ([MS-OXCROPS] section 2.2.4.2) creates a new folder
     /// </summary>
     public class RopCreateFolderRequest : Block

@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.4.3.5 folderChange Element
+    /// [MS-OXCFXICS] 2.2.4.3.5 folderChange Element
     /// The FolderChange element contains a new or changed folder in the hierarchy sync.
     /// </summary>
     public class FolderChange : Block

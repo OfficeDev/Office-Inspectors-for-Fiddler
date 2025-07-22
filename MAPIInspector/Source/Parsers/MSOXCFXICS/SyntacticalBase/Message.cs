@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.4.3.10 message Element
+    /// [MS-OXCFXICS] 2.2.4.3.10 message Element
     /// The message element represents a Message object.
     /// </summary>
     public class Message : Block

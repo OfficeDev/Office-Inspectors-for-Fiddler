@@ -1,4 +1,4 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Code page property types are used to transmit string properties using the code page format of the string as stored on the server,

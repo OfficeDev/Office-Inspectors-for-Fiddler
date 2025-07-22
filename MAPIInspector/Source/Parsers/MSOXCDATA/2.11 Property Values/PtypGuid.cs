@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.11.1 Property Data Types
+    /// [MS-OXCDATA] 2.11.1 Property Data Types
     /// 16 bytes; a GUID with Data1, Data2, and Data3 fields in little-endian format.[MS-DTYP]: GUID.
     /// </summary>
     public class PtypGuid : Block

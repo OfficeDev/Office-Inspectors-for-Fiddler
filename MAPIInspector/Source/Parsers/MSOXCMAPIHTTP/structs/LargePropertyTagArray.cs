@@ -1,12 +1,12 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the LargePropertyTagArray structure.
-    /// 2.2.1 Common Data Types
-    /// 2.2.1.8 LargePropertyTagArray Structure
+    /// [MS-OXCMAPIHTTP] 2.2.1 Common Data Types
+    /// [MS-OXCMAPIHTTP] 2.2.1.8 LargePropertyTagArray Structure
     /// </summary>
     public class LargePropertyTagArray : Block
     {

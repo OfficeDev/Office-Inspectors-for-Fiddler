@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.11.1 Property Data Types
+    /// [MS-OXCDATA] 2.11.1 Property Data Types
     /// Variable size; a 16-bit COUNT field followed by a structure as specified in section 2.11.1.4.
     /// </summary>
     public class PtypServerId : Block

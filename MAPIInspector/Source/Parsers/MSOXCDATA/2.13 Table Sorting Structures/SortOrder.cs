@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.13 Table Sorting Structures
-    /// 2.13.1 SortOrder Structure
+    /// [MS-OXCDATA] 2.13 Table Sorting Structures
+    /// [MS-OXCDATA] 2.13.1 SortOrder Structure
     /// </summary>
     public class SortOrder : Block
     {

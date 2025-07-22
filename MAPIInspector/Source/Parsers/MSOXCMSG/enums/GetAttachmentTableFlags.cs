@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.3.17.1 RopGetAttachmentTable ROP Request Buffer
+    /// [MS-OXCMSG] 2.2.3.17.1 RopGetAttachmentTable ROP Request Buffer
     /// The enum value of GetAttachmentTableFlags that contains flags that control the type of table..
     /// </summary>
     public enum GetAttachmentTableFlags : byte

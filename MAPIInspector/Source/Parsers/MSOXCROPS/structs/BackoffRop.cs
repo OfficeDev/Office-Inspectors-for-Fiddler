@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.15.2.1.1 BackoffRop Structure
+    /// [MS-OXCROPS] 2.2.15.2.1.1 BackoffRop Structure
     /// A class indicates the BackoffRop structure which is defined in section 2.2.15.2.1.1.
     /// </summary>
     public class BackoffRop : Block

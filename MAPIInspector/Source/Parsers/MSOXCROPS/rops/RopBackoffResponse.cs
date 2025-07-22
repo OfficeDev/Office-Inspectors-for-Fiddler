@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.15.2 RopBackoff
+    /// [MS-OXCROPS] 2.2.15.2 RopBackoff
     /// A class indicates the RopBackoff ROP Response Buffer.
     /// </summary>
     public class RopBackoffResponse : Block

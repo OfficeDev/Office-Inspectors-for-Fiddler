@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.4.3.6 folderContent Element
+    /// [MS-OXCFXICS] 2.2.4.3.6 folderContent Element
     /// The folderContent element contains the content of a folder: its properties, messages, and subFolders.
     /// </summary>
     public class FolderContent : Block

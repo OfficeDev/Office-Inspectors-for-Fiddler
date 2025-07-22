@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.3 RuleData
+    /// [MS-OXORULE] 2.2.1.3 RuleData
     /// The RuleData structure contains properties and flags that provide details about a standard rule.
     /// </summary>
     public class RuleData : Block

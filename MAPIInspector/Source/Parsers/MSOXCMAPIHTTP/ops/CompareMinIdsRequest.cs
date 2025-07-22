@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the CompareMinIdsRequest structure.
-    /// 2.2.5 Request Types for Address Book Server Endpoint
-    /// 2.2.5.3 CompareMinIds
+    /// [MS-OXCMAPIHTTP] 2.2.5 Request Types for Address Book Server Endpoint
+    /// [MS-OXCMAPIHTTP] 2.2.5.3 CompareMinIds
     /// </summary>
     public class CompareMinIdsRequest : Block
     {

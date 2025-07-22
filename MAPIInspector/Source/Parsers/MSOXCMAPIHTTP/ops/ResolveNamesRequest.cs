@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the ResolveNamesRequest structure.
-    /// 2.2.5.14 ResolveNames
+    /// [MS-OXCMAPIHTTP] 2.2.5.14 ResolveNames
     /// </summary>
     public class ResolveNamesRequest : Block
     {

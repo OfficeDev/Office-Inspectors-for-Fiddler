@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the RopFastTransferSourceCopyTo ROP Request Buffer.
-    /// 2.2.3.1.1.1.1 RopFastTransferSourceCopyTo ROP Request Buffer
+    /// [MS-OXCFXICS] 2.2.3.1.1.1.1 RopFastTransferSourceCopyTo ROP Request Buffer
     /// </summary>
     public class RopFastTransferSourceCopyToRequest : Block
     {

@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.3 RopDeleteFolder ROP
+    /// [MS-OXCFOLD] 2.2.1.3 RopDeleteFolder ROP
     /// A class indicates the RopDeleteFolder ROP Response Buffer.
     /// </summary>
     public class RopDeleteFolderResponse : Block

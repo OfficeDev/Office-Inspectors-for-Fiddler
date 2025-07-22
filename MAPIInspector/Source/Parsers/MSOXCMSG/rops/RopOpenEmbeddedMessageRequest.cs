@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Net.Mail;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.6.16 RopOpenEmbeddedMessage ROP
+    /// [MS-OXCROPS] 2.2.6.16 RopOpenEmbeddedMessage ROP
     /// A class indicates the RopOpenEmbeddedMessage ROP request Buffer.
     /// </summary>
     public class RopOpenEmbeddedMessageRequest : Block

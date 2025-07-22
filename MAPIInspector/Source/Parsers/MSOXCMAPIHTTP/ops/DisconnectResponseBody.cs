@@ -1,12 +1,12 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the Disconnect request type response body.
-    /// 2.2.4 Request Types for Mailbox Server Endpoint
-    /// 2.2.4.3 Disconnect
+    /// [MS-OXCMAPIHTTP] 2.2.4 Request Types for Mailbox Server Endpoint
+    /// [MS-OXCMAPIHTTP] 2.2.4.3 Disconnect
     /// </summary>
     public class DisconnectResponseBody : Block
     {

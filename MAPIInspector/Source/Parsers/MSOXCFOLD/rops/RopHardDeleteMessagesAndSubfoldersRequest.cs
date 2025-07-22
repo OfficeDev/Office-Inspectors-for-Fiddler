@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.10 RopHardDeleteMessagesAndSubfolders ROP
+    /// [MS-OXCFOLD] 2.2.1.10 RopHardDeleteMessagesAndSubfolders ROP
     /// The RopHardDeleteMessagesAndSubfolders ROP ([MS-OXCROPS] section 2.2.4.10) is used to hard delete all messages and sub-folders from a folder without deleting the folder itself.
     /// </summary>
     public class RopHardDeleteMessagesAndSubfoldersRequest : Block

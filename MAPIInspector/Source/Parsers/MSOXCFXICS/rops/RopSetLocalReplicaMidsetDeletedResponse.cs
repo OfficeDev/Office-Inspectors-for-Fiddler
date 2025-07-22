@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the RopSetLocalReplicaMidsetDeleted ROP Response Buffer.
-    /// 2.2.13.12.2 RopSetLocalReplicaMidsetDeleted ROP Response Buffer
+    /// [MS-OXCROPS] 2.2.13.12.2 RopSetLocalReplicaMidsetDeleted ROP Response Buffer
     /// </summary>
     public class RopSetLocalReplicaMidsetDeletedResponse : Block
     {

@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the RopSynchronizationGetTransferState ROP Response Buffer.
-    /// 2.2.3.2.3.1.2 RopSynchronizationGetTransferState ROP Response Buffer
+    /// [MS-OXCFXICS] 2.2.3.2.3.1.2 RopSynchronizationGetTransferState ROP Response Buffer
     /// </summary>
     public class RopSynchronizationGetTransferStateResponse : Block
     {

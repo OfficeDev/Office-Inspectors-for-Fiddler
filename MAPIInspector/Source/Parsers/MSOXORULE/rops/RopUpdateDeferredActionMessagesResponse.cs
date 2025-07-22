@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.3 RopUpdateDeferredActionMessages ROP
+    /// [MS-OXORULE] 2.2.3 RopUpdateDeferredActionMessages ROP
     /// A class indicates the RopUpdateDeferredActionMessages ROP Response Buffer.
     /// </summary>
     public class RopUpdateDeferredActionMessagesResponse : Block

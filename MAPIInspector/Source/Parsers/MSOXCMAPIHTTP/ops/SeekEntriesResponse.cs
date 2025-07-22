@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the SeekEntriesResponse structure.
-    /// 2.2.5.16 SeekEntries
+    /// [MS-OXCMAPIHTTP] 2.2.5.16 SeekEntries
     /// </summary>
     public class SeekEntriesResponse : Block
     {

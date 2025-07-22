@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.15.1 RopBufferTooSmall
+    /// [MS-OXCROPS] 2.2.15.1 RopBufferTooSmall
     /// A class indicates the RopBufferTooSmall ROP Response Buffer.
     /// </summary>
     public class RopBufferTooSmallResponse : Block

@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.4 Messaging Object EntryIDs Structures
+    /// [MS-OXCDATA] 2.2.4 Messaging Object EntryIDs Structures
     /// The enum of StoreObject type.
     /// </summary>
     public enum StoreObjectType : ushort

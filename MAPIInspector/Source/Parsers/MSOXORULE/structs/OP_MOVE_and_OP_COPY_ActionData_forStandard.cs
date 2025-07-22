@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.5.1.2.1 OP_MOVE and OP_COPY ActionData Structure
+    /// [MS-OXORULE] 2.2.5.1.2.1 OP_MOVE and OP_COPY ActionData Structure
     /// This type is specified in MS-OXORULE section 2.2.5.1.2.1 OP_MOVE and OP_COPY ActionData Structure for Standard Rules
     /// </summary>
     public class OP_MOVE_and_OP_COPY_ActionData_forStandard : Block

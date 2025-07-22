@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using BlockParser;
 
 namespace MAPIInspector.Parsers

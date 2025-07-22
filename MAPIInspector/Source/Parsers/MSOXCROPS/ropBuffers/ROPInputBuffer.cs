@@ -1,4 +1,4 @@
-﻿using BlockParser;
+using BlockParser;
 using Fiddler;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1 ROP Input and Output Buffers
+    /// [MS-OXCROPS] 2.2.1 ROP Input and Output Buffers
     /// A class indicates the ROP input buffer, which is sent by the client, includes an array of ROP request buffers to be processed by the server.
     /// </summary>
     public class ROPInputBuffer : Block

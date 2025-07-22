@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the UpdateStatRequest structure.
-    /// 2.2.5.17 UpdateStat
+    /// [MS-OXCMAPIHTTP] 2.2.5.17 UpdateStat
     /// </summary>
     public class UpdateStatRequest : Block
     {

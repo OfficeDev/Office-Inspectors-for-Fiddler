@@ -1,11 +1,11 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the GetTemplateInfoResponse structure.
-    /// 2.2.5.9 GetTemplateInfo
+    /// [MS-OXCMAPIHTTP] 2.2.5.9 GetTemplateInfo
     /// </summary>
     public class GetTemplateInfoResponse : Block
     {

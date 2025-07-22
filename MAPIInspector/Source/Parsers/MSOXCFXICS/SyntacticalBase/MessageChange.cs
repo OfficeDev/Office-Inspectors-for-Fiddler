@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.4.3.11 messageChange Element
+    /// [MS-OXCFXICS] 2.2.4.3.11 messageChange Element
     /// The MessageChange element contains information for the changed messages.
     /// </summary>
     public class MessageChange : Block

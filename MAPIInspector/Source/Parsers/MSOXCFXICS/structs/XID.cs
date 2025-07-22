@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Represents an external identifier for an entity within a data store.
-    /// 2.2.2.2 XID Structure
+    /// [MS-OXCFXICS] 2.2.2.2 XID Structure
     /// </summary>
     public class XID : Block
     {

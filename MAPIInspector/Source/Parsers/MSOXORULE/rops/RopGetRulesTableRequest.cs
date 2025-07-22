@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2 RopGetRulesTable ROP
+    /// [MS-OXORULE] 2.2.2 RopGetRulesTable ROP
     /// The RopGetRulesTable ROP ([MS-OXCROPS] section 2.2.11.2) creates a Table object through which the client can access the standard rules in a folder using table operations as specified in [MS-OXCTABL].
     /// </summary>
     public class RopGetRulesTableRequest : Block

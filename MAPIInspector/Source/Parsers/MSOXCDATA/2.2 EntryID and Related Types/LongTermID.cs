@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.3.1 LongTermID Structure
+    /// [MS-OXCDATA] 2.2.1.3.1 LongTermID Structure
     /// </summary>
     public class LongTermID : Block
     {

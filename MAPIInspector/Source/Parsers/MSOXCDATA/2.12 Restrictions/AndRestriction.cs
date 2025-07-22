@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.12.1 And Restriction Structures
+    /// [MS-OXCDATA] 2.12.1 And Restriction Structures
     /// </summary>
     public class AndRestriction : Block
     {

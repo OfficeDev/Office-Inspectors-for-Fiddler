@@ -1,9 +1,9 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.15.3 RopRelease
+    /// [MS-OXCROPS] 2.2.15.3 RopRelease
     /// A class indicates the RopRelease ROP Request Buffer.
     /// </summary>
     public class RopReleaseRequest : Block

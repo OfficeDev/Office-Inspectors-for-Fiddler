@@ -1,4 +1,4 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 using System.Windows.Forms.Design;
 
@@ -6,7 +6,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the QueryColumnsResponse structure.
-    /// 2.2.5.13 QueryColumns
+    /// [MS-OXCMAPIHTTP] 2.2.5.13 QueryColumns
     /// </summary>
     public class QueryColumnsResponse : Block
     {

@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the GetMailboxUrlRequest structure.
-    /// 2.2.5.18 GetMailboxUrl
+    /// [MS-OXCMAPIHTTP] 2.2.5.18 GetMailboxUrl
     /// </summary>
     public class GetMailboxUrlRequest : Block
     {

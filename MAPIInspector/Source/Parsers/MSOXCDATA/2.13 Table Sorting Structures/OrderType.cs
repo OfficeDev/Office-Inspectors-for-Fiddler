@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.13.1 SortOrder Structure
+    /// [MS-OXCDATA] 2.13.1 SortOrder Structure
     /// The enum value of Order type.
     /// </summary>
     public enum OrderType : byte

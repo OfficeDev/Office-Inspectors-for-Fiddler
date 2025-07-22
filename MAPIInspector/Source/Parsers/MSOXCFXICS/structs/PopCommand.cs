@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// Represent a pop command.
-    /// 2.2.2.6.2 Pop Command (0x50)
+    /// [MS-OXCFXICS] 2.2.2.6.2 Pop Command (0x50)
     /// </summary>
     public class PopCommand : Command
     {

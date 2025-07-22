@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 using System.Collections.Generic;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.5 RuleAction Structure
+    /// [MS-OXORULE] 2.2.5 RuleAction Structure
     /// </summary>
     public class RuleAction : Block
     {

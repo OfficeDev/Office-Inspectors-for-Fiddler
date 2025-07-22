@@ -1,7 +1,7 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.3.12.1 RopOpenAttachment ROP Request Buffer
+    /// [MS-OXCMSG] 2.2.3.12.1 RopOpenAttachment ROP Request Buffer
     /// The enum specifies the flags for opening attachments.
     /// </summary>
     public enum OpenAttachmentFlags : byte

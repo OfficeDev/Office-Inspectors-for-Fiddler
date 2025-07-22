@@ -1,10 +1,10 @@
-﻿using BlockParser;
+using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The ProgressInformation.
-    /// 2.2.2.7 ProgressInformation Structure
+    /// [MS-OXCFXICS] 2.2.2.7 ProgressInformation Structure
     /// </summary>
     public class ProgressInformation : Block
     {

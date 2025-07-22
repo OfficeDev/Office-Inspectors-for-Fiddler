@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.13.1 RopGetHierarchyTable ROP Request Buffer
+    /// [MS-OXCFOLD] 2.2.1.13.1 RopGetHierarchyTable ROP Request Buffer
     /// </summary>
     [Flags]
     public enum HierarchyTableFlags : byte

@@ -1,8 +1,8 @@
-﻿namespace MAPIInspector.Parsers
+namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The enum type of RelOp.
-    /// 2.12.6 Compare Properties Restriction Structures
+    /// [MS-OXCDATA] 2.12.6 Compare Properties Restriction Structures
     /// </summary>
     public enum RelOpType : byte
     {
