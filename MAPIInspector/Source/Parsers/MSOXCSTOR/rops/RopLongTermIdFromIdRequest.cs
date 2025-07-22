@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.8 RopLongTermIdFromId
+    /// [MS-OXCROPS] 2.2.3.8.1 RopLongTermIdFromId ROP Request Buffer
     /// A class indicates the RopLongTermIdFromId ROP Request Buffer.
     /// </summary>
     public class RopLongTermIdFromIdRequest : Block

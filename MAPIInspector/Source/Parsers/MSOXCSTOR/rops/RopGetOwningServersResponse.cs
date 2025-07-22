@@ -4,7 +4,8 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.6 RopGetOwningServers
+    /// [MS-OXCROPS] 2.2.3.6.2 RopGetOwningServers ROP Success Response Buffer
+    /// [MS-OXCROPS] 2.2.3.6.3 RopGetOwningServers ROP Failure Response Buffer
     /// A class indicates the RopGetOwningServers ROP Response Buffer.
     /// </summary>
     public class RopGetOwningServersResponse : Block

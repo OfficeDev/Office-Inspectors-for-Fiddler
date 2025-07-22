@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.7 RopPublicFolderIsGhosted
+    /// [MS-OXCROPS] 2.2.3.7.1 RopPublicFolderIsGhosted ROP Request Buffer
     /// A class indicates the RopPublicFolderIsGhosted ROP Request Buffer.
     /// </summary>
     public class RopPublicFolderIsGhostedRequest : Block

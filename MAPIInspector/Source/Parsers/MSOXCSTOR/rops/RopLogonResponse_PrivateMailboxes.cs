@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.1 RopLogon
+    /// [MS-OXCSTOR] 2.2.3.1.2 RopLogon ROP Success Response Buffer for Private Mailboxes
     /// A class indicates the RopLogon ROP Response Buffer for private mailbox.
     /// </summary>
     public class RopLogonResponse_PrivateMailboxes : Block

@@ -1,10 +1,10 @@
-using System.Collections.Generic;
 using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.1.5 RopGetStoreState
+    /// [MS-OXCROPS] 2.2.3.5.2 RopGetStoreState ROP Success Response Buffer
+    /// [MS-OXCROPS] 2.2.3.5.3 RopGetStoreState ROP Failure Response Buffer
     /// A class indicates the RopGetStoreState ROP Response Buffer.
     /// </summary>
     public class RopGetStoreStateResponse : Block
