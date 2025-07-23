@@ -1,7 +1,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2 RopIds
+    /// [MS-OXCROPS] 2.2.2 The Table of RopIds
     /// The enum type for RopIds.
     /// </summary>
     public enum RopIdType : byte

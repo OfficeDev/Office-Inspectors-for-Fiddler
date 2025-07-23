@@ -1,8 +1,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// [MS-OXCDATA] 2.12.7.1 BitMaskRestriction Structure
     /// The enum type of BitmapRelOp.
-    /// 2.12.7 BitMaskRestriction Structure
     /// </summary>
     public enum BitmapRelOpType : byte
     {

@@ -3,9 +3,9 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// The PropValue represents identification information and the value of the property.
-    /// 2.2.4.1 Lexical structure propValue
+    /// [MS-OXCFXICS] 2.2.4.1 Lexical structure
     /// [MS-OXCFXICS] 2.2.4.1.2 propValue Lexical Element
+    /// The PropValue represents identification information and the value of the property.
     /// </summary>
     public class PropValue : Block
     {

@@ -3,8 +3,8 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// [MS-OXCFXICS] 2.2.2.6.1 Push Command (0x01 - 0x06)
     /// Represent a push command.
-    /// 2.2.2.6.1 Push Command (0x01 – 0x06)
     /// </summary>
     public class PushCommand : Command
     {

@@ -1,8 +1,8 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// [MS-OXNSPI] 2.2.1.3 Display Type Values
     /// The DisplayTypeValues enum type
-    /// 2.2.3 Display Type Values
     /// </summary>
     public enum DisplayTypeValues : uint
     {

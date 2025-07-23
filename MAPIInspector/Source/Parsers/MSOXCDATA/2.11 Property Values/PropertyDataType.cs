@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// [MS-OXCDATA] 2.11.1 Property Data Types
-    /// 2.11.1.3 Multi-value Property Value Instances
+    /// [MS-OXCDATA] 2.11.1.3 Multivalue Property Value Instances
     /// </summary>
     [Flags]
     public enum PropertyDataType : ushort

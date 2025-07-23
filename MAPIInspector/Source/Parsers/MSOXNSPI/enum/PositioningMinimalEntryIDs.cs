@@ -1,7 +1,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.8 Positioning Minimal Entry IDs
+    /// [MS-OXNSPI] 2.2.1.8 Positioning Minimal Entry IDs
     /// The PositioningMinimalEntryIDs enum type
     /// </summary>
     public enum PositioningMinimalEntryIDs : uint

@@ -4,7 +4,7 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// The NamedPropInfo class.
-    /// 2.2.4.1 Lexical structure namedPropInfo
+    /// [MS-OXCFXICS] 2.2.4.1 Lexical structure
     /// See PropertyName for more information.
     /// </summary>
     public class NamedPropInfo : Block
