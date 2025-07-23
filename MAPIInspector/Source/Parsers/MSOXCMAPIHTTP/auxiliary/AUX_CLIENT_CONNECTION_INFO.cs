@@ -4,8 +4,8 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AUX_CLIENT_CONNECTION_INFO Auxiliary Block Structure
-    /// 2.2.2.2 AUX_HEADER Structure
-    /// 2.2.2.2.20 AUX_CLIENT_CONNECTION_INFO Auxiliary Block Structure
+    /// [MS-OXCRPC] 2.2.2.2 AUX_HEADER Structure
+    /// [MS-OXCRPC] 2.2.2.2.20 AUX_CLIENT_CONNECTION_INFO Auxiliary Block Structure
     /// </summary>
     public class AUX_CLIENT_CONNECTION_INFO : Block
     {

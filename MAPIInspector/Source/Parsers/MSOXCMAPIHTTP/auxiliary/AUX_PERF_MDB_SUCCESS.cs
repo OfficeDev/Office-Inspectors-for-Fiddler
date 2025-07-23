@@ -4,8 +4,8 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AUX_PERF_MDB_SUCCESS Auxiliary Block Structure
-    /// 2.2.2.2 AUX_HEADER Structure
-    /// 2.2.2.2.9 AUX_PERF_MDB_SUCCESS Auxiliary Block Structure
+    /// [MS-OXCRPC] 2.2.2.2 AUX_HEADER Structure
+    /// [MS-OXCRPC] 2.2.2.2.9 AUX_PERF_MDB_SUCCESS Auxiliary Block Structure
     /// </summary>
     public class AUX_PERF_MDB_SUCCESS : Block
     {

@@ -4,8 +4,8 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// A class indicates the AUX_PROTOCOL_DEVICE_IDENTIFICATION Auxiliary Block Structure
-    /// 2.2.2.2 AUX_HEADER Structure
-    /// 2.2.2.2.22 AUX_PROTOCOL_DEVICE_IDENTIFICATION Auxiliary Block Structure
+    /// [MS-OXCRPC] 2.2.2.2 AUX_HEADER Structure
+    /// [MS-OXCRPC] 2.2.2.2.22 AUX_PROTOCOL_DEVICE_IDENTIFICATION Auxiliary Block Structure
     /// </summary>
     public class AUX_PROTOCOL_DEVICE_IDENTIFICATION : Block
     {
