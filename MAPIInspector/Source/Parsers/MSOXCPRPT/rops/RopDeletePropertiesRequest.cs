@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.7 RopDeleteProperties
+    /// [MS-OXCROPS] 2.2.8.8.1 RopDeleteProperties ROP Request Buffer
     /// A class indicates the RopDeleteProperties ROP Request Buffer.
     /// </summary>
     public class RopDeletePropertiesRequest : Block

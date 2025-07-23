@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.4 RopGetPropertiesList
+    /// [MS-OXCROPS] 2.2.8.5.1 RopGetPropertiesList ROP Request Buffer
     /// A class indicates the RopGetPropertiesList ROP Request Buffer.
     /// </summary>
     public class RopGetPropertiesListRequest : Block

@@ -1,11 +1,10 @@
 using BlockParser;
 using System.Collections.Generic;
-using System.Windows.Forms.Design;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.13 RopGetNamesFromPropertyIds
+    /// [MS-OXCROPS] 2.2.8.2.1 RopGetNamesFromPropertyIds ROP Request Buffer
     /// A class indicates the RopGetNamesFromPropertyIds ROP Request Buffer.
     /// </summary>
     public class RopGetNamesFromPropertyIdsRequest : Block

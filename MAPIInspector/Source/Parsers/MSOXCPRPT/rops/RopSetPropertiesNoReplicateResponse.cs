@@ -4,7 +4,8 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.6 RopSetPropertiesNoReplicate
+    /// [MS-OXCROPS] 2.2.8.7.2 RopSetPropertiesNoReplicate ROP Success Response Buffer
+    /// [MS-OXCROPS] 2.2.8.7.3 RopSetPropertiesNoReplicate ROP Failure Response Buffer
     /// A class indicates the RopSetPropertiesNoReplicate ROP Response Buffer.
     /// </summary>
     public class RopSetPropertiesNoReplicateResponse : Block

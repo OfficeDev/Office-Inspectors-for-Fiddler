@@ -3,7 +3,8 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.23 RopProgress
+    /// [MS-OXCROPS] 2.2.8.13.2 RopProgress ROP Success Response Buffer
+    /// [MS-OXCROPS] 2.2.8.13.3 RopProgress ROP Failure Response Buffer
     /// A class indicates the RopProgress ROP Response Buffer.
     /// </summary>
     public class RopProgressResponse : Block

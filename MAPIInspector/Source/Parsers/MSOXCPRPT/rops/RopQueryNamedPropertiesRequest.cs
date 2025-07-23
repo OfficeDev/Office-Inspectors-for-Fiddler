@@ -1,10 +1,9 @@
-using System;
 using BlockParser;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.9 RopQueryNamedProperties
+    /// [MS-OXCROPS] 2.2.8.10.1 RopQueryNamedProperties ROP Request Buffer
     /// A class indicates the RopQueryNamedProperties ROP Request Buffer.
     /// </summary>
     public class RopQueryNamedPropertiesRequest : Block

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.2 RopSetColumns ROP
+    /// [MS-OXCROPS] 2.2.5.1.1 RopSetColumns ROP Request Buffer
     /// The RopSetColumns ROP ([MS-OXCROPS] section 2.2.5.1) sets the properties that the client requests to be included in the table.
     /// </summary>
     public class RopSetColumnsRequest : Block

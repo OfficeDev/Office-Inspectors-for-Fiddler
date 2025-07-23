@@ -3,7 +3,8 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.2 RopSetColumns ROP
+    /// [MS-OXCROPS] 2.2.5.1.2 RopSetColumns ROP Success Response Buffer
+    /// [MS-OXCROPS] 2.2.5.1.3 RopSetColumns ROP Failure Response Buffer
     /// A class indicates the RopSetColumns ROP Response Buffer.
     /// </summary>
     public class RopSetColumnsResponse : Block

@@ -1,11 +1,10 @@
 using BlockParser;
 using System.Collections.Generic;
-using System.Windows.Forms.Design;
 
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.5 RopSetProperties
+    /// [MS-OXCROPS] 2.2.8.6.1 RopSetProperties ROP Request Buffer
     /// A class indicates the RopSetProperties ROP Request Buffer.
     /// </summary>
     public class RopSetPropertiesRequest : Block

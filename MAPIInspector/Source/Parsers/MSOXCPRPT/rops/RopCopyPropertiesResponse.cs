@@ -4,7 +4,9 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.10 RopCopyProperties
+    /// [MS-OXCROPS] 2.2.8.11.2 RopCopyProperties ROP Success Response Buffer
+    /// [MS-OXCROPS] 2.2.8.11.3 RopCopyProperties ROP Null Destination Failure Response Buffer
+    /// [MS-OXCROPS] 2.2.8.11.4 RopCopyProperties ROP Failure Response Buffer
     /// A class indicates the RopCopyProperties ROP Response Buffer.
     /// </summary>
     public class RopCopyPropertiesResponse : Block
