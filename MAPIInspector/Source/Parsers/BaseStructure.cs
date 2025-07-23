@@ -121,12 +121,13 @@ namespace MAPIInspector.Parsers
                 if (child.Text == "Payload" && IsCompressedXOR)
                 {
                     var rpcHeader = (block as RgbOutputBuffer)?.RPCHEADEREXT ??
-                        (block as ExtendedBuffer_Input)?.RPCHEADEREXT;
+                        (block as ExtendedBuffer_Input)?.RPCHEADEREXT ??
+                        (block as ExtendedBuffer)?.RPCHEADEREXT;
                     var childNode = AddBlock(child, blockRootOffset, debug);
                     node.Nodes.Add(childNode);
                     if (childNode.Tag is Position nodePosition && nodePosition != null)
                     {
-                        nodePosition.Offset = rpcHeader._Size;
+                        nodePosition.Offset = rpcHeader?._Size;
                         childNode.Tag = nodePosition;
                     }
                     childNode.Text = "Payload(CompressedOrObfuscated)";
