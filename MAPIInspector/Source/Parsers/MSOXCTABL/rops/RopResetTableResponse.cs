@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.16 RopResetTable ROP
+    /// [MS-OXCROPS] 2.2.5.15.2 RopResetTable ROP Response Buffer
     /// A class indicates the RopResetTable ROP Response Buffer.
     /// </summary>
     public class RopResetTableResponse : Block

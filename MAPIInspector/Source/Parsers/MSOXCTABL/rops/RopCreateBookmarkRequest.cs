@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.12 RopCreateBookmark ROP
+    /// [MS-OXCROPS] 2.2.5.11.1 RopCreateBookmark ROP Request Buffer
     /// The RopCreateBookmark ROP ([MS-OXCROPS] section 2.2.5.11) creates a new bookmark at the current cursor position in the table.
     /// </summary>
     public class RopCreateBookmarkRequest : Block

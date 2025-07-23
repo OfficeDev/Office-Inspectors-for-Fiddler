@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.8 RopQueryPosition ROP
+    /// [MS-OXCROPS] 2.2.5.7.1 RopQueryPosition ROP Request Buffer
     /// The RopQueryPosition ROP ([MS-OXCROPS] section 2.2.5.7) returns the location of the cursor in the table.
     /// </summary>
     public class RopQueryPositionRequest : Block

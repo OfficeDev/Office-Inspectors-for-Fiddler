@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.7 RopGetStatus ROP
+    /// [MS-OXCROPS] 2.2.5.6.1 RopGetStatus ROP Request Buffer
     /// The RopGetStatus ROP ([MS-OXCROPS] section 2.2.5.6) retrieves information about the current status of asynchronous operations being performed on the table.
     /// </summary>
     public class RopGetStatusRequest : Block

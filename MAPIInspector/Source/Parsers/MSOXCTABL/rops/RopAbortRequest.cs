@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.6 RopAbort ROP
+    /// [MS-OXCROPS] 2.2.5.5.1 RopAbort ROP Request Buffer
     /// The RopAbort ROP ([MS-OXCROPS] section 2.2.5.5) attempts to stop any asynchronous table operations that are currently in progress
     /// </summary>
     public class RopAbortRequest : Block

@@ -3,7 +3,8 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.12 RopCreateBookmark ROP
+    /// [MS-OXCROPS] 2.2.5.11.2 RopCreateBookmark ROP Success Response Buffer
+    /// [MS-OXCROPS] 2.2.5.11.3 RopCreateBookmark ROP Failure Response Buffer
     /// A class indicates the RopCreateBookmark ROP Response Buffer.
     /// </summary>
     public class RopCreateBookmarkResponse : Block

@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.17 RopExpandRow ROP
+    /// [MS-OXCROPS] 2.2.5.16.1 RopExpandRow ROP Request Buffer
     /// The RopExpandRow ROP ([MS-OXCROPS] section 2.2.5.16) expands a collapsed category of a table and returns the rows that belong in the newly expanded category.
     /// </summary>
     public class RopExpandRowRequest : Block

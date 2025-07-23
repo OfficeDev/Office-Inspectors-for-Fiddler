@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.3 RopSortTable ROP
+    /// [MS-OXCROPS] 2.2.5.2.1 RopSortTable ROP Request Buffer
     /// The RopSortTable ROP ([MS-OXCROPS] section 2.2.5.2) orders the rows of a contents table based on sort criteria.
     /// </summary>
     public class RopSortTableRequest : Block

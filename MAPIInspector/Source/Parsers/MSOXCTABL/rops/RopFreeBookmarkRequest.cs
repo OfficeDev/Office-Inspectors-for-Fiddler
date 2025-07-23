@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.15 RopFreeBookmark ROP
+    /// [MS-OXCROPS] 2.2.5.14.1 RopFreeBookmark ROP Request Buffer
     /// The RopFreeBookmark ROP ([MS-OXCROPS] section 2.2.5.14) frees the memory associated with a bookmark that was returned by a previous RopCreateBookmark ROP request ([MS-OXCROPS] section 2.2.5.11).
     /// </summary>
     public class RopFreeBookmarkRequest : Block

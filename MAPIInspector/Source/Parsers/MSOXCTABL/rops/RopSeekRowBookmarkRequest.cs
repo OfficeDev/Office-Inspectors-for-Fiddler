@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.10 RopSeekRowBookmark ROP
+    /// [MS-OXCROPS] 2.2.5.9.1 RopSeekRowBookmark ROP Request Buffer
     /// The RopSeekRowBookmark ROP ([MS-OXCROPS] section 2.2.5.9) moves the table cursor to a specific location in the table.
     /// </summary>
     public class RopSeekRowBookmarkRequest : Block

@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.20 RopSetCollapseState ROP
+    /// [MS-OXCROPS] 2.2.5.19.1 RopSetCollapseState ROP Request Buffer
     /// The following descriptions define valid fields for the RopSetCollapseState ROP request buffer ([MS-OXCROPS] section 2.2.5.19.1).
     /// </summary>
     public class RopSetCollapseStateRequest : Block

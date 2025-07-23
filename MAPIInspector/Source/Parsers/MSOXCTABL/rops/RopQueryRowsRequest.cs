@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.5 RopQueryRows ROP
+    /// [MS-OXCROPS] 2.2.5.4.1 RopQueryRows ROP Request Buffer
     /// The RopQueryRows ROP ([MS-OXCROPS] section 2.2.5.4) returns zero or more rows from a table, beginning from the current table cursor position.
     /// </summary>
     public class RopQueryRowsRequest : Block

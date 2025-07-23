@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.19 RopGetCollapseState ROP
+    /// [MS-OXCROPS] 2.2.5.18.1 RopGetCollapseState ROP Request Buffer
     /// The RopGetCollapseState ROP ([MS-OXCROPS] section 2.2.5.18) returns the data necessary to rebuild the current expanded/collapsed state of the table.
     /// </summary>
     public class RopGetCollapseStateRequest : Block

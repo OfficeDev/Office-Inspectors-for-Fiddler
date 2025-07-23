@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.13 RopQueryColumnsAll ROP
+    /// [MS-OXCROPS] 2.2.5.12.1 RopQueryColumnsAll ROP Request Buffer
     /// The RopQueryColumnsAll ROP ([MS-OXCROPS] section 2.2.5.12) returns a complete list of all columns for the table.
     /// </summary>
     public class RopQueryColumnsAllRequest : Block

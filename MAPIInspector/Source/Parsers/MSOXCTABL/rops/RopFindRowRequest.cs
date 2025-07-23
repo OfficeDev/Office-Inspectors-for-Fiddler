@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.14 RopFindRow ROP
+    /// [MS-OXCROPS] 2.2.5.13.1 RopFindRow ROP Request Buffer
     /// The RopFindRow ROP ([MS-OXCROPS] section 2.2.5.13) returns the next row in a table that matches the search criteria and moves the cursor to that row.
     /// </summary>
     public class RopFindRowRequest : Block

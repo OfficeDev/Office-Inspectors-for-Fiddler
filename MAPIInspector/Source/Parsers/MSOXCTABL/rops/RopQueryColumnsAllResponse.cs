@@ -4,7 +4,8 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.13 RopQueryColumnsAll ROP
+    /// [MS-OXCROPS] 2.2.5.12.2 RopQueryColumnsAll ROP Success Response Buffer
+    /// [MS-OXCROPS] 2.2.5.12.3 RopQueryColumnsAll ROP Failure Response Buffer
     /// A class indicates the RopQueryColumnsAll ROP Response Buffer.
     /// </summary>
     public class RopQueryColumnsAllResponse : Block

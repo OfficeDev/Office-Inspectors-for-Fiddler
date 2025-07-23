@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.11 RopSeekRowFractional ROP
+    /// [MS-OXCROPS] 2.2.5.10.1 RopSeekRowFractional ROP Request Buffer
     /// The RopSeekRowFractional ROP ([MS-OXCROPS] section 2.2.5.10) moves the table cursor to an approximate position in the table.
     /// </summary>
     public class RopSeekRowFractionalRequest : Block

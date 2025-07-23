@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.4 RopRestrict ROP
+    /// [MS-OXCROPS] 2.2.5.3.1 RopRestrict ROP Request Buffer
     /// The RopRestrict ROP ([MS-OXCROPS] section 2.2.5.3) establishes a restriction on a table.
     /// </summary>
     public class RopRestrictRequest : Block

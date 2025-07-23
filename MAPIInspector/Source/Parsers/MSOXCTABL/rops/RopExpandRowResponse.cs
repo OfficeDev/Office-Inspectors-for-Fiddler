@@ -4,7 +4,8 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.17 RopExpandRow ROP
+    /// [MS-OXCROPS] 2.2.5.16.2 RopExpandRow ROP Success Response Buffer
+    /// [MS-OXCROPS] 2.2.5.16.3 RopExpandRow ROP Failure Response Buffer
     /// A class indicates the RopExpandRow ROP Response Buffer.
     /// </summary>
     public class RopExpandRowResponse : Block
