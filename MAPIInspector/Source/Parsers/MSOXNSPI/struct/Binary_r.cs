@@ -3,8 +3,8 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.3.1 Property Values
-    /// 2.3.1.3 Binary_r
+    /// [MS-OXNSPI] 2.2.2 Property Values
+    /// [MS-OXNSPI] 2.2.2.3 Binary_r Structure
     /// A class indicates the Binary_r structure.
     /// </summary>
     public class Binary_r : Block

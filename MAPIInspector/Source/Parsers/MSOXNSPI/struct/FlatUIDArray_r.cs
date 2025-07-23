@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.3.1 Property Values
-    /// 2.3.1.8 FlatUIDArray_r
+    /// [MS-OXNSPI] 2.2.2 Property Values
+    /// [MS-OXNSPI] 2.2.2.8 FlatUIDArray_r Structure
     /// A class indicates the FlatUIDArray_r structure.
     /// </summary>
     public class FlatUIDArray_r : Block

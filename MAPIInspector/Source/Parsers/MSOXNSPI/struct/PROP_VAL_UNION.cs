@@ -3,8 +3,8 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.3.1 Property Values
-    /// 2.3.1.11 PROP_VAL_UNION
+    /// [MS-OXNSPI] 2.2.2 Property Values
+    /// [MS-OXNSPI] 2.2.2.11 PROP_VAL_UNION Structure
     /// A class indicates the PROP_VAL_UNION structure.
     /// </summary>
     public class PROP_VAL_UNION : Block

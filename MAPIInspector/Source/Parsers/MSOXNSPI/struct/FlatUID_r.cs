@@ -3,8 +3,9 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.3.1 Property Values
-    /// 2.3.1.1 FlatUID_r
+    /// [MS-OXNSPI] 2.2.2 Property Values
+    /// [MS-OXNSPI] 2.2.2.1 FlatUID_r Structure
+    /// [MS-OXCDATA] 2.5.2 FlatUID_r Structure
     /// A class indicates the FlatUID_r structure.
     /// </summary>
     public class FlatUID_r : Block

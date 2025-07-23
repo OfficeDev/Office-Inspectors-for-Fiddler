@@ -3,8 +3,9 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.3.1 Property Values
-    /// 2.3.1.12 PropertyValue_r
+    /// [MS-OXNSPI] 2.2.2 Property Values
+    /// [MS-OXNSPI] 2.2.2.12 PropertyValue_r Structure
+    /// [MS-OXCDATA] 2.11.2.2 PropertyValue_r Structure
     /// A class indicates the PropertyValue_r structure.
     /// </summary>
     public class PropertyValue_r : Block

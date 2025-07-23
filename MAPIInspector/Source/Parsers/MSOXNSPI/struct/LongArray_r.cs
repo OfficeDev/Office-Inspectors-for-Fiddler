@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.3.1 Property Values
-    /// 2.3.1.5 LongArray_r
+    /// [MS-OXNSPI] 2.2.2 Property Values
+    /// [MS-OXNSPI] 2.2.2.5 LongArray_r Structure
     /// A class indicates the LongArray_r structure.
     /// </summary>
     public class LongArray_r : Block

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.3.1 Property Values
-    /// 2.3.1.10 DateTimeArray_r
+    /// [MS-OXNSPI] 2.2.2 Property Values
+    /// [MS-OXNSPI] 2.2.2.10 DateTimeArray_r Structure
     /// A class indicates the DateTimeArray_r structure.
     /// </summary>
     public class DateTimeArray_r : Block

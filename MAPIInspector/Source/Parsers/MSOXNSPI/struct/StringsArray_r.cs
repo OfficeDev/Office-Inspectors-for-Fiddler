@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.3.6.1 StringsArray_r
+    /// [MS-OXNSPI] 2.2.7.1 StringsArray_r
     /// A class indicates the StringsArray_r structure.
     /// </summary>
     public class StringsArray_r : Block

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.3.1 Property Values
-    /// 2.3.1.9 WStringArray_r
+    /// [MS-OXNSPI] 2.2.2 Property Values
+    /// [MS-OXNSPI] 2.2.2.9 WStringArray_r Structure
     /// A class indicates the WStringArray_r structure.
     /// </summary>
     public class WStringArray_r : Block
