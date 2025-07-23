@@ -3,7 +3,7 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 2.2.2.1 RPC_HEADER_EXT Structure
+    /// [[MS-OXCRPC]] 2.2.2.1 RPC_HEADER_EXT Structure
     /// The RPC_HEADER_EXT structure provides information about the payload. It is defined in section 2.2.2.1 of MS-OXCRPC.
     /// </summary>
     public class RPC_HEADER_EXT : Block

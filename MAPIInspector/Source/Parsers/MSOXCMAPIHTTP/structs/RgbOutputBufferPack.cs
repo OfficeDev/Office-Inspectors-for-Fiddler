@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// 3.1.4.1.1.1.2 rgbAuxOut Output Buffer
+    /// [[MS-OXCRPC]] 3.1.4.1.1.1.2 rgbAuxOut Output Buffer
     /// The rgbOutputBufferPack contains multiple rgbOutputBuffer structure. It is defined in section 3.1.4.2.1.1.2 of MS-OXCRPC.
     /// </summary>
     public class RgbOutputBufferPack : Block
