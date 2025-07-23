@@ -174,8 +174,8 @@ namespace MAPIInspector.Parsers
             var isMovedCopied = NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectMoved) ||
                 NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectCopied);
             // NotificationType in the NotificationFlags field is 0x0004 or 0x0010
-            var isCreateDelete = NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectCreated) ||
-                NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectDeleted);
+            var isCreateModify = NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectCreated) ||
+                NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectModified);
             // bit 0x1000 is set in the NotificationFlags field
             var isTotalMessageCount = NotificationFlags.Data.HasFlag(NotificationTypesEnum.T);
             // bit 0x2000 is set in the NotificationFlags field
@@ -230,7 +230,7 @@ namespace MAPIInspector.Parsers
             if (isMovedCopied && isMessage) OldMessageId = Parse<MessageID>();
             if (isMovedCopied && isMessage) OldParentFolderId = Parse<FolderID>();
 
-            if (isCreateDelete)
+            if (isCreateModify)
             {
                 TagCount = ParseT<ushort>();
 
