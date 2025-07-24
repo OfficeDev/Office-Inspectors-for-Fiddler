@@ -3,7 +3,8 @@ using BlockParser;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// [MS-OXCSTOR] 2.2.3.1.2 RopLogon ROP Success Response Buffer for Private Mailboxes
+    /// [MS-OXCSTOR] 2.2.1.1.3 RopLogon ROP Success Response Buffer for Private Mailbox
+    /// [MS-OXCROPS] 2.2.3.1.2 RopLogon ROP Success Response Buffer for Private Mailboxes
     /// A class indicates the RopLogon ROP Response Buffer for private mailbox.
     /// </summary>
     public class RopLogonResponse_PrivateMailboxes : Block
@@ -119,12 +120,12 @@ namespace MAPIInspector.Parsers
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
             this.AddError(ReturnValue, "ReturnValue");
             AddChildBlockT(LogonFlags, "LogonFlags");
-            AddLabeledChildren(FolderIds, "FolderIds"); // TODO Interpert which folder is which
+            AddLabeledChildren(FolderIds, "FolderIds"); // TODO Interpret which folder is which
             AddChildBlockT(LogonFlags, "ResponseFlags");
             this.AddChildGuid(MailboxGuid, "MailboxGuid");
             AddChildBlockT(ReplId, "ReplId");
             this.AddChildGuid(ReplGuid, "ReplGuid");
-            AddChild(LogonTime, LogonTime.Text);
+            if (LogonTime != null ) AddChild(LogonTime, LogonTime.Text);
             AddChildBlockT(GwartTime, "GwartTime");
             AddChildBlockT(StoreState, "StoreState");
             AddChildBlockT(ServerNameSize, "ServerNameSize");

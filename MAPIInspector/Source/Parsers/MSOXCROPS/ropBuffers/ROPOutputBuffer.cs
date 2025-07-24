@@ -91,7 +91,7 @@ namespace MAPIInspector.Parsers
                             case RopIdType.RopLogon:
                                 int currentPos_logon = parser.Offset;
                                 parser.Advance(sizeof(RopIdType));
-                                BlockT<uint> tempOutputHandleIndex_logon = ParseT<uint>();
+                                var tempOutputHandleIndex_logon = ParseT<byte>();
                                 parser.Offset = currentPos_logon;
                                 if (!(DecodingContext.SessionLogonFlagsInLogonRop.Count > 0 &&
                                     DecodingContext.SessionLogonFlagsInLogonRop.ContainsKey(parsingSessionID) &&
