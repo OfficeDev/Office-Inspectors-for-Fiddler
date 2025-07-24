@@ -19,17 +19,25 @@ namespace MAPIInspector.Parsers
         public BlockBytes Value;
 
         /// <summary>
+        /// [MS-OXCMAPIHTTP] 2.2.1.1 AddressBookPropertyValue Structure
+        /// </summary>
+        public BlockT<bool> HasValue;
+
+        /// <summary>
         /// The Count wide size.
         /// </summary>
         private CountWideEnum countWide;
+
+        private readonly bool isAddressBook = false;
 
         /// <summary>
         /// Initializes a new instance of the PtypBinary class
         /// </summary>
         /// <param name="wide">The Count wide size of PtypBinary type.</param>
-        public PtypBinary(CountWideEnum wide)
+        public PtypBinary(CountWideEnum wide, bool isAddressBook)
         {
             countWide = wide;
+            this.isAddressBook = isAddressBook;
         }
 
         /// <summary>
@@ -37,6 +45,13 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
+            if (isAddressBook)
+            {
+                // If this is an AddressBookPropertyValue, we need to check if HasValue is present
+                HasValue = ParseAs<byte, bool>();
+                if (!HasValue) return;
+            }
+
             switch (countWide)
             {
                 case CountWideEnum.twoBytes:
@@ -53,6 +68,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
+            AddChildBlockT(HasValue, "HasValue");
             AddChildBlockT(Count, "Count");
             AddChildBytes(Value, "Value");
         }

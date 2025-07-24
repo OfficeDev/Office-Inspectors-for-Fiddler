@@ -103,7 +103,7 @@ namespace MAPIInspector.Parsers
                 case PropertyDataType.PtypNull: return Parse<PtypNull>(parser);
                 case PropertyDataType.PtypBinary:
                     {
-                        var tempPropertyValue = new PtypBinary(ptypMultiCountSize);
+                        var tempPropertyValue = new PtypBinary(ptypMultiCountSize, false);
                         tempPropertyValue.Parse(parser);
                         return tempPropertyValue;
                     }
@@ -130,7 +130,7 @@ namespace MAPIInspector.Parsers
                 case PropertyDataType.PtypMultipleGuid: return Parse<PtypMultipleGuid>(parser);
                 case PropertyDataType.PtypMultipleBinary:
                     {
-                        var tempPropertyValue = new PtypMultipleBinary(ptypMultiCountSize);
+                        var tempPropertyValue = new PtypMultipleBinary(ptypMultiCountSize, bIsAddressBook);
                         tempPropertyValue.Parse(parser);
                         return tempPropertyValue;
                     }

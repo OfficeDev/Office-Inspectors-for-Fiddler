@@ -20,12 +20,14 @@ namespace MAPIInspector.Parsers
         /// [MS-OXCMAPIHTTP] 2.2.1.1 AddressBookPropertyValue Structure
         /// </summary>
         public BlockT<bool> HasValue;
+
         /// <summary>
         /// The Count wide size.
         /// </summary>
         private CountWideEnum countWide = 0; // Default to no count field
 
         private readonly bool isAddressBook = false;
+
         /// <summary>
         /// Initializes a new instance of the PtypString8 class
         /// </summary>

@@ -34,13 +34,16 @@ namespace MAPIInspector.Parsers
         /// </summary>
         private CountWideEnum countWide;
 
+        private readonly bool isAddressBook = false;
+
         /// <summary>
         /// Initializes a new instance of the PtypMultipleBinary class
         /// </summary>
         /// <param name="wide">The Count wide size of PtypMultipleBinary type.</param>
-        public PtypMultipleBinary(CountWideEnum wide)
+        public PtypMultipleBinary(CountWideEnum wide, bool isAddressBook)
         {
             countWide = wide;
+            this.isAddressBook = isAddressBook;
         }
 
         /// <summary>
@@ -53,7 +56,7 @@ namespace MAPIInspector.Parsers
             List<PtypBinary> tempvalue = new List<PtypBinary>();
             for (int i = 0; i < Count; i++)
             {
-                var binary = new PtypBinary(countWide);
+                var binary = new PtypBinary(countWide, isAddressBook);
                 binary.Parse(parser);
                 tempvalue.Add(binary);
             }
