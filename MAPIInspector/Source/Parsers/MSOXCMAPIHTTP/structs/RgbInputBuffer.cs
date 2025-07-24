@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// [[MS-OXCRPC]] 3.1.4.1.1.1.1 rgbAuxIn Input Buffer
+    /// [MS-OXCRPC] 3.1.4.1.1.1.1 rgbAuxIn Input Buffer
     /// The rgbInputBuffer contains the ROP request payload. It is defined in section 3.1.4.2.1.1.1 of MS-OXCRPC.
     /// </summary>
     public class RgbInputBuffer : Block

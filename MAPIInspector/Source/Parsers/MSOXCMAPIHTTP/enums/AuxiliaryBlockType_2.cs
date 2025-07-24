@@ -1,6 +1,7 @@
 namespace MAPIInspector.Parsers
 {
     /// <summary>
+    /// [MS-OXCRPC] 2.2.2.2 AUX_HEADER Structure
     /// The enum type corresponding auxiliary block structure that follows the AUX_HEADER structure when the Version field is AUX_VERSION_2. It is defined in section 2.2.2.2 of MS-OXCRPC.
     /// </summary>
     public enum AuxiliaryBlockType_2 : byte
