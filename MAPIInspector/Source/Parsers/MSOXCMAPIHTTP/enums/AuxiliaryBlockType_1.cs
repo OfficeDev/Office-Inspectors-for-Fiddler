@@ -132,6 +132,11 @@ namespace MAPIInspector.Parsers
         AUX_TYPE_ENDPOINT_CAPABILITIES = 0x48,
 
         /// <summary>
+        /// AUX_TYPE_EXCEPTION_TRACE type
+        /// </summary>
+        AUX_TYPE_EXCEPTION_TRACE = 0x49,
+
+        /// <summary>
         /// AUX_CLIENT_CONNECTION_INFO type
         /// </summary>
         AUX_CLIENT_CONNECTION_INFO = 0x4A,

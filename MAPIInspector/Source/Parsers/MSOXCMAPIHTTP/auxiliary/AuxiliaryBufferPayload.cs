@@ -35,6 +35,12 @@ namespace MAPIInspector.Parsers
                             break;
                         }
 
+                    case AuxiliaryBlockType_1.AUX_TYPE_EXCEPTION_TRACE:
+                        {
+                            AuxiliaryBlock = Parse<AUX_EXCEPTION_TRACE>();
+                            break;
+                        }
+
                     case AuxiliaryBlockType_1.AUX_CLIENT_CONNECTION_INFO:
                         {
                             AuxiliaryBlock = Parse<AUX_CLIENT_CONNECTION_INFO>();

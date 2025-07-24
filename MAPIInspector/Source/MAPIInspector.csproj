@@ -382,6 +382,7 @@
     <Compile Include="Parsers\MSOXCMAPIHTTP\auxiliary\AuxiliaryBufferPayload.cs" />
     <Compile Include="Parsers\MSOXCMAPIHTTP\auxiliary\AUX_CLIENT_CONNECTION_INFO.cs" />
     <Compile Include="Parsers\MSOXCMAPIHTTP\auxiliary\AUX_CLIENT_CONTROL.cs" />
+    <Compile Include="Parsers\MSOXCMAPIHTTP\auxiliary\AUX_EXCEPTION_TRACE.cs" />
     <Compile Include="Parsers\MSOXCMAPIHTTP\auxiliary\AUX_ENDPOINT_CAPABILITIES.cs" />
     <Compile Include="Parsers\MSOXCMAPIHTTP\auxiliary\AUX_EXORGINFO.cs" />
     <Compile Include="Parsers\MSOXCMAPIHTTP\auxiliary\AUX_HEADER.cs" />
