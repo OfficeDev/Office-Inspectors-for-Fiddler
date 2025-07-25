@@ -373,11 +373,6 @@ namespace MapiInspector
                 });
                 allSessionsList.Insert(0, session0);
                 AllSessions = allSessionsList.ToArray();
-                int allSessionLength = AllSessions.Length;
-                if (allSessionLength > 0 && AllSessions[allSessionLength - 1]["Number"] == null)
-                {
-                    SetIndexForContextRelatedMethods();
-                }
                 SessionExtensions.AllSessionsNavigator = new SessionNavigator(AllSessions);
 
                 try
@@ -433,10 +428,6 @@ namespace MapiInspector
             var errorStringList = new List<string>();
             StringBuilder stringBuilder = new StringBuilder();
             AllSessions = sessionsFromCore;
-            if (AllSessions.Length > 0 && AllSessions[AllSessions.Length - 1]["Number"] == null)
-            {
-                SetIndexForContextRelatedMethods();
-            }
             SessionExtensions.AllSessionsNavigator = new SessionNavigator(AllSessions);
 
             DecodingContext decodingContext = new DecodingContext();

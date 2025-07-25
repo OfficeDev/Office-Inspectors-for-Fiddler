@@ -26,6 +26,14 @@ namespace MapiInspector
         /// <param name="sessions">Array of Session objects to navigate.</param>
         public SessionNavigator(Session[] sessions)
         {
+            if (sessions.Length > 0 && sessions[sessions.Length - 1]["Number"] == null)
+            {
+                for (int i = 0; i < sessions.Length; i++)
+                {
+                    sessions[i]["Number"] = i.ToString();
+                }
+            }
+
             var tempDict = new SortedDictionary<int, Session>();
             numberToIndex = new Dictionary<int, int>();
 

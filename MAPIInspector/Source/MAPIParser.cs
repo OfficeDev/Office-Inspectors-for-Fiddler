@@ -1428,17 +1428,6 @@ sessionID >= currentSessionID)
         }
 
         /// <summary>
-        /// Add a index feature for session
-        /// </summary>
-        public static void SetIndexForContextRelatedMethods()
-        {
-            for (int i = 0; i < AllSessions.Length; i++)
-            {
-                AllSessions[i]["Number"] = i.ToString();
-            }
-        }
-
-        /// <summary>
         /// Method to judge whether a session is from FiddlerCore or FiddlerExe
         /// </summary>
         /// <param name="currentSession">The session to be judged</param>
@@ -1508,10 +1497,6 @@ sessionID >= currentSessionID)
             bool haveWrittenJson = false;
             StringBuilder stringBuilder = new StringBuilder();
             AllSessions = sessionsFromCore;
-            if (AllSessions.Length > 0 && AllSessions[AllSessions.Length - 1]["Number"] == null)
-            {
-                SetIndexForContextRelatedMethods();
-            }
             SessionExtensions.AllSessionsNavigator = new SessionNavigator(AllSessions);
 
             Partial.ResetPartialParameters();
