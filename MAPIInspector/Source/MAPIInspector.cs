@@ -76,37 +76,37 @@ namespace MapiInspector
         {
             get
             {
-                if (this.session != null)
+                if (session != null)
                 {
                     if (this is IRequestInspector2)
                     {
-                        return this.session.RequestHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
+                        return session.RequestHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
                     }
-                    else if ((this is IResponseInspector2) && this.session.id != 0)
+                    else if ((this is IResponseInspector2) && session.id != 0)
                     {
-                        if ((this is IResponseInspector2) && this.session.ResponseHeaders.Exists("X-ResponseCode"))
+                        if ((this is IResponseInspector2) && session.ResponseHeaders.Exists("X-ResponseCode"))
                         {
-                            string responseCode = this.session.ResponseHeaders["X-ResponseCode"];
+                            string responseCode = session.ResponseHeaders["X-ResponseCode"];
                             if (responseCode == "0")
                             {
-                                return this.session.ResponseHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
+                                return session.ResponseHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
                             }
                             else if (responseCode != string.Empty)
                             {
-                                return this.session.ResponseHeaders.ExistsAndContains("Content-Type", "text/html");
+                                return session.ResponseHeaders.ExistsAndContains("Content-Type", "text/html");
                             }
                         }
                     }
-                    else if ((this is IResponseInspector2) && this.session["X-ResponseCode"] != null)
+                    else if ((this is IResponseInspector2) && session["X-ResponseCode"] != null)
                     {
-                        string responseCode = this.session["X-ResponseCode"];
+                        string responseCode = session["X-ResponseCode"];
                         if (responseCode == "0")
                         {
-                            return this.session["Content-Type"] != null && this.session["Content-Type"] == "application/mapi-http";
+                            return session["Content-Type"] != null && session["Content-Type"] == "application/mapi-http";
                         }
                         else if (responseCode != string.Empty)
                         {
-                            return this.session["Content-Type"] != null && this.session["Content-Type"] == "text/html";
+                            return session["Content-Type"] != null && session["Content-Type"] == "text/html";
                         }
                     }
                 }
@@ -132,15 +132,15 @@ namespace MapiInspector
         public override void AddToTab(TabPage o)
         {
             o.Text = "MAPI";
-            this.MAPIControl = new MAPIControl();
-            this.MAPIControl.Inspector = this;
-            o.Controls.Add(this.MAPIControl);
-            this.MAPIControl.Size = o.Size;
-            this.MAPIControl.Dock = DockStyle.Fill;
-            this.MAPIViewControl = this.MAPIControl.MAPITreeView;
-            this.MAPIControl.MAPIHexBox.VScrollBarVisible = true;
-            this.MAPIViewControl.AfterSelect -= this.TreeView_AfterSelect;
-            this.MAPIViewControl.AfterSelect += this.TreeView_AfterSelect;
+            MAPIControl = new MAPIControl();
+            MAPIControl.Inspector = this;
+            o.Controls.Add(MAPIControl);
+            MAPIControl.Size = o.Size;
+            MAPIControl.Dock = DockStyle.Fill;
+            MAPIViewControl = MAPIControl.MAPITreeView;
+            MAPIControl.MAPIHexBox.VScrollBarVisible = true;
+            MAPIViewControl.AfterSelect -= TreeView_AfterSelect;
+            MAPIViewControl.AfterSelect += TreeView_AfterSelect;
             DecodingContext dc = new DecodingContext();
         }
 
@@ -156,8 +156,8 @@ namespace MapiInspector
 
             if (e.Node.Tag == null)
             {
-                this.MAPIControl.MAPIHexBox.Select(0, 0);
-                this.MAPIControl.CROPSHexBox.Select(0, 0);
+                MAPIControl.MAPIHexBox.Select(0, 0);
+                MAPIControl.CROPSHexBox.Select(0, 0);
             }
             else
             {
@@ -168,32 +168,32 @@ namespace MapiInspector
                     {
                         if (pos.IsAuxiliaryPayload)
                         {
-                            this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(AuxPayLoadCompressedXOR);
+                            MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(AuxPayLoadCompressedXOR);
                         }
                         else
                         {
                             if (request > response)
                             {
-                                this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(InputPayLoadCompressedXOR[pos.BufferIndex]);
+                                MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(InputPayLoadCompressedXOR[pos.BufferIndex]);
                             }
                             else
                             {
-                                this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(OutputPayLoadCompressedXOR[pos.BufferIndex]);
+                                MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(OutputPayLoadCompressedXOR[pos.BufferIndex]);
                             }
                         }
 
-                        this.MAPIControl.CROPSHexBox.Select(pos.StartIndex, pos.Offset);
-                        this.MAPIControl.MAPIHexBox.Select(0, 0);
-                        this.MAPIControl.CROPSHexBox.Visible = true;
+                        MAPIControl.CROPSHexBox.Select(pos.StartIndex, pos.Offset);
+                        MAPIControl.MAPIHexBox.Select(0, 0);
+                        MAPIControl.CROPSHexBox.Visible = true;
                         ToolTip toolTip = new ToolTip();
-                        toolTip.SetToolTip(this.MAPIControl.CROPSHexBox, "This is decompressed payload data.");
-                        this.MAPIControl.SplitContainer.Panel2Collapsed = false;
+                        toolTip.SetToolTip(MAPIControl.CROPSHexBox, "This is decompressed payload data.");
+                        MAPIControl.SplitContainer.Panel2Collapsed = false;
                     }
                     else
                     {
-                        this.MAPIControl.MAPIHexBox.Select(pos.StartIndex, pos.Offset);
-                        this.MAPIControl.CROPSHexBox.Visible = false;
-                        this.MAPIControl.SplitContainer.Panel2Collapsed = true;
+                        MAPIControl.MAPIHexBox.Select(pos.StartIndex, pos.Offset);
+                        MAPIControl.CROPSHexBox.Visible = false;
+                        MAPIControl.SplitContainer.Panel2Collapsed = true;
                     }
                 }
             }
@@ -213,12 +213,12 @@ namespace MapiInspector
         /// </summary>
         public void Clear()
         {
-            this.MAPIViewControl.Nodes.Clear();
-            this.MAPIControl.CROPSHexBox.Visible = false;
+            MAPIViewControl.Nodes.Clear();
+            MAPIControl.CROPSHexBox.Visible = false;
             byte[] empty = new byte[0];
-            this.MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(empty);
-            this.MAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
-            this.MAPIControl.SplitContainer.Panel2Collapsed = true;
+            MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(empty);
+            MAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
+            MAPIControl.SplitContainer.Panel2Collapsed = true;
         }
 
         /// <summary>
@@ -232,24 +232,24 @@ namespace MapiInspector
         /// <returns>Int between 0-100 with 100 being the most confident</returns>
         public override int ScoreForSession(Session oS)
         {
-            if (null == this.session)
+            if (null == session)
             {
-                this.session = oS;
+                session = oS;
             }
 
             if (null == BaseHeaders)
             {
                 if (this is IRequestInspector2)
                 {
-                    BaseHeaders = this.session.oRequest.headers;
+                    BaseHeaders = session.oRequest.headers;
                 }
                 else
                 {
-                    BaseHeaders = this.session.oResponse.headers;
+                    BaseHeaders = session.oResponse.headers;
                 }
             }
 
-            if (this.IsMapihttp)
+            if (IsMapihttp)
             {
                 return 100;
             }
@@ -265,7 +265,7 @@ namespace MapiInspector
         /// <param name="oS">Session object passed by Fiddler</param>
         public override void AssignSession(Session oS)
         {
-            this.session = oS;
+            session = oS;
             base.AssignSession(oS);
         }
 
@@ -276,13 +276,13 @@ namespace MapiInspector
         {
             get
             {
-                return this.rawBody;
+                return rawBody;
             }
 
             set
             {
-                this.rawBody = value;
-                this.UpdateView();
+                rawBody = value;
+                UpdateView();
             }
         }
 
@@ -298,32 +298,32 @@ namespace MapiInspector
                 return;
             }
 
-            this.MAPIViewControl.BeginUpdate();
+            MAPIViewControl.BeginUpdate();
             try
             {
                 var topNode = BaseStructure.AddBlock(obj, DoDebug);
-                this.MAPIViewControl.Nodes.Add(topNode);
+                MAPIViewControl.Nodes.Add(topNode);
                 topNode.ExpandAll();
                 if (bytesForHexview != null)
                 {
-                    this.MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesForHexview);
-                    this.MAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
+                    MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesForHexview);
+                    MAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
                 }
-                if (this.MAPIViewControl.Nodes.Count != 0)
+                if (MAPIViewControl.Nodes.Count != 0)
                 {
-                    this.MAPIViewControl.Nodes[0].EnsureVisible();
+                    MAPIViewControl.Nodes[0].EnsureVisible();
                 }
             }
             catch (Exception e)
             {
                 var exBlock = BlockException.Create("Exception", e, 0);
                 var topNode = BaseStructure.AddBlock(obj, DoDebug);
-                this.MAPIViewControl.Nodes.Add(topNode);
+                MAPIViewControl.Nodes.Add(topNode);
                 topNode.ExpandAll();
             }
             finally
             {
-                this.MAPIViewControl.EndUpdate();
+                MAPIViewControl.EndUpdate();
             }
         }
 
@@ -344,7 +344,7 @@ namespace MapiInspector
         public void ToggleDebug()
         {
             DoDebug = !DoDebug;
-            this.UpdateView();
+            UpdateView();
         }
 
         /// <summary>
@@ -352,7 +352,7 @@ namespace MapiInspector
         /// </summary>
         private void UpdateView()
         {
-            this.Clear();
+            Clear();
             byte[] bytesForHexView;
             Block parserResult;
             IsLooperCall = false;
@@ -360,26 +360,25 @@ namespace MapiInspector
             ContextInformationCollection = new List<ContextInformation>();
             Partial.ResetPartialParameters();
 
-            if (this.IsMapihttp)
+            if (IsMapihttp)
             {
                 List<Session> allSessionsList = new List<Session>();
                 Session session0 = new Session(new byte[0], new byte[0]);
                 Session[] sessionsInFiddler = FiddlerApplication.UI.GetAllSessions();
                 allSessionsList.AddRange(sessionsInFiddler);
-                FiddlerApplication.OnLoadSAZ += this.AfterCallDoImport;
+                FiddlerApplication.OnLoadSAZ += AfterCallDoImport;
                 allSessionsList.Sort(delegate (Session p1, Session p2)
                 {
                     return p1.id.CompareTo(p2.id);
                 });
                 allSessionsList.Insert(0, session0);
-                AllSessions = allSessionsList.ToArray();
-                SessionExtensions.AllSessionsNavigator = new SessionNavigator(AllSessions);
+                SessionExtensions.AllSessionsNavigator = new SessionNavigator(allSessionsList.ToArray());
 
                 try
                 {
-                    if (this.Direction == TrafficDirection.In)
+                    if (Direction == TrafficDirection.In)
                     {
-                        parserResult = ParseHTTPPayload(BaseHeaders, this.session, this.session.requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                        parserResult = ParseHTTPPayload(BaseHeaders, session, session.requestBodyBytes, TrafficDirection.In, out bytesForHexView);
                     }
                     else
                     {
@@ -389,15 +388,15 @@ namespace MapiInspector
                             return;
                         }
 
-                        parserResult = ParseHTTPPayload(BaseHeaders, this.session, this.session.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                        parserResult = ParseHTTPPayload(BaseHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
                     }
 
-                    this.DisplayObject(parserResult, bytesForHexView);
+                    DisplayObject(parserResult, bytesForHexView);
                 }
                 catch (Exception e)
                 {
                     var exception = BlockException.Create("Exception", e, 0);
-                    this.DisplayObject(exception, null);
+                    DisplayObject(exception, null);
                 }
                 finally
                 {
@@ -427,20 +426,18 @@ namespace MapiInspector
         {
             var errorStringList = new List<string>();
             StringBuilder stringBuilder = new StringBuilder();
-            AllSessions = sessionsFromCore;
-            SessionExtensions.AllSessionsNavigator = new SessionNavigator(AllSessions);
+            SessionExtensions.AllSessionsNavigator = new SessionNavigator(sessionsFromCore);
 
             DecodingContext decodingContext = new DecodingContext();
             Partial.ResetPartialParameters();
             Partial.ResetPartialContextInformation();
             ResetHandleInformation();
-            for (int i = 0; i < AllSessions.Length; i++)
+            int i = 0;
+            foreach (var session in SessionExtensions.AllSessionsNavigator)
             {
-                var session = AllSessions[i];
-                Session val = AllSessions[i];
-                if (AllSessions[i]["VirtualID"] != null)
+                if (session["VirtualID"] != null)
                 {
-                    ParsingSession = val;
+                    ParsingSession = session;
                 }
                 if (IsMapihttpWithoutUI())
                 {
@@ -448,19 +445,19 @@ namespace MapiInspector
                     {
                         IsLooperCall = false;
                         Partial.ResetPartialParameters();
-                        BaseHeaders = val.RequestHeaders;
+                        BaseHeaders = session.RequestHeaders;
                         byte[] bytes;
-                        object obj = ParseHTTPPayload(BaseHeaders, val, val.requestBodyBytes, TrafficDirection.In, out bytes);
+                        object obj = ParseHTTPPayload(BaseHeaders, session, session.requestBodyBytes, TrafficDirection.In, out bytes);
                         JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: true, obj);
-                        if (val["X-ResponseCode"] == "0")
+                        if (session["X-ResponseCode"] == "0")
                         {
-                            object obj2 = ParseHTTPPayload(BaseHeaders, val, val.responseBodyBytes, TrafficDirection.Out, out bytes);
+                            object obj2 = ParseHTTPPayload(BaseHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out bytes);
                             JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: false, obj2);
                         }
                     }
                     catch (Exception ex)
                     {
-                        errorStringList.Add($"{errorStringList.Count + 1}. Error: Frame#{val["VirtualID"]} Error Message:{ex.Message}");
+                        errorStringList.Add($"{errorStringList.Count + 1}. Error: Frame#{session["VirtualID"]} Error Message:{ex.Message}");
                     }
                     finally
                     {
@@ -471,6 +468,7 @@ namespace MapiInspector
                         IsLooperCall = true;
                     }
                 }
+
                 if (i % 10 == 0 && JsonResult.Length != 0)
                 {
                     string path = pathName + Path.DirectorySeparatorChar.ToString() + autoCaseName + "-" + JsonFile;
@@ -490,7 +488,10 @@ namespace MapiInspector
                     }
                     JsonResult = string.Empty;
                 }
+
+                i++;
             }
+
             allRops = AllRopsList;
             foreach (string errorString in errorStringList)
             {

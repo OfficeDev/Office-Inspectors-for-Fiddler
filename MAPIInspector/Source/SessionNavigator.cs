@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Fiddler;
 
@@ -7,7 +8,7 @@ namespace MapiInspector
     /// Provides fast navigation of Session objects by their "Number" property.
     /// Allows retrieval of previous, next, and range of sessions based on their number.
     /// </summary>
-    public class SessionNavigator
+    public class SessionNavigator : IEnumerable<Session>
     {
         /// <summary>
         /// Array of sessions sorted by their "Number" property.
@@ -120,6 +121,22 @@ namespace MapiInspector
                 return sortedSessions[0];
             }
             return null;
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the sorted sessions.
+        /// </summary>
+        public IEnumerator<Session> GetEnumerator()
+        {
+            for (int i = 0; i < sortedSessions.Length; i++)
+            {
+                yield return sortedSessions[i];
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

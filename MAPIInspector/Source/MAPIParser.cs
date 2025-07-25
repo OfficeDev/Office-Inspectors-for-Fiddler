@@ -22,11 +22,6 @@ namespace MapiInspector
         public static Session ParsingSession;
 
         /// <summary>
-        /// Record all sessions in Fiddler.
-        /// </summary>
-        public static Session[] AllSessions;
-
-        /// <summary>
         /// The targetHandle is used to record the session id and its object handle before a loop parsing for context session
         /// </summary>
         public static Stack<Dictionary<RopIdType, Dictionary<int, uint>>> TargetHandle = new Stack<Dictionary<RopIdType, Dictionary<int, uint>>>();
@@ -1496,8 +1491,7 @@ sessionID >= currentSessionID)
             var JsonResult = new List<string>();
             bool haveWrittenJson = false;
             StringBuilder stringBuilder = new StringBuilder();
-            AllSessions = sessionsFromCore;
-            SessionExtensions.AllSessionsNavigator = new SessionNavigator(AllSessions);
+            SessionExtensions.AllSessionsNavigator = new SessionNavigator(sessionsFromCore);
 
             Partial.ResetPartialParameters();
             Partial.ResetPartialContextInformation();
@@ -1522,7 +1516,7 @@ sessionID >= currentSessionID)
             var JsonConverters = new JsonConverter[] { new Newtonsoft.Json.Converters.StringEnumConverter(), new ByteArrayConverter() };
 
             int i = 0;
-            foreach (var session in AllSessions)
+            foreach (var session in SessionExtensions.AllSessionsNavigator)
             {
                 if (IsMapihttpSession(session, TrafficDirection.In) || IsMapihttpSession(session, TrafficDirection.Out))
                 {
