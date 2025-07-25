@@ -1,5 +1,6 @@
 using BlockParser;
 using Fiddler;
+using MapiInspector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -188,19 +189,19 @@ namespace MAPIInspector.Parsers
             byte[] bytesForHexView = new byte[0];
             Block obj = null;
             bytes = bytesForHexView;
-            Session thisSession = MapiInspector.MAPIParser.ParsingSession;
+            Session thisSession = MAPIParser.ParsingSession;
             int thisSessionID = thisSession.id;
-            if (MapiInspector.MAPIParser.IsFromFiddlerCore(thisSession))
+            if (MAPIParser.IsFromFiddlerCore(thisSession))
             {
                 thisSessionID = int.Parse(thisSession["VirtualID"]);
             }
 
             if (ropID == RopIdType.RopFastTransferSourceGetBuffer)
             {
-                if (MapiInspector.MAPIParser.responseDic.ContainsKey(thisSessionID))
+                if (MAPIParser.responseDic.ContainsKey(thisSessionID))
                 {
-                    obj = MapiInspector.MAPIParser.responseDic[thisSessionID];
-                    bytes = MapiInspector.MAPIParser.responseBytesForHexview[thisSessionID];
+                    obj = MAPIParser.responseDic[thisSessionID];
+                    bytes = MAPIParser.responseBytesForHexview[thisSessionID];
 
                     if (HandleWithSessionGetContextInformation.ContainsKey(parameters) &&
                         HandleWithSessionGetContextInformation[parameters].ContainsKey(thisSessionID))
@@ -210,7 +211,7 @@ namespace MAPIInspector.Parsers
                         PartialGetRemainSize = HandleWithSessionGetContextInformation[parameters][thisSessionID].RemainSize;
                         PartialGetSubRemainSize = HandleWithSessionGetContextInformation[parameters][thisSessionID].SubRemainSize;
                         IsGet = HandleWithSessionGetContextInformation[parameters][thisSessionID].IsGet;
-                        MapiInspector.MAPIParser.OutputPayLoadCompressedXOR = HandleWithSessionGetContextInformation[parameters][thisSessionID].PayLoadCompresssedXOR;
+                        MAPIParser.OutputPayLoadCompressedXOR = HandleWithSessionGetContextInformation[parameters][thisSessionID].PayLoadCompresssedXOR;
                         PartialGetServerUrl = thisSession.RequestHeaders.RequestPath;
                         PartialGetProcessName = thisSession.LocalProcess;
                         PartialGetClientInfo = thisSession.RequestHeaders["X-ClientInfo"];
@@ -218,9 +219,9 @@ namespace MAPIInspector.Parsers
                 }
                 else
                 {
-                    Session currentSession = MapiInspector.MAPIParser.AllSessions[1];
+                    var currentSession = SessionExtensions.AllSessionsNavigator.First();
                     int currentSessionID = currentSession.id;
-                    if (MapiInspector.MAPIParser.IsFromFiddlerCore(currentSession))
+                    if (MAPIParser.IsFromFiddlerCore(currentSession))
                     {
                         currentSessionID = int.Parse(currentSession["VirtualID"]);
                     }
@@ -252,15 +253,15 @@ namespace MAPIInspector.Parsers
                             PartialGetRemainSize = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].RemainSize;
                             PartialGetSubRemainSize = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].SubRemainSize;
                             IsGet = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].IsGet;
-                            MapiInspector.MAPIParser.OutputPayLoadCompressedXOR = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].PayLoadCompresssedXOR;
+                            MAPIParser.OutputPayLoadCompressedXOR = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].PayLoadCompresssedXOR;
                             PartialGetSession = HandleWithSessionGetContextInformation[parameters][lastSavedSessionID].Session;
                             PartialGetServerUrl = PartialGetSession.RequestHeaders.RequestPath;
                             PartialGetProcessName = PartialGetSession.LocalProcess;
                             PartialGetClientInfo = PartialGetSession.RequestHeaders["X-ClientInfo"];
 
-                            currentSession = MapiInspector.MAPIParser.AllSessions[Convert.ToInt32(PartialGetSession["Number"]) + 1];
+                            currentSession = PartialGetSession.Next();
                         }
-                        if (MapiInspector.MAPIParser.IsFromFiddlerCore(currentSession))
+                        if (MAPIParser.IsFromFiddlerCore(currentSession))
                         {
                             currentSessionID = int.Parse(currentSession["VirtualID"]);
                         }
@@ -279,21 +280,21 @@ namespace MAPIInspector.Parsers
                         if (currentSession.RequestHeaders.RequestPath == serverurl &&
                             currentSession.LocalProcess == processName &&
                             currentSession.RequestHeaders["X-ClientInfo"] == clientInfo &&
-                            MapiInspector.MAPIParser.IsMapihttpSession(currentSession, MapiInspector.MAPIParser.TrafficDirection.Out) &&
+                            MAPIParser.IsMapihttpSession(currentSession, MAPIParser.TrafficDirection.Out) &&
                             currentSession.RequestHeaders["X-RequestType"] == "Execute")
                         {
                             List<uint> tableHandles = new List<uint>();
 
-                            if (MapiInspector.MAPIParser.handleGetDic.ContainsKey(currentSessionID))
+                            if (MAPIParser.handleGetDic.ContainsKey(currentSessionID))
                             {
-                                tableHandles = MapiInspector.MAPIParser.handleGetDic[currentSessionID];
+                                tableHandles = MAPIParser.handleGetDic[currentSessionID];
                             }
                             else
                             {
                                 try
                                 {
-                                    MapiInspector.MAPIParser.IsOnlyGetServerHandle = true;
-                                    object mapiResponse = MapiInspector.MAPIParser.ParseResponseMessage(currentSession, out bytesForHexView, false);
+                                    MAPIParser.IsOnlyGetServerHandle = true;
+                                    object mapiResponse = MAPIParser.ParseResponseMessage(currentSession, out bytesForHexView, false);
 
                                     if (mapiResponse != null &&
                                         (mapiResponse as ExecuteResponseBody).RopBuffer != null &&
@@ -304,29 +305,22 @@ namespace MAPIInspector.Parsers
                                 }
                                 finally
                                 {
-                                    MapiInspector.MAPIParser.IsOnlyGetServerHandle = false;
+                                    MAPIParser.IsOnlyGetServerHandle = false;
                                 }
                             }
 
                             if (tableHandles != null && tableHandles.Contains(parameters))
                             {
-                                MapiInspector.MAPIParser.ParseResponseMessage(currentSession, out bytesForHexView, true);
+                                MAPIParser.ParseResponseMessage(currentSession, out bytesForHexView, true);
                             }
                         }
 
-                        var nextSessionNumber = Convert.ToInt32(currentSession["Number"]) + 1;
-                        foreach (var session in MapiInspector.MAPIParser.AllSessions)
-                        {
-                            if (Convert.ToInt32(session["Number"]) == nextSessionNumber)
-                            {
-                                currentSession = session;
-                                break;
-                            }
-                        }
+                        currentSession = currentSession.Next();
+
                         if (currentSessionID == currentSession.id ||
                             (currentSession["VirtualID"] != null &&
                             currentSessionID == int.Parse(currentSession["VirtualID"]))) break;
-                        if (MapiInspector.MAPIParser.IsFromFiddlerCore(currentSession))
+                        if (MAPIParser.IsFromFiddlerCore(currentSession))
                         {
                             currentSessionID = int.Parse(currentSession["VirtualID"]);
                         }
@@ -341,7 +335,7 @@ namespace MAPIInspector.Parsers
                         DecodingContext.PartialInformationReady.Add(thisSessionID, true);
                     }
 
-                    obj = MapiInspector.MAPIParser.ParseResponseMessage(thisSession, out bytesForHexView, true);
+                    obj = MAPIParser.ParseResponseMessage(thisSession, out bytesForHexView, true);
                     DecodingContext.PartialInformationReady = new Dictionary<int, bool>();
                     bytes = bytesForHexView;
                 }
@@ -349,10 +343,10 @@ namespace MAPIInspector.Parsers
             else if (ropID == RopIdType.RopFastTransferDestinationPutBuffer ||
                 ropID == RopIdType.RopFastTransferDestinationPutBufferExtended)
             {
-                if (MapiInspector.MAPIParser.requestDic.ContainsKey(thisSessionID))
+                if (MAPIParser.requestDic.ContainsKey(thisSessionID))
                 {
-                    obj = MapiInspector.MAPIParser.requestDic[thisSessionID];
-                    bytes = MapiInspector.MAPIParser.requestBytesForHexview[thisSessionID];
+                    obj = MAPIParser.requestDic[thisSessionID];
+                    bytes = MAPIParser.requestBytesForHexview[thisSessionID];
 
                     if (ropID == RopIdType.RopFastTransferDestinationPutBuffer)
                     {
@@ -364,7 +358,7 @@ namespace MAPIInspector.Parsers
                             PartialPutRemainSize = HandleWithSessionPutContextInformation[parameters][thisSessionID].RemainSize;
                             PartialPutSubRemainSize = HandleWithSessionPutContextInformation[parameters][thisSessionID].SubRemainSize;
                             IsPut = true;
-                            MapiInspector.MAPIParser.InputPayLoadCompressedXOR = HandleWithSessionPutContextInformation[parameters][thisSessionID].PayLoadCompresssedXOR;
+                            MAPIParser.InputPayLoadCompressedXOR = HandleWithSessionPutContextInformation[parameters][thisSessionID].PayLoadCompresssedXOR;
                             PartialPutServerUrl = thisSession.RequestHeaders.RequestPath;
                             PartialPutProcessName = thisSession.LocalProcess;
                             PartialPutClientInfo = thisSession.RequestHeaders["X-ClientInfo"];
@@ -380,7 +374,7 @@ namespace MAPIInspector.Parsers
                             PartialPutExtendRemainSize = HandleWithSessionPutExtendContextInformation[parameters][thisSessionID].RemainSize;
                             PartialPutExtendSubRemainSize = HandleWithSessionPutExtendContextInformation[parameters][thisSessionID].SubRemainSize;
                             IsPutExtend = true;
-                            MapiInspector.MAPIParser.InputPayLoadCompressedXOR = HandleWithSessionPutExtendContextInformation[parameters][thisSessionID].PayLoadCompresssedXOR;
+                            MAPIParser.InputPayLoadCompressedXOR = HandleWithSessionPutExtendContextInformation[parameters][thisSessionID].PayLoadCompresssedXOR;
                             PartialPutExtendServerUrl = thisSession.RequestHeaders.RequestPath;
                             PartialPutExtendProcessName = thisSession.LocalProcess;
                             PartialPutExtendClientInfo = thisSession.RequestHeaders["X-ClientInfo"];
@@ -389,9 +383,9 @@ namespace MAPIInspector.Parsers
                 }
                 else
                 {
-                    Session currentSession = MapiInspector.MAPIParser.AllSessions[1];
+                    var currentSession = SessionExtensions.AllSessionsNavigator.First();
                     int currentSessionID = currentSession.id;
-                    if (MapiInspector.MAPIParser.IsFromFiddlerCore(currentSession))
+                    if (MAPIParser.IsFromFiddlerCore(currentSession))
                     {
                         currentSessionID = int.Parse(currentSession["VirtualID"]);
                     }
@@ -425,15 +419,15 @@ namespace MAPIInspector.Parsers
                                 PartialPutRemainSize = HandleWithSessionPutContextInformation[parameters][lastSavedSessionID].RemainSize;
                                 PartialPutSubRemainSize = HandleWithSessionPutContextInformation[parameters][lastSavedSessionID].SubRemainSize;
                                 IsPut = true;
-                                MapiInspector.MAPIParser.InputPayLoadCompressedXOR = HandleWithSessionPutContextInformation[parameters][lastSavedSessionID].PayLoadCompresssedXOR;
+                                MAPIParser.InputPayLoadCompressedXOR = HandleWithSessionPutContextInformation[parameters][lastSavedSessionID].PayLoadCompresssedXOR;
                                 PartialPutSession = HandleWithSessionPutContextInformation[parameters][lastSavedSessionID].Session;
                                 PartialPutServerUrl = PartialPutSession.RequestHeaders.RequestPath;
                                 PartialPutProcessName = PartialPutSession.LocalProcess;
                                 PartialPutClientInfo = PartialPutSession.RequestHeaders["X-ClientInfo"];
-                                currentSession = MapiInspector.MAPIParser.AllSessions[Convert.ToInt32(PartialPutSession["Number"]) + 1];
+                                currentSession = PartialPutSession.Next();
                             }
 
-                            if (MapiInspector.MAPIParser.IsFromFiddlerCore(currentSession))
+                            if (MAPIParser.IsFromFiddlerCore(currentSession))
                             {
                                 currentSessionID = int.Parse(currentSession["VirtualID"]);
                             }
@@ -473,15 +467,15 @@ namespace MAPIInspector.Parsers
                                 PartialPutExtendRemainSize = HandleWithSessionPutExtendContextInformation[parameters][lastSavedSessionID].RemainSize;
                                 PartialPutExtendSubRemainSize = HandleWithSessionPutExtendContextInformation[parameters][lastSavedSessionID].SubRemainSize;
                                 IsPutExtend = true;
-                                MapiInspector.MAPIParser.InputPayLoadCompressedXOR = HandleWithSessionPutExtendContextInformation[parameters][lastSavedSessionID].PayLoadCompresssedXOR;
+                                MAPIParser.InputPayLoadCompressedXOR = HandleWithSessionPutExtendContextInformation[parameters][lastSavedSessionID].PayLoadCompresssedXOR;
                                 PartialPutExtendSession = HandleWithSessionPutExtendContextInformation[parameters][lastSavedSessionID].Session;
                                 PartialPutExtendServerUrl = PartialPutExtendSession.RequestHeaders.RequestPath;
                                 PartialPutExtendProcessName = PartialPutExtendSession.LocalProcess;
                                 PartialPutExtendClientInfo = PartialPutExtendSession.RequestHeaders["X-ClientInfo"];
-                                currentSession = MapiInspector.MAPIParser.AllSessions[Convert.ToInt32(PartialPutExtendSession["Number"]) + 1];
+                                currentSession = PartialPutExtendSession.Next();
                             }
 
-                            if (MapiInspector.MAPIParser.IsFromFiddlerCore(currentSession))
+                            if (MAPIParser.IsFromFiddlerCore(currentSession))
                             {
                                 currentSessionID = int.Parse(currentSession["VirtualID"]);
                             }
@@ -501,21 +495,21 @@ namespace MAPIInspector.Parsers
                         if (currentSession.RequestHeaders.RequestPath == serverurl &&
                             currentSession.LocalProcess == processName &&
                             currentSession.RequestHeaders["X-ClientInfo"] == clientInfo &&
-                            MapiInspector.MAPIParser.IsMapihttpSession(currentSession, MapiInspector.MAPIParser.TrafficDirection.In) &&
+                            MAPIParser.IsMapihttpSession(currentSession, MAPIParser.TrafficDirection.In) &&
                             currentSession.ResponseHeaders["X-RequestType"] == "Execute")
                         {
                             List<uint> tableHandles = new List<uint>();
 
-                            if (MapiInspector.MAPIParser.handlePutDic.ContainsKey(currentSessionID))
+                            if (MAPIParser.handlePutDic.ContainsKey(currentSessionID))
                             {
-                                tableHandles = MapiInspector.MAPIParser.handlePutDic[currentSessionID];
+                                tableHandles = MAPIParser.handlePutDic[currentSessionID];
                             }
                             else
                             {
                                 try
                                 {
-                                    MapiInspector.MAPIParser.IsOnlyGetServerHandle = true;
-                                    object mapiRequest = MapiInspector.MAPIParser.ParseRequestMessage(currentSession, out bytesForHexView, false);
+                                    MAPIParser.IsOnlyGetServerHandle = true;
+                                    object mapiRequest = MAPIParser.ParseRequestMessage(currentSession, out bytesForHexView, false);
 
                                     if (mapiRequest != null &&
                                         (mapiRequest as ExecuteRequestBody).RopBuffer != null &&
@@ -526,13 +520,13 @@ namespace MAPIInspector.Parsers
                                 }
                                 finally
                                 {
-                                    MapiInspector.MAPIParser.IsOnlyGetServerHandle = false;
+                                    MAPIParser.IsOnlyGetServerHandle = false;
                                 }
                             }
 
                             if (tableHandles.Contains(parameters))
                             {
-                                MapiInspector.MAPIParser.ParseRequestMessage(currentSession, out bytesForHexView, true);
+                                MAPIParser.ParseRequestMessage(currentSession, out bytesForHexView, true);
                             }
                             else if (tableHandles.Contains(0xffffffff))
                             {
@@ -540,8 +534,8 @@ namespace MAPIInspector.Parsers
 
                                 try
                                 {
-                                    MapiInspector.MAPIParser.IsOnlyGetServerHandle = true;
-                                    object mapiResponse = MapiInspector.MAPIParser.ParseResponseMessage(currentSession, out bytesForHexView, false);
+                                    MAPIParser.IsOnlyGetServerHandle = true;
+                                    object mapiResponse = MAPIParser.ParseResponseMessage(currentSession, out bytesForHexView, false);
 
                                     if (mapiResponse != null &&
                                         (mapiResponse as ExecuteResponseBody).RopBuffer != null &&
@@ -552,18 +546,18 @@ namespace MAPIInspector.Parsers
                                 }
                                 finally
                                 {
-                                    MapiInspector.MAPIParser.IsOnlyGetServerHandle = false;
+                                    MAPIParser.IsOnlyGetServerHandle = false;
                                 }
 
                                 if (tableHandles.Contains(parameters))
                                 {
-                                    MapiInspector.MAPIParser.ParseRequestMessage(currentSession, out bytesForHexView, true);
+                                    MAPIParser.ParseRequestMessage(currentSession, out bytesForHexView, true);
                                 }
                             }
                         }
 
-                        currentSession = MapiInspector.MAPIParser.AllSessions[Convert.ToInt32(currentSession["Number"]) + 1];
-                        if (MapiInspector.MAPIParser.IsFromFiddlerCore(currentSession))
+                        currentSession = currentSession.Next();
+                        if (MAPIParser.IsFromFiddlerCore(currentSession))
                         {
                             currentSessionID = int.Parse(currentSession["VirtualID"]);
                         }
@@ -578,7 +572,7 @@ namespace MAPIInspector.Parsers
                         DecodingContext.PartialInformationReady.Add(thisSessionID, true);
                     }
 
-                    obj = MapiInspector.MAPIParser.ParseRequestMessage(thisSession, out bytesForHexView, true);
+                    obj = MAPIParser.ParseRequestMessage(thisSession, out bytesForHexView, true);
                     DecodingContext.PartialInformationReady = new Dictionary<int, bool>();
                     bytes = bytesForHexView;
                 }

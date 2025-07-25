@@ -363,10 +363,9 @@ namespace MapiInspector
                     targetDic.Add(sourceRopID, dic);
                     TargetHandle.Push(targetDic);
 
-                    int startingIndex = Convert.ToInt32(thisSession["Number"]) - 1;
-                    for (int i = startingIndex; i >= 0; i--)
+                    var currentSession = thisSession.Previous();
+                    while (currentSession != null)
                     {
-                        Session currentSession = AllSessions[i];
                         if (currentSession.RequestHeaders.RequestPath == serverurl &&
                             currentSession.LocalProcess == processName &&
                             currentSession.RequestHeaders["X-ClientInfo"] == clientInfo &&
@@ -383,6 +382,8 @@ namespace MapiInspector
                                 break;
                             }
                         }
+
+                        currentSession = currentSession.Previous();
                     }
 
                     if (DecodingContext.LogonFlagMapLogId.ContainsKey(serverurl) &&
@@ -436,7 +437,7 @@ namespace MapiInspector
             }
             else if (sourceRopID == RopIdType.RopWritePerUserInformation)
             {
-                Session currentSession = AllSessions[Convert.ToInt32(thisSession["Number"]) - 1];
+                var currentSession = thisSession.Previous();
                 string serverurl = thisSession.RequestHeaders.RequestPath;
                 string processName = thisSession.LocalProcess;
                 string clientInfo = thisSession.RequestHeaders["X-ClientInfo"];
@@ -452,7 +453,12 @@ namespace MapiInspector
                     // Parsing the previous sessions until DecodingContext.LogonFlagMapLogId contains the LogOn Id in this RopWritePerUserInformation ROP.
                     TargetHandle.Push(targetDic);
 
-                    do
+                    while (DecodingContext.LogonFlagMapLogId.Count == 0 ||
+                        !(DecodingContext.LogonFlagMapLogId.ContainsKey(serverurl) &&
+                        DecodingContext.LogonFlagMapLogId[serverurl].ContainsKey(processName) &&
+                        DecodingContext.LogonFlagMapLogId[serverurl][processName].ContainsKey(clientInfo) &&
+                        DecodingContext.LogonFlagMapLogId[serverurl][processName][clientInfo].ContainsKey((byte)parameters[0])) &&
+                        currentSession != null)
                     {
                         if (currentSession.RequestHeaders.RequestPath == serverurl &&
                             currentSession["LocalProcess"] == processName &&
@@ -463,19 +469,8 @@ namespace MapiInspector
                             ParseRequestMessage(currentSession, out bytesForHexView);
                         }
 
-                        if (Convert.ToInt32(currentSession["Number"]) == 1)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            currentSession = AllSessions[Convert.ToInt32(currentSession["Number"]) - 1];
-                        }
+                        currentSession = currentSession.Previous();
                     }
-                    while (DecodingContext.LogonFlagMapLogId.Count == 0 || !(DecodingContext.LogonFlagMapLogId.ContainsKey(serverurl) &&
-                        DecodingContext.LogonFlagMapLogId[serverurl].ContainsKey(processName) &&
-                        DecodingContext.LogonFlagMapLogId[serverurl][processName].ContainsKey(clientInfo) &&
-                        DecodingContext.LogonFlagMapLogId[serverurl][processName][clientInfo].ContainsKey((byte)parameters[0])));
 
                     if (DecodingContext.LogonFlagMapLogId.ContainsKey(serverurl) &&
                         DecodingContext.LogonFlagMapLogId[serverurl].ContainsKey(processName) &&
@@ -528,6 +523,7 @@ namespace MapiInspector
                 {
                     currentSessionID = int.Parse(currentSession["VirtualID"]);
                 }
+
                 var dic_QueryRows = new Dictionary<int, uint>();
                 var targetDic = new Dictionary<RopIdType, Dictionary<int, uint>>();
                 dic_QueryRows.Add(thisSessionID, parameters[1]);
@@ -542,24 +538,24 @@ namespace MapiInspector
                 {
                     // SetColumn_InputHandles_InResponse is only set in this session(and RopSetColumns) response parse, so if SetColumn_InputHandles_InResponse contains this rops outputhandle means that setcolumn and this rop is in the same session.
                     if (DecodingContext.SetColumn_InputHandles_InResponse.Count > 0 &&
-DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
+                        DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                     {
                         ParseRequestMessage(thisSession, out bytesForHexView, true);
                     }
                     else
                     {
-                        currentSession = AllSessions[Convert.ToInt32(thisSession["Number"]) - 1];
-                        if (IsFromFiddlerCore(currentSession))
+                        currentSession = currentSession.Previous();
+                        while (currentSession != null)
                         {
-                            currentSessionID = int.Parse(currentSession["VirtualID"]);
-                        }
-                        else
-                        {
-                            currentSessionID = currentSession.id;
-                        }
-                        while (currentSessionID >= 1 &&
-                            currentSessionID < thisSessionID)
-                        {
+                            if (IsFromFiddlerCore(currentSession))
+                            {
+                                currentSessionID = int.Parse(currentSession["VirtualID"]);
+                            }
+                            else
+                            {
+                                currentSessionID = currentSession.id;
+                            }
+
                             string currentServerPath = currentSession.RequestHeaders.RequestPath;
                             string currentProcessName = currentSession.LocalProcess;
                             string currentClientInfo = currentSession.RequestHeaders["X-ClientInfo"];
@@ -573,11 +569,7 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                                 ParseRequestMessage(currentSession, out bytesForHexView, true);
                             }
 
-                            if (Convert.ToInt32(currentSession["Number"]) == 1)
-                            {
-                                break;
-                            }
-                            else if (DecodingContext.RowRops_handlePropertyTags.ContainsKey(parameters[1]) &&
+                            if (DecodingContext.RowRops_handlePropertyTags.ContainsKey(parameters[1]) &&
                                 DecodingContext.RowRops_handlePropertyTags[parameters[1]].ContainsKey(currentSessionID) &&
                                 DecodingContext.RowRops_handlePropertyTags[parameters[1]][currentSessionID].Item1 == serverurl &&
                                 DecodingContext.RowRops_handlePropertyTags[parameters[1]][currentSessionID].Item2 == processName &&
@@ -585,25 +577,8 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                             {
                                 break;
                             }
-                            else
-                            {
-                                if (Convert.ToInt32(currentSession["Number"]) == 1)
-                                {
-                                    break;
-                                }
-                                else
-                                {
-                                    currentSession = AllSessions[Convert.ToInt32(currentSession["Number"]) - 1];
-                                    if (IsFromFiddlerCore(currentSession))
-                                    {
-                                        currentSessionID = int.Parse(currentSession["VirtualID"]);
-                                    }
-                                    else
-                                    {
-                                        currentSessionID = currentSession.id;
-                                    }
-                                }
-                            }
+
+                            currentSession = currentSession.Previous();
                         }
                     }
 
@@ -678,7 +653,7 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                     }
                     else
                     {
-                        currentSession = AllSessions[Convert.ToInt32(thisSession["Number"]) - 1];
+                        currentSession = thisSession.Previous();
                         if (IsFromFiddlerCore(currentSession))
                         {
                             currentSessionID = int.Parse(currentSession["VirtualID"]);
@@ -691,8 +666,17 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                         // isFound used to specify whether the setColumns for this notify has found.
                         bool isFound = false;
 
-                        while (currentSessionID >= 1)
+                        while (currentSession != null)
                         {
+                            if (IsFromFiddlerCore(currentSession))
+                            {
+                                currentSessionID = int.Parse(currentSession["VirtualID"]);
+                            }
+                            else
+                            {
+                                currentSessionID = currentSession.id;
+                            }
+
                             string currentServerPath = currentSession.RequestHeaders.RequestPath;
                             string currentProcessName = currentSession.LocalProcess;
                             string currentClientInfo = currentSession.RequestHeaders["X-ClientInfo"];
@@ -796,22 +780,8 @@ sessionID >= currentSessionID)
                                 }
                             }
 
-                            if (Convert.ToInt32(currentSession["Number"]) == 1)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                currentSession = AllSessions[Convert.ToInt32(currentSession["Number"]) - 1];
-                                if (IsFromFiddlerCore(currentSession))
-                                {
-                                    currentSessionID = int.Parse(currentSession["VirtualID"]);
-                                }
-                                else
-                                {
-                                    currentSessionID = currentSession.id;
-                                }
-                            }
+
+                            currentSession = currentSession.Previous();
                         }
                     }
                 }
@@ -1538,6 +1508,12 @@ sessionID >= currentSessionID)
             bool haveWrittenJson = false;
             StringBuilder stringBuilder = new StringBuilder();
             AllSessions = sessionsFromCore;
+            if (AllSessions.Length > 0 && AllSessions[AllSessions.Length - 1]["Number"] == null)
+            {
+                SetIndexForContextRelatedMethods();
+            }
+            SessionExtensions.AllSessionsNavigator = new SessionNavigator(AllSessions);
+
             Partial.ResetPartialParameters();
             Partial.ResetPartialContextInformation();
             ResetHandleInformation();
@@ -1556,12 +1532,6 @@ sessionID >= currentSessionID)
             using (StreamWriter streamWriter = File.CreateText(fileName))
             {
                 streamWriter.WriteLine("[");
-            }
-
-            if (AllSessions.Length > 0 &&
-                AllSessions[AllSessions.Length - 1]["Number"] == null)
-            {
-                SetIndexForContextRelatedMethods();
             }
 
             var JsonConverters = new JsonConverter[] { new Newtonsoft.Json.Converters.StringEnumConverter(), new ByteArrayConverter() };

@@ -763,6 +763,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SessionExtensions.cs" />
+    <Compile Include="SessionNavigator.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
