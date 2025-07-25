@@ -204,6 +204,7 @@ namespace MAPIInspector.Parsers
                                         currentRop));
                                     ropsList.Add(ParseJunk("Remaining Data"));
                                 }
+
                                 break;
 
                             // MSOXCTABL ROPs
@@ -254,19 +255,21 @@ namespace MAPIInspector.Parsers
                                             }));
                                         ropsList.Add(ParseJunk("Remaining Data"));
                                     }
-
-                                    var ropQueryRowsResponse = new RopQueryRowsResponse(DecodingContext.RowRops_handlePropertyTags[objHandle_QueryROw][parsingSessionID].Item4);
-                                    ropQueryRowsResponse.Parse(parser);
-                                    ropsList.Add(ropQueryRowsResponse);
-                                    break;
+                                    else
+                                    {
+                                        var ropQueryRowsResponse = new RopQueryRowsResponse(DecodingContext.RowRops_handlePropertyTags[objHandle_QueryROw][parsingSessionID].Item4);
+                                        ropQueryRowsResponse.Parse(parser);
+                                        ropsList.Add(ropQueryRowsResponse);
+                                    }
                                 }
                                 else
                                 {
                                     var ropQueryRowsResponse = new RopQueryRowsResponse(null);
                                     ropQueryRowsResponse.Parse(parser);
                                     ropsList.Add(ropQueryRowsResponse);
-                                    break;
                                 }
+
+                                break;
 
                             case RopIdType.RopAbort:
                                 ropsList.Add(Parse<RopAbortResponse>());
@@ -327,19 +330,21 @@ namespace MAPIInspector.Parsers
                                             }));
                                         ropsList.Add(ParseJunk("Remaining Data"));
                                     }
-
-                                    var ropFindRowResponse = new RopFindRowResponse(DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow][parsingSessionID].Item4);
-                                    ropFindRowResponse.Parse(parser);
-                                    ropsList.Add(ropFindRowResponse);
-                                    break;
+                                    else
+                                    {
+                                        var ropFindRowResponse = new RopFindRowResponse(DecodingContext.RowRops_handlePropertyTags[objHandle_FindRow][parsingSessionID].Item4);
+                                        ropFindRowResponse.Parse(parser);
+                                        ropsList.Add(ropFindRowResponse);
+                                    }
                                 }
                                 else
                                 {
                                     var ropFindRowResponse = new RopFindRowResponse(null);
                                     ropFindRowResponse.Parse(parser);
                                     ropsList.Add(ropFindRowResponse);
-                                    break;
                                 }
+
+                                break;
 
                             case RopIdType.RopFreeBookmark:
                                 ropsList.Add(Parse<RopFreeBookmarkResponse>());
@@ -376,19 +381,21 @@ namespace MAPIInspector.Parsers
                                             }));
                                         ropsList.Add(ParseJunk("Remaining Data"));
                                     }
-
-                                    var ropFindRowResponse = new RopExpandRowResponse(DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow][parsingSessionID].Item4);
-                                    ropFindRowResponse.Parse(parser);
-                                    ropsList.Add(ropFindRowResponse);
-                                    break;
+                                    else
+                                    {
+                                        var ropFindRowResponse = new RopExpandRowResponse(DecodingContext.RowRops_handlePropertyTags[objHandle_ExpandRow][parsingSessionID].Item4);
+                                        ropFindRowResponse.Parse(parser);
+                                        ropsList.Add(ropFindRowResponse);
+                                    }
                                 }
                                 else
                                 {
                                     var ropFindRowResponse = new RopExpandRowResponse(null);
                                     ropFindRowResponse.Parse(parser);
                                     ropsList.Add(ropFindRowResponse);
-                                    break;
                                 }
+
+                                break;
 
                             case RopIdType.RopCollapseRow:
                                 ropsList.Add(Parse<RopCollapseRowResponse>());
@@ -547,8 +554,11 @@ namespace MAPIInspector.Parsers
                                         currentRop));
                                     ropsList.Add(ParseJunk("Remaining Data"));
                                 }
+                                else
+                                {
+                                    ropsList.Add(Parse<RopGetPropertiesSpecificResponse>());
+                                }
 
-                                ropsList.Add(Parse<RopGetPropertiesSpecificResponse>());
                                 break;
 
                             case RopIdType.RopGetPropertiesAll:

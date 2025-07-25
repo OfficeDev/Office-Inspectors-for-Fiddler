@@ -48,9 +48,9 @@ namespace MAPIInspector.Parsers
         /// </returns>
         public static Block MaybeThrow(string message, RopIdType ropID, uint[] parameter = null)
         {
-            var ex = new MissingInformationException(message, ropID, parameter);
             if (MapiInspector.MAPIParser.inSafeHandleContextInformation)
             {
+                var ex = new MissingInformationException(message, ropID, parameter);
                 return BlockException.Create("Failed locating missing information", ex, 0);
             }
 

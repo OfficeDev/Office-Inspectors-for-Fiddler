@@ -405,12 +405,7 @@ namespace MapiInspector
                         information.RelatedInformation = result;
                         ContextInformationCollection.Add(information);
 
-                        if (!OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
-                        {
-                            obj = Block.Create(savedResult);
-                            bytes = new byte[0];
-                            return;
-                        }
+                        OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo);
                     }
 
                     TargetHandle.Pop();
@@ -427,16 +422,11 @@ namespace MapiInspector
                     {
                         DecodingContext.SessionLogonFlagMapLogId.Add(thisSessionID, DecodingContext.LogonFlagMapLogId[serverurl][processName][clientInfo]);
                     }
+                }
 
-                    // Parsing the request structure of this session.
-                    obj = ParseRequestMessage(thisSession, out bytesForHexView, true);
-                    bytes = bytesForHexView;
-                }
-                else
-                {
-                    obj = Block.Create($"{sourceRopID} cannot be parsed successfully due to missing the LogOn information for handle {parameters[0]}, check whether the trace is complete.");
-                    bytes = new byte[0];
-                }
+                // Parsing the request structure of this session.
+                obj = ParseRequestMessage(thisSession, out bytesForHexView, true);
+                bytes = bytesForHexView;
             }
             else if (sourceRopID == RopIdType.RopGetPropertiesSpecific)
             {
@@ -507,12 +497,7 @@ namespace MapiInspector
                         information.RelatedInformation = result;
                         ContextInformationCollection.Add(information);
 
-                        if (!OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
-                        {
-                            obj = Block.Create(savedResult);
-                            bytes = new byte[0];
-                            return;
-                        }
+                        OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo);
                     }
 
                     TargetHandle.Pop();
@@ -529,16 +514,11 @@ namespace MapiInspector
                     {
                         DecodingContext.SessionLogonFlagMapLogId.Add(thisSessionID, DecodingContext.LogonFlagMapLogId[serverurl][processName][clientInfo]);
                     }
+                }
 
-                    // Parsing the request structure of this session.
-                    obj = ParseRequestMessage(thisSession, out bytesForHexView, true);
-                    bytes = bytesForHexView;
-                }
-                else
-                {
-                    obj = Block.Create($"{sourceRopID} cannot be parsed successfully due to missing the LogOn information for handle {parameters[0]}, check whether the trace is complete.");
-                    bytes = new byte[0];
-                }
+                // Parsing the request structure of this session.
+                obj = ParseRequestMessage(thisSession, out bytesForHexView, true);
+                bytes = bytesForHexView;
             }
             else if (sourceRopID == RopIdType.RopQueryRows || sourceRopID == RopIdType.RopFindRow || sourceRopID == RopIdType.RopExpandRow)
             {
@@ -646,12 +626,7 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                     information.RelatedInformation = result;
                     ContextInformationCollection.Add(information);
 
-                    if (!OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
-                    {
-                        obj = Block.Create(savedResult);
-                        bytes = new byte[0];
-                        return;
-                    }
+                    OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo);
                 }
 
                 TargetHandle.Pop();
@@ -668,15 +643,10 @@ DecodingContext.SetColumn_InputHandles_InResponse.Contains(parameters[1]))
                         sessionTagMap.Add(thisSessionID, tupleValue);
                         DecodingContext.RowRops_handlePropertyTags.Add(parameters[1], sessionTagMap);
                     }
+                }
 
-                    obj = ParseResponseMessage(thisSession, out bytesForHexView, true);
-                    bytes = bytesForHexView;
-                }
-                else
-                {
-                    obj = Block.Create($"{sourceRopID} cannot be parsed successfully due to missing the PropertyTags for handle {parameters[1]}, check whether the trace is complete.");
-                    bytes = new byte[0];
-                }
+                obj = ParseResponseMessage(thisSession, out bytesForHexView, true);
+                bytes = bytesForHexView;
             }
             else if (sourceRopID == RopIdType.RopNotify)
             {
@@ -891,12 +861,7 @@ sessionID >= currentSessionID)
                     information.RelatedInformation = result;
                     ContextInformationCollection.Add(information);
 
-                    if (!OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo, out savedResult))
-                    {
-                        obj = Block.Create(savedResult);
-                        bytes = new byte[0];
-                        return;
-                    }
+                    OverwriteOriginalInformation(thisSessionID, serverurl, processName, clientInfo);
                 }
 
                 TargetHandle.Pop();
@@ -913,15 +878,10 @@ sessionID >= currentSessionID)
                         sessionTagMap.Add(thisSessionID, tupleValue);
                         DecodingContext.Notify_handlePropertyTags.Add(parameters[1], sessionTagMap);
                     }
+                }
 
-                    obj = ParseResponseMessage(thisSession, out bytesForHexView, true);
-                    bytes = bytesForHexView;
-                }
-                else
-                {
-                    obj = Block.Create($"RopNotify cannot be parsed successfully due to missing the PropertyTags for handle {parameters[1]}, check whether the trace is complete.");
-                    bytes = new byte[0];
-                }
+                obj = ParseResponseMessage(thisSession, out bytesForHexView, true);
+                bytes = bytesForHexView;
             }
             else if (sourceRopID == RopIdType.RopBufferTooSmall)
             {
@@ -954,11 +914,8 @@ sessionID >= currentSessionID)
         /// <param name="clientInfo">The clientInfo for this session</param>
         /// <param name="result">The result for missing related information </param>
         /// <returns>The result for overwriting.</returns>
-        public static bool OverwriteOriginalInformation(int sessionID, string serverurl, string processName, string clientInfo, out string result)
+        public static void OverwriteOriginalInformation(int sessionID, string serverurl, string processName, string clientInfo)
         {
-            bool checkResult = true;
-            result = string.Empty;
-
             if (ContextInformationCollection.Count > 0)
             {
                 foreach (ContextInformation infor in ContextInformationCollection)
@@ -1006,15 +963,8 @@ sessionID >= currentSessionID)
                                 break;
                         }
                     }
-                    else
-                    {
-                        result = infor.RelatedInformation.ToString();
-                        return false;
-                    }
                 }
             }
-
-            return checkResult;
         }
 
         /// <summary>

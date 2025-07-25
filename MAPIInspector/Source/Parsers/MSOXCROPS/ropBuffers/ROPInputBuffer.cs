@@ -201,8 +201,11 @@ namespace MAPIInspector.Parsers
                                         }));
                                     ropsList.Add(ParseJunk("Remaining Data"));
                                 }
+                                else
+                                {
+                                    ropsList.Add(Parse<RopWritePerUserInformationRequest>());
+                                }
 
-                                ropsList.Add(Parse<RopWritePerUserInformationRequest>());
                                 break;
 
                             // MS-OXCROPS ROPs
@@ -985,8 +988,11 @@ namespace MAPIInspector.Parsers
                                         ));
                                     ropsList.Add(ParseJunk("Remaining Data"));
                                 }
+                                else
+                                {
+                                    ropsList.Add(Parse<RopSetMessageReadFlagRequest>());
+                                }
 
-                                ropsList.Add(Parse<RopSetMessageReadFlagRequest>());
                                 break;
 
                             case RopIdType.RopOpenAttachment:
