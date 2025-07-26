@@ -141,23 +141,6 @@ namespace MapiInspector
         }
 
         /// <summary>
-        /// Converts a simple (non-flag) enum to string. If the value is not present in the underlying enum, converts to a hex string.
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public static string EnumToString(object obj)
-        {
-            if (Enum.IsDefined(obj.GetType(), obj))
-            {
-                return obj.ToString();
-            }
-            else
-            {
-                return $"0x{Convert.ToUInt64(obj):X}";
-            }
-        }
-
-        /// <summary>
         /// Read bits value from byte
         /// </summary>
         /// <param name="b">The byte.</param>

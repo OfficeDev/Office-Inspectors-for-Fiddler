@@ -140,7 +140,7 @@ namespace MAPIInspector.Parsers
             Text = "MetaPropValueGetPartial";
             AddChild(Comment);
             AddChildBlockT(PropType, "PropType");
-            if (PropID != null) AddChild(PropID, $"PropID:{MapiInspector.Utilities.EnumToString(PropID.Data)}");
+            AddChildBlockT(PropID, "PropID");
             if (PropValue != null)
             {
                 if (PropValue is PtypInteger32 int32)

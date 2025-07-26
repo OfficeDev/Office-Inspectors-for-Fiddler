@@ -49,7 +49,7 @@ namespace MAPIInspector.Parsers
         {
             Text = "MetaPropValue";
             AddLabeledChild(PropType, "PropType");
-            if (PropID != null) AddChild(PropID, $"PropID:{MapiInspector.Utilities.EnumToString(PropID.Data)}");
+            AddChildBlockT(PropID, "PropID");
             AddLabeledChild(PropValue, "PropValue");
         }
     }

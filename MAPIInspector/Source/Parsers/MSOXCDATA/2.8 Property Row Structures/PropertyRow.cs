@@ -93,7 +93,9 @@ namespace MAPIInspector.Parsers
                         }
                     }
 
-                    rowPropValue.InsertHeader($"PropertyTag: {MapiInspector.Utilities.EnumToString(tempPropTag.PropertyId.Data)}:{tempPropTag.PropertyType}");
+                    tempPropTag.Size = 0;
+                    foreach (var child in tempPropTag.Children) child.Size = 0;
+                    rowPropValue.InsertChild(tempPropTag, "PropertyTag");
                     tempPropArray.Add(rowPropValue);
                 }
             }

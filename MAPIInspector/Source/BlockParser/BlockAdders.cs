@@ -109,6 +109,24 @@
         public void InsertHeader(string header) => children.Insert(0, Create(header));
 
         /// <summary>
+        /// Insert a child block to this block and sets its text label.
+        /// Node is added as first child of this block.
+        /// </summary>
+        /// <remarks>
+        /// The child is added only if it is not <c>null</c> and has been successfully parsed. The child's text is set to the provided label.
+        /// </remarks>
+        /// <param name="child">The child block to add. Must not be <c>null</c> and must be parsed.</param>
+        /// <param name="label">The label to set as the child's text.</param>
+        public void InsertChild(Block child, string label)
+        {
+            if (child != null && child.Parsed)
+            {
+                child.Text = label;
+                children.Insert(0, child);
+            }
+        }
+
+        /// <summary>
         /// Adds a subheader node with the specified label to this block.
         /// </summary>
         /// <remarks>

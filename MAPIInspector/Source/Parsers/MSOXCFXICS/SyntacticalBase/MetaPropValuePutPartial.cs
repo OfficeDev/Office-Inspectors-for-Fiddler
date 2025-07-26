@@ -135,7 +135,7 @@ namespace MAPIInspector.Parsers
         {
             Text = "MetaPropValuePutPartial";
             AddChildBlockT(PropType, "PropType");
-            if (PropID != null) AddChild(PropID, $"PropID:{MapiInspector.Utilities.EnumToString(PropID.Data)}");
+            AddChildBlockT(PropID, "PropID");
             if (PropValue != null) AddChild(PropValue, $"PropValue:{PropValue.GetType().Name}");
             AddChildBlockT(length, "length");
         }
