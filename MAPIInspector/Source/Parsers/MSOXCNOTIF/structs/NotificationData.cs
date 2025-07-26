@@ -12,13 +12,13 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A combination of an enumeration and flags that describe the type of the notification and the availability of the notification data fields.
         /// </summary>
-        public BlockT<NotificationTypesEnum> NotificationFlags;
+        public BlockT<NotificationTypes> NotificationFlags;
 
         /// <summary>
         /// A subtype of the notification for a TableModified event.
         /// This field is available only if the NotificationType value in the NotificationFlags field is 0x0100.
         /// </summary>
-        public BlockT<TableEventTypeEnum> TableEventType;
+        public BlockT<TableEventType> TableEventType;
 
         /// <summary>
         /// The value of the Folder ID structure, as specified in [MS-OXCDATA] section 2.2.1.1, of the item triggering the notification.
@@ -170,50 +170,50 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            NotificationFlags = ParseT<NotificationTypesEnum>();
-            if (NotificationFlags.Data.HasFlag(NotificationTypesEnum.TableModified))
+            NotificationFlags = ParseT<NotificationTypes>();
+            if (NotificationFlags.Data.HasFlag(NotificationTypes.TableModified))
             {
-                TableEventType = ParseT<TableEventTypeEnum>();
+                TableEventType = ParseT<TableEventType>();
             }
 
             // Bit 0x8000 is set in the NotificationFlags field
-            var isMessage = NotificationFlags.Data.HasFlag(NotificationTypesEnum.M);
+            var isMessage = NotificationFlags.Data.HasFlag(NotificationTypes.M);
             // NotificationType value in the NotificationFlags field is not 0x0100 or 0x0400
-            var notModifiedExtended = !NotificationFlags.Data.HasFlag(NotificationTypesEnum.TableModified) &&
-            !NotificationFlags.Data.HasFlag(NotificationTypesEnum.Extended);
+            var notModifiedExtended = !NotificationFlags.Data.HasFlag(NotificationTypes.TableModified) &&
+            !NotificationFlags.Data.HasFlag(NotificationTypes.Extended);
             // NotificationType in the NotificationFlags field is 0x0004, 0x0008, 0x0020, or 0x0040,
-            var isCreateDeleteMovedCopied = NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectCreated) ||
-                NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectDeleted) ||
-                NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectMoved) ||
-                NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectCopied);
+            var isCreateDeleteMovedCopied = NotificationFlags.Data.HasFlag(NotificationTypes.ObjectCreated) ||
+                NotificationFlags.Data.HasFlag(NotificationTypes.ObjectDeleted) ||
+                NotificationFlags.Data.HasFlag(NotificationTypes.ObjectMoved) ||
+                NotificationFlags.Data.HasFlag(NotificationTypes.ObjectCopied);
             // a message in a search folder(both bit 0x4000 and bit 0x8000 are set in the NotificationFlags field)
-            var isSearchFolderMessage = NotificationFlags.Data.HasFlag(NotificationTypesEnum.S) &&
-                NotificationFlags.Data.HasFlag(NotificationTypesEnum.M);
+            var isSearchFolderMessage = NotificationFlags.Data.HasFlag(NotificationTypes.S) &&
+                NotificationFlags.Data.HasFlag(NotificationTypes.M);
             // a folder (both bit 0x4000 and bit 0x8000 are not set in the NotificationFlags field).
-            var isFolder = !NotificationFlags.Data.HasFlag(NotificationTypesEnum.S) &&
-                !NotificationFlags.Data.HasFlag(NotificationTypesEnum.M);
+            var isFolder = !NotificationFlags.Data.HasFlag(NotificationTypes.S) &&
+                !NotificationFlags.Data.HasFlag(NotificationTypes.M);
             // NotificationType value in the NotificationFlags field is 0x0020 or 0x0040
-            var isMovedCopied = NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectMoved) ||
-                NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectCopied);
+            var isMovedCopied = NotificationFlags.Data.HasFlag(NotificationTypes.ObjectMoved) ||
+                NotificationFlags.Data.HasFlag(NotificationTypes.ObjectCopied);
             // NotificationType in the NotificationFlags field is 0x0004 or 0x0010
-            var isCreateModify = NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectCreated) ||
-                NotificationFlags.Data.HasFlag(NotificationTypesEnum.ObjectModified);
+            var isCreateModify = NotificationFlags.Data.HasFlag(NotificationTypes.ObjectCreated) ||
+                NotificationFlags.Data.HasFlag(NotificationTypes.ObjectModified);
             // bit 0x1000 is set in the NotificationFlags field
-            var isTotalMessageCount = NotificationFlags.Data.HasFlag(NotificationTypesEnum.T);
+            var isTotalMessageCount = NotificationFlags.Data.HasFlag(NotificationTypes.T);
             // bit 0x2000 is set in the NotificationFlags field
-            var isUnreadMessageCount = NotificationFlags.Data.HasFlag(NotificationTypesEnum.U);
+            var isUnreadMessageCount = NotificationFlags.Data.HasFlag(NotificationTypes.U);
             // NotificationType in the NotificationFlags field is 0x0002
-            var isNewMail = NotificationFlags.Data.HasFlag(NotificationTypesEnum.NewMail);
+            var isNewMail = NotificationFlags.Data.HasFlag(NotificationTypes.NewMail);
 
             if (TableEventType != null)
             {
                 // TableEventType field is available and is 0x0003, 0x0004, or 0x0005
-                var isADM = TableEventType == TableEventTypeEnum.TableRowAdded ||
-                    TableEventType == TableEventTypeEnum.TableRowDeleted ||
-                    TableEventType == TableEventTypeEnum.TableRowModified;
+                var isADM = TableEventType == Parsers.TableEventType.TableRowAdded ||
+                    TableEventType == Parsers.TableEventType.TableRowDeleted ||
+                    TableEventType == Parsers.TableEventType.TableRowModified;
                 // TableEventType field is available and is 0x0003 or 0x0005
-                var isAM = TableEventType == TableEventTypeEnum.TableRowAdded ||
-                    TableEventType == TableEventTypeEnum.TableRowModified;
+                var isAM = TableEventType == Parsers.TableEventType.TableRowAdded ||
+                    TableEventType == Parsers.TableEventType.TableRowModified;
 
                 if (isADM) TableRowFolderID = Parse<FolderID>();
                 if (isMessage && isADM) TableRowMessageID = Parse<MessageID>();

@@ -524,12 +524,12 @@
     <Compile Include="Parsers\MSOXCMSG\rops\RopSetReadFlagsRequest.cs" />
     <Compile Include="Parsers\MSOXCMSG\rops\RopSetReadFlagsResponse.cs" />
     <Compile Include="Parsers\MSOXCNOTIF\structs\NotificationData.cs" />
-    <Compile Include="Parsers\MSOXCNOTIF\enums\NotificationTypesEnum.cs" />
+    <Compile Include="Parsers\MSOXCNOTIF\enums\NotificationTypes.cs" />
     <Compile Include="Parsers\MSOXCNOTIF\rops\RopNotifyResponse.cs" />
     <Compile Include="Parsers\MSOXCNOTIF\rops\RopPendingResponse.cs" />
     <Compile Include="Parsers\MSOXCNOTIF\rops\RopRegisterNotificationRequest.cs" />
     <Compile Include="Parsers\MSOXCNOTIF\rops\RopRegisterNotificationResponse.cs" />
-    <Compile Include="Parsers\MSOXCNOTIF\enums\TableEventTypeEnum.cs" />
+    <Compile Include="Parsers\MSOXCNOTIF\enums\TableEventType.cs" />
     <Compile Include="Parsers\MSOXCPERM\enums\ModifyFlags.cs" />
     <Compile Include="Parsers\MSOXCPERM\rops\RopModifyPermissionsResponse.cs" />
     <Compile Include="Parsers\MSOXCMSG\structs\RecipientType.cs" />

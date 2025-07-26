@@ -31,7 +31,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A flags structure that contains flags that specify the types of events to register for.
         /// </summary>
-        public BlockT<NotificationTypesEnum> NotificationTypes;
+        public BlockT<NotificationTypes> NotificationTypes;
 
         /// <summary>
         /// A flags structure.
@@ -62,9 +62,9 @@ namespace MAPIInspector.Parsers
             LogonId = ParseT<byte>();
             InputHandleIndex = ParseT<byte>();
             OutputHandleIndex = ParseT<byte>();
-            NotificationTypes = ParseT<NotificationTypesEnum>();
+            NotificationTypes = ParseT<NotificationTypes>();
 
-            if (NotificationTypes == NotificationTypesEnum.Extended)
+            if (NotificationTypes == Parsers.NotificationTypes.Extended)
             {
                 Reserved = ParseT<byte>();
             }

@@ -6,7 +6,7 @@ namespace MAPIInspector.Parsers
     /// The enum value of Notification type.
     /// </summary>
     [Flags]
-    public enum NotificationTypesEnum : ushort
+    public enum NotificationTypes : ushort
     {
         /// <summary>
         /// A new email message has been received by the server

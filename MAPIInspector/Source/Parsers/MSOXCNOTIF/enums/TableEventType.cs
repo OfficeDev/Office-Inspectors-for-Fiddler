@@ -3,7 +3,7 @@ namespace MAPIInspector.Parsers
     /// <summary>
     /// The enum value of TableEvent type.
     /// </summary>
-    public enum TableEventTypeEnum : ushort
+    public enum TableEventType : ushort
     {
         /// <summary>
         /// The notification is for TableChanged events
