@@ -4,6 +4,8 @@ namespace MAPIInspector.Parsers
 {
     /// <summary>
     /// [MS-OXCROPS] 2.2.14.2.1 RopNotify ROP Response Buffer
+    /// [MS-OXCNOTIF] 2.2.1.4.1.1 RopNotify ROP Response Buffer
+    /// [MS-OXCNOTIF] 2.2.1.4.1.2 NotificationData Structure
     /// A class indicates the RopNotify ROP Response Buffer.
     /// </summary>
     public class RopNotifyResponse : Block
