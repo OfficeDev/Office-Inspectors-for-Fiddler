@@ -27,11 +27,22 @@ namespace MAPIInspector.Parsers
         public static TreeNode AddBlock(Block block, bool debug)
         {
             var node = AddBlock(block, 0, debug);
-            if (HasExceptions(node))
+            if (HasBlock<BlockException>(node))
             {
                 var exNode = new TreeNode("Exceptions found in this block")
                 {
-                    BackColor = System.Drawing.Color.LightPink,
+                    BackColor = BlockException.BackColor,
+                    Tag = "ignore"
+                };
+                exNode.Nodes.Add(node);
+                return exNode;
+            }
+
+            if (HasBlock<BlockJunk>(node))
+            {
+                var exNode = new TreeNode("Unparsed data found in this block")
+                {
+                    BackColor = BlockJunk.BackColor,
                     Tag = "ignore"
                 };
                 exNode.Nodes.Add(node);
@@ -145,7 +156,8 @@ namespace MAPIInspector.Parsers
                 }
             }
 
-            if (block is BlockException) ColorNodes(node, System.Drawing.Color.LightPink);
+            if (block is BlockException) ColorNodes(node, BlockException.BackColor);
+            if (block is BlockJunk) ColorNodes(node, BlockJunk.BackColor);
 
             return node;
         }
@@ -198,17 +210,17 @@ namespace MAPIInspector.Parsers
             return node;
         }
 
-        private static bool HasExceptions(TreeNode node)
+        private static bool HasBlock<T>(TreeNode node) where T : Block
         {
             var pos = node.Tag as Position;
-            if (pos?.SourceBlock is BlockException)
+            if (pos?.SourceBlock is T)
             {
                 return true;
             }
 
             foreach (TreeNode child in node.Nodes)
             {
-                if (HasExceptions(child))
+                if (HasBlock<T>(child))
                 {
                     return true;
                 }

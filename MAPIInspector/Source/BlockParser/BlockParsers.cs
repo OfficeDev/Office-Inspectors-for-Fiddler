@@ -232,15 +232,11 @@ namespace BlockParser
             return ret;
         }
 
-        public Block ParseJunk(string label)
+        public BlockJunk ParseJunk(string label)
         {
-            var junkData = ParseBytes(parser.RemainingBytes);
-            var node = Create();
-            node.Text = label;
-            node.Offset = junkData.Offset;
-            node.Size = junkData.Size;
-            node.AddChild(junkData);
-            return node;
+            var junk = new BlockJunk(label);
+            junk.Parse(parser);
+            return junk;
         }
     }
 }

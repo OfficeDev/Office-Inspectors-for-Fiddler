@@ -1,7 +1,11 @@
-﻿namespace BlockParser
+﻿using System.Drawing;
+
+namespace BlockParser
 {
     public class BlockException : Block
     {
+        public static readonly Color BackColor = Color.LightPink;
+
         public static BlockException Create(string message, System.Exception ex, long offset)
         {
             var node = new BlockException();
