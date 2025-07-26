@@ -12,7 +12,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A combination of an enumeration and flags that describe the type of the notification and the availability of the notification data fields.
         /// </summary>
-        public BlockT<NotificationTypes> NotificationFlags;
+        public NotificationFlags NotificationFlags;
 
         /// <summary>
         /// A subtype of the notification for a TableModified event.
@@ -170,40 +170,38 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            NotificationFlags = ParseT<NotificationTypes>();
-            if (NotificationFlags.Data.HasFlag(NotificationTypes.TableModified))
+            NotificationFlags = Parse<NotificationFlags>();
+            if (NotificationFlags.HasFlag(NotificationTypes.TableModified))
             {
                 TableEventType = ParseT<TableEventType>();
             }
 
             // Bit 0x8000 is set in the NotificationFlags field
-            var isMessage = NotificationFlags.Data.HasFlag(NotificationTypes.M);
+            var isMessage = NotificationFlags.M;
             // NotificationType value in the NotificationFlags field is not 0x0100 or 0x0400
-            var notModifiedExtended = !NotificationFlags.Data.HasFlag(NotificationTypes.TableModified) &&
-            !NotificationFlags.Data.HasFlag(NotificationTypes.Extended);
+            var notModifiedExtended = !NotificationFlags.HasFlag(NotificationTypes.TableModified) &&
+            !NotificationFlags.HasFlag(NotificationTypes.Extended);
             // NotificationType in the NotificationFlags field is 0x0004, 0x0008, 0x0020, or 0x0040,
-            var isCreateDeleteMovedCopied = NotificationFlags.Data.HasFlag(NotificationTypes.ObjectCreated) ||
-                NotificationFlags.Data.HasFlag(NotificationTypes.ObjectDeleted) ||
-                NotificationFlags.Data.HasFlag(NotificationTypes.ObjectMoved) ||
-                NotificationFlags.Data.HasFlag(NotificationTypes.ObjectCopied);
-            // a message in a search folder(both bit 0x4000 and bit 0x8000 are set in the NotificationFlags field)
-            var isSearchFolderMessage = NotificationFlags.Data.HasFlag(NotificationTypes.S) &&
-                NotificationFlags.Data.HasFlag(NotificationTypes.M);
-            // a folder (both bit 0x4000 and bit 0x8000 are not set in the NotificationFlags field).
-            var isFolder = !NotificationFlags.Data.HasFlag(NotificationTypes.S) &&
-                !NotificationFlags.Data.HasFlag(NotificationTypes.M);
+            var isCreateDeleteMovedCopied = NotificationFlags.HasFlag(NotificationTypes.ObjectCreated) ||
+                NotificationFlags.HasFlag(NotificationTypes.ObjectDeleted) ||
+                NotificationFlags.HasFlag(NotificationTypes.ObjectMoved) ||
+                NotificationFlags.HasFlag(NotificationTypes.ObjectCopied);
+            // A message in a search folder(both bit 0x4000 and bit 0x8000 are set in the NotificationFlags field)
+            var isSearchFolderMessage = NotificationFlags.S && NotificationFlags.M;
+            // A folder (both bit 0x4000 and bit 0x8000 are not set in the NotificationFlags field).
+            var isFolder = !NotificationFlags.S && !NotificationFlags.M;
             // NotificationType value in the NotificationFlags field is 0x0020 or 0x0040
-            var isMovedCopied = NotificationFlags.Data.HasFlag(NotificationTypes.ObjectMoved) ||
-                NotificationFlags.Data.HasFlag(NotificationTypes.ObjectCopied);
+            var isMovedCopied = NotificationFlags.HasFlag(NotificationTypes.ObjectMoved) ||
+                NotificationFlags.HasFlag(NotificationTypes.ObjectCopied);
             // NotificationType in the NotificationFlags field is 0x0004 or 0x0010
-            var isCreateModify = NotificationFlags.Data.HasFlag(NotificationTypes.ObjectCreated) ||
-                NotificationFlags.Data.HasFlag(NotificationTypes.ObjectModified);
-            // bit 0x1000 is set in the NotificationFlags field
-            var isTotalMessageCount = NotificationFlags.Data.HasFlag(NotificationTypes.T);
-            // bit 0x2000 is set in the NotificationFlags field
-            var isUnreadMessageCount = NotificationFlags.Data.HasFlag(NotificationTypes.U);
+            var isCreateModify = NotificationFlags.HasFlag(NotificationTypes.ObjectCreated) ||
+                NotificationFlags.HasFlag(NotificationTypes.ObjectModified);
+            // Bit 0x1000 is set in the NotificationFlags field
+            var isTotalMessageCount = NotificationFlags.T;
+            // Bit 0x2000 is set in the NotificationFlags field
+            var isUnreadMessageCount = NotificationFlags.U;
             // NotificationType in the NotificationFlags field is 0x0002
-            var isNewMail = NotificationFlags.Data.HasFlag(NotificationTypes.NewMail);
+            var isNewMail = NotificationFlags.HasFlag(NotificationTypes.NewMail);
 
             if (TableEventType != null)
             {
@@ -289,7 +287,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
-            AddChildBlockT(NotificationFlags, "NotificationFlags");
+            AddChild(NotificationFlags, "NotificationFlags");
             AddChildBlockT(TableEventType, "TableEventType");
             AddLabeledChild(TableRowFolderID, "TableRowFolderID");
             AddLabeledChild(TableRowMessageID, "TableRowMessageID");

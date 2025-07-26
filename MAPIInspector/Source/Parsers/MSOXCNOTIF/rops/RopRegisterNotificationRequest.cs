@@ -31,7 +31,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// A flags structure that contains flags that specify the types of events to register for.
         /// </summary>
-        public BlockT<NotificationTypes> NotificationTypes;
+        public NotificationFlags NotificationTypes;
 
         /// <summary>
         /// A flags structure.
@@ -62,9 +62,9 @@ namespace MAPIInspector.Parsers
             LogonId = ParseT<byte>();
             InputHandleIndex = ParseT<byte>();
             OutputHandleIndex = ParseT<byte>();
-            NotificationTypes = ParseT<NotificationTypes>();
+            NotificationTypes = Parse<NotificationFlags>();
 
-            if (NotificationTypes == Parsers.NotificationTypes.Extended)
+            if (NotificationTypes.HasFlag(Parsers.NotificationTypes.Extended))
             {
                 Reserved = ParseT<byte>();
             }
@@ -85,7 +85,7 @@ namespace MAPIInspector.Parsers
             AddChildBlockT(LogonId, "LogonId");
             AddChildBlockT(InputHandleIndex, "InputHandleIndex");
             AddChildBlockT(OutputHandleIndex, "OutputHandleIndex");
-            AddChildBlockT(NotificationTypes, "NotificationTypes");
+            AddChild(NotificationTypes, "NotificationTypes");
             AddChildBlockT(Reserved, "Reserved");
             AddChildBlockT(WantWholeStore, "WantWholeStore");
             AddChild(FolderId, "FolderId");
