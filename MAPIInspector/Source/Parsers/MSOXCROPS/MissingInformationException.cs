@@ -36,6 +36,12 @@ namespace MAPIInspector.Parsers
             Parameters = parameter;
         }
 
+        // Override ToString method to provide a custom string representation of the exception
+        public override string ToString()
+        {
+            return $"{ErrorMessage} (ROP ID: {RopID}, Parameters: {string.Join(", ", Parameters ?? Array.Empty<uint>())})";
+        }
+
         /// <summary>
         /// Attempts to throw a MissingInformationException or returns a BlockException if we've 
         /// already thrown and are in a safe handle context.

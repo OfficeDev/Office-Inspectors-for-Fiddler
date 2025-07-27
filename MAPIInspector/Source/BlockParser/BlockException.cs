@@ -15,6 +15,7 @@ namespace BlockParser
             if (ex != null)
             {
                 node.AddHeader($"{ex.Message} at offset {offset}");
+                node.AddHeader($"{ex.ToString()}");
                 var exType = Create($"Exception Type: {ex.GetType()}");
                 node.AddChild(exType);
                 if (ex.StackTrace != null)
