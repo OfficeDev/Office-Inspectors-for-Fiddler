@@ -54,7 +54,7 @@ namespace MAPIInspector.Parsers
             Text = "PropertyValue";
             if (Value != null)
             {
-                AddChild(Value, $"Value: {Value.Text}");
+                AddChild(Value, $"Value: {Value}");
             }
             else
             {
