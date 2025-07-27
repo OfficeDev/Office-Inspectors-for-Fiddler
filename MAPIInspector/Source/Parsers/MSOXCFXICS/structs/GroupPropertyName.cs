@@ -1,4 +1,6 @@
 using BlockParser;
+using System;
+using System.Security.Cryptography;
 
 namespace MAPIInspector.Parsers
 {
@@ -58,7 +60,21 @@ namespace MAPIInspector.Parsers
             Text = "GroupPropertyName";
             this.AddChildGuid(Guid, "Guid");
             AddChildBlockT(Kind, "Kind");
-            AddChildBlockT(Lid, "Lid");
+
+            NamedProperty namedProp = null;
+            if (Guid != null && Lid != null)
+            {
+                namedProp = NamedProperty.Lookup(Guid.value, Lid);
+            }
+
+            if (Lid != null)
+            {
+                if (namedProp != null)
+                    AddChild(Lid, $"Dispid: {namedProp.Name} = 0x{Lid:X4}");
+                else
+                    AddChild(Lid, $"Dispid: 0x{Lid:X4}");
+            }
+
             AddChildBlockT(NameSize, "NameSize");
             AddChild(Name, "Name");
         }

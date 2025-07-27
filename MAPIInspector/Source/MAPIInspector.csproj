@@ -151,7 +151,6 @@
     <Compile Include="Parsers\MSOXCDATA\2.12 Restrictions\NotRestriction.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.12 Restrictions\OrRestriction.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.6 Property Name Structures\PropertyName.cs" />
-    <Compile Include="Parsers\MSOXCDATA\2.6 Property Name Structures\PropertyName_r.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.7 PropertyProblem Structure\PropertyProblem.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.12 Restrictions\PropertyRestriction.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.8 Property Row Structures\PropertyRow.cs" />
