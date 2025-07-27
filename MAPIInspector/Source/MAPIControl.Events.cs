@@ -245,6 +245,7 @@ namespace MapiInspector
             bool isF3 = keyData == Keys.F3;
             bool isShiftF3 = keyData == (Keys.Shift | Keys.F3);
             bool isCtrlF = keyData == (Keys.Control | Keys.F);
+            bool isCtrlRight = keyData == (Keys.Control | Keys.Right);
 
             if (mapiTreeView.Focused)
             {
@@ -268,6 +269,13 @@ namespace MapiInspector
                     else
                         HexBox_CopyNoSpaces_Click(mapiHexBox, EventArgs.Empty);
 
+                    return true;
+                }
+
+                if (isCtrlRight)
+                {
+                    var node = mapiTreeView.SelectedNode ?? mapiTreeView.Nodes[0];
+                    node.ExpandAll();
                     return true;
                 }
             }

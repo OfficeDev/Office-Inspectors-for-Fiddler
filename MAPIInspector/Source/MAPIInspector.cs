@@ -303,7 +303,8 @@ namespace MapiInspector
             {
                 var topNode = BaseStructure.AddBlock(obj, DoDebug);
                 MAPIViewControl.Nodes.Add(topNode);
-                topNode.ExpandAll();
+                topNode.Expand();
+                //topNode.ExpandAll();
                 if (bytesForHexview != null)
                 {
                     MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesForHexview);
