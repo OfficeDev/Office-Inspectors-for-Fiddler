@@ -72,14 +72,6 @@ namespace BlockParser
             }
         }
 
-        public void Parse(Stream stream, bool enableJunk = false) => Parse(stream, 0, enableJunk);
-        private void Parse(Stream stream, int cbBin, bool enableJunk = false)
-        {
-            var parser = new BinaryParser(stream, stream.Position);
-            Parse(parser, 0, enableJunk);
-            stream.Seek(Size, SeekOrigin.Current);
-        }
-
         public void Parse(BinaryParser parser, bool enableJunk = false) => Parse(parser, 0, enableJunk);
 
         private void Parse(BinaryParser parser, int cbBin, bool enableJunk = false)
