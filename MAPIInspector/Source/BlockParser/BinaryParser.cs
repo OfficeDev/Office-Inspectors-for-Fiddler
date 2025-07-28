@@ -97,8 +97,8 @@ namespace BlockParser
         /// </summary>
         /// <param name="sourceStream">The source stream to read from.</param>
         /// <param name="position">The position in the stream to start reading from.</param>
-        /// <param name="cb">The number of bytes to read, or -1 to read to the end.</param>
-        public BinaryParser(Stream sourceStream, long position, int cb = -1)
+        /// <param name="cb">The number of bytes to read.</param>
+        public BinaryParser(Stream sourceStream, long position, int cb)
         {
             Offset = 0;
             if (sourceStream == null || !sourceStream.CanSeek)

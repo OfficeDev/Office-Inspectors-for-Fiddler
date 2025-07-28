@@ -153,14 +153,12 @@ namespace BlockParserTests
         public void Parse_Stream_AdvancesStreamByBlockSize()
         {
             var data = new byte[] { 0x09, 0x53, 0x67, 0x08, 0x68, 0x24, 0x78, 0x56, 0x34, 0x12, 0xCD, 0xAB, 0xBE, 0xEF }; // int: 0x08675309, short: 0x2468
-            using (var ms = new MemoryStream(data))
-            {
-                var block = Block.Parse<TestBlock2>(ms, enableJunk: false);
+            var parser = new BinaryParser(data);
+            var block = Block.Parse<TestBlock2>(parser, enableJunk: false);
 
-                Assert.IsInstanceOfType(block, typeof(TestBlock2));
-                Assert.AreEqual(12, block.Size, "Size of TestBlock is 12");
-                Assert.AreEqual(block.Size, ms.Position, "Stream position should advance by block size");
-            }
+            Assert.IsInstanceOfType(block, typeof(TestBlock2));
+            Assert.AreEqual(12, block.Size, "Size of TestBlock is 12");
+            Assert.AreEqual(block.Size, parser.Offset, "Stream position should advance by block size");
         }
 
         public enum TestEnum : short

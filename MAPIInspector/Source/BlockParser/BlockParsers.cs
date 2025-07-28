@@ -1,26 +1,10 @@
 ﻿
 using System;
-using System.IO;
 
 namespace BlockParser
 {
     public partial class Block
     {
-        /// <summary>
-        /// Static parse function returns a parsing block based on a stream at it's current position
-        /// Advance the stream by the size of the block after parsing
-        /// </summary>
-        /// <typeparam name="T">Type of object inheriting from Block to be parsed</typeparam>
-        /// <param name="stream">Stream to parse from</param>
-        /// <param name="enableJunk">Indicates whether to enable junk data parsing</param>
-        /// <returns>Parsed block of type T</returns>
-        public static T Parse<T>(Stream stream, bool enableJunk = false) where T : Block, new()
-        {
-            var block = Parse<T>(new BinaryParser(stream, stream.Position), enableJunk);
-            stream.Seek(block.Size, SeekOrigin.Current);
-            return block;
-        }
-
         public T Parse<T>(bool enableJunk = false) where T : Block, new() => Parse<T>(parser, enableJunk);
         /// <summary>
         /// Static parse function returns a parsing block based on a BinaryParser
