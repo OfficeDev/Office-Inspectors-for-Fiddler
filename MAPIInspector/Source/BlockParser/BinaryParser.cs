@@ -27,7 +27,7 @@ namespace BlockParser
         /// </summary>
         public int RemainingBytes => Offset > size ? 0 : size - Offset;
 
-        private readonly Stream bin;
+        private readonly byte[] bin;
         private int size; // When uncapped, this is bin.Length. When capped, this is our artificial capped size.
         private readonly Stack<int> sizes = new Stack<int>();
 
@@ -36,7 +36,7 @@ namespace BlockParser
         /// </summary>
         public BinaryParser()
         {
-            bin = new MemoryStream();
+            bin = Array.Empty<byte>();
             size = 0;
             Offset = 0;
         }
@@ -53,19 +53,21 @@ namespace BlockParser
             {
                 if (_bin.Length > cb)
                 {
-                    bin = new MemoryStream(_bin, 0, cb, false);
+                    bin = new byte[cb];
+                    Buffer.BlockCopy(_bin, 0, bin, 0, cb);
                 }
                 else
                 {
-                    bin = new MemoryStream(_bin, false);
+                    bin = new byte[_bin.Length];
+                    Buffer.BlockCopy(_bin, 0, bin, 0, _bin.Length);
                 }
             }
             else
             {
-                bin = new MemoryStream();
+                bin = Array.Empty<byte>();
             }
 
-            size = (int)bin.Length;
+            size = bin.Length;
             Offset = 0;
         }
 
@@ -77,14 +79,15 @@ namespace BlockParser
         {
             if (_bin != null)
             {
-                bin = new MemoryStream(_bin, false);
+                bin = new byte[_bin.Length];
+                Buffer.BlockCopy(_bin, 0, bin, 0, _bin.Length);
             }
             else
             {
-                bin = new MemoryStream();
+                bin = Array.Empty<byte>();
             }
 
-            size = (int)bin.Length;
+            size = bin.Length;
             Offset = 0;
         }
 
@@ -100,7 +103,7 @@ namespace BlockParser
             Offset = 0;
             if (sourceStream == null || !sourceStream.CanSeek)
             {
-                bin = new MemoryStream();
+                bin = Array.Empty<byte>();
                 size = 0;
                 return;
             }
@@ -109,23 +112,17 @@ namespace BlockParser
             try
             {
                 sourceStream.Position = position;
-
-                bin = new MemoryStream();
-                if (cb >= 0 && cb + position < sourceStream.Length)
+                int bytesToRead = cb >= 0 && cb + position < sourceStream.Length ? cb : (int)(sourceStream.Length - position);
+                bin = new byte[bytesToRead];
+                int read = sourceStream.Read(bin, 0, bytesToRead);
+                if (read < bytesToRead)
                 {
-                    byte[] buffer = new byte[cb];
-                    int read = sourceStream.Read(buffer, 0, cb);
-                    bin.Write(buffer, 0, read);
+                    Array.Resize(ref bin, read);
                 }
-                else
-                {
-                    sourceStream.CopyTo(bin);
-                }
-
             }
             finally
             {
-                size = (int)bin.Length;
+                size = bin.Length;
                 if (sourceStream.CanSeek) sourceStream.Position = originalPosition;
             }
         }
@@ -170,7 +167,7 @@ namespace BlockParser
         {
             if (sizes.Count == 0)
             {
-                size = (int)bin.Length;
+                size = bin.Length;
             }
             else
             {
@@ -199,9 +196,8 @@ namespace BlockParser
             if (CheckSize(cb))
             {
                 byte[] bytes = new byte[cb];
-                bin.Position = Offset;
-                int read = bin.Read(bytes, 0, cb);
-                Advance(read);
+                Buffer.BlockCopy(bin, Offset, bytes, 0, cb);
+                Advance(cb);
                 return bytes;
             }
 
@@ -215,9 +211,7 @@ namespace BlockParser
         /// <returns>A string representation of the binary data in hexadecimal format.</returns>
         public string PeekBytes()
         {
-            var bytes = new byte[bin.Length];
-            int read = bin.Read(bytes, 0, (int)bin.Length);
-            return Strings.BinToHexString(bytes, bytes.Length);
+            return Strings.BinToHexString(bin, bin.Length);
         }
 
         /// <summary>
