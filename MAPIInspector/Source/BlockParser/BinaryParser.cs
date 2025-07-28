@@ -92,50 +92,6 @@ namespace BlockParser
         }
 
         /// <summary>
-        /// Initializes a BinaryParser from a stream, starting at a given position and reading a specified number of bytes.
-        /// If cb is negative, reads to the end of the stream.
-        /// </summary>
-        /// <param name="sourceStream">The source stream to read from.</param>
-        /// <param name="position">The position in the stream to start reading from.</param>
-        /// <param name="cb">The number of bytes to read.</param>
-        public BinaryParser(Stream sourceStream, long position, int cb)
-        {
-            Offset = 0;
-            if (sourceStream == null || !sourceStream.CanSeek)
-            {
-                bin = Array.Empty<byte>();
-                size = 0;
-                return;
-            }
-
-            long originalPosition = sourceStream.Position;
-            try
-            {
-                sourceStream.Position = position;
-                int bytesToRead = cb >= 0 && cb + position < sourceStream.Length ? cb : (int)(sourceStream.Length - position);
-                bin = new byte[bytesToRead];
-                int read = sourceStream.Read(bin, 0, bytesToRead);
-                if (read < bytesToRead)
-                {
-                    Array.Resize(ref bin, read);
-                }
-            }
-            finally
-            {
-                size = bin.Length;
-                if (sourceStream.CanSeek) sourceStream.Position = originalPosition;
-            }
-        }
-
-        /// <summary>
-        /// Initializes a BinaryParser from a stream, starting at position 0 and reading a specified number of bytes.
-        /// If cb is negative, reads to the end of the stream.
-        /// </summary>
-        /// <param name="sourceStream">The source stream to read from.</param>
-        /// <param name="cb">The number of bytes to read, or -1 to read to the end.</param>
-        public BinaryParser(Stream sourceStream, int cb = -1) : this(sourceStream, 0, cb) { }
-
-        /// <summary>
         /// Advances the current offset by the specified number of bytes.
         /// </summary>
         /// <param name="cb">The number of bytes to advance.</param>

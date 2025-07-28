@@ -37,23 +37,17 @@ namespace BlockParser.Tests
         public void Constructor_Stream_ReadsCorrectly()
         {
             byte[] data = { 10, 20, 30, 40 };
-            using (var ms = new MemoryStream(data))
-            {
-                var parser = new BinaryParser(ms);
-                Assert.AreEqual(4, parser.RemainingBytes);
-            }
+            var parser = new BinaryParser(data);
+            Assert.AreEqual(4, parser.RemainingBytes);
         }
 
         [TestMethod]
         public void Constructor_Stream_WithCap()
         {
             byte[] data = { 10, 20, 30, 40 };
-            using (var ms = new MemoryStream(data))
-            {
-                var parser = new BinaryParser(ms, 2);
-                Assert.AreEqual(2, parser.RemainingBytes);
-                CollectionAssert.AreEqual(new byte[] { 10, 20 }, parser.ReadBytes(parser.RemainingBytes));
-            }
+            var parser = new BinaryParser(2, data);
+            Assert.AreEqual(2, parser.RemainingBytes);
+            CollectionAssert.AreEqual(new byte[] { 10, 20 }, parser.ReadBytes(parser.RemainingBytes));
         }
 
         [TestMethod]
@@ -132,31 +126,6 @@ namespace BlockParser.Tests
             Assert.IsFalse(parser.Empty);
             parser.Advance(2);
             Assert.IsTrue(parser.Empty);
-        }
-
-        [TestMethod]
-        public void Test_StreamConstructor()
-        {
-            // have a stream and read a few bytes from it. Then set up a binary parser and read a few bytes
-            // They should read from the start of the original stream data
-            // But position in the source stream should be unchanged
-            // Finally, since we leave some bytes unread, block ToString should show junk data
-            byte[] data = { 1, 2, 3, 4, 5, 6 };
-            using (var ms = new MemoryStream(data))
-            {
-                var ms1 = ms.ReadByte();
-                Assert.AreEqual(1, ms1);
-                Assert.AreEqual(1, ms.Position);
-                var parser = new BinaryParser(ms, 3);
-                Assert.AreEqual(1, ms.Position);
-                Assert.AreEqual(3, parser.RemainingBytes);
-                CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, parser.ReadBytes(parser.RemainingBytes));
-                Assert.AreEqual(1, ms.Position);
-                parser.Rewind();
-                parser.Advance(2);
-                Assert.AreEqual(1, ms.Position);
-                CollectionAssert.AreEqual(new byte[] { 3 }, parser.ReadBytes(parser.RemainingBytes));
-            }
         }
 
         [TestMethod]
