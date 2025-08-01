@@ -40,14 +40,15 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             Kind = ParseT<KindEnum>();
-            GUID = Parse<BlockGuid>();
 
             switch (Kind.Data)
             {
                 case KindEnum.LID:
+                    GUID = Parse<BlockGuid>();
                     LID = ParseT<uint>();
                     break;
                 case KindEnum.Name:
+                    GUID = Parse<BlockGuid>();
                     NameSize = ParseT<byte>();
                     Name = ParseStringW(NameSize/2);
                     break;
