@@ -1,15 +1,16 @@
-﻿namespace MapiInspector
-{
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Text;
-    using System.Windows.Forms;
-    using Be.Windows.Forms;
-    using Fiddler;
-    using global::MAPIInspector.Parsers;
-    using static MapiInspector.MAPIParser;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Windows.Forms;
+using Be.Windows.Forms;
+using BlockParser;
+using Fiddler;
+using global::MAPIInspector.Parsers;
+using static MapiInspector.MAPIParser;
 
+namespace MapiInspector
+{
     /// <summary>
     /// MAPIInspector Class
     /// </summary>
@@ -59,11 +60,11 @@
             {
                 if (this is IRequestInspector2)
                 {
-                    return MAPIParser.TrafficDirection.In;
+                    return TrafficDirection.In;
                 }
                 else
                 {
-                    return MAPIParser.TrafficDirection.Out;
+                    return TrafficDirection.Out;
                 }
             }
         }
@@ -75,37 +76,37 @@
         {
             get
             {
-                if (this.session != null)
+                if (session != null)
                 {
                     if (this is IRequestInspector2)
                     {
-                        return this.session.RequestHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
+                        return session.RequestHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
                     }
-                    else if ((this is IResponseInspector2) && this.session.id != 0)
+                    else if ((this is IResponseInspector2) && session.id != 0)
                     {
-                        if ((this is IResponseInspector2) && this.session.ResponseHeaders.Exists("X-ResponseCode"))
+                        if ((this is IResponseInspector2) && session.ResponseHeaders.Exists("X-ResponseCode"))
                         {
-                            string responseCode = this.session.ResponseHeaders["X-ResponseCode"];
+                            string responseCode = session.ResponseHeaders["X-ResponseCode"];
                             if (responseCode == "0")
                             {
-                                return this.session.ResponseHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
+                                return session.ResponseHeaders.ExistsAndContains("Content-Type", "application/mapi-http");
                             }
                             else if (responseCode != string.Empty)
                             {
-                                return this.session.ResponseHeaders.ExistsAndContains("Content-Type", "text/html");
+                                return session.ResponseHeaders.ExistsAndContains("Content-Type", "text/html");
                             }
                         }
                     }
-                    else if ((this is IResponseInspector2) && this.session["X-ResponseCode"] != null)
+                    else if ((this is IResponseInspector2) && session["X-ResponseCode"] != null)
                     {
-                        string responseCode = this.session["X-ResponseCode"];
+                        string responseCode = session["X-ResponseCode"];
                         if (responseCode == "0")
                         {
-                            return this.session["Content-Type"] != null && this.session["Content-Type"] == "application/mapi-http";
+                            return session["Content-Type"] != null && session["Content-Type"] == "application/mapi-http";
                         }
                         else if (responseCode != string.Empty)
                         {
-                            return this.session["Content-Type"] != null && this.session["Content-Type"] == "text/html";
+                            return session["Content-Type"] != null && session["Content-Type"] == "text/html";
                         }
                     }
                 }
@@ -131,14 +132,15 @@
         public override void AddToTab(TabPage o)
         {
             o.Text = "MAPI";
-            this.MAPIControl = new MAPIControl();
-            o.Controls.Add(this.MAPIControl);
-            this.MAPIControl.Size = o.Size;
-            this.MAPIControl.Dock = DockStyle.Fill;
-            this.MAPIViewControl = this.MAPIControl.MAPITreeView;
-            this.MAPIControl.MAPIHexBox.VScrollBarVisible = true;
-            this.MAPIViewControl.AfterSelect -= this.TreeView_AfterSelect;
-            this.MAPIViewControl.AfterSelect += this.TreeView_AfterSelect;
+            MAPIControl = new MAPIControl();
+            MAPIControl.Inspector = this;
+            o.Controls.Add(MAPIControl);
+            MAPIControl.Size = o.Size;
+            MAPIControl.Dock = DockStyle.Fill;
+            MAPIViewControl = MAPIControl.MAPITreeView;
+            MAPIControl.MAPIHexBox.VScrollBarVisible = true;
+            MAPIViewControl.AfterSelect -= TreeView_AfterSelect;
+            MAPIViewControl.AfterSelect += TreeView_AfterSelect;
             DecodingContext dc = new DecodingContext();
         }
 
@@ -154,41 +156,45 @@
 
             if (e.Node.Tag == null)
             {
-                this.MAPIControl.MAPIHexBox.Select(0, 0);
-                this.MAPIControl.CROPSHexBox.Select(0, 0);
+                MAPIControl.MAPIHexBox.Select(0, 0);
+                MAPIControl.CROPSHexBox.Select(0, 0);
             }
             else
             {
-                if (((BaseStructure.Position)e.Node.Tag).IsCompressedXOR)
+                var pos = e.Node.Tag as BaseStructure.Position;
+                if (pos != null)
                 {
-                    if (((BaseStructure.Position)e.Node.Tag).IsAuxiliayPayload)
+                    if (pos.IsCompressedXOR)
                     {
-                        this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(MAPIParser.AuxPayLoadCompressedXOR);
-                    }
-                    else
-                    {
-                        if (request > response)
+                        if (pos.IsAuxiliaryPayload)
                         {
-                            this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(MAPIParser.InputPayLoadCompressedXOR[((BaseStructure.Position)e.Node.Tag).BufferIndex]);
+                            MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(AuxPayLoadCompressedXOR);
                         }
                         else
                         {
-                            this.MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(MAPIParser.OutputPayLoadCompressedXOR[((BaseStructure.Position)e.Node.Tag).BufferIndex]);
+                            if (request > response)
+                            {
+                                MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(InputPayLoadCompressedXOR[pos.BufferIndex]);
+                            }
+                            else
+                            {
+                                MAPIControl.CROPSHexBox.ByteProvider = new StaticByteProvider(OutputPayLoadCompressedXOR[pos.BufferIndex]);
+                            }
                         }
-                    }
 
-                    this.MAPIControl.CROPSHexBox.Select(((BaseStructure.Position)e.Node.Tag).StartIndex, ((BaseStructure.Position)e.Node.Tag).Offset);
-                    this.MAPIControl.MAPIHexBox.Select(0, 0);
-                    this.MAPIControl.CROPSHexBox.Visible = true;
-                    ToolTip toolTip = new ToolTip();
-                    toolTip.SetToolTip(this.MAPIControl.CROPSHexBox, "This is decompressed payload data.");
-                    this.MAPIControl.SplitContainer.Panel2Collapsed = false;
-                }
-                else
-                {
-                    this.MAPIControl.MAPIHexBox.Select(((BaseStructure.Position)e.Node.Tag).StartIndex, ((BaseStructure.Position)e.Node.Tag).Offset);
-                    this.MAPIControl.CROPSHexBox.Visible = false;
-                    this.MAPIControl.SplitContainer.Panel2Collapsed = true;
+                        MAPIControl.CROPSHexBox.Select(pos.StartIndex, pos.Offset);
+                        MAPIControl.MAPIHexBox.Select(0, 0);
+                        MAPIControl.CROPSHexBox.Visible = true;
+                        ToolTip toolTip = new ToolTip();
+                        toolTip.SetToolTip(MAPIControl.CROPSHexBox, "This is decompressed payload data.");
+                        MAPIControl.SplitContainer.Panel2Collapsed = false;
+                    }
+                    else
+                    {
+                        MAPIControl.MAPIHexBox.Select(pos.StartIndex, pos.Offset);
+                        MAPIControl.CROPSHexBox.Visible = false;
+                        MAPIControl.SplitContainer.Panel2Collapsed = true;
+                    }
                 }
             }
         }
@@ -207,20 +213,18 @@
         /// </summary>
         public void Clear()
         {
-            this.MAPIViewControl.Nodes.Clear();
-            this.MAPIControl.MAPIRichTextBox.Visible = false;
-            this.MAPIControl.MAPIRichTextBox.Clear();
-            this.MAPIControl.CROPSHexBox.Visible = false;
+            MAPIViewControl.Nodes.Clear();
+            MAPIControl.CROPSHexBox.Visible = false;
             byte[] empty = new byte[0];
-            this.MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(empty);
-            this.MAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
-            this.MAPIControl.SplitContainer.Panel2Collapsed = true;
+            MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(empty);
+            MAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
+            MAPIControl.SplitContainer.Panel2Collapsed = true;
         }
 
         /// <summary>
         /// Called by Fiddler to determine how confident this inspector is that it can
         /// decode the data.  This is only called when the user hits enter or double-
-        /// clicks a session.  
+        /// clicks a session.
         /// If we score the highest out of the other inspectors, Fiddler will open this
         /// inspector's tab and then call AssignSession.
         /// </summary>
@@ -228,24 +232,24 @@
         /// <returns>Int between 0-100 with 100 being the most confident</returns>
         public override int ScoreForSession(Session oS)
         {
-            if (null == this.session)
+            if (null == session)
             {
-                this.session = oS;
+                session = oS;
             }
 
-            if (null == MAPIParser.BaseHeaders)
+            if (null == BaseHeaders)
             {
                 if (this is IRequestInspector2)
                 {
-                    MAPIParser.BaseHeaders = this.session.oRequest.headers;
+                    BaseHeaders = session.oRequest.headers;
                 }
                 else
                 {
-                    MAPIParser.BaseHeaders = this.session.oResponse.headers;
+                    BaseHeaders = session.oResponse.headers;
                 }
             }
 
-            if (this.IsMapihttp)
+            if (IsMapihttp)
             {
                 return 100;
             }
@@ -261,7 +265,7 @@
         /// <param name="oS">Session object passed by Fiddler</param>
         public override void AssignSession(Session oS)
         {
-            this.session = oS;
+            session = oS;
             base.AssignSession(oS);
         }
 
@@ -272,13 +276,13 @@
         {
             get
             {
-                return this.rawBody;
+                return rawBody;
             }
 
             set
             {
-                this.rawBody = value;
-                this.UpdateView();
+                rawBody = value;
+                UpdateView();
             }
         }
 
@@ -287,35 +291,39 @@
         /// </summary>
         /// <param name="obj">The object to display</param>
         /// <param name="bytesForHexview">The byte array provided for HexView</param>
-        public void DisplayObject(object obj, byte[] bytesForHexview)
+        public void DisplayObject(Block obj, byte[] bytesForHexview)
         {
             if (obj == null)
             {
                 return;
             }
 
-            this.MAPIViewControl.BeginUpdate();
+            MAPIViewControl.BeginUpdate();
             try
             {
-                int result;
-                TreeNode topNode = BaseStructure.AddNodesForTree("DisplayObjectRoot", obj, 0, out result);
-                this.MAPIViewControl.Nodes.Add(topNode);
+                var topNode = BaseStructure.AddBlock(obj, DoDebug);
+                MAPIViewControl.Nodes.Add(topNode);
                 topNode.ExpandAll();
-                this.MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesForHexview);
-                this.MAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
-                if (this.MAPIViewControl.Nodes.Count != 0)
+                if (bytesForHexview != null)
                 {
-                    this.MAPIViewControl.Nodes[0].EnsureVisible();
+                    MAPIControl.MAPIHexBox.ByteProvider = new StaticByteProvider(bytesForHexview);
+                    MAPIControl.MAPIHexBox.ByteProvider.ApplyChanges();
+                }
+                if (MAPIViewControl.Nodes.Count != 0)
+                {
+                    MAPIViewControl.Nodes[0].EnsureVisible();
                 }
             }
             catch (Exception e)
             {
-                this.MAPIControl.MAPIRichTextBox.Visible = true;
-                this.MAPIControl.MAPIRichTextBox.Text = e.ToString();
+                var exBlock = BlockException.Create("Exception", e, 0);
+                var topNode = BaseStructure.AddBlock(obj, DoDebug);
+                MAPIViewControl.Nodes.Add(topNode);
+                topNode.ExpandAll();
             }
             finally
             {
-                this.MAPIViewControl.EndUpdate();
+                MAPIViewControl.EndUpdate();
             }
         }
 
@@ -326,9 +334,17 @@
         /// <param name="e">A EventArgs that contains the event data.</param>
         public void AfterCallDoImport(object sender, EventArgs e)
         {
-            MAPIParser.ResetHandleInformation();
-            MAPIParser.ResetPartialContextInformation();
-            MAPIParser.ResetPartialParameters();
+            ResetHandleInformation();
+            Partial.ResetPartialContextInformation();
+            Partial.ResetPartialParameters();
+        }
+
+        private bool DoDebug { get; set; } = false;
+
+        public void ToggleDebug()
+        {
+            DoDebug = !DoDebug;
+            UpdateView();
         }
 
         /// <summary>
@@ -336,64 +352,59 @@
         /// </summary>
         private void UpdateView()
         {
-            this.Clear();
+            Clear();
             byte[] bytesForHexView;
-            object parserResult;
-            MAPIParser.IsLooperCall = false;
-            MAPIParser.TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
-            MAPIParser.ContextInformationCollection = new List<ContextInformation>();
-            MAPIParser.ResetPartialParameters();
+            Block parserResult;
+            IsLooperCall = false;
+            TargetHandle = new Stack<Dictionary<RopIdType, Dictionary<int, uint>>>();
+            ContextInformationCollection = new List<ContextInformation>();
+            Partial.ResetPartialParameters();
 
-            if (this.IsMapihttp)
+            if (IsMapihttp)
             {
                 List<Session> allSessionsList = new List<Session>();
                 Session session0 = new Session(new byte[0], new byte[0]);
                 Session[] sessionsInFiddler = FiddlerApplication.UI.GetAllSessions();
                 allSessionsList.AddRange(sessionsInFiddler);
-                FiddlerApplication.OnLoadSAZ += this.AfterCallDoImport;
+                FiddlerApplication.OnLoadSAZ += AfterCallDoImport;
                 allSessionsList.Sort(delegate (Session p1, Session p2)
                 {
                     return p1.id.CompareTo(p2.id);
                 });
                 allSessionsList.Insert(0, session0);
-                MAPIParser.AllSessions = allSessionsList.ToArray();
-                int allSessionLength = MAPIParser.AllSessions.Length;
-
-                if (allSessionLength > 0 && MAPIParser.AllSessions[allSessionLength - 1]["Number"] == null)
-                {
-                    MAPIParser.SetIndexForContextRelatedMethods();
-                }
+                SessionExtensions.AllSessionsNavigator = new SessionNavigator(allSessionsList.ToArray());
 
                 try
                 {
-                    if (this.Direction == MAPIParser.TrafficDirection.In)
+                    if (Direction == TrafficDirection.In)
                     {
-                        parserResult = MAPIParser.ParseHTTPPayload(MAPIParser.BaseHeaders, this.session, this.session.requestBodyBytes, MAPIParser.TrafficDirection.In, out bytesForHexView);
+                        parserResult = ParseHTTPPayload(BaseHeaders, session, session.requestBodyBytes, TrafficDirection.In, out bytesForHexView);
                     }
                     else
                     {
                         // An X-ResponseCode of 0 (zero) means success from the perspective of the protocol transport, and the client SHOULD parse the response body based on the request that was issued.
-                        if (MAPIParser.BaseHeaders["X-ResponseCode"] != "0")
+                        if (BaseHeaders["X-ResponseCode"] != "0")
                         {
                             return;
                         }
 
-                        parserResult = MAPIParser.ParseHTTPPayload(MAPIParser.BaseHeaders, this.session, this.session.responseBodyBytes, MAPIParser.TrafficDirection.Out, out bytesForHexView);
+                        parserResult = ParseHTTPPayload(BaseHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
                     }
 
-                    this.DisplayObject(parserResult, bytesForHexView);
+                    DisplayObject(parserResult, bytesForHexView);
                 }
                 catch (Exception e)
                 {
-                    parserResult = e.ToString();
+                    var exception = BlockException.Create("Exception", e, 0);
+                    DisplayObject(exception, null);
                 }
                 finally
                 {
                     DecodingContext.Notify_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[], string>>>();
                     DecodingContext.RowRops_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[]>>>();
-                    MAPIParser.TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
-                    MAPIParser.ContextInformationCollection = new List<ContextInformation>();
-                    MAPIParser.IsLooperCall = true;
+                    TargetHandle = new Stack<Dictionary<RopIdType, Dictionary<int, uint>>>();
+                    ContextInformationCollection = new List<ContextInformation>();
+                    IsLooperCall = true;
                 }
             }
             else
@@ -415,52 +426,49 @@
         {
             var errorStringList = new List<string>();
             StringBuilder stringBuilder = new StringBuilder();
-            AllSessions = sessionsFromCore;
+            SessionExtensions.AllSessionsNavigator = new SessionNavigator(sessionsFromCore);
+
             DecodingContext decodingContext = new DecodingContext();
-            ResetPartialParameters();
-            ResetPartialContextInformation();
+            Partial.ResetPartialParameters();
+            Partial.ResetPartialContextInformation();
             ResetHandleInformation();
-            for (int i = 0; i < AllSessions.Length; i++)
+            int i = 0;
+            foreach (var session in SessionExtensions.AllSessionsNavigator)
             {
-                var session = AllSessions[i];
-                Session val = AllSessions[i];
-                if (AllSessions[i]["VirtualID"] != null)
+                if (session["VirtualID"] != null)
                 {
-                    MAPIParser.ParsingSession = val;
-                }
-                if (AllSessions.Length > 0 && AllSessions[AllSessions.Length - 1]["Number"] == null)
-                {
-                    SetIndexForContextRelatedMethods();
+                    ParsingSession = session;
                 }
                 if (IsMapihttpWithoutUI())
                 {
                     try
                     {
-                        MAPIParser.IsLooperCall = false;
-                        ResetPartialParameters();
-                        BaseHeaders = val.RequestHeaders;
+                        IsLooperCall = false;
+                        Partial.ResetPartialParameters();
+                        BaseHeaders = session.RequestHeaders;
                         byte[] bytes;
-                        object obj = ParseHTTPPayload(BaseHeaders, val, val.requestBodyBytes, TrafficDirection.In, out bytes);
+                        object obj = ParseHTTPPayload(BaseHeaders, session, session.requestBodyBytes, TrafficDirection.In, out bytes);
                         JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: true, obj);
-                        if (val["X-ResponseCode"] == "0")
+                        if (session["X-ResponseCode"] == "0")
                         {
-                            object obj2 = ParseHTTPPayload(BaseHeaders, val, val.responseBodyBytes, TrafficDirection.Out, out bytes);
+                            object obj2 = ParseHTTPPayload(BaseHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out bytes);
                             JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: false, obj2);
                         }
                     }
                     catch (Exception ex)
                     {
-                        errorStringList.Add(string.Format("{0}. Error: Frame#{1} Error Message:{2}", errorStringList.Count + 1, val["VirtualID"], ex.Message));
+                        errorStringList.Add($"{errorStringList.Count + 1}. Error: Frame#{session["VirtualID"]} Error Message:{ex.Message}");
                     }
                     finally
                     {
                         DecodingContext.Notify_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[], string>>>();
                         DecodingContext.RowRops_handlePropertyTags = new Dictionary<uint, Dictionary<int, Tuple<string, string, string, PropertyTag[]>>>();
-                        TargetHandle = new Stack<Dictionary<ushort, Dictionary<int, uint>>>();
+                        TargetHandle = new Stack<Dictionary<RopIdType, Dictionary<int, uint>>>();
                         ContextInformationCollection = new List<ContextInformation>();
-                        MAPIParser.IsLooperCall = true;
+                        IsLooperCall = true;
                     }
                 }
+
                 if (i % 10 == 0 && JsonResult.Length != 0)
                 {
                     string path = pathName + Path.DirectorySeparatorChar.ToString() + autoCaseName + "-" + JsonFile;
@@ -480,7 +488,10 @@
                     }
                     JsonResult = string.Empty;
                 }
+
+                i++;
             }
+
             allRops = AllRopsList;
             foreach (string errorString in errorStringList)
             {

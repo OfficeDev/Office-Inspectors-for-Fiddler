@@ -1,96 +1,20 @@
-﻿namespace MapiInspector
-{
-    using Newtonsoft.Json;
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
+namespace MapiInspector
+{
     /// <summary>
     /// The utilities class for MAPI Inspector.
     /// </summary>
     public class Utilities
     {
         /// <summary>
-        /// Convert the data format from uInt to string 
-        /// </summary>
-        /// <param name="data">The UInt data</param>
-        /// <returns>The converted string result</returns>
-        public static string ConvertUintToString(uint data)
-        {
-            return data.ToString() + " (0x" + data.ToString("X8") + ")";
-        }
-
-        /// <summary>
-        /// Convert the data format from uShort to string 
-        /// </summary>
-        /// <param name="data">The uShort data</param>
-        /// <returns>The converted string result</returns>
-        public static string ConvertUshortToString(ushort data)
-        {
-            return data.ToString() + " (0x" + data.ToString("X4") + ")";
-        }
-
-        public static string ConvertByteArrayToString(byte[] bin, uint? limit = null)
-        {
-            if (bin == null || bin.Length == 0) return string.Empty;
-
-            var szText = new StringBuilder();
-            long length = bin.Length;
-            if (limit.HasValue) length = Math.Min(length, limit.Value);
-            for (uint i = 0; i < length; i++)
-            {
-                if (bin[i] <= 0x8)
-                {
-                    szText.Append(".");
-                }
-                else if (bin[i] >= 0xA && bin[i] <= 0x1F)
-                {
-                    szText.Append(".");
-                }
-                else if (bin[i] > 0xff)
-                {
-                    szText.Append(".");
-                }
-                else
-                {
-                    szText.Append((char)bin[i]);
-                }
-            }
-
-            return szText.ToString();
-        }
-
-        // Array type just display the first 30 values if the array length is more than 30.
-        public static string ConvertArrayToHexString(Array bin, int? limit = 30)
-        {
-            var result = new StringBuilder();
-            int displayLength = limit ?? bin.Length;
-            result.Append("[");
-
-            foreach (var b in bin)
-            {
-                result.Append($"{b:X2},");
-
-                if (displayLength <= 1)
-                {
-                    result.Insert(result.Length - 1, "...");
-                    break;
-                }
-
-                displayLength--;
-            }
-
-            result.Remove(result.Length - 1, 1);
-            result.Append("]");
-            return result.ToString();
-        }
-
-        /// <summary>
         /// Get the valid response from HTTP chunked response body.
         /// </summary>
         /// <param name="responseBodyFromFiddler">The raw response body from Fiddler.</param>
         /// <returns>The valid response bytes</returns>
-        public static byte[] GetPaylodFromChunkedBody(byte[] responseBodyFromFiddler)
+        public static byte[] GetPayloadFromChunkedBody(byte[] responseBodyFromFiddler)
         {
             int length = responseBodyFromFiddler.Length;
             List<byte> payload = new List<byte>();
@@ -201,6 +125,7 @@
                 Obj = obj;
             }
         }
+
         /// <summary>
         /// Method to seal parse result to Json string
         /// Used in test automation
@@ -216,20 +141,29 @@
         }
 
         /// <summary>
-                 /// Converts a simple (non-flag) enum to string. If the value is not present in the underlying enum, converts to a hex string.
-                 /// </summary>
-                 /// <param name="obj"></param>
-                 /// <returns></returns>
-        public static string EnumToString(object obj)
+        /// Read bits value from byte
+        /// </summary>
+        /// <param name="b">The byte.</param>
+        /// <param name="index">The bit index to read</param>
+        /// <param name="length">The bit length to read</param>
+        /// <returns>bits value</returns>
+        static public byte GetBits(byte b, int index, int length)
         {
-            if (Enum.IsDefined(obj.GetType(), obj))
+            int bit = 0;
+            int tempBit = 0;
+
+            if ((index >= 8) || (length > 8))
             {
-                return obj.ToString();
+                throw new Exception("The range for index or length should be 0~7.");
             }
-            else
+
+            for (int i = 0; i < length; i++)
             {
-                return $"0x{Convert.ToUInt64(obj):X}";
+                tempBit = ((b & (1 << (7 - index - i))) > 0) ? 1 : 0;
+                bit = (bit << 1) | tempBit;
             }
+
+            return (byte)bit;
         }
     }
 }

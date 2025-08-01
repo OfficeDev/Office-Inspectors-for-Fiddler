@@ -1,0 +1,122 @@
+using BlockParser;
+
+namespace MAPIInspector.Parsers
+{
+    /// <summary>
+    /// [MS-OXCFXICS] 2.2.4.1 Lexical structure
+    /// [MS-OXCFXICS] 2.2.4.1.2 propValue Lexical Element
+    /// The PropValue represents identification information and the value of the property.
+    /// </summary>
+    public class PropValue : Block
+    {
+        /// <summary>
+        /// The propType.
+        /// </summary>
+        public BlockT<PropertyDataType> PropType;
+
+        /// <summary>
+        /// The PropInfo.
+        /// </summary>
+        public PropInfo PropInfo;
+
+        /// <summary>
+        /// The propType for partial split
+        /// </summary>
+        protected BlockT<PropertyDataType> ptype;
+
+        /// <summary>
+        /// The PropId for partial split
+        /// </summary>
+        protected BlockT<PidTagPropertyEnum> pid;
+
+        /// <summary>
+        /// Indicate whether the stream's position is IsMetaTagIdsetGiven.
+        /// </summary>
+        /// <param name="parser">A BinaryParser.</param>
+        /// <returns>True if the stream's position is IsMetaTagIdsetGiven,else false.</returns>
+        public static bool IsMetaTagIdsetGiven(BinaryParser parser)
+        {
+            var offset = parser.Offset;
+            var type = ParseT<PropertyDataType>(parser);
+            var id = ParseT<PidTagPropertyEnum>(parser);
+            parser.Offset = offset;
+            if (!type.Parsed || !id.Parsed) return false;
+            return type == PropertyDataType.PtypInteger32 && id == PidTagPropertyEnum.MetaTagIdsetGiven;
+        }
+
+        /// <summary>
+        /// Verify that a stream's current position contains a serialized PropValue.
+        /// </summary>
+        /// <param name="parser">A BinaryParser.</param>
+        /// <returns>If the stream's current position contains a serialized PropValue, return true, else false.</returns>
+        public static bool Verify(BinaryParser parser)
+        {
+            var tag = TestParse<Markers>(parser);
+            if (!tag.Parsed) return false;
+            return !parser.Empty &&
+                (FixedPropTypePropValue.Verify(parser) ||
+                VarPropTypePropValue.Verify(parser) ||
+                MvPropTypePropValue.Verify(parser)) &&
+                !MarkersHelper.IsMarker(tag) &&
+                !MarkersHelper.IsMetaTag((MetaProperties)tag.Data);
+        }
+
+        /// <summary>
+        /// Parse a PropValue instance from a BinaryParser.
+        /// </summary>
+        /// <param name="parser">A BinaryParser.</param>
+        /// <returns>A PropValue instance.</returns>
+        public static PropValue ParseFrom(BinaryParser parser)
+        {
+            if (FixedPropTypePropValue.Verify(parser))
+            {
+                return Parse<FixedPropTypePropValue>(parser);
+            }
+            else if (VarPropTypePropValue.Verify(parser))
+            {
+                return Parse<VarPropTypePropValue>(parser);
+            }
+            else if (MvPropTypePropValue.Verify(parser))
+            {
+                return Parse<MvPropTypePropValue>(parser);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        protected override void Parse()
+        {
+            if ((Partial.IsPut == true &&
+                (Partial.PartialPutType == 0 ||
+                (Partial.PartialPutType != 0 &&
+                !(Partial.PartialPutServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
+                Partial.PartialPutProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
+                Partial.PartialPutClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])))) ||
+                (Partial.IsGet == true &&
+                (Partial.PartialGetType == 0 ||
+                (Partial.PartialGetType != 0 &&
+                !(Partial.PartialGetServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
+                Partial.PartialGetProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
+                Partial.PartialGetClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])))) ||
+                (Partial.IsPutExtend == true &&
+                (Partial.PartialPutExtendType == 0 ||
+                (Partial.PartialPutType != 0 &&
+                !(Partial.PartialPutExtendServerUrl == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath &&
+                Partial.PartialPutExtendProcessName == MapiInspector.MAPIParser.ParsingSession.LocalProcess &&
+                Partial.PartialPutExtendClientInfo == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])))))
+            {
+                PropType = ParseT<PropertyDataType>();
+                PropInfo = Parse<PropInfo>();
+            }
+        }
+
+        protected override void ParseBlocks()
+        {
+            Text = "PropValue";
+            AddChildBlockT(PropType, "PropType"); // Consider: ({(ushort)PropType:X4})
+            AddChild(PropInfo);
+        }
+    }
+}

@@ -1,0 +1,44 @@
+using BlockParser;
+
+namespace MAPIInspector.Parsers
+{
+    /// <summary>
+    /// The structure of LongTermId
+    /// [MS-OXCDATA] 2.2.1.3.1 LongTermID Structure
+    /// </summary>
+    public class LongTermId : Block
+    {
+        /// <summary>
+        /// A 128-bit unsigned integer identifying a Store object.
+        /// </summary>
+        public BlockGuid DatabaseGuid;
+
+        /// <summary>
+        /// An unsigned 48-bit integer identifying the folder within its Store object.
+        /// </summary>
+        public BlockBytes GlobalCounter;
+
+        /// <summary>
+        /// An UShort.
+        /// </summary>
+        public BlockT<ushort> Pad;
+
+        /// <summary>
+        /// Parse the LongTermId structure
+        /// </summary>
+        protected override void Parse()
+        {
+            DatabaseGuid = Parse<BlockGuid>();
+            GlobalCounter = ParseBytes(6, 6);
+            Pad = ParseT<ushort>();
+        }
+
+        protected override void ParseBlocks()
+        {
+            Text = "LongTermId";
+            this.AddChildGuid(DatabaseGuid, "DatabaseGuid");
+            AddChildBytes(GlobalCounter, "GlobalCounter");
+            AddChildBlockT(Pad, "Pad");
+        }
+    }
+}

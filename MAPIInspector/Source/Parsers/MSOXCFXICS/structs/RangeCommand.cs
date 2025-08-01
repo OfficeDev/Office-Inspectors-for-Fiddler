@@ -1,0 +1,58 @@
+using BlockParser;
+
+namespace MAPIInspector.Parsers
+{
+    /// <summary>
+    /// Represent a range command.
+    /// [MS-OXCFXICS] 2.2.2.6.4 Range Command (0x52)
+    /// </summary>
+    public class RangeCommand : Command
+    {
+        /// <summary>
+        /// Bitmask Command.
+        /// </summary>
+        public BlockT<byte> Command;
+
+        /// <summary>
+        /// The low value of the range.
+        /// </summary>
+        public BlockBytes LowValue;
+
+        /// <summary>
+        /// The high value of the range.
+        /// </summary>
+        public BlockBytes HighValue;
+
+        /// <summary>
+        /// The length of the LowValue and hignValue.
+        /// </summary>
+        private uint length;
+
+        /// <summary>
+        /// Initializes a new instance of the RangeCommand class.
+        /// </summary>
+        /// <param name="length">The length of the LowValue and hignValue.</param>
+        public RangeCommand(uint length)
+        {
+            this.length = length;
+        }
+
+        /// <summary>
+        /// Parse from a stream.
+        /// </summary>
+        protected override void Parse()
+        {
+            Command = ParseT<byte>();
+            LowValue = ParseBytes((int)length);
+            HighValue = ParseBytes((int)length);
+        }
+
+        protected override void ParseBlocks()
+        {
+            Text = "RangeCommand";
+            AddChildBlockT(Command, "Command");
+            AddLabeledChild(LowValue, "LowValue");
+            AddLabeledChild(HighValue, "HighValue");
+        }
+    }
+}

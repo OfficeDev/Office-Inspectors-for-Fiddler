@@ -1,0 +1,315 @@
+using BlockParser;
+using System.Collections.Generic;
+
+namespace MAPIInspector.Parsers
+{
+    /// <summary>
+    /// [MS-OXCNOTIF] 2.2.1.4.1.2 NotificationData Structure
+    /// A class indicates the NotificationData
+    /// </summary>
+    public class NotificationData : Block
+    {
+        /// <summary>
+        /// A combination of an enumeration and flags that describe the type of the notification and the availability of the notification data fields.
+        /// </summary>
+        public NotificationFlags NotificationFlags;
+
+        /// <summary>
+        /// A subtype of the notification for a TableModified event.
+        /// This field is available only if the NotificationType value in the NotificationFlags field is 0x0100.
+        /// </summary>
+        public BlockT<TableEventType> TableEventType;
+
+        /// <summary>
+        /// The value of the Folder ID structure, as specified in [MS-OXCDATA] section 2.2.1.1, of the item triggering the notification.
+        /// This field is available only if the TableEventType field is available and is 0x0003, 0x0004, or 0x0005.
+        /// </summary>
+        public FolderID TableRowFolderID;
+
+        /// <summary>
+        /// The value of the Message ID structure, as specified in [MS-OXCDATA] section 2.2.1.2, of the item triggering the notification.
+        /// This field is available only if bit 0x8000 is set in the NotificationFlags field and if the TableEventType field is available and is 0x0003, 0x0004, or 0x0005.
+        /// </summary>
+        public MessageID TableRowMessageID;
+
+        /// <summary>
+        /// An identifier of the instance of the previous row in the table.
+        /// This field is available only if bit 0x8000 is set in the NotificationFlags field and if the TableEventType field is available and is 0x0003, 0x0004, or 0x0005.
+        /// </summary>
+        public BlockT<uint> TableRowInstance;
+
+        /// <summary>
+        /// The old value of the Folder ID structure of the item triggering the notification.
+        /// This field is available only if the TableEventType field is available and is 0x0003 or 0x0005.
+        /// </summary>
+        public FolderID InsertAfterTableRowFolderID;
+
+        /// <summary>
+        /// The old value of the Message ID structure of the item triggering the notification.
+        /// This field is available only if bit 0x8000 is set in the NotificationFlags field and if the TableEventType field is available and is 0x0003 or 0x0005.
+        /// </summary>
+        public MessageID InsertAfterTableRowID;
+
+        /// <summary>
+        /// An unsigned 32-bit identifier of the instance of the row where the modified row is inserted.
+        /// This field is available only if bit 0x8000 is set in the NotificationFlags field and if the TableEventType field is available and is 0x0003 or 0x0005.
+        /// </summary>
+        public BlockT<uint> InsertAfterTableRowInstance;
+
+        /// <summary>
+        /// An unsigned 16-bit integer that indicates the length of the table row data.
+        /// This field is available only if the TableEventType field is available and is 0x0003 or 0x0005.
+        /// </summary>
+        public BlockT<ushort> TableRowDataSize;
+
+        /// <summary>
+        /// The table row data, which contains a list of property values in a PropertyRow structure, as specified in [MS-OXCDATA] section 2.8, for the row that was added or modified in the table.
+        /// The property values to be included are determined by a previous RopSetColumns ROP, as specified in [MS-OXCTABL] section 2.2.2.2. This field is available only if the TableEventType field is available and is 0x0003 or 0x0005.
+        /// </summary>
+        public PropertyRow TableRowData;
+
+        /// <summary>
+        /// The Folder ID structure of the item triggering the event.
+        /// This field is available only if the NotificationType value in the NotificationFlags field is not 0x0100 or 0x0400.
+        /// </summary>
+        public FolderID FolderId;
+
+        /// <summary>
+        /// The Message ID structure, as specified in [MS-OXCDATA] section 2.2.1.2, of the item triggering the event.
+        /// This field is available only if the NotificationType value in the NotificationFlags field is not 0x0100 or 0x0400, and bit 0x8000 is set in the NotificationFlags field.
+        /// </summary>
+        public MessageID MessageId;
+
+        /// <summary>
+        /// The Folder ID structure of the parent folder of the item triggering the event.
+        /// This field is available only if the value of the NotificationType in the NotificationFlags field is 0x0004, 0x0008, 0x0020, or 0x0040, and it is sent for either a message in a search folder (both bit 0x4000 and bit 0x8000 are set in the NotificationFlags field) or a folder (both bit 0x4000 and bit 0x8000 are not set in the NotificationFlags field).
+        /// </summary>
+        public FolderID ParentFolderId;
+
+        /// <summary>
+        /// The old Folder ID structure of the item triggering the event.
+        /// This field is available only if the NotificationType value in the NotificationFlags field is 0x0020 or 0x0040.
+        /// </summary>
+        public FolderID OldFolderId;
+
+        /// <summary>
+        /// The old Message ID structure of the item triggering the event.
+        /// This field is available only if the value of the NotificationType in the NotificationFlags field is 0x0020 or 0x0040 and bit 0x8000 is set in the NotificationFlags field.
+        /// </summary>
+        public MessageID OldMessageId;
+
+        /// <summary>
+        /// The old parent Folder ID structure of the item triggering the event.
+        /// This field is available only if the value of the NotificationType in the NotificationFlags field is 0x0020 or 0x0040 and bit 0x8000 is not set in the NotificationFlags field.
+        /// </summary>
+        public FolderID OldParentFolderId;
+
+        /// <summary>
+        /// An unsigned 16-bit integer that specifies the number of property tags in the Tags field.
+        /// This field is available only if the value of the NotificationType in the NotificationFlags field is 0x0004 or 0x0010. If the value of the NotificationType in the NotificationFlags field is 0x0010, the value of this field SHOULD<9> be set to 0x0000.
+        /// </summary>
+        public BlockT<ushort> TagCount;
+
+        /// <summary>
+        /// An array of unsigned 32-bit integers that identifies the IDs of properties that have changed.
+        /// This field is available only if the TagCount field is available and the value of the TagCount field is not 0x0000 or 0xFFFF.
+        /// </summary>
+        public PropertyTag[] Tags;
+
+        /// <summary>
+        /// An unsigned 32-bit integer that specifies the total number of items in the folder triggering this event.
+        /// This field is available only if bit 0x1000 is set in the NotificationFlags field.
+        /// </summary>
+        public BlockT<uint> TotalMessageCount;
+
+        /// <summary>
+        /// An unsigned 32-bit integer that specifies the number of unread items in a folder triggering this event.
+        /// This field is available only if bit 0x2000 is set in the NotificationFlags field.
+        /// </summary>
+        public BlockT<uint> UnreadMessageCount;
+
+        /// <summary>
+        /// An unsigned 32-bit integer that specifies the message flags of new mail that has been received.<10>
+        /// This field is available only if the value of the NotificationType in the NotificationFlags field is 0x0002. For details, see [MS-OXCMSG] section 2.2.1.6.
+        /// </summary>
+        public BlockT<uint> MessageFlags;
+
+        /// <summary>
+        /// A value of TRUE (0x01) indicates the value of the MessageClass field is in Unicode;
+        /// otherwise, FALSE (0x00) indicates the value of the MessageClass is in ASCII. A value of FALSE is returned if the client is working in cached mode, as specified by the ClientMode field in [MS-OXCRPC] section 2.2.2.2.4. This field is available only if the value of the NotificationType field in the NotificationFlags field is 0x0002.
+        /// </summary>
+        public BlockT<byte> UnicodeFlag;
+
+        /// <summary>
+        /// A null-terminated string containing the message class of the new mail.
+        /// The string is in Unicode if the UnicodeFlag field is set to TRUE (0x01). The string is in ASCII if UnicodeFlag is set to FALSE (0x00). This field is available only if the value of the NotificationType in the NotificationFlags field is 0x0002.
+        /// </summary>
+        public BlockString MessageClass;
+
+        /// <summary>
+        /// A Server object handle that specifies the notification Server object associated with this notification event.
+        /// </summary>
+        private uint notificationHandle;
+
+        /// <summary>
+        /// Each row MUST have the same columns and ordering of columns as specified in the last RopSetColumns ROP request ([MS-OXCROPS] section 2.2.5.1).
+        /// </summary>
+        private PropertyTag[] propertiesBySetColum;
+
+        /// <summary>
+        /// Initializes a new instance of the NotificationData class
+        /// </summary>
+        /// <param name="notificationHandle">The object handle in notify operation</param>
+        public NotificationData(uint notificationHandle)
+        {
+            this.notificationHandle = notificationHandle;
+        }
+
+        /// <summary>
+        /// Parse the NotificationData structure.
+        /// </summary>
+        protected override void Parse()
+        {
+            NotificationFlags = Parse<NotificationFlags>();
+            if (NotificationFlags.HasFlag(NotificationTypes.TableModified))
+            {
+                TableEventType = ParseT<TableEventType>();
+            }
+
+            // Bit 0x8000 is set in the NotificationFlags field
+            var isMessage = NotificationFlags.M;
+            // NotificationType value in the NotificationFlags field is not 0x0100 or 0x0400
+            var notModifiedExtended = !NotificationFlags.HasFlag(NotificationTypes.TableModified) &&
+            !NotificationFlags.HasFlag(NotificationTypes.Extended);
+            // NotificationType in the NotificationFlags field is 0x0004, 0x0008, 0x0020, or 0x0040,
+            var isCreateDeleteMovedCopied = NotificationFlags.HasFlag(NotificationTypes.ObjectCreated) ||
+                NotificationFlags.HasFlag(NotificationTypes.ObjectDeleted) ||
+                NotificationFlags.HasFlag(NotificationTypes.ObjectMoved) ||
+                NotificationFlags.HasFlag(NotificationTypes.ObjectCopied);
+            // A message in a search folder(both bit 0x4000 and bit 0x8000 are set in the NotificationFlags field)
+            var isSearchFolderMessage = NotificationFlags.S && NotificationFlags.M;
+            // A folder (both bit 0x4000 and bit 0x8000 are not set in the NotificationFlags field).
+            var isFolder = !NotificationFlags.S && !NotificationFlags.M;
+            // NotificationType value in the NotificationFlags field is 0x0020 or 0x0040
+            var isMovedCopied = NotificationFlags.HasFlag(NotificationTypes.ObjectMoved) ||
+                NotificationFlags.HasFlag(NotificationTypes.ObjectCopied);
+            // NotificationType in the NotificationFlags field is 0x0004 or 0x0010
+            var isCreateModify = NotificationFlags.HasFlag(NotificationTypes.ObjectCreated) ||
+                NotificationFlags.HasFlag(NotificationTypes.ObjectModified);
+            // Bit 0x1000 is set in the NotificationFlags field
+            var isTotalMessageCount = NotificationFlags.T;
+            // Bit 0x2000 is set in the NotificationFlags field
+            var isUnreadMessageCount = NotificationFlags.U;
+            // NotificationType in the NotificationFlags field is 0x0002
+            var isNewMail = NotificationFlags.HasFlag(NotificationTypes.NewMail);
+
+            if (TableEventType != null)
+            {
+                // TableEventType field is available and is 0x0003, 0x0004, or 0x0005
+                var isADM = TableEventType == Parsers.TableEventType.TableRowAdded ||
+                    TableEventType == Parsers.TableEventType.TableRowDeleted ||
+                    TableEventType == Parsers.TableEventType.TableRowModified;
+                // TableEventType field is available and is 0x0003 or 0x0005
+                var isAM = TableEventType == Parsers.TableEventType.TableRowAdded ||
+                    TableEventType == Parsers.TableEventType.TableRowModified;
+
+                if (isADM) TableRowFolderID = Parse<FolderID>();
+                if (isMessage && isADM) TableRowMessageID = Parse<MessageID>();
+                if (isMessage && isADM) TableRowInstance = ParseT<uint>();
+
+                if (isMessage && isAM) InsertAfterTableRowFolderID = Parse<FolderID>();
+                if (isMessage && isAM) InsertAfterTableRowID = Parse<MessageID>();
+                if (isMessage && isAM) InsertAfterTableRowInstance = ParseT<uint>();
+
+                if (isAM)
+                {
+                    TableRowDataSize = ParseT<ushort>();
+
+                    int parsingSessionID = MapiInspector.MAPIParser.ParsingSession.id;
+                    if (MapiInspector.MAPIParser.IsFromFiddlerCore(MapiInspector.MAPIParser.ParsingSession))
+                    {
+                        parsingSessionID = int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"]);
+                    }
+                    if (DecodingContext.Notify_handlePropertyTags.Count > 0 && DecodingContext.Notify_handlePropertyTags.ContainsKey(notificationHandle) && DecodingContext.Notify_handlePropertyTags[notificationHandle].ContainsKey(parsingSessionID)
+                        && DecodingContext.Notify_handlePropertyTags[notificationHandle][parsingSessionID].Item1 == MapiInspector.MAPIParser.ParsingSession.RequestHeaders.RequestPath
+                        && DecodingContext.Notify_handlePropertyTags[notificationHandle][parsingSessionID].Item2 == MapiInspector.MAPIParser.ParsingSession.LocalProcess
+                        && DecodingContext.Notify_handlePropertyTags[notificationHandle][parsingSessionID].Item3 == MapiInspector.MAPIParser.ParsingSession.RequestHeaders["X-ClientInfo"])
+                    {
+                        propertiesBySetColum = DecodingContext.Notify_handlePropertyTags[notificationHandle][parsingSessionID].Item4;
+                    }
+
+                    TableRowData = new PropertyRow(TableRowDataSize, propertiesBySetColum);
+                    TableRowData.Parse(parser);
+                }
+            }
+
+            if (notModifiedExtended) FolderId = Parse<FolderID>();
+            if (notModifiedExtended && isMessage) MessageId = Parse<MessageID>();
+            if (isCreateDeleteMovedCopied && (isSearchFolderMessage || isFolder)) ParentFolderId = Parse<FolderID>();
+            if (isMovedCopied) OldFolderId = Parse<FolderID>();
+            if (isMovedCopied && isMessage) OldMessageId = Parse<MessageID>();
+            if (isMovedCopied && !isMessage) OldParentFolderId = Parse<FolderID>();
+
+            if (isCreateModify)
+            {
+                TagCount = ParseT<ushort>();
+
+                if (TagCount != 0x0000 && TagCount != 0xFFFF)
+                {
+                    var listTags = new List<PropertyTag>();
+
+                    for (int i = 0; i < TagCount; i++)
+                    {
+                        listTags.Add(Parse<PropertyTag>());
+                    }
+
+                    Tags = listTags.ToArray();
+                }
+            }
+
+            if (isTotalMessageCount) TotalMessageCount = ParseT<uint>();
+            if (isUnreadMessageCount) UnreadMessageCount = ParseT<uint>();
+
+            if (isNewMail)
+            {
+                MessageFlags = ParseT<uint>();
+                UnicodeFlag = ParseT<byte>();
+                if (UnicodeFlag == 0x00)
+                {
+                    MessageClass = ParseStringA();
+                }
+                else if (UnicodeFlag == 0x01)
+                {
+                    MessageClass = ParseStringW();
+                }
+            }
+        }
+
+        protected override void ParseBlocks()
+        {
+            AddChild(NotificationFlags, "NotificationFlags");
+            AddChildBlockT(TableEventType, "TableEventType");
+            AddLabeledChild(TableRowFolderID, "TableRowFolderID");
+            AddLabeledChild(TableRowMessageID, "TableRowMessageID");
+            AddChildBlockT(TableRowInstance, "TableRowInstance");
+            AddLabeledChild(InsertAfterTableRowFolderID, "InsertAfterTableRowFolderID");
+            AddLabeledChild(InsertAfterTableRowID, "InsertAfterTableRowID");
+            AddChildBlockT(InsertAfterTableRowInstance, "InsertAfterTableRowInstance");
+            AddChildBlockT(TableRowDataSize, "TableRowDataSize");
+            AddLabeledChild(TableRowData, "TableRowData");
+            AddLabeledChild(FolderId, "FolderId");
+            AddLabeledChild(MessageId, "MessageId");
+            AddLabeledChild(ParentFolderId, "ParentFolderId");
+            AddLabeledChild(OldFolderId, "OldFolderId");
+            AddLabeledChild(OldMessageId, "OldMessageId");
+            AddLabeledChild(OldParentFolderId, "OldParentFolderId");
+            AddChildBlockT(TagCount, "TagCount");
+            AddLabeledChildren(Tags, "Tags");
+            AddChildBlockT(TotalMessageCount, "TotalMessageCount");
+            AddChildBlockT(UnreadMessageCount, "UnreadMessageCount");
+            AddChildBlockT(MessageFlags, "MessageFlags");
+            AddChildBlockT(UnicodeFlag, "UnicodeFlag");
+            AddChildString(MessageClass, "MessageClass");
+        }
+    }
+}
