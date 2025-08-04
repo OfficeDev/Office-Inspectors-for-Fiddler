@@ -5,8 +5,6 @@ VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAPIInspector", "MAPIInspector.csproj", "{F6AD8210-981D-42D9-B8FA-0970FD41DBE5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockParser", "BlockParser\BlockParser.csproj", "{67F29406-30D1-4390-AE42-F08ACF9E32A7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlockParserTests", "BlockParserTests\BlockParserTests.csproj", "{9DA1E185-CC83-4CD4-ABEA-9DA0E2AEE034}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{F6AD8210-981D-42D9-B8FA-0970FD41DBE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6AD8210-981D-42D9-B8FA-0970FD41DBE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6AD8210-981D-42D9-B8FA-0970FD41DBE5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{67F29406-30D1-4390-AE42-F08ACF9E32A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{67F29406-30D1-4390-AE42-F08ACF9E32A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{67F29406-30D1-4390-AE42-F08ACF9E32A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{67F29406-30D1-4390-AE42-F08ACF9E32A7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9DA1E185-CC83-4CD4-ABEA-9DA0E2AEE034}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9DA1E185-CC83-4CD4-ABEA-9DA0E2AEE034}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DA1E185-CC83-4CD4-ABEA-9DA0E2AEE034}.Release|Any CPU.ActiveCfg = Release|Any CPU

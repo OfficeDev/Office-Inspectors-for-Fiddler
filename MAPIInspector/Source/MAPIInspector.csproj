@@ -755,6 +755,20 @@
     <Compile Include="SessionExtensions.cs" />
     <Compile Include="SessionNavigator.cs" />
     <Compile Include="Utilities.cs" />
+    <Compile Include="BlockParser\BinaryParser.cs" />
+    <Compile Include="BlockParser\Block.cs" />
+    <Compile Include="BlockParser\BlockAdders.cs" />
+    <Compile Include="BlockParser\BlockBytes.cs" />
+    <Compile Include="BlockParser\BlockCreators.cs" />
+    <Compile Include="BlockParser\BlockException.cs" />
+    <Compile Include="BlockParser\BlockJunk.cs" />
+    <Compile Include="BlockParser\BlockParsers.cs" />
+    <Compile Include="BlockParser\BlockString.cs" />
+    <Compile Include="BlockParser\BlockStringA.cs" />
+    <Compile Include="BlockParser\BlockStringW.cs" />
+    <Compile Include="BlockParser\BlockT.cs" />
+    <Compile Include="BlockParser\ScratchBlock.cs" />
+    <Compile Include="BlockParser\Strings.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -782,12 +796,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="BlockParser\BlockParser.csproj">
-      <Project>{67f29406-30d1-4390-ae42-f08acf9e32a7}</Project>
-      <Name>BlockParser</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Search.png" />
