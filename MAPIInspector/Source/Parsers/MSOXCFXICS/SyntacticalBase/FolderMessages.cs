@@ -1,0 +1,51 @@
+using BlockParser;
+using System.Collections.Generic;
+
+namespace MAPIInspector.Parsers
+{
+    /// <summary>
+    /// [MS-OXCFXICS] 2.2.4.3.7 folderMessages Element
+    /// The folderMessages element contains the messages contained in a folder.
+    /// </summary>
+    public class FolderMessages : Block
+    {
+        /// <summary>
+        /// A list of MetaTagFxDelPropMessageList.
+        /// </summary>
+        public MetaTagFxDelPropMessageList[] MetaTagFxDelPropMessageLists;
+
+        protected override void Parse()
+        {
+            int count = 0;
+            var interMessageLists = new List<MetaTagFxDelPropMessageList>();
+
+            while (!parser.Empty && count < 2)
+            {
+                if (MetaTagFxDelPropMessageList.Verify(parser))
+                {
+                    interMessageLists.Add(Parse<MetaTagFxDelPropMessageList>());
+                }
+                else
+                {
+                    break;
+                }
+
+                count++;
+            }
+
+            MetaTagFxDelPropMessageLists = interMessageLists.ToArray();
+        }
+
+        protected override void ParseBlocks()
+        {
+            Text = "FolderMessages";
+            if (MetaTagFxDelPropMessageLists != null)
+            {
+                foreach (var messageList in MetaTagFxDelPropMessageLists)
+                {
+                    AddChild(messageList);
+                }
+            }
+        }
+    }
+}
