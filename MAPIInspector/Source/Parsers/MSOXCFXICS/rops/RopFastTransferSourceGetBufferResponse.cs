@@ -67,15 +67,14 @@ namespace MAPIInspector.Parsers
             RopId = ParseT<RopIdType>();
             InputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
+            TransferStatus = ParseT<TransferStatus>();
+            InProgressCount = ParseT<ushort>();
+            TotalStepCount = ParseT<ushort>();
+            Reserved = ParseT<byte>();
+            TransferBufferSize = ParseT<ushort>();
 
             if (ReturnValue == ErrorCodes.Success)
             {
-                TransferStatus = ParseT<TransferStatus>();
-                InProgressCount = ParseT<ushort>();
-                TotalStepCount = ParseT<ushort>();
-                Reserved = ParseT<byte>();
-                TransferBufferSize = ParseT<ushort>();
-
                 parser.PushCap(TransferBufferSize);
 
                 var transferBufferList = new List<Block>();

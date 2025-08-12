@@ -101,6 +101,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlockParser\BlockInteresting.cs" />
     <Compile Include="ByteArrayConverter.cs" />
     <Compile Include="MAPIControl.Events.cs">
       <SubType>UserControl</SubType>

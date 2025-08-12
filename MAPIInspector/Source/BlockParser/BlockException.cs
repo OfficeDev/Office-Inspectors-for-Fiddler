@@ -2,9 +2,10 @@
 
 namespace BlockParser
 {
-    public class BlockException : Block
+    public class BlockException : BlockInteresting
     {
-        public static readonly Color BackColor = Color.LightPink;
+        public override Color BackColor => Color.LightPink;
+        public override string InterestingLabel => "Exceptions found in this block";
 
         public static BlockException Create(string message, System.Exception ex, long offset)
         {
