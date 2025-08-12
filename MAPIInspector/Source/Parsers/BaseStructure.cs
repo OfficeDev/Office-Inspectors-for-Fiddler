@@ -27,22 +27,12 @@ namespace MAPIInspector.Parsers
         public static TreeNode AddBlock(Block block, bool debug)
         {
             var node = AddBlock(block, 0, debug);
-            if (HasBlock<BlockException>(node))
+            var interestingBlock = FindInterestingBlock(node);
+            if (interestingBlock != null)
             {
-                var exNode = new TreeNode("Exceptions found in this block")
+                var exNode = new TreeNode(interestingBlock.InterestingLabel)
                 {
-                    BackColor = BlockException.BackColor,
-                    Tag = "ignore"
-                };
-                exNode.Nodes.Add(node);
-                return exNode;
-            }
-
-            if (HasBlock<BlockJunk>(node))
-            {
-                var exNode = new TreeNode("Unparsed data found in this block")
-                {
-                    BackColor = BlockJunk.BackColor,
+                    BackColor = interestingBlock.BackColor,
                     Tag = "ignore"
                 };
                 exNode.Nodes.Add(node);
@@ -156,8 +146,7 @@ namespace MAPIInspector.Parsers
                 }
             }
 
-            if (block is BlockException) ColorNodes(node, BlockException.BackColor);
-            if (block is BlockJunk) ColorNodes(node, BlockJunk.BackColor);
+            if (block is BlockInteresting interestingBlock) ColorNodes(node, interestingBlock.BackColor);
 
             return node;
         }
@@ -210,23 +199,24 @@ namespace MAPIInspector.Parsers
             return node;
         }
 
-        private static bool HasBlock<T>(TreeNode node) where T : Block
+        private static BlockInteresting FindInterestingBlock(TreeNode node)
         {
             var pos = node.Tag as Position;
-            if (pos?.SourceBlock is T)
+            if (pos?.SourceBlock is BlockInteresting interestingBlock)
             {
-                return true;
+                return interestingBlock;
             }
 
             foreach (TreeNode child in node.Nodes)
             {
-                if (HasBlock<T>(child))
+                var foundBlock = FindInterestingBlock(child);
+                if (foundBlock != null)
                 {
-                    return true;
+                    return foundBlock;
                 }
             }
 
-            return false;
+            return null;
         }
     }
 }
