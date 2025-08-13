@@ -207,8 +207,16 @@ namespace MapiInspector
 
         private void SearchButton_Click(object sender, EventArgs e)
         {
-            bool bIsShift = (ModifierKeys & Keys.Shift) == Keys.Shift;
-            PerformSearch(bIsShift);
+            bool isCtrl = (ModifierKeys & Keys.Control) == Keys.Control;
+            bool isShift = (ModifierKeys & Keys.Shift) == Keys.Shift;
+            if (isCtrl)
+            {
+                SearchFrames(isShift);
+            }
+            else
+            {
+                PerformSearch(isShift);
+            }
         }
 
         private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
@@ -246,6 +254,8 @@ namespace MapiInspector
             bool isShiftF3 = keyData == (Keys.Shift | Keys.F3);
             bool isCtrlF = keyData == (Keys.Control | Keys.F);
             bool isCtrlRight = keyData == (Keys.Control | Keys.Right);
+            bool isCtrlF3 = keyData == (Keys.Control | Keys.F3);
+            bool isCtrlShiftF3 = keyData == (Keys.Control | Keys.Shift | Keys.F3);
 
             if (mapiTreeView.Focused)
             {
@@ -287,6 +297,12 @@ namespace MapiInspector
                 return true;
             }
 
+            if (isCtrlF3 || isCtrlShiftF3)
+            {
+                SearchFrames(isCtrlShiftF3);
+                return true;
+            }
+
             if (isF3 || isShiftF3)
             {
                 PerformSearch(keyData.HasFlag(Keys.Shift));
@@ -320,6 +336,17 @@ namespace MapiInspector
                 mapiTreeView.Focus();
                 foundNode.EnsureVisible();
             }
+        }
+
+        private void SearchFrames(bool searchBackwards)
+        {
+            // TODO: Implement search frames logic as described in the prompt
+            // 1. Get search term from searchTextBox
+            // 2. Determine current frame and search context (request/response)
+            // 3. Search current frame after current position
+            // 4. If not found, iterate through subsequent frames and search
+            // 5. On match, switch to that frame and set position
+            // 6. Do not wrap around
         }
 
         // Find next node (downwards, wraps around)
