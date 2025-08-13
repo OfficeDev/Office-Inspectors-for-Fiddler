@@ -327,8 +327,8 @@ namespace MapiInspector
                 return;
 
             var foundNode = searchUp
-                ? FindPrevNode(mapiTreeView.Nodes, startNode, searchText)
-                : FindNextNode(mapiTreeView.Nodes, startNode, searchText);
+                ? FindPrevNode(mapiTreeView.Nodes, startNode, searchText, true)
+                : FindNextNode(mapiTreeView.Nodes, startNode, searchText, true);
 
             if (foundNode != null)
             {
@@ -340,17 +340,28 @@ namespace MapiInspector
 
         private void SearchFrames(bool searchBackwards)
         {
-            // TODO: Implement search frames logic as described in the prompt
-            // 1. Get search term from searchTextBox
-            // 2. Determine current frame and search context (request/response)
-            // 3. Search current frame after current position
-            // 4. If not found, iterate through subsequent frames and search
-            // 5. On match, switch to that frame and set position
-            // 6. Do not wrap around
+            string searchText = searchTextBox.Text.Trim();
+            if (string.IsNullOrEmpty(searchText) || searchText == "Search (Ctrl+F)")
+                return;
+
+            var startNode = mapiTreeView.SelectedNode ?? mapiTreeView.Nodes[0];
+            TreeNode foundNode = searchBackwards
+                ? FindPrevNode(mapiTreeView.Nodes, startNode, searchText, false)
+                : FindNextNode(mapiTreeView.Nodes, startNode, searchText, false);
+
+            if (foundNode != null)
+            {
+                mapiTreeView.SelectedNode = foundNode;
+                mapiTreeView.Focus();
+                foundNode.EnsureVisible();
+                return;
+            }
+
+            // TODO: Implement frame iteration logic (load next frame, search, switch to frame on match)
         }
 
         // Find next node (downwards, wraps around)
-        private TreeNode FindNextNode(TreeNodeCollection nodes, TreeNode startNode, string searchText)
+        private TreeNode FindNextNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap)
         {
             bool foundStart = false;
             TreeNode firstMatch = null;
@@ -361,19 +372,19 @@ namespace MapiInspector
                     foundStart = true;
                     continue;
                 }
-
-                if (foundStart && GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
-                    return node;
-                if (firstMatch == null && GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
-                    firstMatch = node;
+                if (GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    if (foundStart)
+                        return node;
+                    if (firstMatch == null)
+                        firstMatch = node;
+                }
             }
-
-            // Wrap around
-            return firstMatch;
+            return wrap ? firstMatch : null;
         }
 
         // Find previous node (upwards, wraps around)
-        private TreeNode FindPrevNode(TreeNodeCollection nodes, TreeNode startNode, string searchText)
+        private TreeNode FindPrevNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap)
         {
             TreeNode lastMatch = null;
             foreach (var node in FlattenNodes(nodes))
@@ -383,18 +394,18 @@ namespace MapiInspector
                 if (GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
                     lastMatch = node;
             }
-
-            // Wrap around: if nothing before, search from end
-            if (lastMatch == null)
+            if (lastMatch != null)
+                return lastMatch;
+            if (wrap)
             {
                 foreach (var node in FlattenNodes(nodes))
                 {
                     if (GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
                         lastMatch = node;
                 }
+                return lastMatch;
             }
-
-            return lastMatch;
+            return null;
         }
 
         // Helper: flatten all nodes in tree (preorder)
