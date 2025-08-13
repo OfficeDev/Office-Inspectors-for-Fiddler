@@ -947,7 +947,7 @@ sessionID >= currentSessionID)
             if (IsMapihttpSession(parsingSession, TrafficDirection.In))
             {
                 NeedToParseCROPSLayer = isLooper;
-                mapiRequest = ParseHTTPPayload(parsingSession.RequestHeaders, parsingSession, parsingSession.requestBodyBytes, TrafficDirection.In, out byte[] bytesForHexView);
+                mapiRequest = ParseHTTPPayload(parsingSession.RequestHeaders, parsingSession, TrafficDirection.In, out byte[] bytesForHexView);
                 hexViewBytes = bytesForHexView;
                 int parsingSessionID = parsingSession.id;
                 if (IsFromFiddlerCore(parsingSession))
@@ -1020,7 +1020,7 @@ sessionID >= currentSessionID)
                     currentSession.ResponseHeaders["X-ResponseCode"] == "0")
                 {
                     NeedToParseCROPSLayer = isLooper;
-                    mapiResponse = ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out byte[] bytesForHexView);
+                    mapiResponse = ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, TrafficDirection.Out, out byte[] bytesForHexView);
                     hexViewBytes = bytesForHexView;
                     int parsingSessionID = currentSession.id;
                     if (IsFromFiddlerCore(currentSession))
@@ -1072,7 +1072,7 @@ sessionID >= currentSessionID)
                     currentSession["X-ResponseCode"] == "0")
                 {
                     NeedToParseCROPSLayer = isLooper;
-                    mapiResponse = ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out byte[] bytesForHexView);
+                    mapiResponse = ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, TrafficDirection.Out, out byte[] bytesForHexView);
                     hexViewBytes = bytesForHexView;
                     int parsingSessionID = currentSession.id;
                     if (currentSession.id == 0)
@@ -1137,12 +1137,25 @@ sessionID >= currentSessionID)
         /// <param name="direction">The direction of the traffic.</param>
         /// <param name="bytes">The bytes provided for MAPI view layer.</param>
         /// <returns>The object parsed result</returns>
-        public static Block ParseHTTPPayload(HTTPHeaders headers, Session currentSession, byte[] bytesFromHTTP, TrafficDirection direction, out byte[] bytes)
+        public static Block ParseHTTPPayload(HTTPHeaders headers, Session currentSession, TrafficDirection direction, out byte[] bytes)
         {
             Block objectOut = null;
             byte[] emptyByte = new byte[0];
             bytes = emptyByte;
             string requestType = string.Empty;
+            byte[] bytesFromHTTP = null;
+
+            switch (direction)
+            {
+                case TrafficDirection.In:
+                    bytesFromHTTP = currentSession.requestBodyBytes;
+                    break;
+                case TrafficDirection.Out:
+                    bytesFromHTTP = currentSession.responseBodyBytes;
+                    break;
+                default:
+                    return Block.Create("Invalid traffic direction.");
+            }
 
             if (!IsFromFiddlerCore(currentSession))
             {
@@ -1521,8 +1534,8 @@ sessionID >= currentSessionID)
                     {
                         IsLooperCall = false;
                         Partial.ResetPartialParameters();
-                        var requestObj = ParseHTTPPayload(session.RequestHeaders, session, session.requestBodyBytes, TrafficDirection.In, out var bytes);
-                        var responseObj = ParseHTTPPayload(session.ResponseHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out var bytes2);
+                        var requestObj = ParseHTTPPayload(session.RequestHeaders, session, TrafficDirection.In, out var bytes);
+                        var responseObj = ParseHTTPPayload(session.ResponseHeaders, session, TrafficDirection.Out, out var bytes2);
 
                         var mapiFrame = new MAPIFrame
                         {
