@@ -312,7 +312,8 @@ namespace MapiInspector
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        private void PerformSearch(bool searchUp)
+        // Combined search logic for single and multi-frame search
+        private void SearchNodes(bool searchUp, bool searchFrames)
         {
             string searchText = searchTextBox.Text.Trim();
             if (mapiTreeView.Nodes.Count == 0 ||
@@ -326,38 +327,32 @@ namespace MapiInspector
             if (startNode == null)
                 return;
 
-            var foundNode = searchUp
-                ? FindPrevNode(mapiTreeView.Nodes, startNode, searchText, true)
-                : FindNextNode(mapiTreeView.Nodes, startNode, searchText, true);
+            TreeNode foundNode = searchUp
+                ? FindPrevNode(mapiTreeView.Nodes, startNode, searchText, !searchFrames)
+                : FindNextNode(mapiTreeView.Nodes, startNode, searchText, !searchFrames);
 
             if (foundNode != null)
             {
                 mapiTreeView.SelectedNode = foundNode;
                 mapiTreeView.Focus();
                 foundNode.EnsureVisible();
+                return;
             }
+
+            if (searchFrames)
+            {
+                // TODO: Implement frame iteration logic (load next frame, search, switch to frame on match)
+            }
+        }
+
+        private void PerformSearch(bool searchUp)
+        {
+            SearchNodes(searchUp, false);
         }
 
         private void SearchFrames(bool searchBackwards)
         {
-            string searchText = searchTextBox.Text.Trim();
-            if (string.IsNullOrEmpty(searchText) || searchText == "Search (Ctrl+F)")
-                return;
-
-            var startNode = mapiTreeView.SelectedNode ?? mapiTreeView.Nodes[0];
-            TreeNode foundNode = searchBackwards
-                ? FindPrevNode(mapiTreeView.Nodes, startNode, searchText, false)
-                : FindNextNode(mapiTreeView.Nodes, startNode, searchText, false);
-
-            if (foundNode != null)
-            {
-                mapiTreeView.SelectedNode = foundNode;
-                mapiTreeView.Focus();
-                foundNode.EnsureVisible();
-                return;
-            }
-
-            // TODO: Implement frame iteration logic (load next frame, search, switch to frame on match)
+            SearchNodes(searchBackwards, true);
         }
 
         // Find next node (downwards, wraps around)
