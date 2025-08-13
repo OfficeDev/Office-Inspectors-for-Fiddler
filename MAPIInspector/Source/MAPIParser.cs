@@ -1154,41 +1154,20 @@ sessionID >= currentSessionID)
                     return Block.Create("Invalid traffic direction.");
             }
 
-            if (!IsFromFiddlerCore(currentSession))
+            if (bytesFromHTTP == null || bytesFromHTTP.Length == 0)
             {
-                if (bytesFromHTTP == null || bytesFromHTTP.Length == 0)
-                {
-                    return Block.Create("Payload length from HTTP layer is 0");
-                }
-                else if (headers == null || !headers.Exists("X-RequestType"))
-                {
-                    return Block.Create("X-RequestType header does not exist.");
-                }
-
-                requestType = headers["X-RequestType"];
-
-                if (requestType == null)
-                {
-                    return Block.Create("Request type is null");
-                }
+                return Block.Create("Payload length from HTTP layer is 0");
             }
-            else
+            else if (currentSession.RequestHeaders == null || !currentSession.RequestHeaders.Exists("X-RequestType"))
             {
-                if (bytesFromHTTP == null || bytesFromHTTP.Length == 0)
-                {
-                    return Block.Create("Payload length from HTTP layer is 0");
-                }
-                else if (headers == null || !currentSession.RequestHeaders.Exists("X-RequestType"))
-                {
-                    return Block.Create("X-RequestType header does not exist.");
-                }
+                return Block.Create("X-RequestType header does not exist.");
+            }
 
-                requestType = currentSession.RequestHeaders["X-RequestType"];
+            requestType = currentSession.RequestHeaders["X-RequestType"];
 
-                if (requestType == null)
-                {
-                    return Block.Create("Request type is null");
-                }
+            if (requestType == null)
+            {
+                return Block.Create("Request type is null");
             }
 
             try
