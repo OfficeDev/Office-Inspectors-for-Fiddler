@@ -134,7 +134,7 @@ namespace MapiInspector
             if (IsMapihttpSession(currentSession, TrafficDirection.Out))
             {
                 byte[] bytesForHexView;
-                var mapiResponse = ParseHTTPExecuteResponsePayload(currentSession.ResponseHeaders, currentSession, TrafficDirection.Out, out bytesForHexView);
+                var mapiResponse = ParseHTTPExecuteResponsePayload(currentSession, TrafficDirection.Out, out bytesForHexView);
                 var responseBody = mapiResponse as ExecuteResponseBody;
                 int rgbOutputBufferCount = responseBody.RopBuffer.RgbOutputBuffers.Length;
 
@@ -151,13 +151,11 @@ namespace MapiInspector
         /// <summary>
         /// Parse special session's response message to MS-OXCROPS layer
         /// </summary>
-        /// <param name="headers">The header of this parsing session .</param>
         /// <param name="currentSession">The parsing session.</param>
-        /// <param name="bytesFromHTTP">The raw data from HTTP layer.</param>
         /// <param name="direction">The direction of the traffic.</param>
         /// <param name="bytes">The bytes provided for MAPI view layer.</param>
         /// <returns>The object parsed result</returns>
-        public static Block ParseHTTPExecuteResponsePayload(HTTPHeaders headers, Session currentSession, TrafficDirection direction, out byte[] bytes)
+        public static Block ParseHTTPExecuteResponsePayload(Session currentSession, TrafficDirection direction, out byte[] bytes)
         {
             Block objectOut = null;
             byte[] emptyByte = new byte[0];
@@ -202,8 +200,8 @@ namespace MapiInspector
                     }
                 }
                 else if (direction == TrafficDirection.Out &&
-                    headers.Exists("Transfer-Encoding") &&
-                    headers["Transfer-Encoding"] == "chunked")
+                    currentSession.ResponseHeaders.Exists("Transfer-Encoding") &&
+                    currentSession.ResponseHeaders["Transfer-Encoding"] == "chunked")
                 {
                     bytesFromHTTP = Utilities.GetPayloadFromChunkedBody(bytesFromHTTP);
                     bytes = bytesFromHTTP;
@@ -944,7 +942,7 @@ sessionID >= currentSessionID)
             if (IsMapihttpSession(parsingSession, TrafficDirection.In))
             {
                 NeedToParseCROPSLayer = isLooper;
-                mapiRequest = ParseHTTPPayload(parsingSession.RequestHeaders, parsingSession, TrafficDirection.In, out byte[] bytesForHexView);
+                mapiRequest = ParseHTTPPayload(parsingSession, TrafficDirection.In, out byte[] bytesForHexView);
                 hexViewBytes = bytesForHexView;
                 int parsingSessionID = parsingSession.id;
                 if (IsFromFiddlerCore(parsingSession))
@@ -1017,7 +1015,7 @@ sessionID >= currentSessionID)
                     currentSession.ResponseHeaders["X-ResponseCode"] == "0")
                 {
                     NeedToParseCROPSLayer = isLooper;
-                    mapiResponse = ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, TrafficDirection.Out, out byte[] bytesForHexView);
+                    mapiResponse = ParseHTTPPayload(currentSession, TrafficDirection.Out, out byte[] bytesForHexView);
                     hexViewBytes = bytesForHexView;
                     int parsingSessionID = currentSession.id;
                     if (IsFromFiddlerCore(currentSession))
@@ -1069,7 +1067,7 @@ sessionID >= currentSessionID)
                     currentSession["X-ResponseCode"] == "0")
                 {
                     NeedToParseCROPSLayer = isLooper;
-                    mapiResponse = ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, TrafficDirection.Out, out byte[] bytesForHexView);
+                    mapiResponse = ParseHTTPPayload(currentSession, TrafficDirection.Out, out byte[] bytesForHexView);
                     hexViewBytes = bytesForHexView;
                     int parsingSessionID = currentSession.id;
                     if (currentSession.id == 0)
@@ -1128,13 +1126,11 @@ sessionID >= currentSessionID)
         /// <summary>
         /// Parse the HTTP payload to MAPI message.
         /// </summary>
-        /// <param name="headers">The HTTP header.</param>
         /// <param name="currentSession">the current session.</param>
-        /// <param name="bytesFromHTTP">The raw data from HTTP layer.</param>
         /// <param name="direction">The direction of the traffic.</param>
         /// <param name="bytes">The bytes provided for MAPI view layer.</param>
         /// <returns>The object parsed result</returns>
-        public static Block ParseHTTPPayload(HTTPHeaders headers, Session currentSession, TrafficDirection direction, out byte[] bytes)
+        public static Block ParseHTTPPayload(Session currentSession, TrafficDirection direction, out byte[] bytes)
         {
             Block objectOut = null;
             byte[] emptyByte = new byte[0];
@@ -1183,8 +1179,8 @@ sessionID >= currentSessionID)
                     }
                 }
                 else if (direction == TrafficDirection.Out &&
-                    headers.Exists("Transfer-Encoding") &&
-                    headers["Transfer-Encoding"] == "chunked")
+                    currentSession.ResponseHeaders.Exists("Transfer-Encoding") &&
+                    currentSession.ResponseHeaders["Transfer-Encoding"] == "chunked")
                 {
                     bytesFromHTTP = Utilities.GetPayloadFromChunkedBody(bytesFromHTTP);
                     bytes = bytesFromHTTP;
@@ -1510,8 +1506,8 @@ sessionID >= currentSessionID)
                     {
                         IsLooperCall = false;
                         Partial.ResetPartialParameters();
-                        var requestObj = ParseHTTPPayload(session.RequestHeaders, session, TrafficDirection.In, out var bytes);
-                        var responseObj = ParseHTTPPayload(session.ResponseHeaders, session, TrafficDirection.Out, out var bytes2);
+                        var requestObj = ParseHTTPPayload(session, TrafficDirection.In, out var bytes);
+                        var responseObj = ParseHTTPPayload(session, TrafficDirection.Out, out var bytes2);
 
                         var mapiFrame = new MAPIFrame
                         {

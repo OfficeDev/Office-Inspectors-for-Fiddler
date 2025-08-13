@@ -379,7 +379,7 @@ namespace MapiInspector
                 {
                     if (Direction == TrafficDirection.In)
                     {
-                        parserResult = ParseHTTPPayload(BaseHeaders, session, TrafficDirection.In, out bytesForHexView);
+                        parserResult = ParseHTTPPayload(session, TrafficDirection.In, out bytesForHexView);
                     }
                     else
                     {
@@ -389,7 +389,7 @@ namespace MapiInspector
                             return;
                         }
 
-                        parserResult = ParseHTTPPayload(BaseHeaders, session, TrafficDirection.Out, out bytesForHexView);
+                        parserResult = ParseHTTPPayload(session, TrafficDirection.Out, out bytesForHexView);
                     }
 
                     DisplayObject(parserResult, bytesForHexView);
@@ -447,11 +447,11 @@ namespace MapiInspector
                         IsLooperCall = false;
                         Partial.ResetPartialParameters();
                         BaseHeaders = session.RequestHeaders;
-                        object obj = ParseHTTPPayload(BaseHeaders, session, TrafficDirection.In, out byte[] bytes);
+                        object obj = ParseHTTPPayload(session, TrafficDirection.In, out byte[] bytes);
                         JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: true, obj);
                         if (session["X-ResponseCode"] == "0")
                         {
-                            object obj2 = ParseHTTPPayload(BaseHeaders, session, TrafficDirection.Out, out byte[] bytes2);
+                            object obj2 = ParseHTTPPayload(session, TrafficDirection.Out, out byte[] bytes2);
                             JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: false, obj2);
                         }
                     }
