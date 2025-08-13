@@ -57,18 +57,19 @@ namespace MapiInspector
             }
         }
 
-        private string CleanString(string text)
+        private static string CleanString(string text)
         {
             return text.TrimEnd('\0').Replace("\0", "\\0");
         }
 
-        private string GetNodeText(TreeNode node)
+        public static string GetNodeText(TreeNode node)
         {
             if (node == null) return string.Empty;
             if (node.Tag is global::MAPIInspector.Parsers.BaseStructure.Position position && position.SourceBlock != null)
             {
                 return CleanString(position.SourceBlock.Text);
             }
+
             return CleanString(node.Text);
         }
 
@@ -209,24 +210,19 @@ namespace MapiInspector
         {
             bool isCtrl = (ModifierKeys & Keys.Control) == Keys.Control;
             bool isShift = (ModifierKeys & Keys.Shift) == Keys.Shift;
-            if (isCtrl)
-            {
-                SearchFrames(isShift);
-            }
-            else
-            {
-                PerformSearch(isShift);
-            }
+            PerformSearch(isShift, isCtrl);
+
         }
 
         private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             bool bEnter = e.KeyCode == Keys.Enter;
-            bool bShiftEnter = (e.KeyCode == Keys.Enter) && (e.Modifiers == Keys.Shift);
+            bool isCtrl = (ModifierKeys & Keys.Control) == Keys.Control;
+            bool isShift = (ModifierKeys & Keys.Shift) == Keys.Shift;
 
-            if (bEnter || bShiftEnter)
+            if (bEnter)
             {
-                PerformSearch(e.Modifiers == Keys.Shift);
+                PerformSearch(isShift, isCtrl);
                 e.Handled = true;
                 e.SuppressKeyPress = true;
             }
@@ -250,12 +246,9 @@ namespace MapiInspector
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            bool isF3 = keyData == Keys.F3;
-            bool isShiftF3 = keyData == (Keys.Shift | Keys.F3);
+            bool isF3 = keyData.HasFlag(Keys.F3);
             bool isCtrlF = keyData == (Keys.Control | Keys.F);
             bool isCtrlRight = keyData == (Keys.Control | Keys.Right);
-            bool isCtrlF3 = keyData == (Keys.Control | Keys.F3);
-            bool isCtrlShiftF3 = keyData == (Keys.Control | Keys.Shift | Keys.F3);
 
             if (mapiTreeView.Focused)
             {
@@ -297,15 +290,9 @@ namespace MapiInspector
                 return true;
             }
 
-            if (isCtrlF3 || isCtrlShiftF3)
+            if (isF3)
             {
-                SearchFrames(isCtrlShiftF3);
-                return true;
-            }
-
-            if (isF3 || isShiftF3)
-            {
-                PerformSearch(keyData.HasFlag(Keys.Shift));
+                PerformSearch(keyData.HasFlag(Keys.Shift), keyData.HasFlag(Keys.Control));
                 return true;
             }
 
@@ -313,50 +300,44 @@ namespace MapiInspector
         }
 
         // Combined search logic for single and multi-frame search
-        private void SearchNodes(bool searchUp, bool searchFrames)
+        public static TreeNode SearchNodes(TreeView treeView, TreeNodeCollection nodes, string searchText, TreeNode startNode, bool searchUp, bool searchFrames)
         {
-            string searchText = searchTextBox.Text.Trim();
-            if (mapiTreeView.Nodes.Count == 0 ||
-                string.IsNullOrEmpty(searchText) ||
-                searchText == "Search (Ctrl+F)")
-            {
-                return;
-            }
+            searchText = searchText.Trim();
 
-            var startNode = mapiTreeView.SelectedNode ?? mapiTreeView.Nodes[0];
+            if (nodes.Count == 0 || string.IsNullOrEmpty(searchText) || searchText == "Search (Ctrl+F)")
+            {
+                return null;
+            }
             if (startNode == null)
-                return;
+                return null;
 
             TreeNode foundNode = searchUp
-                ? FindPrevNode(mapiTreeView.Nodes, startNode, searchText, !searchFrames)
-                : FindNextNode(mapiTreeView.Nodes, startNode, searchText, !searchFrames);
+                ? FindPrevNode(nodes, startNode, searchText, !searchFrames)
+                : FindNextNode(nodes, startNode, searchText, !searchFrames);
 
             if (foundNode != null)
             {
-                mapiTreeView.SelectedNode = foundNode;
-                mapiTreeView.Focus();
+                treeView.SelectedNode = foundNode;
+                treeView.Focus();
                 foundNode.EnsureVisible();
-                return;
+                return foundNode;
             }
 
             if (searchFrames)
             {
                 // TODO: Implement frame iteration logic (load next frame, search, switch to frame on match)
             }
+
+            return null;
         }
 
-        private void PerformSearch(bool searchUp)
+        private void PerformSearch(bool searchUp, bool searchFrames)
         {
-            SearchNodes(searchUp, false);
-        }
-
-        private void SearchFrames(bool searchBackwards)
-        {
-            SearchNodes(searchBackwards, true);
+            SearchNodes(mapiTreeView, mapiTreeView.Nodes, searchTextBox.Text, mapiTreeView.SelectedNode ?? mapiTreeView.Nodes[0], searchUp, searchFrames);
         }
 
         // Find next node (downwards, wraps around)
-        private TreeNode FindNextNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap)
+        public static TreeNode FindNextNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap)
         {
             bool foundStart = false;
             TreeNode firstMatch = null;
@@ -379,7 +360,7 @@ namespace MapiInspector
         }
 
         // Find previous node (upwards, wraps around)
-        private TreeNode FindPrevNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap)
+        public static TreeNode FindPrevNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap)
         {
             TreeNode lastMatch = null;
             foreach (var node in FlattenNodes(nodes))
@@ -404,7 +385,7 @@ namespace MapiInspector
         }
 
         // Helper: flatten all nodes in tree (preorder)
-        private System.Collections.Generic.IEnumerable<TreeNode> FlattenNodes(TreeNodeCollection nodes)
+        public static System.Collections.Generic.IEnumerable<TreeNode> FlattenNodes(TreeNodeCollection nodes)
         {
             foreach (TreeNode node in nodes)
             {
