@@ -134,7 +134,7 @@ namespace MapiInspector
             if (IsMapihttpSession(currentSession, TrafficDirection.Out))
             {
                 byte[] bytesForHexView;
-                var mapiResponse = ParseHTTPExecuteResponsePayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                var mapiResponse = ParseHTTPExecuteResponsePayload(currentSession.ResponseHeaders, currentSession, TrafficDirection.Out, out bytesForHexView);
                 var responseBody = mapiResponse as ExecuteResponseBody;
                 int rgbOutputBufferCount = responseBody.RopBuffer.RgbOutputBuffers.Length;
 
@@ -157,39 +157,36 @@ namespace MapiInspector
         /// <param name="direction">The direction of the traffic.</param>
         /// <param name="bytes">The bytes provided for MAPI view layer.</param>
         /// <returns>The object parsed result</returns>
-        public static Block ParseHTTPExecuteResponsePayload(HTTPHeaders headers, Session currentSession, byte[] bytesFromHTTP, TrafficDirection direction, out byte[] bytes)
+        public static Block ParseHTTPExecuteResponsePayload(HTTPHeaders headers, Session currentSession, TrafficDirection direction, out byte[] bytes)
         {
             Block objectOut = null;
             byte[] emptyByte = new byte[0];
             bytes = emptyByte;
             string requestType = string.Empty;
-            if (!IsFromFiddlerCore(currentSession))
+            byte[] bytesFromHTTP = null;
+
+            switch (direction)
             {
-                if (bytesFromHTTP == null || bytesFromHTTP.Length == 0 || headers == null || !headers.Exists("X-RequestType"))
-                {
-                    return null;
-                }
-
-                requestType = headers["X-RequestType"];
-
-                if (requestType == null)
-                {
-                    return null;
-                }
+                case TrafficDirection.In:
+                    bytesFromHTTP = currentSession.requestBodyBytes;
+                    break;
+                case TrafficDirection.Out:
+                    bytesFromHTTP = currentSession.responseBodyBytes;
+                    break;
+                default:
+                    return Block.Create("Invalid traffic direction.");
             }
-            else
+
+            if (bytesFromHTTP == null || bytesFromHTTP.Length == 0 || currentSession.RequestHeaders == null || !currentSession.RequestHeaders.Exists("X-RequestType"))
             {
-                if (bytesFromHTTP == null || bytesFromHTTP.Length == 0 || currentSession.RequestHeaders == null || !currentSession.RequestHeaders.Exists("X-RequestType"))
-                {
-                    return null;
-                }
+                return null;
+            }
 
-                requestType = currentSession.RequestHeaders["X-RequestType"];
+            requestType = currentSession.RequestHeaders["X-RequestType"];
 
-                if (requestType == null)
-                {
-                    return null;
-                }
+            if (requestType == null)
+            {
+                return null;
             }
 
             try
