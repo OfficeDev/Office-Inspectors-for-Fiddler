@@ -293,6 +293,7 @@ namespace MapiInspector
         /// <param name="bytesForHexview">The byte array provided for HexView</param>
         public void DisplayObject(Block obj, byte[] bytesForHexview)
         {
+            MAPIViewControl.Tag = session;
             if (obj == null)
             {
                 return;
@@ -446,12 +447,11 @@ namespace MapiInspector
                         IsLooperCall = false;
                         Partial.ResetPartialParameters();
                         BaseHeaders = session.RequestHeaders;
-                        byte[] bytes;
-                        object obj = ParseHTTPPayload(BaseHeaders, session, session.requestBodyBytes, TrafficDirection.In, out bytes);
+                        object obj = ParseHTTPPayload(BaseHeaders, session, session.requestBodyBytes, TrafficDirection.In, out byte[] bytes);
                         JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: true, obj);
                         if (session["X-ResponseCode"] == "0")
                         {
-                            object obj2 = ParseHTTPPayload(BaseHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out bytes);
+                            object obj2 = ParseHTTPPayload(BaseHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out byte[] bytes2);
                             JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: false, obj2);
                         }
                     }

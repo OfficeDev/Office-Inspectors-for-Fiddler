@@ -1,5 +1,4 @@
 using Fiddler;
-using System.Collections.Generic;
 
 namespace MapiInspector
 {

@@ -325,7 +325,8 @@ namespace MapiInspector
 
             if (searchFrames)
             {
-                // TODO: Implement frame iteration logic (load next frame, search, switch to frame on match)
+                var currentSession = treeView.Tag as Fiddler.Session;
+                var nextSession = searchUp?currentSession?.Previous(): currentSession?.Next();
             }
 
             return null;

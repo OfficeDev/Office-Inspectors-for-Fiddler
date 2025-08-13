@@ -947,8 +947,7 @@ sessionID >= currentSessionID)
             if (IsMapihttpSession(parsingSession, TrafficDirection.In))
             {
                 NeedToParseCROPSLayer = isLooper;
-                byte[] bytesForHexView;
-                mapiRequest = ParseHTTPPayload(parsingSession.RequestHeaders, parsingSession, parsingSession.requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                mapiRequest = ParseHTTPPayload(parsingSession.RequestHeaders, parsingSession, parsingSession.requestBodyBytes, TrafficDirection.In, out byte[] bytesForHexView);
                 hexViewBytes = bytesForHexView;
                 int parsingSessionID = parsingSession.id;
                 if (IsFromFiddlerCore(parsingSession))
@@ -1021,8 +1020,7 @@ sessionID >= currentSessionID)
                     currentSession.ResponseHeaders["X-ResponseCode"] == "0")
                 {
                     NeedToParseCROPSLayer = isLooper;
-                    byte[] bytesForHexView;
-                    mapiResponse = ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                    mapiResponse = ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out byte[] bytesForHexView);
                     hexViewBytes = bytesForHexView;
                     int parsingSessionID = currentSession.id;
                     if (IsFromFiddlerCore(currentSession))
@@ -1074,8 +1072,7 @@ sessionID >= currentSessionID)
                     currentSession["X-ResponseCode"] == "0")
                 {
                     NeedToParseCROPSLayer = isLooper;
-                    byte[] bytesForHexView;
-                    mapiResponse = ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                    mapiResponse = ParseHTTPPayload(currentSession.ResponseHeaders, currentSession, currentSession.responseBodyBytes, TrafficDirection.Out, out byte[] bytesForHexView);
                     hexViewBytes = bytesForHexView;
                     int parsingSessionID = currentSession.id;
                     if (currentSession.id == 0)
@@ -1525,7 +1522,7 @@ sessionID >= currentSessionID)
                         IsLooperCall = false;
                         Partial.ResetPartialParameters();
                         var requestObj = ParseHTTPPayload(session.RequestHeaders, session, session.requestBodyBytes, TrafficDirection.In, out var bytes);
-                        var responseObj = ParseHTTPPayload(session.ResponseHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out bytes);
+                        var responseObj = ParseHTTPPayload(session.ResponseHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out var bytes2);
 
                         var mapiFrame = new MAPIFrame
                         {
