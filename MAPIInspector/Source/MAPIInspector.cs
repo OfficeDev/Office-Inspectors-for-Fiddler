@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using Be.Windows.Forms;
 using BlockParser;
 using Fiddler;
-using global::MAPIInspector.Parsers;
+using MAPIInspector.Parsers;
 using static MapiInspector.MAPIParser;
 
 namespace MapiInspector
@@ -54,7 +54,7 @@ namespace MapiInspector
         /// <summary>
         /// Gets the direction of the traffic
         /// </summary>
-        public MAPIParser.TrafficDirection Direction
+        public TrafficDirection Direction
         {
             get
             {
@@ -142,6 +142,7 @@ namespace MapiInspector
             MAPIViewControl.AfterSelect -= TreeView_AfterSelect;
             MAPIViewControl.AfterSelect += TreeView_AfterSelect;
             DecodingContext dc = new DecodingContext();
+            FiddlerApplication.OnLoadSAZ += AfterCallDoImport;
         }
 
         /// <summary>
@@ -293,7 +294,6 @@ namespace MapiInspector
         /// <param name="bytesForHexview">The byte array provided for HexView</param>
         public void DisplayObject(Block obj, byte[] bytesForHexview)
         {
-            MAPIViewControl.Tag = session;
             if (obj == null)
             {
                 return;
@@ -361,20 +361,20 @@ namespace MapiInspector
             ContextInformationCollection = new List<ContextInformation>();
             Partial.ResetPartialParameters();
 
+            // Set up our session navigator whether this is a MAPI frame or not.
+            List<Session> allSessionsList = new List<Session>();
+            Session session0 = new Session(new byte[0], new byte[0]);
+            Session[] sessionsInFiddler = FiddlerApplication.UI.GetAllSessions();
+            allSessionsList.AddRange(sessionsInFiddler);
+            allSessionsList.Sort(delegate (Session p1, Session p2)
+            {
+                return p1.id.CompareTo(p2.id);
+            });
+            allSessionsList.Insert(0, session0);
+            SessionExtensions.AllSessionsNavigator = new SessionNavigator(allSessionsList.ToArray());
+
             if (IsMapihttp)
             {
-                List<Session> allSessionsList = new List<Session>();
-                Session session0 = new Session(new byte[0], new byte[0]);
-                Session[] sessionsInFiddler = FiddlerApplication.UI.GetAllSessions();
-                allSessionsList.AddRange(sessionsInFiddler);
-                FiddlerApplication.OnLoadSAZ += AfterCallDoImport;
-                allSessionsList.Sort(delegate (Session p1, Session p2)
-                {
-                    return p1.id.CompareTo(p2.id);
-                });
-                allSessionsList.Insert(0, session0);
-                SessionExtensions.AllSessionsNavigator = new SessionNavigator(allSessionsList.ToArray());
-
                 try
                 {
                     if (Direction == TrafficDirection.In)
@@ -423,7 +423,7 @@ namespace MapiInspector
         /// <param name="autoCaseName">The test case name to parse</param>
         /// <param name="allRops">All ROPs contained in list</param>
         /// <returns>Parse result, true means success</returns>
-        public bool ParseCaptureFile(Fiddler.Session[] sessionsFromCore, string pathName, string autoCaseName, out List<string> allRops)
+        public bool ParseCaptureFile(Session[] sessionsFromCore, string pathName, string autoCaseName, out List<string> allRops)
         {
             var errorStringList = new List<string>();
             StringBuilder stringBuilder = new StringBuilder();

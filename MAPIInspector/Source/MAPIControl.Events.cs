@@ -1,3 +1,5 @@
+using Fiddler;
+using MAPIInspector.Parsers;
 using System;
 using System.Text;
 using System.Windows.Forms;
@@ -244,7 +246,7 @@ namespace MapiInspector
             }
         }
 
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        protected override bool ProcessCmdKey(ref System.Windows.Forms.Message msg, Keys keyData)
         {
             bool isF3 = keyData.HasFlag(Keys.F3);
             bool isCtrlF = keyData == (Keys.Control | Keys.F);
@@ -300,41 +302,60 @@ namespace MapiInspector
         }
 
         // Combined search logic for single and multi-frame search
-        public static TreeNode SearchNodes(TreeView treeView, TreeNodeCollection nodes, string searchText, TreeNode startNode, bool searchUp, bool searchFrames)
+        public static void SearchNodes(TreeView treeView, string searchText, bool searchUp, bool searchFrames, MAPIParser.TrafficDirection direction, Session currentSession)
         {
             searchText = searchText.Trim();
+            if (string.IsNullOrEmpty(searchText) || searchText == "Search (Ctrl+F)") return;
 
-            if (nodes.Count == 0 || string.IsNullOrEmpty(searchText) || searchText == "Search (Ctrl+F)")
+            var startNode = treeView?.SelectedNode;
+            if (startNode == null && treeView?.Nodes.Count > 0)
             {
-                return null;
+                startNode = treeView.Nodes[0];
             }
-            if (startNode == null)
-                return null;
 
-            TreeNode foundNode = searchUp
-                ? FindPrevNode(nodes, startNode, searchText, !searchFrames)
-                : FindNextNode(nodes, startNode, searchText, !searchFrames);
-
-            if (foundNode != null)
+            if (startNode != null)
             {
-                treeView.SelectedNode = foundNode;
-                treeView.Focus();
-                foundNode.EnsureVisible();
-                return foundNode;
+                var nodes = treeView.Nodes;
+                TreeNode foundNode = searchUp
+                    ? FindPrevNode(nodes, startNode, searchText, !searchFrames)
+                    : FindNextNode(nodes, startNode, searchText, !searchFrames);
+
+                if (foundNode != null)
+                {
+                    treeView.SelectedNode = foundNode;
+                    treeView.Focus();
+                    foundNode.EnsureVisible();
+                    return;
+                }
             }
 
             if (searchFrames)
             {
-                var currentSession = treeView.Tag as Fiddler.Session;
-                var nextSession = searchUp?currentSession?.Previous(): currentSession?.Next();
-            }
+                while (currentSession != null)
+                {
+                    var nextSession = searchUp ? currentSession?.Previous() : currentSession?.Next();
+                    if (nextSession == null) break;
+                    var parseResult = MAPIParser.ParseHTTPPayload(nextSession, direction, out var bytes);
+                    var rootNode = new TreeNode();
+                    var node = BaseStructure.AddBlock(parseResult, false);
+                    rootNode.Nodes.Add(node);
+                    var foundMatch = searchUp
+                        ? FindPrevNode(rootNode.Nodes, node, searchText, true)
+                        : FindNextNode(rootNode.Nodes, node, searchText, true);
+                    if (foundMatch != null)
+                    {
+                        Fiddler.FiddlerApplication.UI.SelectSessionsMatchingCriteria(s => s.id == nextSession.id);
+                        break;
+                    }
 
-            return null;
+                    currentSession = nextSession;
+                }
+            }
         }
 
         private void PerformSearch(bool searchUp, bool searchFrames)
         {
-            SearchNodes(mapiTreeView, mapiTreeView.Nodes, searchTextBox.Text, mapiTreeView.SelectedNode ?? mapiTreeView.Nodes[0], searchUp, searchFrames);
+            SearchNodes(mapiTreeView, searchTextBox.Text, searchUp, searchFrames, Inspector.Direction, Inspector.session);
         }
 
         // Find next node (downwards, wraps around)
