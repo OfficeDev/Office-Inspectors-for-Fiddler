@@ -5,132 +5,103 @@ using Fiddler;
 namespace MapiInspector
 {
     /// <summary>
-    /// Provides fast navigation of Session objects by their "Number" property.
-    /// Allows retrieval of previous, next, and range of sessions based on their number.
+    /// Provides fast navigation of Session objects by their id property.
+    /// Allows retrieval of previous, next, and range of sessions based on their id.
     /// </summary>
     public class SessionNavigator : IEnumerable<Session>
     {
         /// <summary>
-        /// Array of sessions sorted by their "Number" property.
+        /// Array of sessions in their input order.
         /// </summary>
-        private readonly Session[] sortedSessions;
+        private readonly Session[] sessions;
 
         /// <summary>
-        /// Maps session number to its index in the sortedSessions array.
+        /// Maps session id to its index in the sessions array.
         /// </summary>
-        private readonly Dictionary<int, int> numberToIndex;
+        private readonly Dictionary<int, int> idToIndex;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SessionNavigator"/> class.
-        /// Sorts the provided sessions by their "Number" property and builds navigation structures.
+        /// Builds navigation structures based on Session.id.
         /// </summary>
         /// <param name="sessions">Array of Session objects to navigate.</param>
         public SessionNavigator(Session[] sessions)
         {
-            if (sessions.Length > 0 && sessions[sessions.Length - 1]["Number"] == null)
-            {
-                for (int i = 0; i < sessions.Length; i++)
-                {
-                    sessions[i]["Number"] = i.ToString();
-                }
-            }
-
-            var tempDict = new SortedDictionary<int, Session>();
-            numberToIndex = new Dictionary<int, int>();
-
             if (sessions == null || sessions.Length == 0)
             {
-                sortedSessions = new Session[0];
+                this.sessions = new Session[0];
+                idToIndex = new Dictionary<int, int>();
                 return;
             }
 
-            // Collect valid sessions and their numbers into a sorted dictionary
+            this.sessions = new Session[sessions.Length];
+            idToIndex = new Dictionary<int, int>();
+
             for (int i = 0; i < sessions.Length; i++)
             {
                 var s = sessions[i];
                 if (s != null)
                 {
-                    var numberValue = s["Number"];
-                    if (numberValue != null)
-                    {
-                        if (int.TryParse(numberValue, out int num))
-                        {
-                            // Only add if not already present (avoid duplicate numbers)
-                            if (!tempDict.ContainsKey(num))
-                                tempDict[num] = s;
-                        }
-                    }
+                    this.sessions[i] = s;
+                    idToIndex[s.id] = i;
                 }
-            }
-
-            // Build sorted array and number-to-index map from sorted dictionary
-            sortedSessions = new Session[tempDict.Count];
-            int idx = 0;
-            foreach (var kvp in tempDict)
-            {
-                sortedSessions[idx] = kvp.Value;
-                numberToIndex[kvp.Key] = idx;
-                idx++;
             }
         }
 
         /// <summary>
-        /// Gets the previous session in the sorted order relative to the specified session.
+        /// Gets the previous session in the order relative to the specified session.
         /// </summary>
         /// <param name="current">The current session.</param>
         /// <returns>The previous session, or null if not found.</returns>
         public Session Previous(Session current)
         {
-            if (current == null || current["Number"] == null)
+            if (current == null)
                 return null;
-            if (!int.TryParse(current["Number"], out int num))
-                return null;
-            if (!numberToIndex.TryGetValue(num, out int idx))
+            if (!idToIndex.TryGetValue(current.id, out int idx))
                 return null;
             if (idx > 0)
-                return sortedSessions[idx - 1];
+                return sessions[idx - 1];
             return null;
         }
 
         /// <summary>
-        /// Gets the next session in the sorted order relative to the specified session.
+        /// Gets the next session in the order relative to the specified session.
         /// </summary>
         /// <param name="current">The current session.</param>
         /// <returns>The next session, or null if not found.</returns>
         public Session Next(Session current)
         {
-            if (current == null || current["Number"] == null)
+            if (current == null)
                 return null;
-            if (!int.TryParse(current["Number"], out int num))
+            if (!idToIndex.TryGetValue(current.id, out int idx))
                 return null;
-            if (!numberToIndex.TryGetValue(num, out int idx))
-                return null;
-            if (idx < sortedSessions.Length - 1)
-                return sortedSessions[idx + 1];
+            if (idx < sessions.Length - 1)
+                return sessions[idx + 1];
             return null;
         }
 
         /// <summary>
-        /// Retrieves the first session from the sorted list of sessions.
+        /// Retrieves the first session from the list of sessions.
         /// </summary>
-        /// <returns>The first <see cref="Session"/> object in the sorted list, or <see langword="null"/> if the list is empty.</returns>
+        /// <returns>The first <see cref="Session"/> object in the list, or <see langword="null"/> if the list is empty.</returns>
         public Session First()
         {
-            if (sortedSessions.Length > 0)
+            if (sessions.Length > 0)
             {
-                return sortedSessions[0];
+                return sessions[0];
             }
+
             return null;
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the sorted sessions.
+        /// Returns an enumerator that iterates through the sessions.
         /// </summary>
         public IEnumerator<Session> GetEnumerator()
         {
-            for (int i = 0; i < sortedSessions.Length; i++)
+            for (int i = 0; i < sessions.Length; i++)
             {
-                yield return sortedSessions[i];
+                yield return sessions[i];
             }
         }
 
