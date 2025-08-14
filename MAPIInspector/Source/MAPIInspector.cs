@@ -362,17 +362,8 @@ namespace MapiInspector
 
             if (IsMapihttp)
             {
-                List<Session> allSessionsList = new List<Session>();
-                Session session0 = new Session(new byte[0], new byte[0]);
-                Session[] sessionsInFiddler = FiddlerApplication.UI.GetAllSessions();
-                allSessionsList.AddRange(sessionsInFiddler);
                 FiddlerApplication.OnLoadSAZ += AfterCallDoImport;
-                allSessionsList.Sort(delegate (Session p1, Session p2)
-                {
-                    return p1.id.CompareTo(p2.id);
-                });
-                allSessionsList.Insert(0, session0);
-                SessionExtensions.AllSessionsNavigator = new SessionNavigator(allSessionsList.ToArray());
+                SessionExtensions.AllSessionsNavigator = new SessionNavigator(null);
 
                 try
                 {

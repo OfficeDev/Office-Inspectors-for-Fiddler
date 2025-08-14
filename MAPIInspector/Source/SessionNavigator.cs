@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Fiddler;
@@ -27,12 +28,17 @@ namespace MapiInspector
         /// <param name="sessions">Array of Session objects to navigate.</param>
         public SessionNavigator(Session[] sessions)
         {
-            if (sessions == null || sessions.Length == 0)
+            sessions = sessions ?? FiddlerApplication.UI.GetAllSessions();
+
+            if (sessions.Length == 0)
             {
                 this.sessions = new Session[0];
                 idToIndex = new Dictionary<int, int>();
                 return;
             }
+
+            // Sort sessions by their id property to ensure they are in order.
+            Array.Sort(sessions, (p1, p2) => p1.id.CompareTo(p2.id));
 
             this.sessions = new Session[sessions.Length];
             idToIndex = new Dictionary<int, int>();
