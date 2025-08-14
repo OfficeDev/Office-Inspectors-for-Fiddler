@@ -143,6 +143,10 @@ namespace MapiInspector
             MAPIViewControl.AfterSelect += TreeView_AfterSelect;
             DecodingContext dc = new DecodingContext();
             FiddlerApplication.OnLoadSAZ += AfterCallDoImport;
+            FiddlerApplication.AfterSessionComplete += (Session oSession) =>
+            {
+                SessionExtensions.AllSessionsNavigator = new SessionNavigator(null);
+            };
         }
 
         /// <summary>
