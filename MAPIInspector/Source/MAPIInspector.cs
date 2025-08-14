@@ -143,7 +143,7 @@ namespace MapiInspector
             MAPIViewControl.AfterSelect += TreeView_AfterSelect;
             DecodingContext dc = new DecodingContext();
             FiddlerApplication.OnLoadSAZ += AfterCallDoImport;
-            FiddlerApplication.AfterSessionComplete += (Session oSession) => SessionExtensions.Init();
+            FiddlerApplication.AfterSessionComplete += (Session oSession) => SessionExtensions.AllSessionsNavigator.Init();
         }
 
         /// <summary>
@@ -355,7 +355,7 @@ namespace MapiInspector
         private void UpdateView()
         {
             Clear();
-            SessionExtensions.Init();
+            SessionExtensions.AllSessionsNavigator.Init();
             byte[] bytesForHexView;
             Block parserResult;
             IsLooperCall = false;
@@ -417,7 +417,7 @@ namespace MapiInspector
         {
             var errorStringList = new List<string>();
             StringBuilder stringBuilder = new StringBuilder();
-            SessionExtensions.Init(sessionsFromCore);
+            SessionExtensions.AllSessionsNavigator.Init(sessionsFromCore);
 
             DecodingContext decodingContext = new DecodingContext();
             Partial.ResetPartialParameters();

@@ -22,7 +22,7 @@ namespace MapiInspector
         /// Updates the session list and reinitializes the navigation structures.
         /// </summary>
         /// <param name="newSessions">The new array of Session objects.</param>
-        public void Init(Session[] newSessions)
+        public void Init(Session[] newSessions = null)
         {
             inputSessions = newSessions;
             sessions = null;

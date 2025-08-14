@@ -36,11 +36,5 @@ namespace MapiInspector
                 _allSessionsNavigator = value;
             }
         }
-
-        /// <summary>
-        /// Initializes the global AllSessionsNavigator singleton.
-        /// </summary>
-        /// <param name="sessions">Array of Session objects to navigate. If null, uses FiddlerApplication.UI.GetAllSessions().</param>
-        public static void Init(Session[] sessions = null) => AllSessionsNavigator.Init(sessions);
     }
 }

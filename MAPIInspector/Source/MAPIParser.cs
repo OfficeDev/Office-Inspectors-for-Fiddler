@@ -1473,7 +1473,7 @@ namespace MapiInspector
             var JsonResult = new List<string>();
             bool haveWrittenJson = false;
             StringBuilder stringBuilder = new StringBuilder();
-            SessionExtensions.Init(sessionsFromCore);
+            SessionExtensions.AllSessionsNavigator.Init(sessionsFromCore);
 
             Partial.ResetPartialParameters();
             Partial.ResetPartialContextInformation();
