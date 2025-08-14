@@ -354,24 +354,13 @@ namespace MapiInspector
         private void UpdateView()
         {
             Clear();
+            SessionExtensions.AllSessionsNavigator = new SessionNavigator(null);
             byte[] bytesForHexView;
             Block parserResult;
             IsLooperCall = false;
             TargetHandle = new Stack<Dictionary<RopIdType, Dictionary<int, uint>>>();
             ContextInformationCollection = new List<ContextInformation>();
             Partial.ResetPartialParameters();
-
-            // Set up our session navigator whether this is a MAPI frame or not.
-            List<Session> allSessionsList = new List<Session>();
-            Session session0 = new Session(new byte[0], new byte[0]);
-            Session[] sessionsInFiddler = FiddlerApplication.UI.GetAllSessions();
-            allSessionsList.AddRange(sessionsInFiddler);
-            allSessionsList.Sort(delegate (Session p1, Session p2)
-            {
-                return p1.id.CompareTo(p2.id);
-            });
-            allSessionsList.Insert(0, session0);
-            SessionExtensions.AllSessionsNavigator = new SessionNavigator(allSessionsList.ToArray());
 
             if (IsMapihttp)
             {
