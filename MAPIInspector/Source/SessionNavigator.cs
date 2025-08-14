@@ -14,18 +14,17 @@ namespace MapiInspector
         /// <summary>
         /// Array of sessions in their input order.
         /// </summary>
-        private readonly Session[] inputSessions;
+        private Session[] inputSessions;
         private Session[] sessions;
         private Dictionary<int, int> idToIndex;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SessionNavigator"/> class.
-        /// Builds navigation structures based on Session.id.
+        /// Updates the session list and reinitializes the navigation structures.
         /// </summary>
-        /// <param name="sessions">Array of Session objects to navigate.</param>
-        public SessionNavigator(Session[] _sessions)
+        /// <param name="newSessions">The new array of Session objects.</param>
+        public void Init(Session[] newSessions)
         {
-            inputSessions = _sessions;
+            inputSessions = newSessions;
             sessions = null;
             idToIndex = null;
         }

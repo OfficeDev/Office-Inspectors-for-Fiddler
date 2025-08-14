@@ -145,7 +145,7 @@ namespace MapiInspector
             FiddlerApplication.OnLoadSAZ += AfterCallDoImport;
             FiddlerApplication.AfterSessionComplete += (Session oSession) =>
             {
-                SessionExtensions.AllSessionsNavigator = new SessionNavigator(null);
+                SessionExtensions.Init();
             };
         }
 
@@ -358,7 +358,7 @@ namespace MapiInspector
         private void UpdateView()
         {
             Clear();
-            SessionExtensions.AllSessionsNavigator = new SessionNavigator(null);
+            SessionExtensions.Init();
             byte[] bytesForHexView;
             Block parserResult;
             IsLooperCall = false;
@@ -420,7 +420,7 @@ namespace MapiInspector
         {
             var errorStringList = new List<string>();
             StringBuilder stringBuilder = new StringBuilder();
-            SessionExtensions.AllSessionsNavigator = new SessionNavigator(sessionsFromCore);
+            SessionExtensions.Init(sessionsFromCore);
 
             DecodingContext decodingContext = new DecodingContext();
             Partial.ResetPartialParameters();

@@ -726,7 +726,7 @@ namespace MapiInspector
                                                                     foreach (int sessionID in sessions)
                                                                     {
                                                                         if (sessionID <= thisSessionID &&
-sessionID >= currentSessionID)
+                                                                            sessionID >= currentSessionID)
                                                                         {
                                                                             Tuple<string, string, string, PropertyTag[], string> originalTuple = DecodingContext.Notify_handlePropertyTags[parameters[1]][sessionID];
                                                                             if (originalTuple.Item5 == string.Empty)
@@ -1473,7 +1473,7 @@ sessionID >= currentSessionID)
             var JsonResult = new List<string>();
             bool haveWrittenJson = false;
             StringBuilder stringBuilder = new StringBuilder();
-            SessionExtensions.AllSessionsNavigator = new SessionNavigator(sessionsFromCore);
+            SessionExtensions.Init(sessionsFromCore);
 
             Partial.ResetPartialParameters();
             Partial.ResetPartialContextInformation();
