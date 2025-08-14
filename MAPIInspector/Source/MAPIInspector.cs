@@ -142,6 +142,7 @@ namespace MapiInspector
             MAPIViewControl.AfterSelect -= TreeView_AfterSelect;
             MAPIViewControl.AfterSelect += TreeView_AfterSelect;
             DecodingContext dc = new DecodingContext();
+            FiddlerApplication.OnLoadSAZ += AfterCallDoImport;
         }
 
         /// <summary>
@@ -353,6 +354,7 @@ namespace MapiInspector
         private void UpdateView()
         {
             Clear();
+            SessionExtensions.AllSessionsNavigator = new SessionNavigator(null);
             byte[] bytesForHexView;
             Block parserResult;
             IsLooperCall = false;
@@ -362,9 +364,6 @@ namespace MapiInspector
 
             if (IsMapihttp)
             {
-                FiddlerApplication.OnLoadSAZ += AfterCallDoImport;
-                SessionExtensions.AllSessionsNavigator = new SessionNavigator(null);
-
                 try
                 {
                     if (Direction == TrafficDirection.In)
