@@ -14,41 +14,44 @@ namespace MapiInspector
         /// <summary>
         /// Array of sessions in their input order.
         /// </summary>
-        private readonly Session[] sessions;
-
-        /// <summary>
-        /// Maps session id to its index in the sessions array.
-        /// </summary>
-        private readonly Dictionary<int, int> idToIndex;
+        private readonly Session[] inputSessions;
+        private Session[] sessions;
+        private Dictionary<int, int> idToIndex;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SessionNavigator"/> class.
         /// Builds navigation structures based on Session.id.
         /// </summary>
         /// <param name="sessions">Array of Session objects to navigate.</param>
-        public SessionNavigator(Session[] sessions)
+        public SessionNavigator(Session[] _sessions)
         {
-            sessions = sessions ?? FiddlerApplication.UI.GetAllSessions();
+            inputSessions = _sessions;
+            sessions = null;
+            idToIndex = null;
+        }
 
-            if (sessions.Length == 0)
+        private void EnsureInitialized()
+        {
+            if (sessions != null && idToIndex != null)
+                return;
+
+            var source = inputSessions ?? FiddlerApplication.UI.GetAllSessions();
+            if (source == null || source.Length == 0)
             {
-                this.sessions = new Session[0];
+                sessions = new Session[0];
                 idToIndex = new Dictionary<int, int>();
                 return;
             }
 
-            // Sort sessions by their id property to ensure they are in order.
-            Array.Sort(sessions, (p1, p2) => p1.id.CompareTo(p2.id));
-
-            this.sessions = new Session[sessions.Length];
+            Array.Sort(source, (p1, p2) => p1.id.CompareTo(p2.id));
+            sessions = new Session[source.Length];
             idToIndex = new Dictionary<int, int>();
-
-            for (int i = 0; i < sessions.Length; i++)
+            for (int i = 0; i < source.Length; i++)
             {
-                var s = sessions[i];
+                var s = source[i];
                 if (s != null)
                 {
-                    this.sessions[i] = s;
+                    sessions[i] = s;
                     idToIndex[s.id] = i;
                 }
             }
@@ -61,6 +64,7 @@ namespace MapiInspector
         /// <returns>The previous session, or null if not found.</returns>
         public Session Previous(Session current)
         {
+            EnsureInitialized();
             if (current == null)
                 return null;
             if (!idToIndex.TryGetValue(current.id, out int idx))
@@ -77,6 +81,7 @@ namespace MapiInspector
         /// <returns>The next session, or null if not found.</returns>
         public Session Next(Session current)
         {
+            EnsureInitialized();
             if (current == null)
                 return null;
             if (!idToIndex.TryGetValue(current.id, out int idx))
@@ -92,6 +97,7 @@ namespace MapiInspector
         /// <returns>The first <see cref="Session"/> object in the list, or <see langword="null"/> if the list is empty.</returns>
         public Session First()
         {
+            EnsureInitialized();
             if (sessions.Length > 0)
             {
                 return sessions[0];
@@ -105,6 +111,7 @@ namespace MapiInspector
         /// </summary>
         public IEnumerator<Session> GetEnumerator()
         {
+            EnsureInitialized();
             for (int i = 0; i < sessions.Length; i++)
             {
                 yield return sessions[i];
