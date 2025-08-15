@@ -307,6 +307,7 @@ namespace MapiInspector
             searchText = searchText.Trim();
             if (string.IsNullOrEmpty(searchText) || searchText == "Search (Ctrl+F)") return;
 
+            FiddlerApplication.UI.SetStatusText($"Searching for {searchText}");
             var startNode = treeView?.SelectedNode;
             if (startNode == null && treeView?.Nodes.Count > 0)
             {
@@ -344,13 +345,16 @@ namespace MapiInspector
                         : FindNextNode(rootNode.Nodes, node, searchText, true);
                     if (foundMatch != null)
                     {
-                        Fiddler.FiddlerApplication.UI.SelectSessionsMatchingCriteria(s => s.id == nextSession.id);
-                        break;
+                        FiddlerApplication.UI.SelectSessionsMatchingCriteria(s => s.id == nextSession.id);
+                        nextSession.ViewItem.EnsureVisible();
+                        return;
                     }
 
                     currentSession = nextSession;
                 }
             }
+
+            FiddlerApplication.UI.SetStatusText("No match found");
         }
 
         private void PerformSearch(bool searchUp, bool searchFrames)
