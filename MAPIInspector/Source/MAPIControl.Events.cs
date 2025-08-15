@@ -308,29 +308,29 @@ namespace MapiInspector
         }
 
         // Combined search logic for single and multi-frame search
-        public static void SearchNodes(TreeView treeView, string searchText, bool searchUp, bool searchFrames, MAPIParser.TrafficDirection direction, Session currentSession)
+        private void PerformSearch(bool searchUp, bool searchFrames)
         {
-            searchText = searchText.Trim();
+            var searchText = searchTextBox.Text.Trim();
             if (string.IsNullOrEmpty(searchText) || searchText == SearchDefaultText) return;
 
             FiddlerApplication.UI.SetStatusText($"Searching for {searchText}");
-            var startNode = treeView?.SelectedNode;
-            if (startNode == null && treeView?.Nodes.Count > 0)
+            var startNode = mapiTreeView?.SelectedNode;
+            if (startNode == null && mapiTreeView?.Nodes.Count > 0)
             {
-                startNode = treeView.Nodes[0];
+                startNode = mapiTreeView.Nodes[0];
             }
 
             if (startNode != null)
             {
-                var nodes = treeView.Nodes;
+                var nodes = mapiTreeView.Nodes;
                 TreeNode foundNode = searchUp
                     ? FindPrevNode(nodes, startNode, searchText, !searchFrames)
                     : FindNextNode(nodes, startNode, searchText, !searchFrames);
 
                 if (foundNode != null)
                 {
-                    treeView.SelectedNode = foundNode;
-                    treeView.Focus();
+                    mapiTreeView.SelectedNode = foundNode;
+                    mapiTreeView.Focus();
                     foundNode.EnsureVisible();
                     return;
                 }
@@ -338,11 +338,12 @@ namespace MapiInspector
 
             if (searchFrames)
             {
+                var currentSession = Inspector.session;
                 while (currentSession != null)
                 {
                     var nextSession = searchUp ? currentSession?.Previous() : currentSession?.Next();
                     if (nextSession == null) break;
-                    var parseResult = MAPIParser.ParseHTTPPayload(nextSession, direction, out var bytes);
+                    var parseResult = MAPIParser.ParseHTTPPayload(nextSession, Inspector.Direction, out var bytes);
                     var rootNode = new TreeNode();
                     var node = BaseStructure.AddBlock(parseResult, false);
                     rootNode.Nodes.Add(node);
@@ -361,11 +362,6 @@ namespace MapiInspector
             }
 
             FiddlerApplication.UI.SetStatusText("No match found");
-        }
-
-        private void PerformSearch(bool searchUp, bool searchFrames)
-        {
-            SearchNodes(mapiTreeView, searchTextBox.Text, searchUp, searchFrames, Inspector.Direction, Inspector.session);
         }
 
         // Find next node (downwards, wraps around)
