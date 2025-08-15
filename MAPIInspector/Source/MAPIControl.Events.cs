@@ -8,6 +8,10 @@ namespace MapiInspector
 {
     public partial class MAPIControl
     {
+        public static readonly string SearchDefaultText = "Search (Ctrl+F) F3 to search. Hold SHIFT to search backwards. Hold CTRL to search across frames.";
+        private readonly System.Drawing.Color SearchDefaultColor = System.Drawing.Color.Gray;
+        private readonly System.Drawing.Color SearchNormalColor = System.Drawing.Color.Black;
+
         private void InitializeContextMenus()
         {
             // TreeView context menu
@@ -232,9 +236,10 @@ namespace MapiInspector
 
         private void SearchTextBox_GotFocus(object sender, EventArgs e)
         {
-            if (searchTextBox.Text == "Search (Ctrl+F)")
+            if (searchTextBox.Text == SearchDefaultText)
             {
                 searchTextBox.Text = "";
+                searchTextBox.ForeColor = SearchNormalColor;
             }
         }
 
@@ -242,7 +247,8 @@ namespace MapiInspector
         {
             if (string.IsNullOrWhiteSpace(searchTextBox.Text))
             {
-                searchTextBox.Text = "Search (Ctrl+F)";
+                searchTextBox.Text = SearchDefaultText;
+                searchTextBox.ForeColor = SearchDefaultColor;
             }
         }
 
@@ -305,7 +311,7 @@ namespace MapiInspector
         public static void SearchNodes(TreeView treeView, string searchText, bool searchUp, bool searchFrames, MAPIParser.TrafficDirection direction, Session currentSession)
         {
             searchText = searchText.Trim();
-            if (string.IsNullOrEmpty(searchText) || searchText == "Search (Ctrl+F)") return;
+            if (string.IsNullOrEmpty(searchText) || searchText == SearchDefaultText) return;
 
             FiddlerApplication.UI.SetStatusText($"Searching for {searchText}");
             var startNode = treeView?.SelectedNode;
