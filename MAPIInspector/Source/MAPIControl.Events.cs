@@ -413,7 +413,7 @@ namespace MapiInspector
         }
 
         // Helper: flatten all nodes in tree (preorder)
-        public static System.Collections.Generic.IEnumerable<TreeNode> FlattenNodes(TreeNodeCollection nodes)
+        private System.Collections.Generic.IEnumerable<TreeNode> FlattenNodes(TreeNodeCollection nodes)
         {
             foreach (TreeNode node in nodes)
             {
