@@ -63,12 +63,12 @@ namespace MapiInspector
             }
         }
 
-        private static string CleanString(string text)
+        private string CleanString(string text)
         {
             return text.TrimEnd('\0').Replace("\0", "\\0");
         }
 
-        public static string GetNodeText(TreeNode node)
+        public string GetNodeText(TreeNode node)
         {
             if (node == null) return string.Empty;
             if (node.Tag is global::MAPIInspector.Parsers.BaseStructure.Position position && position.SourceBlock != null)
@@ -365,7 +365,7 @@ namespace MapiInspector
         }
 
         // Find next node (downwards, wraps around)
-        public static TreeNode FindNextNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap)
+        public TreeNode FindNextNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap)
         {
             bool foundStart = false;
             TreeNode firstMatch = null;
@@ -388,7 +388,7 @@ namespace MapiInspector
         }
 
         // Find previous node (upwards, wraps around)
-        public static TreeNode FindPrevNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap)
+        public TreeNode FindPrevNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap)
         {
             TreeNode lastMatch = null;
             foreach (var node in FlattenNodes(nodes))
