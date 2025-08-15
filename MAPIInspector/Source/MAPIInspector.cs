@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using Be.Windows.Forms;
 using BlockParser;
 using Fiddler;
-using global::MAPIInspector.Parsers;
+using MAPIInspector.Parsers;
 using static MapiInspector.MAPIParser;
 
 namespace MapiInspector
@@ -54,7 +54,7 @@ namespace MapiInspector
         /// <summary>
         /// Gets the direction of the traffic
         /// </summary>
-        public MAPIParser.TrafficDirection Direction
+        public TrafficDirection Direction
         {
             get
             {
@@ -142,6 +142,8 @@ namespace MapiInspector
             MAPIViewControl.AfterSelect -= TreeView_AfterSelect;
             MAPIViewControl.AfterSelect += TreeView_AfterSelect;
             DecodingContext dc = new DecodingContext();
+            FiddlerApplication.OnLoadSAZ += AfterCallDoImport;
+            FiddlerApplication.AfterSessionComplete += (Session oSession) => SessionExtensions.AllSessionsNavigator.Init();
         }
 
         /// <summary>
@@ -353,6 +355,7 @@ namespace MapiInspector
         private void UpdateView()
         {
             Clear();
+            SessionExtensions.AllSessionsNavigator.Init();
             byte[] bytesForHexView;
             Block parserResult;
             IsLooperCall = false;
@@ -362,23 +365,11 @@ namespace MapiInspector
 
             if (IsMapihttp)
             {
-                List<Session> allSessionsList = new List<Session>();
-                Session session0 = new Session(new byte[0], new byte[0]);
-                Session[] sessionsInFiddler = FiddlerApplication.UI.GetAllSessions();
-                allSessionsList.AddRange(sessionsInFiddler);
-                FiddlerApplication.OnLoadSAZ += AfterCallDoImport;
-                allSessionsList.Sort(delegate (Session p1, Session p2)
-                {
-                    return p1.id.CompareTo(p2.id);
-                });
-                allSessionsList.Insert(0, session0);
-                SessionExtensions.AllSessionsNavigator = new SessionNavigator(allSessionsList.ToArray());
-
                 try
                 {
                     if (Direction == TrafficDirection.In)
                     {
-                        parserResult = ParseHTTPPayload(BaseHeaders, session, session.requestBodyBytes, TrafficDirection.In, out bytesForHexView);
+                        parserResult = ParseHTTPPayload(session, TrafficDirection.In, out bytesForHexView);
                     }
                     else
                     {
@@ -388,7 +379,7 @@ namespace MapiInspector
                             return;
                         }
 
-                        parserResult = ParseHTTPPayload(BaseHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out bytesForHexView);
+                        parserResult = ParseHTTPPayload(session, TrafficDirection.Out, out bytesForHexView);
                     }
 
                     DisplayObject(parserResult, bytesForHexView);
@@ -422,11 +413,11 @@ namespace MapiInspector
         /// <param name="autoCaseName">The test case name to parse</param>
         /// <param name="allRops">All ROPs contained in list</param>
         /// <returns>Parse result, true means success</returns>
-        public bool ParseCaptureFile(Fiddler.Session[] sessionsFromCore, string pathName, string autoCaseName, out List<string> allRops)
+        public bool ParseCaptureFile(Session[] sessionsFromCore, string pathName, string autoCaseName, out List<string> allRops)
         {
             var errorStringList = new List<string>();
             StringBuilder stringBuilder = new StringBuilder();
-            SessionExtensions.AllSessionsNavigator = new SessionNavigator(sessionsFromCore);
+            SessionExtensions.AllSessionsNavigator.Init(sessionsFromCore);
 
             DecodingContext decodingContext = new DecodingContext();
             Partial.ResetPartialParameters();
@@ -446,12 +437,11 @@ namespace MapiInspector
                         IsLooperCall = false;
                         Partial.ResetPartialParameters();
                         BaseHeaders = session.RequestHeaders;
-                        byte[] bytes;
-                        object obj = ParseHTTPPayload(BaseHeaders, session, session.requestBodyBytes, TrafficDirection.In, out bytes);
+                        object obj = ParseHTTPPayload(session, TrafficDirection.In, out byte[] bytes);
                         JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: true, obj);
                         if (session["X-ResponseCode"] == "0")
                         {
-                            object obj2 = ParseHTTPPayload(BaseHeaders, session, session.responseBodyBytes, TrafficDirection.Out, out bytes);
+                            object obj2 = ParseHTTPPayload(session, TrafficDirection.Out, out byte[] bytes2);
                             JsonResult += Utilities.ConvertCSharpToJson(i, isRequest: false, obj2);
                         }
                     }
