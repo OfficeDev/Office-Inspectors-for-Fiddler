@@ -140,7 +140,9 @@ namespace MapiInspector
 			this.searchTextBox.Name = "searchTextBox";
 			this.searchTextBox.Size = new System.Drawing.Size(1028, 34);
 			this.searchTextBox.TabIndex = 0;
-			this.searchTextBox.Text = "Search (Ctrl+F)";
+			this.searchTextBox.Text = SearchDefaultText;
+			this.searchTextBox.ForeColor = SearchDefaultColor;
+			this.toolTip1.SetToolTip(this.searchTextBox, SearchDefaultText);
 			this.searchTextBox.GotFocus += new System.EventHandler(this.SearchTextBox_GotFocus);
 			this.searchTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchTextBox_KeyDown);
 			this.searchTextBox.LostFocus += new System.EventHandler(this.SearchTextBox_LostFocus);

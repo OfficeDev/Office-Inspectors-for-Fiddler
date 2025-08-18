@@ -1,3 +1,5 @@
+using Fiddler;
+using MAPIInspector.Parsers;
 using System;
 using System.Text;
 using System.Windows.Forms;
@@ -6,6 +8,10 @@ namespace MapiInspector
 {
     public partial class MAPIControl
     {
+        public static readonly string SearchDefaultText = "Search (Ctrl+F) F3 to search. Hold SHIFT to search backwards. Hold CTRL to search across frames.";
+        private readonly System.Drawing.Color SearchDefaultColor = System.Drawing.Color.Gray;
+        private readonly System.Drawing.Color SearchNormalColor = System.Drawing.Color.Black;
+
         private void InitializeContextMenus()
         {
             // TreeView context menu
@@ -69,6 +75,7 @@ namespace MapiInspector
             {
                 return CleanString(position.SourceBlock.Text);
             }
+
             return CleanString(node.Text);
         }
 
@@ -207,18 +214,21 @@ namespace MapiInspector
 
         private void SearchButton_Click(object sender, EventArgs e)
         {
-            bool bIsShift = (ModifierKeys & Keys.Shift) == Keys.Shift;
-            PerformSearch(bIsShift);
+            var isCtrl = (ModifierKeys & Keys.Control) == Keys.Control;
+            var isShift = (ModifierKeys & Keys.Shift) == Keys.Shift;
+            PerformSearch(isShift, isCtrl);
+
         }
 
         private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             bool bEnter = e.KeyCode == Keys.Enter;
-            bool bShiftEnter = (e.KeyCode == Keys.Enter) && (e.Modifiers == Keys.Shift);
+            bool isCtrl = (ModifierKeys & Keys.Control) == Keys.Control;
+            bool isShift = (ModifierKeys & Keys.Shift) == Keys.Shift;
 
-            if (bEnter || bShiftEnter)
+            if (bEnter)
             {
-                PerformSearch(e.Modifiers == Keys.Shift);
+                PerformSearch(isShift, isCtrl);
                 e.Handled = true;
                 e.SuppressKeyPress = true;
             }
@@ -226,9 +236,10 @@ namespace MapiInspector
 
         private void SearchTextBox_GotFocus(object sender, EventArgs e)
         {
-            if (searchTextBox.Text == "Search (Ctrl+F)")
+            if (searchTextBox.Text == SearchDefaultText)
             {
                 searchTextBox.Text = "";
+                searchTextBox.ForeColor = SearchNormalColor;
             }
         }
 
@@ -236,14 +247,14 @@ namespace MapiInspector
         {
             if (string.IsNullOrWhiteSpace(searchTextBox.Text))
             {
-                searchTextBox.Text = "Search (Ctrl+F)";
+                searchTextBox.Text = SearchDefaultText;
+                searchTextBox.ForeColor = SearchDefaultColor;
             }
         }
 
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        protected override bool ProcessCmdKey(ref System.Windows.Forms.Message msg, Keys keyData)
         {
-            bool isF3 = keyData == Keys.F3;
-            bool isShiftF3 = keyData == (Keys.Shift | Keys.F3);
+            bool isF3 = keyData.HasFlag(Keys.F3);
             bool isCtrlF = keyData == (Keys.Control | Keys.F);
             bool isCtrlRight = keyData == (Keys.Control | Keys.Right);
 
@@ -287,43 +298,74 @@ namespace MapiInspector
                 return true;
             }
 
-            if (isF3 || isShiftF3)
+            if (isF3)
             {
-                PerformSearch(keyData.HasFlag(Keys.Shift));
+                PerformSearch(keyData.HasFlag(Keys.Shift), keyData.HasFlag(Keys.Control));
                 return true;
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        private void PerformSearch(bool searchUp)
+        // Combined search logic for single and multi-frame search
+        private void PerformSearch(bool searchUp, bool searchFrames)
         {
-            string searchText = searchTextBox.Text.Trim();
-            if (mapiTreeView.Nodes.Count == 0 ||
-                string.IsNullOrEmpty(searchText) ||
-                searchText == "Search (Ctrl+F)")
+            var searchText = searchTextBox.Text.Trim();
+            if (string.IsNullOrEmpty(searchText) || searchText == SearchDefaultText) return;
+
+            FiddlerApplication.UI.SetStatusText($"Searching for {searchText}");
+            var startNode = mapiTreeView?.SelectedNode;
+            if (startNode == null && mapiTreeView?.Nodes.Count > 0)
             {
-                return;
+                startNode = mapiTreeView.Nodes[0];
             }
 
-            var startNode = mapiTreeView.SelectedNode ?? mapiTreeView.Nodes[0];
-            if (startNode == null)
-                return;
-
-            var foundNode = searchUp
-                ? FindPrevNode(mapiTreeView.Nodes, startNode, searchText)
-                : FindNextNode(mapiTreeView.Nodes, startNode, searchText);
-
-            if (foundNode != null)
+            if (startNode != null)
             {
-                mapiTreeView.SelectedNode = foundNode;
-                mapiTreeView.Focus();
-                foundNode.EnsureVisible();
+                var nodes = mapiTreeView.Nodes;
+                TreeNode foundNode = searchUp
+                    ? FindPrevNode(nodes, startNode, searchText, !searchFrames)
+                    : FindNextNode(nodes, startNode, searchText, !searchFrames);
+
+                if (foundNode != null)
+                {
+                    mapiTreeView.SelectedNode = foundNode;
+                    mapiTreeView.Focus();
+                    foundNode.EnsureVisible();
+                    return;
+                }
             }
+
+            if (searchFrames)
+            {
+                var currentSession = Inspector.session;
+                while (currentSession != null)
+                {
+                    var nextSession = searchUp ? currentSession?.Previous() : currentSession?.Next();
+                    if (nextSession == null) break;
+                    var parseResult = MAPIParser.ParseHTTPPayload(nextSession, Inspector.Direction, out var bytes);
+                    var rootNode = new TreeNode();
+                    var node = BaseStructure.AddBlock(parseResult, false);
+                    rootNode.Nodes.Add(node);
+                    var foundMatch = searchUp
+                        ? FindPrevNode(rootNode.Nodes, node, searchText, true)
+                        : FindNextNode(rootNode.Nodes, node, searchText, true);
+                    if (foundMatch != null)
+                    {
+                        FiddlerApplication.UI.SelectSessionsMatchingCriteria(s => s.id == nextSession.id);
+                        nextSession.ViewItem.EnsureVisible();
+                        return;
+                    }
+
+                    currentSession = nextSession;
+                }
+            }
+
+            FiddlerApplication.UI.SetStatusText("No match found");
         }
 
         // Find next node (downwards, wraps around)
-        private TreeNode FindNextNode(TreeNodeCollection nodes, TreeNode startNode, string searchText)
+        private TreeNode FindNextNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap)
         {
             bool foundStart = false;
             TreeNode firstMatch = null;
@@ -335,18 +377,20 @@ namespace MapiInspector
                     continue;
                 }
 
-                if (foundStart && GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
-                    return node;
-                if (firstMatch == null && GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
-                    firstMatch = node;
+                if (GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    if (foundStart)
+                        return node;
+                    if (firstMatch == null)
+                        firstMatch = node;
+                }
             }
 
-            // Wrap around
-            return firstMatch;
+            return wrap ? firstMatch : null;
         }
 
         // Find previous node (upwards, wraps around)
-        private TreeNode FindPrevNode(TreeNodeCollection nodes, TreeNode startNode, string searchText)
+        private TreeNode FindPrevNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap)
         {
             TreeNode lastMatch = null;
             foreach (var node in FlattenNodes(nodes))
@@ -357,8 +401,7 @@ namespace MapiInspector
                     lastMatch = node;
             }
 
-            // Wrap around: if nothing before, search from end
-            if (lastMatch == null)
+            if (lastMatch == null && wrap)
             {
                 foreach (var node in FlattenNodes(nodes))
                 {
