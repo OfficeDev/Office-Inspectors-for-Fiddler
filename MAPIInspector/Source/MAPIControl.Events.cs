@@ -214,8 +214,8 @@ namespace MapiInspector
 
         private void SearchButton_Click(object sender, EventArgs e)
         {
-            bool isCtrl = (ModifierKeys & Keys.Control) == Keys.Control;
-            bool isShift = (ModifierKeys & Keys.Shift) == Keys.Shift;
+            var isCtrl = (ModifierKeys & Keys.Control) == Keys.Control;
+            var isShift = (ModifierKeys & Keys.Shift) == Keys.Shift;
             PerformSearch(isShift, isCtrl);
 
         }
@@ -376,6 +376,7 @@ namespace MapiInspector
                     foundStart = true;
                     continue;
                 }
+
                 if (GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     if (foundStart)
@@ -384,6 +385,7 @@ namespace MapiInspector
                         firstMatch = node;
                 }
             }
+
             return wrap ? firstMatch : null;
         }
 
@@ -398,18 +400,17 @@ namespace MapiInspector
                 if (GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
                     lastMatch = node;
             }
-            if (lastMatch != null)
-                return lastMatch;
-            if (wrap)
+
+            if (lastMatch == null && wrap)
             {
                 foreach (var node in FlattenNodes(nodes))
                 {
                     if (GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
                         lastMatch = node;
                 }
-                return lastMatch;
             }
-            return null;
+
+            return lastMatch;
         }
 
         // Helper: flatten all nodes in tree (preorder)
