@@ -4,8 +4,9 @@ using System.Collections.Generic;
 namespace MAPIInspector.Parsers
 {
     /// <summary>
-    /// [MS-OXCROPS] 2.2.7.6 RopTransportSend
-    /// A class indicates the RopTransportSend ROP Response Buffer.
+    /// [MS-OXCROPS] 2.2.7.6.2 RopTransportSend ROP Success Response Buffer
+    /// [MS-OXCROPS] 2.2.7.6.3 RopTransportSend ROP Failure Response Buffer
+    /// /// A class indicates the RopTransportSend ROP Response Buffer.
     /// </summary>
     public class RopTransportSendResponse : Block
     {
@@ -46,8 +47,7 @@ namespace MAPIInspector.Parsers
         {
             RopId = ParseT<RopIdType>();
             InputHandleIndex = ParseT<byte>();
-            this.AddError(ReturnValue, "ReturnValue");
-
+            //ReturnValue = ParseT<ErrorCodes>();
             if (ReturnValue == ErrorCodes.Success)
             {
                 NoPropertiesReturned = ParseT<byte>();

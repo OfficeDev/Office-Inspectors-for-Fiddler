@@ -67,7 +67,6 @@ namespace MAPIInspector.Parsers
             RopId = ParseT<RopIdType>();
             OutputHandleIndex = ParseT<byte>();
             ReturnValue = ParseT<ErrorCodes>();
-
             if (ReturnValue == ErrorCodes.Success)
             {
                 FolderId = Parse<FolderID>();
