@@ -324,8 +324,8 @@ namespace MapiInspector
             {
                 var nodes = mapiTreeView.Nodes;
                 TreeNode foundNode = searchUp
-                    ? FindPrevNode(nodes, startNode, searchText, !searchFrames)
-                    : FindNextNode(nodes, startNode, searchText, !searchFrames);
+                    ? FindPrevNode(nodes, startNode, searchText, !searchFrames, false)
+                    : FindNextNode(nodes, startNode, searchText, !searchFrames, false);
 
                 if (foundNode != null)
                 {
@@ -348,8 +348,8 @@ namespace MapiInspector
                     var node = BaseStructure.AddBlock(parseResult, false);
                     rootNode.Nodes.Add(node);
                     var foundMatch = searchUp
-                        ? FindPrevNode(rootNode.Nodes, node, searchText, true)
-                        : FindNextNode(rootNode.Nodes, node, searchText, true);
+                        ? FindPrevNode(rootNode.Nodes, node, searchText, true, true)
+                        : FindNextNode(rootNode.Nodes, node, searchText, true, true);
                     if (foundMatch != null)
                     {
                         FiddlerApplication.UI.SelectSessionsMatchingCriteria(s => s.id == nextSession.id);
@@ -365,63 +365,84 @@ namespace MapiInspector
         }
 
         // Find next node (downwards, wraps around)
-        private TreeNode FindNextNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap)
+        private TreeNode FindNextNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap, bool matchStartNode)
         {
-            bool foundStart = false;
-            TreeNode firstMatch = null;
-            foreach (var node in FlattenNodes(nodes))
+            var allNodes = FlattenNodes(nodes);
+            int startIndex = 0;
+            for (int i = 0; i < allNodes.Count; i++)
             {
-                if (node == startNode)
+                if (allNodes[i] == startNode)
                 {
-                    foundStart = true;
-                    continue;
-                }
-
-                if (GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
-                {
-                    if (foundStart)
-                        return node;
-                    if (firstMatch == null)
-                        firstMatch = node;
+                    startIndex = i;
+                    break;
                 }
             }
-
-            return wrap ? firstMatch : null;
+            // Search from startNode (inclusive/exclusive) to end
+            int first = matchStartNode ? startIndex : startIndex + 1;
+            for (int i = first; i < allNodes.Count; i++)
+            {
+                if (GetNodeText(allNodes[i]).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                    return allNodes[i];
+            }
+            // If wrap is enabled, search from beginning up to startNode (exclusive)
+            if (wrap)
+            {
+                for (int i = 0; i < startIndex; i++)
+                {
+                    if (GetNodeText(allNodes[i]).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                        return allNodes[i];
+                }
+            }
+            return null;
         }
 
         // Find previous node (upwards, wraps around)
-        private TreeNode FindPrevNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap)
+        private TreeNode FindPrevNode(TreeNodeCollection nodes, TreeNode startNode, string searchText, bool wrap, bool matchStartNode)
         {
-            TreeNode lastMatch = null;
-            foreach (var node in FlattenNodes(nodes))
+            var allNodes = FlattenNodes(nodes);
+            int startIndex = 0;
+            for (int i = 0; i < allNodes.Count; i++)
             {
-                if (node == startNode)
-                    break;
-                if (GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
-                    lastMatch = node;
-            }
-
-            if (lastMatch == null && wrap)
-            {
-                foreach (var node in FlattenNodes(nodes))
+                if (allNodes[i] == startNode)
                 {
-                    if (GetNodeText(node).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
-                        lastMatch = node;
+                    startIndex = i;
+                    break;
                 }
             }
-
-            return lastMatch;
+            // Search backwards from startNode (inclusive/exclusive) to beginning
+            int first = matchStartNode ? startIndex : startIndex - 1;
+            for (int i = first; i >= 0; i--)
+            {
+                if (GetNodeText(allNodes[i]).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                    return allNodes[i];
+            }
+            // If wrap is enabled, search from end down to startNode (exclusive)
+            if (wrap)
+            {
+                for (int i = allNodes.Count - 1; i > startIndex; i--)
+                {
+                    if (GetNodeText(allNodes[i]).IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                        return allNodes[i];
+                }
+            }
+            return null;
         }
 
-        // Helper: flatten all nodes in tree (preorder)
-        private System.Collections.Generic.IEnumerable<TreeNode> FlattenNodes(TreeNodeCollection nodes)
+        // Helper: flatten all nodes in tree (preorder) and return as a list
+        private System.Collections.Generic.List<TreeNode> FlattenNodes(TreeNodeCollection nodes)
         {
-            foreach (TreeNode node in nodes)
+            var result = new System.Collections.Generic.List<TreeNode>();
+            var stack = new System.Collections.Generic.Stack<TreeNode>();
+            for (int i = nodes.Count - 1; i >= 0; i--)
+                stack.Push(nodes[i]);
+            while (stack.Count > 0)
             {
-                yield return node;
-                foreach (var child in FlattenNodes(node.Nodes))
-                    yield return child;
+                var node = stack.Pop();
+                result.Add(node);
+                for (int i = node.Nodes.Count - 1; i >= 0; i--)
+                    stack.Push(node.Nodes[i]);
             }
+            return result;
         }
 
         private void AttachHexBoxKeyboardHandler(Be.Windows.Forms.HexBox hexBox)
