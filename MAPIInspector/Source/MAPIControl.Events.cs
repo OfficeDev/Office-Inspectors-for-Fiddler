@@ -314,18 +314,20 @@ namespace MapiInspector
             if (string.IsNullOrEmpty(searchText) || searchText == SearchDefaultText) return;
 
             FiddlerApplication.UI.SetStatusText($"Searching for {searchText}");
+            var includeRoot = false; // Don't include the currently selected node for a seach
             var startNode = mapiTreeView?.SelectedNode;
             if (startNode == null && mapiTreeView?.Nodes.Count > 0)
             {
                 startNode = mapiTreeView.Nodes[0];
+                includeRoot = true; // But if no node was selected, incude whatever node we start from
             }
 
             if (startNode != null)
             {
                 var nodes = mapiTreeView.Nodes;
                 TreeNode foundNode = searchUp
-                    ? FindPrevNode(nodes, startNode, searchText, !searchFrames, false)
-                    : FindNextNode(nodes, startNode, searchText, !searchFrames, false);
+                    ? FindPrevNode(nodes, startNode, searchText, !searchFrames, includeRoot)
+                    : FindNextNode(nodes, startNode, searchText, !searchFrames, includeRoot);
 
                 if (foundNode != null)
                 {
@@ -338,6 +340,7 @@ namespace MapiInspector
 
             if (searchFrames)
             {
+                includeRoot = true; // Now that we're searching new frames, always include the root node in our search
                 var currentSession = Inspector.session;
                 while (currentSession != null)
                 {
@@ -348,8 +351,8 @@ namespace MapiInspector
                     var node = BaseStructure.AddBlock(parseResult, false);
                     rootNode.Nodes.Add(node);
                     var foundMatch = searchUp
-                        ? FindPrevNode(rootNode.Nodes, node, searchText, true, true)
-                        : FindNextNode(rootNode.Nodes, node, searchText, true, true);
+                        ? FindPrevNode(rootNode.Nodes, node, searchText, true, includeRoot)
+                        : FindNextNode(rootNode.Nodes, node, searchText, true, includeRoot);
                     if (foundMatch != null)
                     {
                         FiddlerApplication.UI.SelectSessionsMatchingCriteria(s => s.id == nextSession.id);
