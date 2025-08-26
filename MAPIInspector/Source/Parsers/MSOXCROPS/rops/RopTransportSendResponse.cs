@@ -47,7 +47,7 @@ namespace MAPIInspector.Parsers
         {
             RopId = ParseT<RopIdType>();
             InputHandleIndex = ParseT<byte>();
-            //ReturnValue = ParseT<ErrorCodes>();
+            ReturnValue = ParseT<ErrorCodes>();
             if (ReturnValue == ErrorCodes.Success)
             {
                 NoPropertiesReturned = ParseT<byte>();
