@@ -49,6 +49,7 @@ namespace MapiInspector
 			// 
 			// splitContainer
 			// 
+			this.splitContainer.AccessibleName = "Main Split";
 			this.splitContainer.Cursor = System.Windows.Forms.Cursors.Default;
 			this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.splitContainer.Location = new System.Drawing.Point(634, 36);
@@ -73,6 +74,7 @@ namespace MapiInspector
 			// 
 			// mapiHexBox
 			// 
+			this.mapiHexBox.AccessibleName = "Hex Data";
 			this.mapiHexBox.AccessibleRole = System.Windows.Forms.AccessibleRole.ScrollBar;
 			this.mapiHexBox.BodyOffset = 0;
 			this.mapiHexBox.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -91,6 +93,7 @@ namespace MapiInspector
 			// 
 			// cropsHexBox
 			// 
+			this.cropsHexBox.AccessibleName = "Decompressed Payload";
 			this.cropsHexBox.BodyOffset = 1;
 			this.cropsHexBox.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.cropsHexBox.Font = new System.Drawing.Font("Segoe UI", 10F);
@@ -133,6 +136,7 @@ namespace MapiInspector
 			// 
 			// searchTextBox
 			// 
+			this.searchTextBox.AccessibleName = "Search Text";
 			this.searchTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.searchTextBox.Font = new System.Drawing.Font("Segoe UI", 10F);
 			this.searchTextBox.Location = new System.Drawing.Point(0, 0);
@@ -140,15 +144,13 @@ namespace MapiInspector
 			this.searchTextBox.Name = "searchTextBox";
 			this.searchTextBox.Size = new System.Drawing.Size(1028, 34);
 			this.searchTextBox.TabIndex = 0;
-			this.searchTextBox.Text = SearchDefaultText;
-			this.searchTextBox.ForeColor = SearchDefaultColor;
-			this.toolTip1.SetToolTip(this.searchTextBox, SearchDefaultText);
 			this.searchTextBox.GotFocus += new System.EventHandler(this.SearchTextBox_GotFocus);
 			this.searchTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SearchTextBox_KeyDown);
 			this.searchTextBox.LostFocus += new System.EventHandler(this.SearchTextBox_LostFocus);
 			// 
 			// searchButton
 			// 
+			this.searchButton.AccessibleName = "Search";
 			this.searchButton.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.searchButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this.searchButton.Image = global::MAPIInspector.Properties.Resources.Search;
@@ -180,7 +182,7 @@ namespace MapiInspector
 			this.searchTableLayoutPanel.PerformLayout();
 			this.ResumeLayout(false);
 
-        }
+		}
 
         private System.Windows.Forms.TreeView mapiTreeView;
         private System.Windows.Forms.SplitContainer splitContainer;
