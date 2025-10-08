@@ -200,5 +200,187 @@ namespace BlockParserTests
 
             Assert.AreEqual(0x78563412, int1);
         }
+
+        [TestMethod]
+        public void BlankLine_SingleLine_BlankLine_Line_EOS()
+        {
+            var bytes = new byte[]
+            {
+                // "line1\r\n"
+                0x6C, 0x69, 0x6E, 0x65, 0x31, 0x0D, 0x0A, // 7 bytes
+                // "\r\n" (blank line)
+                0x0D, 0x0A, // 2 bytes
+                // "line3"
+                0x6C, 0x69, 0x6E, 0x65, 0x33 // 5 bytes (no terminator - EOS)
+            };
+            var parser = new BinaryParser(bytes);
+
+            var block1 = Block.ParseStringLineA(parser);
+            Assert.AreEqual("line1", block1);
+            Assert.IsFalse(block1.BlankLine);
+            Assert.AreEqual(0, block1.Offset);
+            Assert.AreEqual(5, block1.Length);
+            Assert.AreEqual(7, block1.Size);
+
+            var block2 = Block.ParseStringLineA(parser);
+            Assert.AreEqual("", block2);
+            Assert.IsTrue(block2.BlankLine);
+            Assert.AreEqual(7, block2.Offset);
+            Assert.AreEqual(0, block2.Length);
+            Assert.AreEqual(2, block2.Size);
+
+            var block3 = Block.ParseStringLineA(parser);
+            Assert.AreEqual("line3", block3);
+            Assert.IsFalse(block3.BlankLine);
+            Assert.AreEqual(9, block3.Offset);
+            Assert.AreEqual(5, block3.Length);
+            Assert.AreEqual(5, block3.Size);
+
+            Assert.AreEqual(14, parser.Offset);
+            Assert.AreEqual(0, parser.RemainingBytes);
+        }
+
+        [TestMethod]
+        public void BlankLine_TwoLines_BlankLine_Line_NullTerminator_OtherData()
+        {
+            var bytes = new byte[]
+            {
+                // "line1\r\n"
+                0x6C, 0x69, 0x6E, 0x65, 0x31, 0x0D, 0x0A, // 7 bytes
+                // "line2\n"
+                0x6C, 0x69, 0x6E, 0x65, 0x32, 0x0A, // 6 bytes
+                // "\r\n" (blank line)
+                0x0D, 0x0A, // 2 bytes
+                // "line4\0" (null terminated)
+                0x6C, 0x69, 0x6E, 0x65, 0x34, 0x00, // 6 bytes
+                // Other data
+                0xAA, 0xBB, 0xCC, 0xDD // 4 bytes
+            };
+            var parser = new BinaryParser(bytes);
+
+            var block1 = Block.ParseStringLineA(parser);
+            Assert.AreEqual("line1", block1);
+            Assert.IsFalse(block1.BlankLine);
+            Assert.AreEqual(0, block1.Offset);
+            Assert.AreEqual(5, block1.Length);
+            Assert.AreEqual(7, block1.Size);
+
+            var block2 = Block.ParseStringLineA(parser);
+            Assert.AreEqual("line2", block2);
+            Assert.IsFalse(block2.BlankLine);
+            Assert.AreEqual(7, block2.Offset);
+            Assert.AreEqual(5, block2.Length);
+            Assert.AreEqual(6, block2.Size);
+
+            var block3 = Block.ParseStringLineA(parser);
+            Assert.AreEqual("", block3);
+            Assert.IsTrue(block3.BlankLine);
+            Assert.AreEqual(13, block3.Offset);
+            Assert.AreEqual(0, block3.Length);
+            Assert.AreEqual(2, block3.Size);
+
+            var block4 = Block.ParseStringLineA(parser);
+            Assert.AreEqual("line4", block4);
+            Assert.IsFalse(block4.BlankLine);
+            Assert.AreEqual(15, block4.Offset);
+            Assert.AreEqual(5, block4.Length);
+            Assert.AreEqual(6, block4.Size); // Includes null terminator
+
+            Assert.AreEqual(21, parser.Offset);
+            Assert.AreEqual(4, parser.RemainingBytes);
+
+            // Verify other data is still there
+            var otherData = Block.ParseT<uint>(parser);
+            Assert.AreEqual(0xDDCCBBAA, otherData); // Little endian
+        }
+
+        [TestMethod]
+        public void BlankLine_OnlyBlankLines()
+        {
+            var bytes = new byte[]
+            {
+                // "\r\n" (blank line 1)
+                0x0D, 0x0A, // 2 bytes
+                // "\n" (blank line 2)
+                0x0A, // 1 byte
+                // "\r\n" (blank line 3)
+                0x0D, 0x0A, // 2 bytes
+                // Other data
+                0x12, 0x34
+            };
+            var parser = new BinaryParser(bytes);
+
+            var block1 = Block.ParseStringLineA(parser);
+            Assert.AreEqual("", block1);
+            Assert.IsTrue(block1.BlankLine);
+            Assert.AreEqual(0, block1.Offset);
+            Assert.AreEqual(0, block1.Length);
+            Assert.AreEqual(2, block1.Size);
+
+            var block2 = Block.ParseStringLineA(parser);
+            Assert.AreEqual("", block2);
+            Assert.IsTrue(block2.BlankLine);
+            Assert.AreEqual(2, block2.Offset);
+            Assert.AreEqual(0, block2.Length);
+            Assert.AreEqual(1, block2.Size);
+
+            var block3 = Block.ParseStringLineA(parser);
+            Assert.AreEqual("", block3);
+            Assert.IsTrue(block3.BlankLine);
+            Assert.AreEqual(3, block3.Offset);
+            Assert.AreEqual(0, block3.Length);
+            Assert.AreEqual(2, block3.Size);
+
+            Assert.AreEqual(5, parser.Offset);
+            Assert.AreEqual(2, parser.RemainingBytes);
+        }
+
+        [TestMethod]
+        public void BlankLine_MixedLineEndings()
+        {
+            var bytes = new byte[]
+            {
+                // "text\r\n"
+                0x74, 0x65, 0x78, 0x74, 0x0D, 0x0A, // 6 bytes
+                // "\n" (blank line with LF only)
+                0x0A, // 1 byte
+                // "more\n"
+                0x6D, 0x6F, 0x72, 0x65, 0x0A, // 5 bytes
+                // "\r\n" (blank line with CRLF)
+                0x0D, 0x0A // 2 bytes
+            };
+            var parser = new BinaryParser(bytes);
+
+            var block1 = Block.ParseStringLineA(parser);
+            Assert.AreEqual("text", block1);
+            Assert.IsFalse(block1.BlankLine);
+            Assert.AreEqual(0, block1.Offset);
+            Assert.AreEqual(4, block1.Length);
+            Assert.AreEqual(6, block1.Size);
+
+            var block2 = Block.ParseStringLineA(parser);
+            Assert.AreEqual("", block2);
+            Assert.IsTrue(block2.BlankLine);
+            Assert.AreEqual(6, block2.Offset);
+            Assert.AreEqual(0, block2.Length);
+            Assert.AreEqual(1, block2.Size);
+
+            var block3 = Block.ParseStringLineA(parser);
+            Assert.AreEqual("more", block3);
+            Assert.IsFalse(block3.BlankLine);
+            Assert.AreEqual(7, block3.Offset);
+            Assert.AreEqual(4, block3.Length);
+            Assert.AreEqual(5, block3.Size);
+
+            var block4 = Block.ParseStringLineA(parser);
+            Assert.AreEqual("", block4);
+            Assert.IsTrue(block4.BlankLine);
+            Assert.AreEqual(12, block4.Offset);
+            Assert.AreEqual(0, block4.Length);
+            Assert.AreEqual(2, block4.Size);
+
+            Assert.AreEqual(14, parser.Offset);
+            Assert.AreEqual(0, parser.RemainingBytes);
+        }
     }
 }

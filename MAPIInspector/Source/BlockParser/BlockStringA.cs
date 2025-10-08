@@ -5,7 +5,6 @@ namespace BlockParser
 {
     public class BlockStringA : BlockString
     {
-        public bool LineMode { get; set; } = false;
         protected override void Parse()
         {
             Parsed = false;
@@ -56,6 +55,11 @@ namespace BlockParser
                     {
                         data = data.Substring(0, lfIndex);
                         length = lfIndex + lineEndingLength;
+                    }
+
+                    if (lfIndex == 0 && lineEndingLength > 0)
+                    {
+                        BlankLine = true;
                     }
                 }
 

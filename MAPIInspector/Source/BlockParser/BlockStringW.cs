@@ -5,7 +5,6 @@ namespace BlockParser
 {
     public class BlockStringW : BlockString
     {
-        public bool LineMode { get; set; } = false;
         protected override void Parse()
         {
             Parsed = false;
@@ -63,6 +62,12 @@ namespace BlockParser
                         data = data.Substring(0, lfIndex);
                         length = (lfIndex + lineEndingLength) * 2; // Multiply by 2 for UTF-16 bytes
                     }
+
+                    if (lfIndex == 0 && lineEndingLength > 0)
+                    {
+                        BlankLine = true;
+                    }
+
                 }
 
                 data = Strings.RemoveInvalidCharacters(data);
