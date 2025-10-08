@@ -5,7 +5,7 @@ namespace BlockParser
     public class BlockJunk : BlockInteresting
     {
         public override Color BackColor => Color.Coral;
-        public override string InterestingLabel => "Exceptions found in this block";
+        public override string InterestingLabel => "Extra data found in this block";
 
         string Label;
         BlockBytes junkData;
