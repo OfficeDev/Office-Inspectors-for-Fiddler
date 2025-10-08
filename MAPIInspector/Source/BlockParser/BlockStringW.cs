@@ -13,7 +13,7 @@ namespace BlockParser
                 return;
 
             // We don't want to skip a null because we stopped at the line ending
-            var fixedLength = cchChar != -1|| LineMode;
+            var fixedLength = cchChar != -1 || LineMode;
             var oldOffset = parser.Offset;
             var bytes = parser.ReadBytes(size);
             parser.Offset = oldOffset;
