@@ -52,6 +52,7 @@ namespace MAPIInspector.Parsers
 
         protected override void ParseBlocks()
         {
+            Text = "PtypServerId";
             AddChildBlockT(Ours, "Ours");
             AddLabeledChild(FolderID, "FolderID");
             AddLabeledChild(MessageID, "MessageID");
