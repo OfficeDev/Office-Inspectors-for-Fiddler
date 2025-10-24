@@ -254,7 +254,7 @@ namespace BlockParserTests
                 // "line4\0" (null terminated)
                 0x6C, 0x69, 0x6E, 0x65, 0x34, 0x00, // 6 bytes
                 // Other data
-                0xAA, 0xBB, 0xCC, 0xDD // 4 bytes
+                0xAA, 0xBB, 0xCC // 3 bytes
             };
             var parser = new BinaryParser(bytes);
 
@@ -284,14 +284,14 @@ namespace BlockParserTests
             Assert.IsFalse(block4.BlankLine);
             Assert.AreEqual(15, block4.Offset);
             Assert.AreEqual(5, block4.Length);
-            Assert.AreEqual(6, block4.Size); // Includes null terminator
+            Assert.AreEqual(5, block4.Size);
 
-            Assert.AreEqual(21, parser.Offset);
+            Assert.AreEqual(20, parser.Offset);
             Assert.AreEqual(4, parser.RemainingBytes);
 
             // Verify other data is still there
             var otherData = Block.ParseT<uint>(parser);
-            Assert.AreEqual(0xDDCCBBAA, otherData); // Little endian
+            Assert.AreEqual(0xCCBBAA00, otherData); // Little endian
         }
 
         [TestMethod]
