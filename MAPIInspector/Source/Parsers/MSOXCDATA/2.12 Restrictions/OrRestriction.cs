@@ -24,17 +24,17 @@ namespace MAPIInspector.Parsers
         public RestrictionType[] Restricts;
 
         /// <summary>
-        /// The Count wide size.
+        /// The parsing context that determines count field widths.
         /// </summary>
-        private CountWideEnum countWide;
+        private PropertyCountContext context;
 
         /// <summary>
         /// Initializes a new instance of the OrRestriction class
         /// </summary>
-        /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
-        public OrRestriction(CountWideEnum ptypMultiCountSize)
+        /// <param name="countContext">The parsing context that determines count field widths.</param>
+        public OrRestriction(PropertyCountContext countContext)
         {
-            countWide = ptypMultiCountSize;
+            context = countContext;
         }
 
         /// <summary>
@@ -43,13 +43,15 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             RestrictType = ParseT<RestrictTypeEnum>();
-            switch (countWide)
+            switch (context)
             {
-                case CountWideEnum.twoBytes:
+                case PropertyCountContext.RopBuffers:
                     RestrictCount = ParseAs<ushort, uint>();
                     break;
                 default:
-                case CountWideEnum.fourBytes:
+                case PropertyCountContext.ExtendedRules:
+                case PropertyCountContext.MapiHttp:
+                case PropertyCountContext.AddressBook:
                     RestrictCount = ParseT<uint>();
                     break;
             }
@@ -57,7 +59,7 @@ namespace MAPIInspector.Parsers
             var tempRestricts = new List<RestrictionType>();
             for (int length = 0; length < RestrictCount; length++)
             {
-                var tempRestriction = new RestrictionType();
+                var tempRestriction = new RestrictionType(context);
                 tempRestriction.Parse(parser);
                 tempRestricts.Add(tempRestriction);
             }

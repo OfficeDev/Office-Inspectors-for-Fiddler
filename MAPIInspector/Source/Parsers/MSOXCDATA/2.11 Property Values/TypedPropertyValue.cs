@@ -18,22 +18,25 @@ namespace MAPIInspector.Parsers
         public Block _PropertyValue;
 
         /// <summary>
-        /// The Count wide size of ptypMutiple type.
+        /// The parsing context that determines count field widths.
         /// </summary>
-        private CountWideEnum countWide = CountWideEnum.twoBytes;
+        private PropertyCountContext context = PropertyCountContext.RopBuffers;
 
         /// <summary>
-        /// Initializes a new instance of the TypedPropertyValue class
+        /// Initializes a new instance of the TypedPropertyValue class (parameterless constructor)
         /// </summary>
-        public TypedPropertyValue() { }
-
-        /// <summary>
-        /// Initializes a new instance of the TypedPropertyValue class
-        /// </summary>
-        /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type</param>
-        public TypedPropertyValue(CountWideEnum ptypMultiCountSize)
+        public TypedPropertyValue()
         {
-            countWide = ptypMultiCountSize;
+            context = PropertyCountContext.RopBuffers;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the TypedPropertyValue class
+        /// </summary>
+        /// <param name="countContext">The parsing context that determines count field widths</param>
+        public TypedPropertyValue(PropertyCountContext countContext = PropertyCountContext.RopBuffers)
+        {
+            context = countContext;
         }
 
         /// <summary>
@@ -42,7 +45,7 @@ namespace MAPIInspector.Parsers
         protected override void Parse()
         {
             PropertyType = ParseT<PropertyDataType>();
-            _PropertyValue = PropertyValue.ReadPropertyValue(PropertyType, parser, countWide);
+            _PropertyValue = PropertyValue.ReadPropertyValue(PropertyType, parser, context);
         }
 
         protected override void ParseBlocks()

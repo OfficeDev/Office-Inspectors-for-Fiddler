@@ -14,9 +14,9 @@ namespace MAPIInspector.Parsers
         public Block Value;
 
         /// <summary>
-        /// The Count wide size of ptypMutiple type.
+        /// The parsing context that determines count field widths.
         /// </summary>
-        private CountWideEnum countWide;
+        private PropertyCountContext context;
 
         /// <summary>
         /// An unsigned integer that specifies the data type of the property value, according to the table in section 2.11.1.
@@ -32,11 +32,11 @@ namespace MAPIInspector.Parsers
         /// Initializes a new instance of the PropertyValue class
         /// </summary>
         /// <param name="_propertyType">The property type</param>
-        /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type</param>
+        /// <param name="countContext">The parsing context that determines count field widths</param>
         /// <param name="addressBook">Whether it is AddressBook related property</param>
-        public PropertyValue(PropertyDataType _propertyType, CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes, bool addressBook = false)
+        public PropertyValue(PropertyDataType _propertyType, PropertyCountContext countContext = PropertyCountContext.RopBuffers, bool addressBook = false)
         {
-            countWide = ptypMultiCountSize;
+            context = countContext;
             propertyType = _propertyType;
             isAddressBook = addressBook;
         }
@@ -46,7 +46,7 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            Value = ReadPropertyValue(propertyType, parser, countWide);
+            Value = ReadPropertyValue(propertyType, parser, context, isAddressBook);
         }
 
         protected override void ParseBlocks()
@@ -67,9 +67,10 @@ namespace MAPIInspector.Parsers
         /// </summary>
         /// <param name="dataType">The Property data type.</param>
         /// <param name="parser">A BinaryParser containing the PropertyValue structure</param>
-        /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
+        /// <param name="countContext">The parsing context that determines count field widths</param>
+        /// <param name="bIsAddressBook">Whether this is for address book parsing</param>
         /// <returns>The object of PropertyValue.</returns>
-        static public Block ReadPropertyValue(PropertyDataType dataType, BinaryParser parser, CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes, bool bIsAddressBook = false)
+        static public Block ReadPropertyValue(PropertyDataType dataType, BinaryParser parser, PropertyCountContext countContext = PropertyCountContext.RopBuffers, bool bIsAddressBook = false)
         {
             switch (dataType)
             {
@@ -89,13 +90,13 @@ namespace MAPIInspector.Parsers
                 case PropertyDataType.PtypServerId: return Parse<PtypServerId>(parser);
                 case PropertyDataType.PtypRestriction:
                     {
-                        var tempPropertyValue = new RestrictionType(ptypMultiCountSize);
+                        var tempPropertyValue = new RestrictionType(countContext);
                         tempPropertyValue.Parse(parser);
                         return tempPropertyValue;
                     }
                 case PropertyDataType.PtypRuleAction:
                     {
-                        var tempPropertyValue = new RuleAction(ptypMultiCountSize);
+                        var tempPropertyValue = new RuleAction(countContext);
                         tempPropertyValue.Parse(parser);
                         return tempPropertyValue;
                     }
@@ -103,7 +104,7 @@ namespace MAPIInspector.Parsers
                 case PropertyDataType.PtypNull: return Parse<PtypNull>(parser);
                 case PropertyDataType.PtypBinary:
                     {
-                        var tempPropertyValue = new PtypBinary(ptypMultiCountSize, false);
+                        var tempPropertyValue = new PtypBinary(countContext);
                         tempPropertyValue.Parse(parser);
                         return tempPropertyValue;
                     }
@@ -116,13 +117,13 @@ namespace MAPIInspector.Parsers
                 case PropertyDataType.PtypMultipleInteger64: return Parse<PtypMultipleInteger64>(parser);
                 case PropertyDataType.PtypMultipleString:
                     {
-                        var tempPropertyValue = new PtypMultipleString(ptypMultiCountSize, bIsAddressBook);
+                        var tempPropertyValue = new PtypMultipleString(bIsAddressBook);
                         tempPropertyValue.Parse(parser);
                         return tempPropertyValue;
                     }
                 case PropertyDataType.PtypMultipleString8:
                     {
-                        var tempPropertyValue = new PtypMultipleString8(ptypMultiCountSize, bIsAddressBook);
+                        var tempPropertyValue = new PtypMultipleString8(bIsAddressBook);
                         tempPropertyValue.Parse(parser);
                         return tempPropertyValue;
                     }
@@ -130,12 +131,12 @@ namespace MAPIInspector.Parsers
                 case PropertyDataType.PtypMultipleGuid: return Parse<PtypMultipleGuid>(parser);
                 case PropertyDataType.PtypMultipleBinary:
                     {
-                        var tempPropertyValue = new PtypMultipleBinary(ptypMultiCountSize, bIsAddressBook);
+                        var tempPropertyValue = new PtypMultipleBinary(countContext, bIsAddressBook);
                         tempPropertyValue.Parse(parser);
                         return tempPropertyValue;
                     }
-
-                case PropertyDataType.PtypObject_Or_PtypEmbeddedTable: return Parse<PtypObject_Or_PtypEmbeddedTable>(parser);
+                case PropertyDataType.PtypObject_Or_PtypEmbeddedTable: 
+                    return Parse<PtypObject_Or_PtypEmbeddedTable>(parser);
             }
 
             return null;

@@ -35,12 +35,19 @@ namespace MAPIInspector.Parsers
         private int size;
 
         /// <summary>
+        /// The parsing context that determines count field widths.
+        /// </summary>
+        private PropertyCountContext context = PropertyCountContext.RopBuffers;
+
+        /// <summary>
         /// Initializes a new instance of the PropertyRow class
         /// </summary>
         /// <param name="_propTags">The array of property tag.</param>
-        public PropertyRow(PropertyTag[] _propTags)
+        /// <param name="countContext">The parsing context that determines count field widths.</param>
+        public PropertyRow(PropertyTag[] _propTags, PropertyCountContext countContext = PropertyCountContext.RopBuffers)
         {
             propTags = _propTags;
+            context = countContext;
         }
 
         /// <summary>
@@ -48,10 +55,12 @@ namespace MAPIInspector.Parsers
         /// </summary>
         /// <param name="size">The size of the structure.</param>
         /// <param name="_propTags">The array of property tag.</param>
-        public PropertyRow(int _size, PropertyTag[] _propTags)
+        /// <param name="countContext">The parsing context that determines count field widths.</param>
+        public PropertyRow(int _size, PropertyTag[] _propTags, PropertyCountContext countContext = PropertyCountContext.RopBuffers)
         {
             size = _size;
             propTags = _propTags;
+            context = countContext;
         }
 
         /// <summary>
@@ -72,7 +81,7 @@ namespace MAPIInspector.Parsers
                     {
                         if (tempPropTag.PropertyType != PropertyDataType.PtypUnspecified)
                         {
-                            rowPropValue = new PropertyValue(tempPropTag.PropertyType);
+                            rowPropValue = new PropertyValue(tempPropTag.PropertyType, context);
                             rowPropValue.Parse(parser);
                         }
                         else
@@ -84,12 +93,13 @@ namespace MAPIInspector.Parsers
                     {
                         if (tempPropTag.PropertyType != PropertyDataType.PtypUnspecified)
                         {
-                            rowPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType);
+                            rowPropValue = new FlaggedPropertyValue(tempPropTag.PropertyType, context);
                             rowPropValue.Parse(parser);
                         }
                         else
                         {
-                            rowPropValue = Parse<FlaggedPropertyValueWithType>();
+                            rowPropValue = new FlaggedPropertyValueWithType(context);
+                            rowPropValue.Parse(parser);
                         }
                     }
 

@@ -34,7 +34,8 @@ namespace MAPIInspector.Parsers
             var tempPropertyValues = new List<TaggedPropertyValue>();
             for (int i = 0; i < PropertyValueCount; i++)
             {
-                var temptaggedPropertyValue = new TaggedPropertyValue(CountWideEnum.twoBytes);
+                // For extended rules context, both PtypBinary and PtypMultiple use 4-byte count
+                var temptaggedPropertyValue = new TaggedPropertyValue(PropertyCountContext.ExtendedRules);
                 temptaggedPropertyValue.Parse(parser);
                 tempPropertyValues.Add(temptaggedPropertyValue);
             }

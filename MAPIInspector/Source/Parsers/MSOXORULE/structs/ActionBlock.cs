@@ -33,17 +33,17 @@ namespace MAPIInspector.Parsers
         public Block ActionData;
 
         /// <summary>
-        /// The wide size of NoOfActions.
+        /// The parsing context that determines count field widths.
         /// </summary>
-        private CountWideEnum countWide;
+        private PropertyCountContext context;
 
         /// <summary>
-        /// Initializes a new instance of the ActionBlock class.
+        /// Initializes a new instance of the ActionBlock class
         /// </summary>
-        /// <param name="wide">The wide size of ActionLength.</param>
-        public ActionBlock(CountWideEnum wide = CountWideEnum.twoBytes)
+        /// <param name="countContext">The parsing context that determines count field widths.</param>
+        public ActionBlock(PropertyCountContext countContext)
         {
-            countWide = wide;
+            context = countContext;
         }
 
         /// <summary>
@@ -51,13 +51,15 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            switch (countWide)
+            switch (context)
             {
-                case CountWideEnum.twoBytes:
+                case PropertyCountContext.RopBuffers:
                     ActionLength = ParseAs<ushort, uint>();
                     break;
                 default:
-                case CountWideEnum.fourBytes:
+                case PropertyCountContext.ExtendedRules:
+                case PropertyCountContext.MapiHttp:
+                case PropertyCountContext.AddressBook:
                     ActionLength = ParseT<uint>();
                     break;
             }
@@ -97,22 +99,24 @@ namespace MAPIInspector.Parsers
             ActionFlags = ParseT<uint>();
             if (ActionLength > 9)
             {
-                if ((ActionType.OP_MOVE == _actionType || ActionType.OP_COPY == _actionType) && countWide.Equals(CountWideEnum.twoBytes))
+                bool isExtended = (context != PropertyCountContext.RopBuffers);
+                
+                if ((ActionType.OP_MOVE == _actionType || ActionType.OP_COPY == _actionType) && !isExtended)
                 {
                     ActionData = new OP_MOVE_and_OP_COPY_ActionData_forStandard();
                     ActionData.Parse(parser);
                 }
-                else if ((ActionType.OP_MOVE == _actionType || ActionType.OP_COPY == _actionType) && countWide.Equals(CountWideEnum.fourBytes))
+                else if ((ActionType.OP_MOVE == _actionType || ActionType.OP_COPY == _actionType) && isExtended)
                 {
                     ActionData = new OP_MOVE_and_OP_COPY_ActionData_forExtended();
                     ActionData.Parse(parser);
                 }
-                else if ((ActionType.OP_REPLY == _actionType || ActionType.OP_OOF_REPLY == _actionType) && countWide.Equals(CountWideEnum.twoBytes))
+                else if ((ActionType.OP_REPLY == _actionType || ActionType.OP_OOF_REPLY == _actionType) && !isExtended)
                 {
                     ActionData = new OP_REPLY_and_OP_OOF_REPLY_ActionData_forStandard();
                     ActionData.Parse(parser);
                 }
-                else if ((ActionType.OP_REPLY == _actionType || ActionType.OP_OOF_REPLY == _actionType) && countWide.Equals(CountWideEnum.fourBytes))
+                else if ((ActionType.OP_REPLY == _actionType || ActionType.OP_OOF_REPLY == _actionType) && isExtended)
                 {
                     ActionData = new OP_REPLY_and_OP_OOF_REPLY_ActionData_forExtended();
                     ActionData.Parse(parser);
@@ -129,7 +133,7 @@ namespace MAPIInspector.Parsers
                 }
                 else if (ActionType.OP_TAG == _actionType)
                 {
-                    ActionData = new TaggedPropertyValue(CountWideEnum.twoBytes);
+                    ActionData = new TaggedPropertyValue(context);
                     ActionData.Parse(parser);
                 }
                 else if (ActionType.OP_DEFER_ACTION == _actionType)

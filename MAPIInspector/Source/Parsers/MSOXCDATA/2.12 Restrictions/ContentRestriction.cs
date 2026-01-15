@@ -33,17 +33,17 @@ namespace MAPIInspector.Parsers
         public TaggedPropertyValue TaggedValue;
 
         /// <summary>
-        /// The Count wide size.
+        /// The parsing context that determines count field width
         /// </summary>
-        private CountWideEnum countWide;
+        private PropertyCountContext context;
 
         /// <summary>
         /// Initializes a new instance of the ContentRestriction class
         /// </summary>
-        /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
-        public ContentRestriction(CountWideEnum ptypMultiCountSize)
+        /// <param name="countContext">The parsing context that determines count field widths.</param>
+        public ContentRestriction(PropertyCountContext countContext)
         {
-            countWide = ptypMultiCountSize;
+            context = countContext;
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace MAPIInspector.Parsers
             FuzzyLevelLow = ParseT<FuzzyLevelLowEnum>();
             FuzzyLevelHigh = ParseT<FuzzyLevelHighEnum>();
             PropertyTag = Parse<PropertyTag>();
-            TaggedValue = new TaggedPropertyValue(countWide, PropertyTag);
+            TaggedValue = new TaggedPropertyValue(context, PropertyTag);
             TaggedValue.Parse(parser);
         }
 

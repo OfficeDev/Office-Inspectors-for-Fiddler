@@ -8,6 +8,20 @@ namespace MAPIInspector.Parsers
     public class BitMaskRestriction : Block
     {
         /// <summary>
+        /// The parsing context that determines count field widths.
+        /// </summary>
+        private PropertyCountContext context;
+
+        /// <summary>
+        /// Initializes a new instance of the BitMaskRestriction class
+        /// </summary>
+        /// <param name="countContext">The parsing context that determines count field widths.</param>
+        public BitMaskRestriction(PropertyCountContext countContext)
+        {
+            context = countContext;
+        }
+
+        /// <summary>
         /// An unsigned integer. This value indicates the type of restriction (2) and MUST be set to 0x06.
         /// </summary>
         public BlockT<RestrictTypeEnum> RestrictType;

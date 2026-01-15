@@ -121,7 +121,7 @@ namespace MAPIInspector.Parsers
 
             if (HasFilter)
             {
-                var restriction = new RestrictionType(CountWideEnum.fourBytes);
+                var restriction = new RestrictionType(PropertyCountContext.MapiHttp);
                 restriction.Parse(parser);
                 Filter = restriction;
             }

@@ -18,9 +18,9 @@ namespace MAPIInspector.Parsers
         public Block _PropertyValue;
 
         /// <summary>
-        /// The Constructor to set the Count wide size.
+        /// The parsing context that determines count field widths.
         /// </summary>
-        private CountWideEnum countWide;
+        private PropertyCountContext context;
 
         /// <summary>
         /// A propertyTag structure, used for PropertyRestriction
@@ -30,11 +30,11 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// Initializes a new instance of the TaggedPropertyValue class
         /// </summary>
-        /// <param name="ptypMultiCountSize">The count size of multiple property</param>
+        /// <param name="countContext">The parsing context that determines count field widths</param>
         /// <param name="propertyTag">The PropertyTag structure</param>
-        public TaggedPropertyValue(CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes, PropertyTag propertyTag = null)
+        public TaggedPropertyValue(PropertyCountContext countContext = PropertyCountContext.RopBuffers, PropertyTag propertyTag = null)
         {
-            countWide = ptypMultiCountSize;
+            context = countContext;
             tagInRestriction = propertyTag;
         }
 
@@ -51,11 +51,11 @@ namespace MAPIInspector.Parsers
                     tagInRestriction.PropertyType.Data = (PropertyDataType)((ushort)tagInRestriction.PropertyType.Data & 0xfff);
                 }
 
-                _PropertyValue = PropertyValue.ReadPropertyValue(tagInRestriction.PropertyType, parser, countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(tagInRestriction.PropertyType, parser, context);
             }
             else
             {
-                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyTag.PropertyType, parser, countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyTag.PropertyType, parser, context);
             }
         }
 

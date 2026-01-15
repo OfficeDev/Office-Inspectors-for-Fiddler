@@ -52,7 +52,11 @@ namespace MAPIInspector.Parsers
             HasState = ParseAs<byte, bool>();
             if (HasState) State = Parse<STAT>();
             HasPropertyTags = ParseAs<byte, bool>();
-            PropertyTags = Parse<LargePropertyTagArray>();
+            if (HasPropertyTags)
+            {
+                PropertyTags = Parse<LargePropertyTagArray>();
+            }
+
             AuxiliaryBufferSize = ParseT<uint>();
             if (AuxiliaryBufferSize > 0) AuxiliaryBuffer = Parse<ExtendedBuffer>();
         }

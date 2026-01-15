@@ -18,24 +18,24 @@ namespace MAPIInspector.Parsers
         public Block _PropertyValue;
 
         /// <summary>
-        /// The Property data type.
+        /// The parsing context that determines count field widths.
+        /// </summary>
+        private PropertyCountContext context;
+
+        /// <summary>
+        /// An unsigned integer that specifies the data type of the property value, according to the table in section 2.11.1.
         /// </summary>
         private PropertyDataType propertyType;
 
         /// <summary>
-        /// The Count wide size.
-        /// </summary>
-        private CountWideEnum countWide;
-
-        /// <summary>
         /// Initializes a new instance of the FlaggedPropertyValue class
         /// </summary>
-        /// <param name="propertyType">The Property data type.</param>
-        /// <param name="ptypMultiCountSize">The Count wide size.</param>
-        public FlaggedPropertyValue(PropertyDataType _propertyType, CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes)
+        /// <param name="_propertyType">The property type</param>
+        /// <param name="countContext">The parsing context that determines count field widths</param>
+        public FlaggedPropertyValue(PropertyDataType _propertyType, PropertyCountContext countContext = PropertyCountContext.RopBuffers)
         {
+            context = countContext;
             propertyType = _propertyType;
-            countWide = ptypMultiCountSize;
         }
 
         /// <summary>
@@ -46,11 +46,11 @@ namespace MAPIInspector.Parsers
             Flag = ParseT<byte>();
             if (Flag == 0x00)
             {
-                _PropertyValue = PropertyValue.ReadPropertyValue(propertyType, parser, countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(propertyType, parser, context);
             }
             else if (Flag == 0x0A)
             {
-                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyDataType.PtypErrorCode, parser, countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyDataType.PtypErrorCode, parser, context);
             }
         }
 
