@@ -106,6 +106,8 @@
     <Compile Include="MAPIControl.Events.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\PropertyCountContext.cs" />
+    <Compile Include="Parsers\MSOXCDATA\2.12 Restrictions\CommentRestriction.cs" />
     <Compile Include="Parsers\MSOXCFXICS\LexicalBase\Partial\MissingPartialInformationException.cs" />
     <Compile Include="Parsers\MSOXCFXICS\LexicalBase\Partial\PartialContextInformation.cs" />
     <Compile Include="Parsers\MSOXCFXICS\LexicalBase\Partial\Partial.cs" />
@@ -143,7 +145,6 @@
     <Compile Include="Parsers\MSOXCDATA\2.1 AddressList Structures\AddressList.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.12 Restrictions\AndRestriction.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.12 Restrictions\BitMaskRestriction.cs" />
-    <Compile Include="Parsers\MSOXCDATA\2.12 Restrictions\CommentRestriction.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.12 Restrictions\ComparePropertiesRestriction.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.12 Restrictions\ContentRestriction.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.12 Restrictions\CountRestriction.cs" />
@@ -206,7 +207,6 @@
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\TypedPropertyValue.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\TypedString.cs" />
     <Compile Include="Parsers\MSOXCDATA\BlockGuid.cs" />
-    <Compile Include="Parsers\MSOXCDATA\2.11 Property Values\CountWideEnum.cs" />
     <Compile Include="Parsers\MSOXCDATA\2.4 Error Codes\HelpMethod.cs" />
     <Compile Include="Parsers\MSOXCDATA\BlockGuidExtensions.cs" />
     <Compile Include="Parsers\MSOXCFOLD\enums\ContentsTableFlags.cs" />
@@ -710,6 +710,7 @@
     <Compile Include="Parsers\MSOXCTABL\rops\RopSortTableRequest.cs" />
     <Compile Include="Parsers\MSOXCTABL\rops\RopSortTableResponse.cs" />
     <Compile Include="Parsers\MSOXNSPI\enum\DisplayTypeValues.cs" />
+    <Compile Include="Parsers\MSOXNSPI\struct\EntryID.cs" />
     <Compile Include="Parsers\MSOXNSPI\struct\EphemeralEntryID.cs" />
     <Compile Include="Parsers\MSOXNSPI\struct\MinimalEntryID.cs" />
     <Compile Include="Parsers\MSOXCTABL\rops\RopSetCollapseStateResponse.cs" />

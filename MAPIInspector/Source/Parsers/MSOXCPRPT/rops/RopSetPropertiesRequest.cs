@@ -40,6 +40,11 @@ namespace MAPIInspector.Parsers
         public TaggedPropertyValue[] PropertyValues;
 
         /// <summary>
+        /// Unparsed data left in the buffer.
+        /// </summary>
+        public BlockJunk Junk;
+
+        /// <summary>
         /// Parse the RopSetPropertiesRequest structure.
         /// </summary>
         protected override void Parse()
@@ -49,15 +54,27 @@ namespace MAPIInspector.Parsers
             InputHandleIndex = ParseT<byte>();
             PropertyValueSize = ParseT<ushort>();
             PropertyValueCount = ParseT<ushort>();
+
+            parser.PushCap(PropertyValueSize.Data - sizeof(ushort));
+
             var interValue = new List<TaggedPropertyValue>();
-            for (int i = 0; i < PropertyValueCount; i++)
+            for (int i = 0; i < PropertyValueCount && !parser.Empty; i++)
             {
-                var value = new TaggedPropertyValue();
+                var value = new TaggedPropertyValue(PropertyCountContext.RopBuffers);
                 value.Parse(parser);
                 interValue.Add(value);
             }
 
             PropertyValues = interValue.ToArray();
+
+            if (!parser.Empty && parser.RemainingBytes > 0)
+            {
+                // If there is still data left, grab it as a block
+                Junk = ParseJunk("Remaining Data");
+            }
+
+            // Pop the cap to restore previous parsing limits
+            parser.PopCap();
         }
 
         protected override void ParseBlocks()
@@ -69,6 +86,7 @@ namespace MAPIInspector.Parsers
             AddChildBlockT(PropertyValueSize, "PropertyValueSize");
             AddChildBlockT(PropertyValueCount, "PropertyValueCount");
             AddLabeledChildren(PropertyValues, "PropertyValues");
+            AddChild(Junk, "Junk");
         }
     }
 }

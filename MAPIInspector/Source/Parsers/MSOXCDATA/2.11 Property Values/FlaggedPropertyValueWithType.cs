@@ -23,22 +23,17 @@ namespace MAPIInspector.Parsers
         public Block _PropertyValue;
 
         /// <summary>
-        /// The Count wide size.
+        /// The parsing context that determines count field widths.
         /// </summary>
-        private CountWideEnum countWide = CountWideEnum.twoBytes;
+        private readonly PropertyCountContext context;
 
         /// <summary>
         /// Initializes a new instance of the FlaggedPropertyValueWithType class
         /// </summary>
-        public FlaggedPropertyValueWithType() { }
-
-        /// <summary>
-        /// Initializes a new instance of the FlaggedPropertyValueWithType class
-        /// </summary>
-        /// <param name="ptypMultiCountSize">The Count wide size.</param>
-        public FlaggedPropertyValueWithType(CountWideEnum ptypMultiCountSize)
+        /// <param name="countContext">The parsing context that determines count field widths</param>
+        public FlaggedPropertyValueWithType(PropertyCountContext countContext = PropertyCountContext.RopBuffers)
         {
-            countWide = ptypMultiCountSize;
+            context = countContext;
         }
 
         /// <summary>
@@ -50,11 +45,11 @@ namespace MAPIInspector.Parsers
             Flag = ParseT<byte>();
             if (Flag == 0x00)
             {
-                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyType, parser, countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyType, parser, context);
             }
             else if (Flag == 0x0A)
             {
-                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyDataType.PtypErrorCode, parser, countWide);
+                _PropertyValue = PropertyValue.ReadPropertyValue(PropertyDataType.PtypErrorCode, parser, context);
             }
         }
 

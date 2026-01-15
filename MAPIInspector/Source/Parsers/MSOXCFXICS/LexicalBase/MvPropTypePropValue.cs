@@ -16,6 +16,20 @@ namespace MAPIInspector.Parsers
         Block[] ValueArray;
 
         /// <summary>
+        /// The parsing context that determines count field widths.
+        /// </summary>
+        private readonly PropertyCountContext context;
+
+        /// <summary>
+        /// Initializes a new instance of the MvPropTypePropValue class with specified context.
+        /// </summary>
+        /// <param name="countContext">The parsing context that determines count field widths.</param>
+        public MvPropTypePropValue(PropertyCountContext countContext)
+        {
+            context = countContext;
+        }
+
+        /// <summary>
         /// Verify that a stream's current position contains a serialized MvPropTypePropValue.
         /// </summary>
         /// <param name="parser">A BinaryParser.</param>
@@ -33,10 +47,10 @@ namespace MAPIInspector.Parsers
             Length = ParseT<int>();
             long dataCount = Length;
 
-            ValueArray = ParseArray(parser, PropType, dataCount);
+            ValueArray = ParseArray(parser, PropType, dataCount, context);
         }
 
-        public static Block[] ParseArray(BinaryParser parser, PropertyDataType dataType, long dataCount)
+        public static Block[] ParseArray(BinaryParser parser, PropertyDataType dataType, long dataCount, PropertyCountContext context = PropertyCountContext.RopBuffers)
         {
             var blocks = new List<Block>();
             for (int i = 0; i < dataCount; i++)
@@ -72,16 +86,14 @@ namespace MAPIInspector.Parsers
                         tmpBlock = Parse<PtypGuid>(parser);
                         break;
                     case PropertyDataType.PtypMultipleBinary:
-                        tmpBlock = new PtypBinary(CountWideEnum.fourBytes, false);
+                        tmpBlock = new PtypBinary(context, false);
                         tmpBlock.Parse(parser);
                         break;
                     case PropertyDataType.PtypMultipleString:
-                        tmpBlock = new PtypString(CountWideEnum.fourBytes, false);
-                        tmpBlock.Parse(parser);
+                        tmpBlock = Parse<PtypString>(parser);
                         break;
                     case PropertyDataType.PtypMultipleString8:
-                        tmpBlock = new PtypString8(CountWideEnum.fourBytes, false);
-                        tmpBlock.Parse(parser);
+                        tmpBlock = Parse<PtypString8>(parser);
                         break;
                 }
 

@@ -22,24 +22,24 @@ namespace MAPIInspector.Parsers
         public BlockT<bool> HasValue;
 
         /// <summary>
-        /// The Count wide size.
+        /// Bool value indicates if this property value is for address book.
         /// </summary>
-        private CountWideEnum countWide = 0; // Default to no count field
-
         private readonly bool isAddressBook = false;
 
         /// <summary>
-        /// Initializes a new instance of the PtypString class
+        /// Initializes a new instance of the PtypString class (parameterless constructor)
         /// </summary>
-        public PtypString() { }
+        public PtypString()
+        {
+            isAddressBook = false;
+        }
 
         /// <summary>
         /// Initializes a new instance of the PtypString class
         /// </summary>
-        /// <param name="wide">The Count wide size of PtypString type.</param>
-        public PtypString(CountWideEnum wide, bool isAddressBook)
+        /// <param name="isAddressBook">Whether this is for address book parsing.</param>
+        public PtypString(bool isAddressBook = false)
         {
-            countWide = wide;
             this.isAddressBook = isAddressBook;
         }
 
@@ -62,22 +62,8 @@ namespace MAPIInspector.Parsers
                 return;
             }
 
-            // If we have a countWide enum, we read a count field and use it.
-            // Otherwise, if we were given a count, we use that directly.
-            switch (countWide)
-            {
-                case CountWideEnum.twoBytes:
-                    Count = ParseAs<ushort, int>();
-                    Value = ParseStringW(Count/2);
-                    break;
-                case CountWideEnum.fourBytes:
-                    Count = ParseT<int>();
-                    Value = ParseStringW(Count/2);
-                    break;
-                default:
-                    Value = ParseStringW(-1);
-                    break;
-            }
+            // PtypString doesn't use count fields - it's null-terminated
+            Value = ParseStringW();
         }
 
         protected override void ParseBlocks()

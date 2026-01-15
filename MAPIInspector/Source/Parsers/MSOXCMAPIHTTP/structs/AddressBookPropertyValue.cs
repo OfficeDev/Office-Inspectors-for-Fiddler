@@ -35,19 +35,12 @@ namespace MAPIInspector.Parsers
         private PropertyDataType propertyDataType;
 
         /// <summary>
-        /// A CountWideEnum is used to initialized the AddressBookPropertyValue structure
-        /// </summary>
-        private CountWideEnum countWide;
-
-        /// <summary>
         /// Initializes a new instance of the AddressBookPropertyValue class.
         /// </summary>
-        /// <param name="propertyDataType">The PropertyDataType for this structure</param>
-        /// <param name="ptypMultiCountSize">The CountWideEnum for this structure</param>
-        public AddressBookPropertyValue(PropertyDataType _propertyDataType, CountWideEnum ptypMultiCountSize = CountWideEnum.fourBytes)
+        /// <param name="_propertyDataType">The PropertyDataType value</param>
+        public AddressBookPropertyValue(PropertyDataType _propertyDataType)
         {
             propertyDataType = _propertyDataType;
-            countWide = ptypMultiCountSize;
         }
 
         /// <summary>
@@ -71,7 +64,7 @@ namespace MAPIInspector.Parsers
 
             if (HasValue == null || HasValue)
             {
-                _PropertyValue = PropertyValue.ReadPropertyValue(propertyDataType, parser, countWide, true);
+                _PropertyValue = PropertyValue.ReadPropertyValue(propertyDataType, parser, PropertyCountContext.MapiHttp, true);
             }
         }
 

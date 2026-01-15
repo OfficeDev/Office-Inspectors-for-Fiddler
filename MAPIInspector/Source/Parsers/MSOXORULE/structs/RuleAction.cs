@@ -19,17 +19,17 @@ namespace MAPIInspector.Parsers
         public ActionBlock[] ActionBlocks;
 
         /// <summary>
-        /// The wide size of NoOfActions.
+        /// The parsing context that determines count field widths.
         /// </summary>
-        private CountWideEnum countWide;
+        private readonly PropertyCountContext context;
 
         /// <summary>
         /// Initializes a new instance of the RuleAction class
         /// </summary>
-        /// <param name="wide">The wide size of NoOfActions.</param>
-        public RuleAction(CountWideEnum wide = CountWideEnum.twoBytes)
+        /// <param name="countContext">The parsing context that determines count field widths.</param>
+        public RuleAction(PropertyCountContext countContext = PropertyCountContext.RopBuffers)
         {
-            countWide = wide;
+            context = countContext;
         }
 
         /// <summary>
@@ -37,20 +37,22 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            switch (countWide)
+            switch (context)
             {
-                case CountWideEnum.twoBytes:
+                case PropertyCountContext.RopBuffers:
                     NoOfActions = ParseAs<ushort, uint>();
                     break;
                 default:
-                case CountWideEnum.fourBytes:
+                case PropertyCountContext.ExtendedRules:
+                case PropertyCountContext.MapiHttp:
+                case PropertyCountContext.AddressBook:
                     NoOfActions = ParseT<uint>();
                     break;
             }
             var tempActionBlocks = new List<ActionBlock>();
             for (int i = 0; i < NoOfActions; i++)
             {
-                var tempActionBlock = new ActionBlock(CountWideEnum.twoBytes);
+                var tempActionBlock = new ActionBlock(context);
                 tempActionBlock.Parse(parser);
                 tempActionBlocks.Add(tempActionBlock);
             }

@@ -28,6 +28,20 @@ namespace MAPIInspector.Parsers
         public PropertyTag PropTag2;
 
         /// <summary>
+        /// The parsing context that determines count field widths.
+        /// </summary>
+        private readonly PropertyCountContext context;
+
+        /// <summary>
+        /// Initializes a new instance of the ComparePropsRestriction class
+        /// </summary>
+        /// <param name="countContext">The parsing context that determines count field widths.</param>
+        public ComparePropertiesRestriction(PropertyCountContext countContext)
+        {
+            context = countContext;
+        }
+
+        /// <summary>
         /// Parse the ComparePropertiesRestriction structure.
         /// </summary>
         protected override void Parse()
