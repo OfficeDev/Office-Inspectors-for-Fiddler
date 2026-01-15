@@ -39,6 +39,9 @@ namespace MAPIInspector.Parsers
         /// </summary>
         public TaggedPropertyValue[] PropertyValues;
 
+        /// <summary>
+        /// Unparsed data left in the buffer.
+        /// </summary>
         public BlockJunk Junk;
 
         /// <summary>

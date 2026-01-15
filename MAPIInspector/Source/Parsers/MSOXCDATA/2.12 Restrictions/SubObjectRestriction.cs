@@ -25,7 +25,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// The parsing context that determines count field widths.
         /// </summary>
-        private PropertyCountContext context;
+        private readonly PropertyCountContext context;
 
         /// <summary>
         /// Initializes a new instance of the SubObjectRestriction class

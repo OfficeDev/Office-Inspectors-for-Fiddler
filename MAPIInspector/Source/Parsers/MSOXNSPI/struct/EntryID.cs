@@ -12,7 +12,7 @@ namespace MAPIInspector.Parsers
     public class EntryID : Block
     {
         /// <summary>
-        /// The size of the ID. This field is missing from the ModLinkAtt documentation.
+        /// The size of the ID in bytes. Note: This field exists in the wire format but is not documented in [MS-OXCMAPIHTTP] 2.2.5.10 ModLinkAtt.
         /// </summary>
         public BlockT<uint> EntryIDSize;
 

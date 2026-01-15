@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// The parsing context that determines count field widths.
         /// </summary>
-        private PropertyCountContext context;
+        private readonly PropertyCountContext context;
 
         /// <summary>
         /// A propertyTag structure, used for PropertyRestriction

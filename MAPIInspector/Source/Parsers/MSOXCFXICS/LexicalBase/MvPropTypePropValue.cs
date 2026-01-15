@@ -18,7 +18,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// The parsing context that determines count field widths.
         /// </summary>
-        private PropertyCountContext context;
+        private readonly PropertyCountContext context;
 
         /// <summary>
         /// Initializes a new instance of the MvPropTypePropValue class with specified context.
@@ -90,12 +90,10 @@ namespace MAPIInspector.Parsers
                         tmpBlock.Parse(parser);
                         break;
                     case PropertyDataType.PtypMultipleString:
-                        tmpBlock = new PtypString(false);
-                        tmpBlock.Parse(parser);
+                        tmpBlock = Parse<PtypString>(parser);
                         break;
                     case PropertyDataType.PtypMultipleString8:
-                        tmpBlock = new PtypString8(false);
-                        tmpBlock.Parse(parser);
+                        tmpBlock = Parse<PtypString8>(parser);
                         break;
                 }
 

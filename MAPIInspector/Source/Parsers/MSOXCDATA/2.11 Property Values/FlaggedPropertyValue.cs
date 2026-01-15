@@ -20,7 +20,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// The parsing context that determines count field widths.
         /// </summary>
-        private PropertyCountContext context;
+        private readonly PropertyCountContext context;
 
         /// <summary>
         /// An unsigned integer that specifies the data type of the property value, according to the table in section 2.11.1.

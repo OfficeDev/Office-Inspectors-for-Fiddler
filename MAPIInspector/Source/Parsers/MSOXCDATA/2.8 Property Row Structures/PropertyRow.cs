@@ -37,7 +37,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// The parsing context that determines count field widths.
         /// </summary>
-        private PropertyCountContext context = PropertyCountContext.RopBuffers;
+        private readonly PropertyCountContext context = PropertyCountContext.RopBuffers;
 
         /// <summary>
         /// Initializes a new instance of the PropertyRow class

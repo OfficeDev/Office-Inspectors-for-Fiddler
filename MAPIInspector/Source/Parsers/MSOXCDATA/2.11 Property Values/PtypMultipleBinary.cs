@@ -32,7 +32,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// The parsing context that determines count field widths.
         /// </summary>
-        private PropertyCountContext context;
+        private readonly PropertyCountContext context;
 
         /// <summary>
         /// Bool value indicates if this property value is for address book.
