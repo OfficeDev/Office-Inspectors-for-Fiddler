@@ -7,7 +7,7 @@ namespace MAPIInspector.Parsers
     /// [MS-OXCMAPIHTTP] 2.2.5.10 ModLinkAtt
     /// [MS-OXNSPI] 2.2.9.3 PermanentEntryID
     /// [MS-OXNSPI] 2.2.9.2 EphemeralEntryID
-    /// A class indicates the EphemeralEntryID structure.
+    /// A class indicates the EntryID structure.
     /// </summary>
     public class EntryID : Block
     {
