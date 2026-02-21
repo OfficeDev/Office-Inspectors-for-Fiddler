@@ -1003,6 +1003,8 @@ namespace FSSHTTPandWOPIInspector.Parsers
         FileOperation,
         Versioning,
         Properties,
+        Label,
+        Policy
     }
 
     /// <summary>
@@ -1017,4 +1019,5 @@ namespace FSSHTTPandWOPIInspector.Parsers
         OnSuccessOrNotSupported,
         Invalid, //MSFSSHTTP2010 #531
     }
+
 }
