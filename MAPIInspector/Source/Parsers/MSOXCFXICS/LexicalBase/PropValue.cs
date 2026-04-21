@@ -78,7 +78,9 @@ namespace MAPIInspector.Parsers
             }
             else if (MvPropTypePropValue.Verify(parser))
             {
-                return Parse<MvPropTypePropValue>(parser);
+                var mvPropValue = new MvPropTypePropValue(PropertyCountContext.RopBuffers);
+                mvPropValue.Parse(parser);
+                return mvPropValue;
             }
             else
             {

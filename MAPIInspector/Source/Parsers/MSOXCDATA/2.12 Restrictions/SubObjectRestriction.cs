@@ -23,17 +23,17 @@ namespace MAPIInspector.Parsers
         public RestrictionType Restriction;
 
         /// <summary>
-        /// The Count wide size.
+        /// The parsing context that determines count field widths.
         /// </summary>
-        private CountWideEnum countWide;
+        private readonly PropertyCountContext context;
 
         /// <summary>
         /// Initializes a new instance of the SubObjectRestriction class
         /// </summary>
-        /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
-        public SubObjectRestriction(CountWideEnum ptypMultiCountSize)
+        /// <param name="countContext">The parsing context that determines count field widths.</param>
+        public SubObjectRestriction(PropertyCountContext countContext)
         {
-            countWide = ptypMultiCountSize;
+            context = countContext;
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace MAPIInspector.Parsers
         {
             RestrictType = ParseT<RestrictTypeEnum>();
             Subobject = Parse<PropertyTag>();
-            Restriction = new RestrictionType(countWide);
+            Restriction = new RestrictionType(context);
             Restriction.Parse(parser);
         }
 

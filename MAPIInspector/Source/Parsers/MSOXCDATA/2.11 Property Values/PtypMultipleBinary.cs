@@ -30,19 +30,23 @@ namespace MAPIInspector.Parsers
         public PtypBinary[] Value;
 
         /// <summary>
-        /// The Count wide size.
+        /// The parsing context that determines count field widths.
         /// </summary>
-        private CountWideEnum countWide;
+        private readonly PropertyCountContext context;
 
+        /// <summary>
+        /// Bool value indicates if this property value is for address book.
+        /// </summary>
         private readonly bool isAddressBook = false;
 
         /// <summary>
         /// Initializes a new instance of the PtypMultipleBinary class
         /// </summary>
-        /// <param name="wide">The Count wide size of PtypMultipleBinary type.</param>
-        public PtypMultipleBinary(CountWideEnum wide, bool isAddressBook)
+        /// <param name="countContext">The parsing context that determines count field width.</param>
+        /// <param name="isAddressBook">Whether this is for address book parsing.</param>
+        public PtypMultipleBinary(PropertyCountContext countContext, bool isAddressBook = false)
         {
-            countWide = wide;
+            context = countContext;
             this.isAddressBook = isAddressBook;
         }
 
@@ -51,17 +55,16 @@ namespace MAPIInspector.Parsers
         /// </summary>
         protected override void Parse()
         {
-            Count = ParseT<uint>();
-
-            List<PtypBinary> tempvalue = new List<PtypBinary>();
+            Count = ParseT<uint>(); // Always 32-bit for multiple types
+            var tempBinary = new List<PtypBinary>();
             for (int i = 0; i < Count; i++)
             {
-                var binary = new PtypBinary(countWide, isAddressBook);
+                var binary = new PtypBinary(context, isAddressBook);
                 binary.Parse(parser);
-                tempvalue.Add(binary);
+                tempBinary.Add(binary);
             }
 
-            Value = tempvalue.ToArray();
+            Value = tempBinary.ToArray();
         }
 
         protected override void ParseBlocks()

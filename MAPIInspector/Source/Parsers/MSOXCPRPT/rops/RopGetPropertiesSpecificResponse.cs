@@ -49,7 +49,8 @@ namespace MAPIInspector.Parsers
                 {
                     propTags = DecodingContext.GetPropertiesSpec_propertyTags[int.Parse(MapiInspector.MAPIParser.ParsingSession["VirtualID"])][InputHandleIndex].Dequeue();
                 }
-                RowData = new PropertyRow(propTags);
+
+                RowData = new PropertyRow(propTags, PropertyCountContext.RopBuffers);
                 RowData.Parse(parser);
             }
         }

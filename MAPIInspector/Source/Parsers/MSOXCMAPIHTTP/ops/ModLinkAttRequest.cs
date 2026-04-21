@@ -6,6 +6,7 @@ namespace MAPIInspector.Parsers
     /// <summary>
     /// A class indicates the ModLinkAttRequest structure.
     /// [MS-OXCMAPIHTTP] 2.2.5.10 ModLinkAtt
+    /// [MS-OXNSPI]: 3.1.4.1.15 NspiModLinkAtt (Opnum 14)
     /// </summary>
     public class ModLinkAttRequest : Block
     {
@@ -37,7 +38,7 @@ namespace MAPIInspector.Parsers
         /// <summary>
         /// An array of entry IDs, each of which is either an EphemeralEntryID structure or a PermanentEntryID structure.
         /// </summary>
-        public Block[] EntryIds;
+        public EntryID[] EntryIds;
 
         /// <summary>
         /// An unsigned integer that specifies the size, in bytes, of the AuxiliaryBuffer field.
@@ -62,19 +63,11 @@ namespace MAPIInspector.Parsers
             if (HasEntryIds)
             {
                 EntryIdCount = ParseT<uint>();
-                var tempObj = new List<Block>();
+                var tempObj = new List<EntryID>();
 
                 for (int i = 0; i < EntryIdCount; i++)
                 {
-                    var currentByte = TestParse<byte>();
-                    if (currentByte == 0x87)
-                    {
-                        tempObj.Add(Parse<EphemeralEntryID>());
-                    }
-                    else if (currentByte == 0x00)
-                    {
-                        tempObj.Add(Parse<PermanentEntryID>());
-                    }
+                    tempObj.Add(Parse<EntryID>());
                 }
 
                 EntryIds = tempObj.ToArray();

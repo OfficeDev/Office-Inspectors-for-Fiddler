@@ -26,19 +26,12 @@ namespace MAPIInspector.Parsers
         private LargePropertyTagArray largePropTagArray;
 
         /// <summary>
-        /// The ptypMultiCountSize type used to initialize the constructed function.
-        /// </summary>
-        private CountWideEnum ptypMultiCountSize;
-
-        /// <summary>
         /// Initializes a new instance of the AddressBookPropertyRow class.
         /// </summary>
         /// <param name="largePropTagArray">The LargePropertyTagArray value</param>
-        /// <param name="ptypMultiCountSize">The ptypMultiCountSize value</param>
-        public AddressBookPropertyRow(LargePropertyTagArray largePropTagArray, CountWideEnum ptypMultiCountSize = CountWideEnum.fourBytes)
+        public AddressBookPropertyRow(LargePropertyTagArray largePropTagArray)
         {
             this.largePropTagArray = largePropTagArray;
-            this.ptypMultiCountSize = ptypMultiCountSize;
         }
 
         /// <summary>
@@ -55,7 +48,7 @@ namespace MAPIInspector.Parsers
                 {
                     if (propTag.PropertyType != PropertyDataType.PtypUnspecified)
                     {
-                        var propValue = new AddressBookPropertyValue(propTag.PropertyType, ptypMultiCountSize);
+                        var propValue = new AddressBookPropertyValue(propTag.PropertyType);
                         propValue.Parse(parser);
                         addrRowValue = propValue;
                     }
@@ -78,8 +71,11 @@ namespace MAPIInspector.Parsers
                     }
                 }
 
-                addrRowValue.AddChild(propTag);
-                result.Add(addrRowValue);
+                if (addrRowValue != null)
+                {
+                    addrRowValue.AddChild(propTag);
+                    result.Add(addrRowValue);
+                }
             }
 
             ValueArray = result.ToArray();

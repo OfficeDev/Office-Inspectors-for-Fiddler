@@ -56,7 +56,7 @@ namespace MAPIInspector.Parsers
 
                 for (int i = 0; i < PropertyValueCount; i++)
                 {
-                    var temptaggedPropertyValue = new TaggedPropertyValue(CountWideEnum.twoBytes);
+                    var temptaggedPropertyValue = new TaggedPropertyValue(PropertyCountContext.RopBuffers);
                     temptaggedPropertyValue.Parse(parser);
                     tempPropertyValues.Add(temptaggedPropertyValue);
                 }

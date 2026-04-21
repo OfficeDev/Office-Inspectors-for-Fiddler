@@ -22,24 +22,24 @@ namespace MAPIInspector.Parsers
         public BlockT<bool> HasValue;
 
         /// <summary>
-        /// The Count wide size.
+        /// Bool value indicates if this property value is for address book.
         /// </summary>
-        private CountWideEnum countWide = 0; // Default to no count field
-
         private readonly bool isAddressBook = false;
 
         /// <summary>
-        /// Initializes a new instance of the PtypString8 class
+        /// Initializes a new instance of the PtypString8 class (parameterless constructor)
         /// </summary>
-        public PtypString8() { }
+        public PtypString8()
+        {
+            isAddressBook = false;
+        }
 
         /// <summary>
         /// Initializes a new instance of the PtypString8 class
         /// </summary>
-        /// <param name="wide">The Count wide size of PtypString8 type.</param>
-        public PtypString8(CountWideEnum wide, bool isAddressBook)
+        /// <param name="isAddressBook">Whether this is for address book parsing.</param>
+        public PtypString8(bool isAddressBook = false)
         {
-            countWide = wide;
             this.isAddressBook = isAddressBook;
         }
 
@@ -62,22 +62,8 @@ namespace MAPIInspector.Parsers
                 return;
             }
 
-            // If we have a countWide enum, we read a count field and use it.
-            // Otherwise, if we were given a count, we use that directly.
-            switch (countWide)
-            {
-                case CountWideEnum.twoBytes:
-                    Count = ParseAs<ushort, int>();
-                    Value = ParseStringA(Count);
-                    break;
-                case CountWideEnum.fourBytes:
-                    Count = ParseT<int>();
-                    Value = ParseStringA(Count);
-                    break;
-                default:
-                    Value = ParseStringA(-1);
-                    break;
-            }
+            // PtypString8 doesn't use count fields - it's null-terminated
+            Value = ParseStringA();
         }
 
         protected override void ParseBlocks()

@@ -5,7 +5,6 @@ namespace BlockParser
 {
     public class BlockStringW : BlockString
     {
-        public bool LineMode { get; set; } = false;
         protected override void Parse()
         {
             Parsed = false;
@@ -14,7 +13,7 @@ namespace BlockParser
                 return;
 
             // We don't want to skip a null because we stopped at the line ending
-            var fixedLength = cchChar != -1|| LineMode;
+            var fixedLength = cchChar != -1 || LineMode;
             var oldOffset = parser.Offset;
             var bytes = parser.ReadBytes(size);
             parser.Offset = oldOffset;
@@ -63,6 +62,12 @@ namespace BlockParser
                         data = data.Substring(0, lfIndex);
                         length = (lfIndex + lineEndingLength) * 2; // Multiply by 2 for UTF-16 bytes
                     }
+
+                    if (lfIndex == 0 && lineEndingLength > 0)
+                    {
+                        BlankLine = true;
+                    }
+
                 }
 
                 data = Strings.RemoveInvalidCharacters(data);

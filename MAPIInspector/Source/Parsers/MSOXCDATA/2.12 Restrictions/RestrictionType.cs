@@ -13,17 +13,17 @@ namespace MAPIInspector.Parsers
         public Block Restriction;
 
         /// <summary>
-        /// The Count wide size.
+        /// The parsing context that determines count field widths.
         /// </summary>
-        private CountWideEnum countWide;
+        private readonly PropertyCountContext context;
 
         /// <summary>
         /// Initializes a new instance of the RestrictionType class
         /// </summary>
-        /// <param name="ptypMultiCountSize">The Count wide size of ptypMutiple type.</param>
-        public RestrictionType(CountWideEnum ptypMultiCountSize = CountWideEnum.twoBytes)
+        /// <param name="countContext">The parsing context that determines count field widths.</param>
+        public RestrictionType(PropertyCountContext countContext = PropertyCountContext.RopBuffers)
         {
-            countWide = ptypMultiCountSize;
+            context = countContext;
         }
 
         /// <summary>
@@ -38,97 +38,78 @@ namespace MAPIInspector.Parsers
             {
                 case RestrictTypeEnum.AndRestriction:
                     {
-                        var restriction = new AndRestriction(countWide);
-                        restriction.Parse(parser);
-                        Restriction = restriction;
+                        Restriction = new AndRestriction(context);
+                        Restriction.Parse(parser);
                         break;
                     }
 
                 case RestrictTypeEnum.OrRestriction:
                     {
-                        var restriction = new OrRestriction(countWide);
-                        restriction.Parse(parser);
-                        Restriction = restriction;
+                        Restriction = new OrRestriction(context);
+                        Restriction.Parse(parser);
                         break;
                     }
 
                 case RestrictTypeEnum.NotRestriction:
                     {
-                        var restriction = new NotRestriction(countWide);
-                        restriction.Parse(parser);
-                        Restriction = restriction;
+                        Restriction = new NotRestriction(context);
+                        Restriction.Parse(parser);
                         break;
                     }
 
                 case RestrictTypeEnum.ContentRestriction:
                     {
-                        var restriction = new ContentRestriction(countWide);
-                        restriction.Parse(parser);
-                        Restriction = restriction;
+                        Restriction = new ContentRestriction(context);
+                        Restriction.Parse(parser);
                         break;
                     }
 
                 case RestrictTypeEnum.PropertyRestriction:
                     {
-                        var restriction = new PropertyRestriction(countWide);
-                        restriction.Parse(parser);
-                        Restriction = restriction;
+                        Restriction = new PropertyRestriction(context);
+                        Restriction.Parse(parser);
                         break;
                     }
 
                 case RestrictTypeEnum.ComparePropertiesRestriction:
                     {
-                        var restriction = new ComparePropertiesRestriction();
-                        restriction.Parse(parser);
-                        Restriction = restriction;
+                        Restriction = new ComparePropertiesRestriction(context);
+                        Restriction.Parse(parser);
                         break;
                     }
 
                 case RestrictTypeEnum.BitMaskRestriction:
                     {
-                        var restriction = new BitMaskRestriction();
-                        restriction.Parse(parser);
-                        Restriction = restriction;
+                        Restriction = new BitMaskRestriction(context);
+                        Restriction.Parse(parser);
                         break;
                     }
 
                 case RestrictTypeEnum.SizeRestriction:
                     {
-                        var restriction = new SizeRestriction();
-                        restriction.Parse(parser);
-                        Restriction = restriction;
+                        Restriction = new SizeRestriction();
+                        Restriction.Parse(parser);
                         break;
                     }
 
                 case RestrictTypeEnum.ExistRestriction:
                     {
-                        var restriction = new ExistRestriction();
-                        restriction.Parse(parser);
-                        Restriction = restriction;
-                        break;
-                    }
-
-                case RestrictTypeEnum.SubObjectRestriction:
-                    {
-                        var restriction = new SubObjectRestriction(countWide);
-                        restriction.Parse(parser);
-                        Restriction = restriction;
+                        Restriction = new ExistRestriction();
+                        Restriction.Parse(parser);
                         break;
                     }
 
                 case RestrictTypeEnum.CommentRestriction:
                     {
-                        var restriction = new CommentRestriction(countWide);
-                        restriction.Parse(parser);
-                        Restriction = restriction;
+                        Restriction = new CommentRestriction(context);
+                        Restriction.Parse(parser);
                         break;
                     }
 
                 case RestrictTypeEnum.CountRestriction:
                     {
-                        var restriction = new CountRestriction(countWide);
-                        restriction.Parse(parser);
-                        Restriction = restriction;
+                        Restriction = new CountRestriction(context);
+                        Restriction.Parse(parser);
                         break;
                     }
 

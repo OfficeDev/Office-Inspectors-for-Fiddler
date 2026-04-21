@@ -52,7 +52,11 @@ namespace MAPIInspector.Parsers
         private static TreeNode AddBlock(Block block, int blockRootOffset, bool debug)
         {
             // Clean up embedded null characters in the block text for display purposes
-            var text = block.Text.Replace("\0", "\\0");
+            var text = block.Text?.Replace("\0", "\\0");
+            if (text == null)
+            {
+                text = $"Exception: Missing Text property for {block.GetType()}";
+            }
             const int maxNodeLength = 100;
             // Truncate the text if it exceeds 100 characters for display purposes
             if (text.Length > maxNodeLength)

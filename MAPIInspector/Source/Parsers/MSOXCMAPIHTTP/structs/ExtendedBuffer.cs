@@ -57,9 +57,13 @@ namespace MAPIInspector.Parsers
                 for (int length = 0; length < RPCHEADEREXT._Size;)
                 {
                     var buffer = Parse<AuxiliaryBufferPayload>(newParser);
-                    buffer.ShiftOffset(payloadOffset); // shift the offset to the original position
-                    payload.Add(buffer);
-                    length += buffer.AUXHEADER._Size;
+                    if (buffer.Parsed)
+                    {
+                        buffer.ShiftOffset(payloadOffset); // shift the offset to the original position
+                        payload.Add(buffer);
+                        length += buffer.AUXHEADER._Size;
+                    }
+                    else break;
                 }
 
                 Payload = payload.ToArray();

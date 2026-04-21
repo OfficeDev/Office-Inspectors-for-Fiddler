@@ -10,5 +10,7 @@
         public string Data => data;
         public int Length => data.Length;
         public bool Empty => string.IsNullOrEmpty(data);
+        public bool LineMode { get; set; } = false;
+        public bool BlankLine { get; set; } = false;
     }
 }

@@ -32,7 +32,7 @@ namespace MAPIInspector.Parsers
                 str = ParseStringLineA(parser);
                 exceptionMessage.Add(str);
 
-                if (str.Empty) break;
+                if (str.Empty && !str.BlankLine) break;
             }
 
             ExceptionMessage = exceptionMessage.ToArray();

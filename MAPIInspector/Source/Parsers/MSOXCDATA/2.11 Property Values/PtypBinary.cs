@@ -24,19 +24,34 @@ namespace MAPIInspector.Parsers
         public BlockT<bool> HasValue;
 
         /// <summary>
-        /// The Count wide size.
+        /// Whether to use 32-bit count (true) or 16-bit count (false).
         /// </summary>
-        private CountWideEnum countWide;
+        private bool usesFourByteCount;
 
         private readonly bool isAddressBook = false;
 
         /// <summary>
         /// Initializes a new instance of the PtypBinary class
         /// </summary>
-        /// <param name="wide">The Count wide size of PtypBinary type.</param>
-        public PtypBinary(CountWideEnum wide, bool isAddressBook)
+        /// <param name="context">The parsing context that determines count field width.</param>
+        /// <param name="isAddressBook">Whether this is for address book parsing.</param>
+        public PtypBinary(PropertyCountContext context, bool isAddressBook = false)
         {
-            countWide = wide;
+            // Determine count width based on context
+            switch (context)
+            {
+                case PropertyCountContext.RopBuffers:
+                    usesFourByteCount = false; // 16 bits wide
+                    break;
+                case PropertyCountContext.ExtendedRules:
+                case PropertyCountContext.MapiHttp:
+                case PropertyCountContext.AddressBook:
+                    usesFourByteCount = true; // 32 bits wide
+                    break;
+                default:
+                    usesFourByteCount = false; // Default to ROP buffer behavior
+                    break;
+            }
             this.isAddressBook = isAddressBook;
         }
 
@@ -52,15 +67,13 @@ namespace MAPIInspector.Parsers
                 if (!HasValue) return;
             }
 
-            switch (countWide)
+            if (!usesFourByteCount)
             {
-                case CountWideEnum.twoBytes:
-                    Count= ParseAs<ushort,uint>();
-                    break;
-                default:
-                case CountWideEnum.fourBytes:
-                    Count = ParseT<uint>();
-                    break;
+                Count = ParseAs<ushort, uint>();
+            }
+            else
+            {
+                Count = ParseT<uint>();
             }
 
             Value = ParseBytes(Count);
