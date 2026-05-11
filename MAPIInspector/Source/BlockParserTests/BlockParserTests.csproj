@@ -119,8 +119,9 @@
     <Reference Include="Microsoft.Extensions.Hosting.Abstractions, Version=10.0.0.5, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.Hosting.Abstractions.10.0.5\lib\net462\Microsoft.Extensions.Hosting.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.Logging, Version=10.0.0.5, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Extensions.Logging.10.0.5\lib\net462\Microsoft.Extensions.Logging.dll</HintPath>
+    <Reference Include="Microsoft.Extensions.Logging, Version=10.0.0.7, Culture=neutral, PublicKeyToken=adb9793829ddae60">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.10.0.7\lib\net462\Microsoft.Extensions.Logging.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=10.0.0.7, Culture=neutral, PublicKeyToken=adb9793829ddae60">
       <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.10.0.7\lib\net462\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
