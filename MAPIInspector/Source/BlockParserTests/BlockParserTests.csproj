@@ -75,8 +75,8 @@
       <HintPath>..\packages\Azure.Core.1.57.0\lib\net472\Azure.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Azure.Monitor.OpenTelemetry.Exporter, Version=1.8.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8">
-      <HintPath>..\packages\Azure.Monitor.OpenTelemetry.Exporter.1.8.0\lib\netstandard2.0\Azure.Monitor.OpenTelemetry.Exporter.dll</HintPath>
+    <Reference Include="Azure.Monitor.OpenTelemetry.Exporter, Version=1.8.1.0, Culture=neutral, PublicKeyToken=92742159e12e44c8">
+      <HintPath>..\packages\Azure.Monitor.OpenTelemetry.Exporter.1.8.1\lib\netstandard2.0\Azure.Monitor.OpenTelemetry.Exporter.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.ApplicationInsights, Version=3.1.1.75, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
