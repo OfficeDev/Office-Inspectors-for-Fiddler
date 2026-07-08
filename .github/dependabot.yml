@@ -4,28 +4,76 @@ updates:
     directory: /
     schedule:
       interval: daily
+    groups:
+      production-dependencies:
+        dependency-type: "production"
+      development-dependencies:
+        dependency-type: "development"
+      other-dependencies:
+        patterns:
+          - "*"
 
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: daily
+    groups:
+      production-dependencies:
+        dependency-type: "production"
+      development-dependencies:
+        dependency-type: "development"
+      other-dependencies:
+        patterns:
+          - "*"
 
   - package-ecosystem: nuget
     directory: /FSSHTTPWOPIInspector/Source
     schedule:
       interval: daily
+    groups:
+      production-dependencies:
+        dependency-type: "production"
+      development-dependencies:
+        dependency-type: "development"
+      other-dependencies:
+        patterns:
+          - "*"
 
   - package-ecosystem: nuget
     directory: /FSSHTTPWOPIInspector/Test/WOPIautomation/WOPIautomation
     schedule:
       interval: daily
+    groups:
+      production-dependencies:
+        dependency-type: "production"
+      development-dependencies:
+        dependency-type: "development"
+      other-dependencies:
+        patterns:
+          - "*"
 
   - package-ecosystem: nuget
     directory: /MAPIInspector/Source
     schedule:
       interval: daily
+    groups:
+      production-dependencies:
+        dependency-type: "production"
+      development-dependencies:
+        dependency-type: "development"
+      other-dependencies:
+        patterns:
+          - "*"
 
   - package-ecosystem: nuget
     directory: /MAPIInspector/Test/MAPIAutomationTest/MAPIAutomationTest
     schedule:
       interval: daily
+    groups:
+      production-dependencies:
+        dependency-type: "production"
+      development-dependencies:
+        dependency-type: "development"
+      other-dependencies:
+        patterns:
+          - "*"
