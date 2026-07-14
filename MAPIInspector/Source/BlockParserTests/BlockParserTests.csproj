@@ -302,8 +302,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\MSTest.Analyzers.4.3.0\analyzers\dotnet\cs\MSTest.Analyzers.CodeFixes.dll" />
-    <Analyzer Include="..\packages\MSTest.Analyzers.4.3.0\analyzers\dotnet\cs\MSTest.Analyzers.dll" />
+    <Analyzer Include="..\packages\MSTest.Analyzers.4.3.2\analyzers\dotnet\cs\MSTest.Analyzers.CodeFixes.dll" />
+    <Analyzer Include="..\packages\MSTest.Analyzers.4.3.2\analyzers\dotnet\cs\MSTest.Analyzers.dll" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
