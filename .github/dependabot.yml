@@ -1,9 +1,12 @@
 version: 2
+# Let new releases age before adoption so delayed internal feeds can catch up.
 updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
     groups:
       production-dependencies:
         dependency-type: "production"
@@ -17,6 +20,8 @@ updates:
     directory: /
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
     groups:
       production-dependencies:
         dependency-type: "production"
@@ -30,6 +35,8 @@ updates:
     directory: /FSSHTTPWOPIInspector/Source
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
     groups:
       production-dependencies:
         dependency-type: "production"
@@ -43,6 +50,8 @@ updates:
     directory: /FSSHTTPWOPIInspector/Test/WOPIautomation/WOPIautomation
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
     groups:
       production-dependencies:
         dependency-type: "production"
@@ -56,6 +65,8 @@ updates:
     directory: /MAPIInspector/Source
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
     groups:
       production-dependencies:
         dependency-type: "production"
@@ -69,6 +80,8 @@ updates:
     directory: /MAPIInspector/Test/MAPIAutomationTest/MAPIAutomationTest
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
     groups:
       production-dependencies:
         dependency-type: "production"
